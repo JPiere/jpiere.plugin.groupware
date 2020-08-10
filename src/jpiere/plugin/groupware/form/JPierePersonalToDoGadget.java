@@ -71,6 +71,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 	private LocalDateTime p_LocalDateTime = LocalDateTime.now();
 	private String p_FormattedLocalDateTime = null;
 
+	private Timestamp today = null;
+
 
 	private final static String BUTTON_NAME_PREVIOUS_DAY = "PREVIOUSDAY";
 	private final static String BUTTON_NAME_NEXT_DAY = "NEXTDAY";
@@ -89,6 +91,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		p_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
 		login_User_ID = p_AD_User_ID;
 		p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
+
+		today = Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 
 		createHeader();
 		createMessage();
@@ -304,10 +308,26 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 	}
 
+
 	private void createTitle(MToDo toDo, ToolBarButton btn)
 	{
 		if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 		{
+			Timestamp scheduledEndDay = Timestamp.valueOf(LocalDateTime.of(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate(), LocalTime.MIN));
+			if(today.compareTo(scheduledEndDay) < 0)
+			{
+				btn.setImage(ThemeManager.getThemeResource("images/" + "InfoIndicator16.png"));
+
+			}else if(today.compareTo(scheduledEndDay) == 0){
+
+				btn.setImage(ThemeManager.getThemeResource("images/" + "mSetVariable.png"));
+
+			}else if(today.compareTo(scheduledEndDay) > 0) {
+
+				btn.setImage(ThemeManager.getThemeResource("images/" + "ErrorIndicator16.png"));
+
+			}
+
 			btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
@@ -320,18 +340,21 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 			if(p_FormattedLocalDateTime.equals(formattedscheduledStartTime) && p_FormattedLocalDateTime.equals(formattedscheduledEndTime))
 			{
+				btn.setImage(ThemeManager.getThemeResource("images/" + "InfoSchedule16.png"));
 				LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
 				LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
 				btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString() + " " + toDo.getName());
 
 			}else {
 
+				btn.setImage(ThemeManager.getThemeResource("images/" + "Register16.png"));
 				btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
 
 			}
 
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
 
+			btn.setImage(ThemeManager.getThemeResource("images/" + "Editor16.png"));
 			btn.setLabel(toDo.getName());
 
 		}
