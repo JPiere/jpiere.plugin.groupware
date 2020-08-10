@@ -6,7 +6,10 @@ Bundle-Version: 7.1.0.qualifier
 Bundle-Vendor: OSS ERP Solutions
 Automatic-Module-Name: jpiere.plugin.groupware
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: org.adempiere.base;bundle-version="7.1.0"
+Require-Bundle: org.adempiere.base;bundle-version="7.1.0",
+ org.adempiere.ui.zk;bundle-version="7.1.0",
+ zk,
+ zul
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

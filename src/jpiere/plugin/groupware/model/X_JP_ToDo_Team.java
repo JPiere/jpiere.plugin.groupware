@@ -32,7 +32,7 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200808L;
+	private static final long serialVersionUID = 20200810L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team (Properties ctx, int JP_ToDo_Team_ID, String trxName)
@@ -40,6 +40,8 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
       super (ctx, JP_ToDo_Team_ID, trxName);
       /** if (JP_ToDo_Team_ID == 0)
         {
+			setIsOpenToDoJP (true);
+// Y
 			setJP_Mandatory_Statistics_Info (null);
 // NO
 			setJP_Processing1 (null);
@@ -214,6 +216,27 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 	public String getDescription () 
 	{
 		return (String)get_Value(COLUMNNAME_Description);
+	}
+
+	/** Set Open ToDo.
+		@param IsOpenToDoJP Open ToDo	  */
+	public void setIsOpenToDoJP (boolean IsOpenToDoJP)
+	{
+		set_Value (COLUMNNAME_IsOpenToDoJP, Boolean.valueOf(IsOpenToDoJP));
+	}
+
+	/** Get Open ToDo.
+		@return Open ToDo	  */
+	public boolean isOpenToDoJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsOpenToDoJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
 	}
 
 	/** Yes / No = YN */
@@ -469,10 +492,12 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 		return (String)get_Value(COLUMNNAME_JP_ToDo_Team_UU);
 	}
 
-	/** ToDo = T */
-	public static final String JP_TODO_TYPE_ToDo = "T";
+	/** Task = T */
+	public static final String JP_TODO_TYPE_Task = "T";
 	/** Schedule = S */
 	public static final String JP_TODO_TYPE_Schedule = "S";
+	/** Memo = M */
+	public static final String JP_TODO_TYPE_Memo = "M";
 	/** Set ToDo Type.
 		@param JP_ToDo_Type ToDo Type	  */
 	public void setJP_ToDo_Type (String JP_ToDo_Type)

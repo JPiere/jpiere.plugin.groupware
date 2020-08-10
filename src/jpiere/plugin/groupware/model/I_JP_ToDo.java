@@ -194,6 +194,15 @@ public interface I_JP_ToDo
 	  */
 	public boolean isActive();
 
+    /** Column name IsOpenToDoJP */
+    public static final String COLUMNNAME_IsOpenToDoJP = "IsOpenToDoJP";
+
+	/** Set Open ToDo	  */
+	public void setIsOpenToDoJP (boolean IsOpenToDoJP);
+
+	/** Get Open ToDo	  */
+	public boolean isOpenToDoJP();
+
     /** Column name JP_Processing1 */
     public static final String COLUMNNAME_JP_Processing1 = "JP_Processing1";
 

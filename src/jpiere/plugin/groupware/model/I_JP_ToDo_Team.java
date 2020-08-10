@@ -166,6 +166,15 @@ public interface I_JP_ToDo_Team
 	  */
 	public boolean isActive();
 
+    /** Column name IsOpenToDoJP */
+    public static final String COLUMNNAME_IsOpenToDoJP = "IsOpenToDoJP";
+
+	/** Set Open ToDo	  */
+	public void setIsOpenToDoJP (boolean IsOpenToDoJP);
+
+	/** Get Open ToDo	  */
+	public boolean isOpenToDoJP();
+
     /** Column name JP_Mandatory_Statistics_Info */
     public static final String COLUMNNAME_JP_Mandatory_Statistics_Info = "JP_Mandatory_Statistics_Info";
 

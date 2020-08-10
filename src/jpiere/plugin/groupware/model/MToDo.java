@@ -49,6 +49,16 @@ public class MToDo extends X_JP_ToDo {
 
 		setAD_Org_ID(0);
 
+		//*** Check ToDo Type ***//
+		if(Util.isEmpty(getJP_ToDo_Type()))
+		{
+			Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type)};
+			log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+			return false;
+		}
+
+
+		//*** Check ToDo Category ***//
 		if(getJP_ToDo_Category_ID() != 0 && (newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Category_ID)))
 		{
 			if(MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != 0 && MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != getAD_User_ID() )
@@ -58,19 +68,58 @@ public class MToDo extends X_JP_ToDo {
 			}
 		}
 
-		if(getJP_ToDo_ScheduledStartTime() != null
-				&& getJP_ToDo_ScheduledEndTime() != null)
+		//*** Check Schedule Time ***//
+		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime) || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime))
 		{
-			if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
+			if(MToDo.JP_TODO_TYPE_Task.equals(getJP_ToDo_Type()))
 			{
-				log.saveError("Error", Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") );
-				return false;
-			}
+				if(getJP_ToDo_ScheduledEndTime() == null)
+				{
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
+					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+					return false;
+				}
 
+				setJP_ToDo_ScheduledStartTime(null);
+
+			}if(MToDo.JP_TODO_TYPE_Schedule.equals(getJP_ToDo_Type())) {
+
+
+				if(getJP_ToDo_ScheduledEndTime() == null)
+				{
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)};
+					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+					return false;
+				}
+
+				if(getJP_ToDo_ScheduledEndTime() == null)
+				{
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
+					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+					return false;
+				}
+
+				if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
+				{
+					log.saveError("Error", Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") );
+					return false;
+				}
+
+			}if(MToDo.JP_TODO_TYPE_Memo.equals(getJP_ToDo_Type())) {
+
+				setJP_ToDo_ScheduledStartTime(null);
+				setJP_ToDo_ScheduledEndTime(null);
+			}
 		}
 
+
+		//*** Check ToDo Status***//
 		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
 		{
+			if(Util.isEmpty(getJP_ToDo_Status()))
+			{
+				setJP_ToDo_Status(MToDo.JP_TODO_STATUS_NotYetStarted);
+			}
 
 			if(MToDoTeam.JP_TODO_STATUS_NotYetStarted.equals(getJP_ToDo_Status()))
 			{
@@ -92,6 +141,7 @@ public class MToDo extends X_JP_ToDo {
 				setJP_ToDo_EndTime(new Timestamp(System.currentTimeMillis()));
 				setProcessed(true);
 
+				//*** Check Statistics info ***//
 				if(getJP_ToDo_Team_ID() != 0)
 				{
 					MToDoTeam teamToDo = new MToDoTeam(getCtx(), getJP_ToDo_Team_ID(), get_TrxName());

@@ -14,6 +14,8 @@
 package jpiere.plugin.groupware.process;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.logging.Level;
 
 import org.adempiere.util.ProcessUtil;
@@ -108,6 +110,7 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 			v_JP_ToDo_ScheduledEndTime = calculateNextScheduleTime(v_JP_ToDo_ScheduledEndTime);
 
 		v_JudgmentTime = v_JP_ToDo_ScheduledStartTime == null ? v_JP_ToDo_ScheduledEndTime :  v_JP_ToDo_ScheduledStartTime;
+		p_DateTo = Timestamp.valueOf(LocalDateTime.of(p_DateTo.toLocalDateTime().toLocalDate(), LocalTime.MAX));
 
 		int created = 0;
 		while(p_DateTo.compareTo(v_JudgmentTime) >= 0)
