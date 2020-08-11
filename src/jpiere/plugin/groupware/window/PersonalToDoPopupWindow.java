@@ -113,8 +113,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 	/** Read Only				*/
-	private boolean isReadOnly = false;
+	private boolean isUpdatable = false;
 	private boolean isNewRecord = false;
+	private boolean isTeamToDo = false;
 
 	private int p_Record_ID = 0;
 	private MToDo m_ToDo = null;
@@ -156,20 +157,27 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			{
 				isNewRecord = false;
 				if(m_ToDo.isProcessed())
-					isReadOnly = true;
+					isUpdatable = false;
 				else
-					isReadOnly = false;
+					isUpdatable = true;
 			}else {
 
 				isNewRecord = false;
-				isReadOnly = true;
+				isUpdatable = false;
 			}
 		}else {
 
 			isNewRecord = true;
-			isReadOnly = false;
+			isUpdatable = true;
 
 		}
+
+		if(p_Record_ID == 0)
+			isTeamToDo = false;
+		else if(m_ToDo.getJP_ToDo_Team_ID() == 0)
+			isTeamToDo = false;
+		else
+			isTeamToDo = true;
 
 
 		//Window Title
@@ -217,7 +225,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		//*** AD_User_ID ***//
 		MLookup lookup_AD_User_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
-		editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, isReadOnly, true);
+		editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, isTeamToDo? true : !isUpdatable, true);
 		if(isNewRecord)
 		{
 			editor_AD_User_ID.setValue(p_AD_User_ID);
@@ -249,7 +257,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_Type.appendChild(label_JP_ToDo_Type.getDecorator());
 
 		MLookup lookup_JP_ToDo_Type = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
-		editor_JP_ToDo_Type = new WTableDirEditor(lookup_JP_ToDo_Type, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type), null, true, isReadOnly, true);
+		editor_JP_ToDo_Type = new WTableDirEditor(lookup_JP_ToDo_Type, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type), null, true, isTeamToDo? true : !isUpdatable, true);
 		if(isNewRecord)
 		{
 			editor_JP_ToDo_Type.setValue(p_JP_ToDo_Type);
@@ -273,7 +281,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_Category_ID.appendChild(label_JP_ToDo_Category_ID);
 
 		MLookup lookup_JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
-		editor_JP_ToDo_Category_ID = new WSearchEditor(lookup_JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, false, isReadOnly, true);
+		editor_JP_ToDo_Category_ID = new WSearchEditor(lookup_JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, false, isTeamToDo? true : !isUpdatable, true);
 		if(isNewRecord)
 		{
 			;
@@ -297,7 +305,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_Name.appendChild(label_Name);
 		div_Name.appendChild(label_Name.getDecorator());
 
-		editor_Name = new WStringEditor(MToDo.COLUMNNAME_Name, true, isReadOnly, true, 30, 30, "", null);
+		editor_Name = new WStringEditor(MToDo.COLUMNNAME_Name, true, isTeamToDo? true : !isUpdatable, true, 30, 30, "", null);
 		if(isNewRecord)
 		{
 			;
@@ -319,7 +327,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_Description.setSclass("form-label");
 		div_Description.appendChild(label_Description);
 
-		editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, isReadOnly, true, 30, 30, "", null);
+		editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, isTeamToDo? true : !isUpdatable, true, 30, 30, "", null);
 		if(isNewRecord)
 		{
 			;
@@ -342,7 +350,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_Comments.setSclass("form-label");
 		div_Comments.appendChild(label_Comments);
 
-		editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, isReadOnly, true, 30, 30, "", null);
+		editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, !isUpdatable, true, 30, 30, "", null);
 		if(isNewRecord)
 		{
 			;
@@ -368,7 +376,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_ScheduledStartTime.appendChild(label_JP_ToDo_ScheduledStartTime);
 		div_JP_ToDo_ScheduledStartTime.appendChild(label_JP_ToDo_ScheduledStartTime.getDecorator());
 
-		editor_JP_ToDo_ScheduledStartTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, isReadOnly, true, null);
+		editor_JP_ToDo_ScheduledStartTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, !isUpdatable, true, null);
 		if(isNewRecord)
 		{
 			editor_JP_ToDo_ScheduledStartTime.setValue(p_SelectedDate);
@@ -394,7 +402,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_ScheduledEndTime.appendChild(label_JP_ToDo_ScheduledEndTime);
 		div_JP_ToDo_ScheduledEndTime.appendChild(label_JP_ToDo_ScheduledEndTime.getDecorator());
 
-		editor_JP_ToDo_ScheduledEndTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, isReadOnly, true, null);
+		editor_JP_ToDo_ScheduledEndTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, !isUpdatable, true, null);
 		if(isNewRecord)
 		{
 			editor_JP_ToDo_ScheduledEndTime.setValue(p_SelectedDate);
@@ -419,7 +427,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_Status.appendChild(label_JP_ToDo_Status.getDecorator());
 
 		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
-		editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, isReadOnly, true);
+		editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, isUpdatable? false: true, true);
 		if(isNewRecord)
 		{
 			editor_JP_ToDo_Status.setValue(MToDo.JP_TODO_STATUS_NotYetStarted);
@@ -437,7 +445,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 		/** IsOpenToDoJP **/
-		editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, isReadOnly, true);
+		editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, !isUpdatable, true);
 		if(isNewRecord)
 		{
 			editor_IsOpenToDoJP.setValue("Y");
@@ -453,7 +461,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		/** JP_Statistics_YesNo  **/
 		MLookup lookup_JP_Statistics_YesNo = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_YesNo),  DisplayType.List);
-		editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo), null, false, isReadOnly, true);
+		editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo), null, false, !isUpdatable, true);
 		if(isNewRecord)
 		{
 
@@ -471,7 +479,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		/** JP_Statistics_Choice **/
 		MLookup lookup_JP_Statistics_Choice = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_Choice),  DisplayType.List);
-		editor_JP_Statistics_Choice = new WTableDirEditor(lookup_JP_Statistics_Choice, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice), null, false, isReadOnly, true);
+		editor_JP_Statistics_Choice = new WTableDirEditor(lookup_JP_Statistics_Choice, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice), null, false, !isUpdatable, true);
 		if(isNewRecord)
 		{
 
@@ -488,7 +496,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 		/** JP_Statistics_DateAndTime **/
-		editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime), null, false, isReadOnly, true);
+		editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime), null, false, !isUpdatable, true);
 		if(isNewRecord)
 		{
 
@@ -504,7 +512,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 		/** JP_Statistics_Number **/
-		editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, isReadOnly, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
+		editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, !isUpdatable, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
 		if(isNewRecord)
 		{
 
@@ -543,13 +551,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	}
 
-	public void onEvent(Event e) throws Exception {
-		if (isReadOnly)
-			this.detach();
-		else if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK)) {
+	public void onEvent(Event e) throws Exception
+	{
 
+		if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK))
+		{
 
-			if(isReadOnly)
+			if(!isUpdatable)
 			{
 				return;
 			}

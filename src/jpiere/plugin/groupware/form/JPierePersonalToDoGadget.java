@@ -320,7 +320,6 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 			btn.setId(String.valueOf(toDo.getJP_ToDo_ID()));
 			row.appendChild(btn);
 		}//for
-
 	}
 
 
