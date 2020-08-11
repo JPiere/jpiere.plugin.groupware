@@ -47,14 +47,172 @@ public class MToDo extends X_JP_ToDo {
 	protected boolean beforeSave(boolean newRecord)
 	{
 
+		String msg = beforeSavePreCheck(newRecord);
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
+			return false;
+		}
+
+//		setAD_Org_ID(0);
+//
+//		//*** Check ToDo Type ***//
+//		if(Util.isEmpty(getJP_ToDo_Type()))
+//		{
+//			Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type)};
+//			log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//			return false;
+//		}
+//
+//
+//		//*** Check ToDo Category ***//
+//		if(getJP_ToDo_Category_ID() != 0 && (newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Category_ID)))
+//		{
+//			if(MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != 0 && MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != getAD_User_ID() )
+//			{
+//				log.saveError("Error", Msg.getMsg(getCtx(), "JP_OtherUserToDoCategory"));//You can't use other user's ToDo Category.
+//				return false;
+//			}
+//		}
+//
+//		//*** Check Schedule Time ***//
+//		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime) || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime))
+//		{
+//			if(MToDo.JP_TODO_TYPE_Task.equals(getJP_ToDo_Type()))
+//			{
+//				if(getJP_ToDo_ScheduledEndTime() == null)
+//				{
+//					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
+//					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//					return false;
+//				}
+//
+//				setJP_ToDo_ScheduledStartTime(null);
+//
+//			}if(MToDo.JP_TODO_TYPE_Schedule.equals(getJP_ToDo_Type())) {
+//
+//
+//				if(getJP_ToDo_ScheduledEndTime() == null)
+//				{
+//					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)};
+//					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//					return false;
+//				}
+//
+//				if(getJP_ToDo_ScheduledEndTime() == null)
+//				{
+//					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
+//					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//					return false;
+//				}
+//
+//				if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
+//				{
+//					log.saveError("Error", Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") );
+//					return false;
+//				}
+//
+//			}if(MToDo.JP_TODO_TYPE_Memo.equals(getJP_ToDo_Type())) {
+//
+//				setJP_ToDo_ScheduledStartTime(null);
+//				setJP_ToDo_ScheduledEndTime(null);
+//			}
+//		}
+//
+//
+//		//*** Check ToDo Status***//
+//		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
+//		{
+//			if(Util.isEmpty(getJP_ToDo_Status()))
+//			{
+//				setJP_ToDo_Status(MToDo.JP_TODO_STATUS_NotYetStarted);
+//			}
+//
+//			if(MToDoTeam.JP_TODO_STATUS_NotYetStarted.equals(getJP_ToDo_Status()))
+//			{
+//				setJP_ToDo_StartTime(null);
+//				setJP_ToDo_EndTime(null);
+//				setProcessed(false);
+//
+//			}else if(MToDoTeam.JP_TODO_STATUS_WorkInProgress.equals(getJP_ToDo_Status())) {
+//
+//				if(getJP_ToDo_StartTime() == null)
+//					setJP_ToDo_StartTime(new Timestamp(System.currentTimeMillis()));
+//				setJP_ToDo_EndTime(null);
+//				setProcessed(false);
+//
+//			}else if(MToDoTeam.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status())) {
+//
+//				if(getJP_ToDo_StartTime() == null)
+//					setJP_ToDo_StartTime(new Timestamp(System.currentTimeMillis()));
+//				setJP_ToDo_EndTime(new Timestamp(System.currentTimeMillis()));
+//				setProcessed(true);
+//
+//				//*** Check Statistics info ***//
+//				if(getJP_ToDo_Team_ID() != 0)
+//				{
+//					MToDoTeam teamToDo = new MToDoTeam(getCtx(), getJP_ToDo_Team_ID(), get_TrxName());
+//					if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(teamToDo.getJP_Mandatory_Statistics_Info()))
+//					{
+//						;//Noting to do;
+//
+//					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
+//
+//						if(Util.isEmpty(getJP_Statistics_YesNo()))
+//						{
+//							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+//							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_YesNo)};
+//							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//							return false;
+//						}
+//
+//					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
+//
+//						if(Util.isEmpty(getJP_Statistics_Choice()))
+//						{
+//							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+//							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_Choice)};
+//							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//							return false;
+//						}
+//
+//					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
+//
+//						if(getJP_Statistics_DateAndTime() == null)
+//						{
+//							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+//							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_DateAndTime)};
+//							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//							return false;
+//						}
+//
+//					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
+//
+//						if(get_Value("JP_Statistics_Number") == null)
+//						{
+//							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+//							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_Number)};
+//							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
+//							return false;
+//						}
+//					}
+//
+//				}//if(getJP_ToDo_Team_ID() != 0)
+//			}
+//		}//if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
+
+		return true;
+	}
+
+	public String beforeSavePreCheck(boolean newRecord)
+	{
 		setAD_Org_ID(0);
 
 		//*** Check ToDo Type ***//
 		if(Util.isEmpty(getJP_ToDo_Type()))
 		{
 			Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type)};
-			log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-			return false;
+			return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 		}
 
 
@@ -63,8 +221,7 @@ public class MToDo extends X_JP_ToDo {
 		{
 			if(MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != 0 && MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != getAD_User_ID() )
 			{
-				log.saveError("Error", Msg.getMsg(getCtx(), "JP_OtherUserToDoCategory"));//You can't use other user's ToDo Category.
-				return false;
+				return Msg.getMsg(getCtx(), "JP_OtherUserToDoCategory");//You can't use other user's ToDo Category.
 			}
 		}
 
@@ -76,8 +233,7 @@ public class MToDo extends X_JP_ToDo {
 				if(getJP_ToDo_ScheduledEndTime() == null)
 				{
 					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
-					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-					return false;
+					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 				}
 
 				setJP_ToDo_ScheduledStartTime(null);
@@ -88,21 +244,18 @@ public class MToDo extends X_JP_ToDo {
 				if(getJP_ToDo_ScheduledEndTime() == null)
 				{
 					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)};
-					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-					return false;
+					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 				}
 
 				if(getJP_ToDo_ScheduledEndTime() == null)
 				{
 					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
-					log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-					return false;
+					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 				}
 
 				if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
 				{
-					log.saveError("Error", Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") );
-					return false;
+					return Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") ;
 				}
 
 			}if(MToDo.JP_TODO_TYPE_Memo.equals(getJP_ToDo_Type())) {
@@ -155,8 +308,7 @@ public class MToDo extends X_JP_ToDo {
 						{
 							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
 							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_YesNo)};
-							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-							return false;
+							return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 						}
 
 					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
@@ -165,8 +317,7 @@ public class MToDo extends X_JP_ToDo {
 						{
 							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
 							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_Choice)};
-							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-							return false;
+							return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 						}
 
 					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
@@ -175,8 +326,7 @@ public class MToDo extends X_JP_ToDo {
 						{
 							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
 							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_DateAndTime)};
-							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-							return false;
+							return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 						}
 
 					}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(teamToDo.getJP_Mandatory_Statistics_Info())){
@@ -185,8 +335,7 @@ public class MToDo extends X_JP_ToDo {
 						{
 							String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
 							Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_Number)};
-							log.saveError("Error", msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));
-							return false;
+							return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 						}
 					}
 
@@ -194,7 +343,7 @@ public class MToDo extends X_JP_ToDo {
 			}
 		}//if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
 
-		return true;
+		return null;
 	}
 
 	/**

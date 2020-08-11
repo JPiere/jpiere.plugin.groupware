@@ -8,8 +8,15 @@ Automatic-Module-Name: jpiere.plugin.groupware
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.adempiere.base;bundle-version="7.1.0",
  org.adempiere.ui.zk;bundle-version="7.1.0",
+ org.idempiere.zk.extra;bundle-version="7.1.0",
+ zcommon;bundle-version="8.6.0",
+ zel;bundle-version="8.6.0",
+ zhtml;bundle-version="8.6.0",
+ zkbind;bundle-version="8.6.0",
+ zkplus;bundle-version="8.6.0",
  zk,
- zul
+ zul,
+ zweb;bundle-version="8.6.0"
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

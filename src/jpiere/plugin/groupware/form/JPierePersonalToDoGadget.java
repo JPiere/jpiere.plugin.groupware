@@ -27,11 +27,13 @@ import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.component.ToolBarButton;
 import org.adempiere.webui.dashboard.DashboardPanel;
+import org.adempiere.webui.editor.WDateEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
+import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.compiere.model.MColumn;
@@ -51,6 +53,7 @@ import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Html;
 
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
 /**
@@ -68,7 +71,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 	private int p_AD_User_ID = 0;
 	private String p_JP_ToDo_Type = "T";
-	private LocalDateTime p_LocalDateTime = LocalDateTime.now();
+	private LocalDateTime p_LocalDateTime =null;
 	private String p_FormattedLocalDateTime = null;
 
 	private Timestamp today = null;
@@ -82,6 +85,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 	private Language lang = Env.getLanguage(Env.getCtx());
 	private int login_User_ID = 0;
+	WDateEditor editor_Date = null;
 
 	public JPierePersonalToDoGadget()
 	{
@@ -90,7 +94,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 		p_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
 		login_User_ID = p_AD_User_ID;
+
+		p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
 		p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
+
+		editor_Date = new WDateEditor("JP_ToDoScheduledDate", false, false, true, "");
+		editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
+		editor_Date.addValueChangeListener(this);
 
 		today = Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 
@@ -150,20 +160,19 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
 		hlyaout.appendChild(div1);
 
-
-		WStringEditor text = new WStringEditor();
-		text.setReadWrite(false);
-
-
 		if(p_AD_User_ID == 0)
 		{
-			text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "AD_User_ID"));
-			hlyaout.appendChild(text.getComponent());
+			WStringEditor editor_Text = new WStringEditor();
+			editor_Text.setReadWrite(false);
+			editor_Text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "AD_User_ID"));
+			hlyaout.appendChild(editor_Text.getComponent());
 
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
 
-			text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
-			hlyaout.appendChild(text.getComponent());
+			WStringEditor editor_Text = new WStringEditor();
+			editor_Text.setReadWrite(false);
+			editor_Text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
+			hlyaout.appendChild(editor_Text.getComponent());
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
@@ -177,8 +186,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 			leftBtn.addEventListener(Events.ON_CLICK, this);
 			hlyaout.appendChild(leftBtn);
 
-			text.setValue(Msg.getMsg(Env.getCtx(),"JP_ScheduledFor",new Object[]{p_FormattedLocalDateTime}));//Schedule for {0}
-			hlyaout.appendChild(text.getComponent());
+			editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
+			hlyaout.appendChild(editor_Date.getComponent());
 
 			Button rightBtn = new Button();
 			rightBtn.setImage(ThemeManager.getThemeResource("images/" + imageRight));
@@ -190,13 +199,17 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
 
-			text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
-			hlyaout.appendChild(text.getComponent());
+			WStringEditor editor_Text = new WStringEditor();
+			editor_Text.setReadWrite(false);
+			editor_Text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
+			hlyaout.appendChild(editor_Text.getComponent());
 
 		}else {
 
-			text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "JP_ToDo_Type"));
-			hlyaout.appendChild(text.getComponent());
+			WStringEditor editor_Text = new WStringEditor();
+			editor_Text.setReadWrite(false);
+			editor_Text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "JP_ToDo_Type"));
+			hlyaout.appendChild(editor_Text.getComponent());
 
 		}
 
@@ -210,6 +223,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		createNewToDo.setClass("btn-small");
 		createNewToDo.setName(BUTTON_NAME_NEW_TODO);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
+		createNewToDo.setId(String.valueOf(0));
 		hlyaout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
@@ -233,7 +247,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 	}
 
-	private void createContents()
+	public void createContents()
 	{
 
 		if(contentsArea.getFirstChild() != null)
@@ -303,6 +317,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 			btn.setSclass("link");
 			createTitle(toDo, btn);
 			btn.addEventListener(Events.ON_CLICK, this);
+			btn.setId(String.valueOf(toDo.getJP_ToDo_ID()));
 			row.appendChild(btn);
 		}//for
 
@@ -328,7 +343,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 			}
 
-			btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
+			if(toDo.getJP_ToDo_Team_ID() == 0)
+			{
+				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
+			}else {
+				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime())
+						+" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+			}
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
@@ -343,19 +364,39 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 				btn.setImage(ThemeManager.getThemeResource("images/" + "InfoSchedule16.png"));
 				LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
 				LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
-				btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString() + " " + toDo.getName());
+
+				if(toDo.getJP_ToDo_Team_ID() == 0)
+				{
+					btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString() + " " + toDo.getName());
+				}else {
+					btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString()
+						+" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+				}
 
 			}else {
 
 				btn.setImage(ThemeManager.getThemeResource("images/" + "Register16.png"));
-				btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
+				if(toDo.getJP_ToDo_Team_ID() == 0)
+				{
+					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
+				}else {
+					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime
+						+" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+				}
+
 
 			}
 
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
 
 			btn.setImage(ThemeManager.getThemeResource("images/" + "Editor16.png"));
-			btn.setLabel(toDo.getName());
+			if(toDo.getJP_ToDo_Team_ID() == 0)
+			{
+				btn.setLabel(toDo.getName());
+			}else {
+				btn.setLabel(" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+			}
+
 
 		}
 	}
@@ -388,6 +429,21 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 				p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Memo;
 			else
 				p_JP_ToDo_Type = null;
+
+		}else if("JP_ToDoScheduledDate".equals(name)) {
+
+			if(value == null)
+			{
+				p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
+				editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
+
+			}else {
+
+				p_LocalDateTime = ((Timestamp)value).toLocalDateTime();
+
+			}
+
+			p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
 		}
 
 		createMessage();
@@ -422,18 +478,26 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 				}else if(BUTTON_NAME_NEW_TODO.equals(btnName)){
 
 					;//TODO
+					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(event, this);
+					SessionManager.getAppDesktop().showWindow(todoWindow);
 
 				}else if(BUTTON_NAME_REFRESH.equals(btnName)){
 
 					createContents();
 
 				}else if(BUTTON_NAME_CALENDER.equals(btnName)){
-					;//TODO
+					;
 				}
+
+			}else if(comp instanceof ToolBarButton) {
+
+				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(event, this);
+				SessionManager.getAppDesktop().showWindow(todoWindow);
 
 			}
 
 		}
+
 	}
 
 	private List<MToDo> getToDoes(String whereClause, String orderClause, Object ...parameters)
@@ -443,8 +507,21 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 										.setParameters(parameters)
 										.setOrderBy(orderClause)
 										.list();
-
-
 		return list;
+	}
+
+	public int getAD_User_ID()
+	{
+		return p_AD_User_ID;
+	}
+
+	public String getJP_ToDo_Type()
+	{
+		return p_JP_ToDo_Type;
+	}
+
+	public Timestamp getSelectedDate()
+	{
+		return Timestamp.valueOf(p_LocalDateTime);
 	}
 }
