@@ -49,8 +49,10 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlBasedComponent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
+import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.South;
 
 import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
@@ -314,6 +316,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		}
 		editor_Name.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Name.getComponent(), "true");
+		editor_Name.getComponent().setRows(2);
 
 		row = new Row();
 		rows.appendChild(row);
@@ -336,7 +339,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		}
 		editor_Description.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
-		editor_Description.getComponent().setRows(3);
+		editor_Description.getComponent().setRows(2);
 
 		row = new Row();
 		rows.appendChild(row);
@@ -360,7 +363,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		editor_Comments.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
-		editor_Comments.getComponent().setRows(3);
+		editor_Comments.getComponent().setRows(2);
 
 		row = new Row();
 		rows.appendChild(row);
@@ -459,6 +462,26 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		row.appendCellChild(div_IsOpenToDoJP,2);
 
 
+		/********************************************************************************************
+		 * Statistics Info
+		 ********************************************************************************************/
+
+		row = new Row();
+		rows.appendChild(row);
+		Groupbox statisticsInfo_GroupBox = new Groupbox();
+		statisticsInfo_GroupBox.setOpen(true);
+		row.appendCellChild(statisticsInfo_GroupBox,6);
+		statisticsInfo_GroupBox.appendChild(new Caption(Msg.getMsg(Env.getCtx(),"JP_StatisticsInfo")));
+		Grid statisticsInfo_Grid  = GridFactory.newGridLayout();
+		statisticsInfo_Grid.setStyle("background-color: #E9F0FF");
+		statisticsInfo_Grid.setStyle("border: none");
+		statisticsInfo_GroupBox.appendChild(statisticsInfo_Grid);
+
+		Rows statisticsInfo_rows = new Rows();
+		statisticsInfo_Grid.appendChild(statisticsInfo_rows);
+		row = new Row();
+		statisticsInfo_rows.appendChild(row);
+
 		/** JP_Statistics_YesNo  **/
 		MLookup lookup_JP_Statistics_YesNo = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_YesNo),  DisplayType.List);
 		editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo), null, false, !isUpdatable, true);
@@ -472,7 +495,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		ZKUpdateUtil.setHflex(editor_JP_Statistics_YesNo.getComponent(), "true");
 
 		row = new Row();
-		rows.appendChild(row);
+		statisticsInfo_rows.appendChild(row);
 		row.appendCellChild(editor_JP_Statistics_YesNo.getLabel().rightAlign(),2);
 		row.appendCellChild(editor_JP_Statistics_YesNo.getComponent(),4);
 
@@ -490,7 +513,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		ZKUpdateUtil.setHflex(editor_JP_Statistics_Choice.getComponent(), "true");
 
 		row = new Row();
-		rows.appendChild(row);
+		statisticsInfo_rows.appendChild(row);
 		row.appendCellChild(editor_JP_Statistics_Choice.getLabel().rightAlign(),2);
 		row.appendCellChild(editor_JP_Statistics_Choice.getComponent(),4);
 
@@ -506,7 +529,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		ZKUpdateUtil.setHflex((HtmlBasedComponent)editor_JP_Statistics_DateAndTime.getComponent(), "true");
 
 		row = new Row();
-		rows.appendChild(row);
+		statisticsInfo_rows.appendChild(row);
 		row.appendCellChild(editor_JP_Statistics_DateAndTime.getLabel().rightAlign(),2);
 		row.appendCellChild(editor_JP_Statistics_DateAndTime.getComponent(),4);
 
@@ -520,7 +543,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			editor_JP_Statistics_Number.setValue(m_ToDo.getJP_Statistics_Number());
 		}
 		row = new Row();
-		rows.appendChild(row);
+		statisticsInfo_rows.appendChild(row);
 		row.appendCellChild(editor_JP_Statistics_Number.getLabel().rightAlign(),2);
 		row.appendCellChild(editor_JP_Statistics_Number.getComponent(),4);
 
