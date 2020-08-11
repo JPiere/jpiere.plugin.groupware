@@ -17,7 +17,9 @@ import java.sql.Timestamp;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
+import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.ConfirmPanel;
 import org.adempiere.webui.component.Grid;
 import org.adempiere.webui.component.GridFactory;
@@ -39,6 +41,7 @@ import org.adempiere.webui.window.FDialog;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MTable;
 import org.compiere.model.MUser;
 import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
@@ -49,6 +52,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlBasedComponent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
@@ -379,7 +383,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_ScheduledStartTime.appendChild(label_JP_ToDo_ScheduledStartTime);
 		div_JP_ToDo_ScheduledStartTime.appendChild(label_JP_ToDo_ScheduledStartTime.getDecorator());
 
-		editor_JP_ToDo_ScheduledStartTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, !isUpdatable, true, null);
+		editor_JP_ToDo_ScheduledStartTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, isTeamToDo? true : !isUpdatable, true, null);
 		if(isNewRecord)
 		{
 			editor_JP_ToDo_ScheduledStartTime.setValue(p_SelectedDate);
@@ -405,7 +409,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div_JP_ToDo_ScheduledEndTime.appendChild(label_JP_ToDo_ScheduledEndTime);
 		div_JP_ToDo_ScheduledEndTime.appendChild(label_JP_ToDo_ScheduledEndTime.getDecorator());
 
-		editor_JP_ToDo_ScheduledEndTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, !isUpdatable, true, null);
+		editor_JP_ToDo_ScheduledEndTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, isTeamToDo? true :!isUpdatable, true, null);
 		if(isNewRecord)
 		{
 			editor_JP_ToDo_ScheduledEndTime.setValue(p_SelectedDate);
@@ -553,6 +557,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		ZKUpdateUtil.setHflex(borderlayout, "1");
 		ZKUpdateUtil.setVflex(borderlayout, "1");
 
+		//TODO
+		Button refresh = new Button();
+		refresh.setImage(ThemeManager.getThemeResource("images/" + "Refresh16.png"));
+		refresh.setClass("btn-small");
+		refresh.setId(comp.getId());
+		refresh.addEventListener(Events.ON_CLICK, this);
+		borderlayout.appendNorth(refresh);
+
 		Center centerPane = new Center();
 		centerPane.setSclass("dialog-content");
 		centerPane.setAutoscroll(true);
@@ -576,6 +588,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	public void onEvent(Event e) throws Exception
 	{
+		Component comp = e.getTarget();
+		Object list_index = comp.getAttribute("index");
+		String eventName = e.getName();
 
 		if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK))
 		{
@@ -684,7 +699,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			this.detach();
 		}
 		else if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
+		{
 			this.detach();
+		}else {
+
+			AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), Integer.valueOf(comp.getId()).intValue());
+			this.detach();
+		}
 	}
 
 
