@@ -339,6 +339,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		//*** IsOpenToDoJP ***//
 		WYesNoEditor editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_IsOpenToDoJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, !p_IsUpdatable, true);
+		editor_IsOpenToDoJP.addValueChangeListener(this);
 		map_Editor.put(MToDo.COLUMNNAME_IsOpenToDoJP, editor_IsOpenToDoJP);
 
 
@@ -360,12 +361,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		//*** JP_Statistics_DateAndTime ***//
 		WDatetimeEditor editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime), null, false, !p_IsUpdatable, true);
+		editor_JP_Statistics_DateAndTime.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex((HtmlBasedComponent)editor_JP_Statistics_DateAndTime.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, editor_JP_Statistics_DateAndTime);
 
 
 		//*** JP_Statistics_Number ***//
 		WNumberEditor editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, !p_IsUpdatable, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
+		editor_JP_Statistics_Number.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_Statistics_Number.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
 	}

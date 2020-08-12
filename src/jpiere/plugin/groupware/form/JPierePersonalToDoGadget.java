@@ -37,6 +37,7 @@ import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.compiere.model.MColumn;
+import org.compiere.model.MForm;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.Query;
@@ -53,6 +54,7 @@ import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Html;
 
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.util.GroupwareTeamUtil;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
@@ -501,7 +503,11 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 					createContents();
 
 				}else if(BUTTON_NAME_CALENDER.equals(btnName)){
-					;
+
+
+					MForm form = GroupwareTeamUtil.getToDoCallendarForm();
+					SessionManager.getAppDesktop().openForm(form.getAD_Form_ID());
+
 				}
 
 			}else if(comp instanceof ToolBarButton) {
