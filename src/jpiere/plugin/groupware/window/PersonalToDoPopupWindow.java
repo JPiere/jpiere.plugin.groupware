@@ -60,6 +60,8 @@ import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
+import org.zkoss.zul.Hlayout;
+import org.zkoss.zul.Html;
 import org.zkoss.zul.North;
 import org.zkoss.zul.South;
 
@@ -95,6 +97,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Timestamp p_SelectedDate = null;
 
 
+	private North north = null;
+	private Center center = null;
 	private ConfirmPanel confirmPanel;
 
 	private JPierePersonalToDoGadget i_CallPersonalToDoPopupwindow;
@@ -104,6 +108,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	public PersonalToDoPopupWindow(Event event, JPierePersonalToDoGadget parent)
 	{
 		super();
+		this.i_CallPersonalToDoPopupwindow = parent;
+		ctx = Env.getCtx();
 
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		if (!ThemeManager.isUseCSSForWindowSize()) {
@@ -122,22 +128,37 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		this.setClosable(true);
 
 
-		initControlParameter(event, parent);
+		Component comp = event.getTarget();
+		String string_ID = comp.getId();
+		if(Util.isEmpty(string_ID))
+		{
+			;//TODO エラー
+
+		}else {
+
+			p_JP_ToDo_ID = Integer.valueOf(string_ID).intValue();
+		}
+
+		updateControlParameter(p_JP_ToDo_ID);
+		updateWindowTitle();
+
 		createLabelMap();
 		createEditorMap();
-
-		updateWindowTitle();
 
 		Borderlayout borderlayout = new Borderlayout();
 		this.appendChild(borderlayout);
 		ZKUpdateUtil.setHflex(borderlayout, "1");
 		ZKUpdateUtil.setVflex(borderlayout, "1");
 
-		North noth = createNorth();
-		borderlayout.appendChild(noth);
+		north = new North();
+		north = updateNorth();
+		borderlayout.appendChild(north);
 
-		//TODO
-		Center center  = createCenter();
+		center = new Center();
+		center.setSclass("dialog-content");
+		center.setAutoscroll(true);
+
+		center = updateCenter();
 		borderlayout.appendChild(center);
 
 
@@ -151,55 +172,53 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	}
 
-	private void initControlParameter(Event event, JPierePersonalToDoGadget parent)
+	private void updateControlParameter(int JP_ToDO_ID)
 	{
-		this.i_CallPersonalToDoPopupwindow = parent;
-		ctx = Env.getCtx();
+		p_JP_ToDo_ID = JP_ToDO_ID;
+		p_SelectedDate = i_CallPersonalToDoPopupwindow.getSelectedDate();
 
-		Component comp = event.getTarget();
-		String string_ID = comp.getId();
-		if(Util.isEmpty(string_ID))
+		if(p_JP_ToDo_ID == 0)
 		{
-			;//TODO エラー
+			p_IsNewRecord = true;
+			p_MToDo = null;
+			p_AD_User_ID = i_CallPersonalToDoPopupwindow.getAD_User_ID();
+			p_JP_ToDo_Type = i_CallPersonalToDoPopupwindow.getJP_ToDo_Type();
 
 		}else {
 
-			p_JP_ToDo_ID = Integer.valueOf(string_ID).intValue();
+			p_IsNewRecord = false;
+			p_MToDo = new MToDo(ctx, p_JP_ToDo_ID, null);
+			p_AD_User_ID = p_MToDo.getAD_User_ID();
+			p_JP_ToDo_Type = p_MToDo.getJP_ToDo_Type();
 		}
 
-
-		p_AD_User_ID = parent.getAD_User_ID();
-		p_JP_ToDo_Type = parent.getJP_ToDo_Type();
-		p_SelectedDate = parent.getSelectedDate();
-
-		if(p_JP_ToDo_ID != 0 )
+		if(p_IsNewRecord)
 		{
-			p_MToDo = new MToDo(ctx, p_JP_ToDo_ID, null);
+			p_IsUpdatable = true;
+
+		}else {
+
 			if(p_AD_User_ID == Env.getAD_User_ID(ctx) || p_MToDo.getCreatedBy() == Env.getAD_User_ID(ctx))
 			{
-				p_IsNewRecord = false;
 				if(p_MToDo.isProcessed())
 					p_IsUpdatable = false;
 				else
 					p_IsUpdatable = true;
+
 			}else {
 
-				p_IsNewRecord = false;
 				p_IsUpdatable = false;
 			}
-		}else {
-
-			p_IsNewRecord = true;
-			p_IsUpdatable = true;
-
 		}
 
-		if(p_JP_ToDo_ID == 0)
+
+		if(p_IsNewRecord)
 			p_IsTeamToDo = false;
 		else if(p_MToDo.getJP_ToDo_Team_ID() == 0)
 			p_IsTeamToDo = false;
 		else
 			p_IsTeamToDo = true;
+
 	}
 
 	private void createLabelMap()
@@ -355,26 +374,64 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	}
 
-	private North createNorth()
+	private North updateNorth()
 	{
-		North north = new North();
+		if(north.getFirstChild() != null)
+			north.getFirstChild().detach();
 
-		Button refresh = new Button();
-		refresh.setImage(ThemeManager.getThemeResource("images/" + "Refresh16.png"));
-		refresh.setClass("btn-small");
-		refresh.setId(String.valueOf(p_JP_ToDo_ID));
-		refresh.addEventListener(Events.ON_CLICK, this);
+		if(p_IsNewRecord)
+			return north;
 
-		north.appendChild(refresh);
+		Hlayout hlyaout = new Hlayout();
+		north.appendChild(hlyaout);
+
+		Div div1 = new Div();
+		div1.appendChild(new Html("&nbsp;"));
+		div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		hlyaout.appendChild(div1);
+
+		Button zoom = new Button();
+		zoom.setImage(ThemeManager.getThemeResource("images/" + "Zoom16.png"));
+		zoom.setClass("btn-small");
+		zoom.setId(String.valueOf(p_JP_ToDo_ID));
+		zoom.addEventListener(Events.ON_CLICK, this);
+		hlyaout.appendChild(zoom);
+
+		Div div2 = new Div();
+		div2.appendChild(new Html("&nbsp;"));
+		div2.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		hlyaout.appendChild(div2);
+
+		String imageLeft = "MoveLeft16.png";
+		String imageRight = "MoveRight16.png";
+
+		Button leftBtn = new Button();
+		leftBtn.setImage(ThemeManager.getThemeResource("images/" + imageLeft));
+		leftBtn.setClass("btn-small");
+		leftBtn.setName("Pre");
+		leftBtn.addEventListener(Events.ON_CLICK, this);
+		hlyaout.appendChild(leftBtn);
+
+		Button rightBtn = new Button();
+		rightBtn.setImage(ThemeManager.getThemeResource("images/" + imageRight));
+		rightBtn.setClass("btn-small");
+		rightBtn.addEventListener(Events.ON_CLICK, this);
+		rightBtn.setName("Next");
+		hlyaout.appendChild(rightBtn);
+
+		Div div3 = new Div();
+		div3.appendChild(new Html("&nbsp;"));
+		div3.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		hlyaout.appendChild(div3);
+
 		return north;
 
 	}
 
-	private Center createCenter()
+	private Center updateCenter()
 	{
-		Center center = new Center();
-		center.setSclass("dialog-content");
-		center.setAutoscroll(true);
+		if(center.getFirstChild() != null)
+			center.getFirstChild().detach();
 
 		Div centerContent = new Div();
 		center.appendChild(centerContent);
