@@ -13,6 +13,7 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -248,11 +249,11 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		}
 	}
 
-	private void createEditorMap()//TODO
+	private void createEditorMap()
 	{
 		//*** AD_User_ID ***//
 		MLookup lookup_AD_User_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
-		WSearchEditor Editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, p_IsTeamToDo? true : !p_IsUpdatable, true);
+		WSearchEditor Editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, p_IsNewRecord? false : true, true);
 		Editor_AD_User_ID.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(Editor_AD_User_ID.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_AD_User_ID, Editor_AD_User_ID);
@@ -352,7 +353,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
 	}
 
-	private void updateEditorValue()//TODO
+	private void updateEditorValue()
 	{
 		if(p_IsNewRecord)
 		{
@@ -386,7 +387,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			}
 
 		}
-
 	}
 
 	private Div createLabelDiv(Label label, boolean isMandatory )
@@ -445,6 +445,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		Button zoom = new Button();
 		zoom.setImage(ThemeManager.getThemeResource("images/" + "Zoom16.png"));
 		zoom.setClass("btn-small");
+		zoom.setName(BUTTON_NAME_ZOOM);
 		zoom.setId(String.valueOf(p_JP_ToDo_ID));
 		zoom.addEventListener(Events.ON_CLICK, this);
 		hlyaout.appendChild(zoom);
@@ -640,13 +641,11 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		return center;
 	}
 
-	public void onEvent(Event e) throws Exception
+	public void onEvent(Event event) throws Exception
 	{
-		Component comp = e.getTarget();
-		Object list_index = comp.getAttribute("index");
-		String eventName = e.getName();
+		Component comp = event.getTarget();
 
-		if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK))
+		if (event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK))
 		{
 
 			if(!p_IsUpdatable)
@@ -654,7 +653,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				return;
 			}
 
-			if(p_JP_ToDo_ID == 0)
+			if(p_IsNewRecord)
 				p_MToDo = new MToDo(Env.getCtx(), 0, null);
 
 			p_MToDo.setAD_Org_ID(0);
@@ -735,7 +734,25 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				p_MToDo.setJP_ToDo_Status(editor.getValue().toString());
 			}
 
+			//Check IsOpenToDoJP
+			editor = map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP);
+			p_MToDo.setIsOpenToDoJP(((boolean)editor.getValue()));
 
+			//Check JP_Statistics_YesNo
+			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo);
+			p_MToDo.setJP_Statistics_YesNo(((String)editor.getValue()));
+
+			//Check JP_Statistics_Choice
+			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice);
+			p_MToDo.setJP_Statistics_Choice(((String)editor.getValue()));
+
+			//Check JP_Statistics_DateAndTime
+			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
+			p_MToDo.setJP_Statistics_DateAndTime(((Timestamp)editor.getValue()));
+
+			//Check JP_Statistics_Number
+			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
+			p_MToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
 
 			String msg = p_MToDo.beforeSavePreCheck(true);
 			if(!Util.isEmpty(msg))
@@ -746,16 +763,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if (p_MToDo.save())
 			{
-				if (log.isLoggable(Level.FINE)) log.fine("R_Request_ID=" + p_MToDo.getJP_ToDo_ID());
+				if (log.isLoggable(Level.FINE)) log.fine("JP_ToDo_ID=" + p_MToDo.getJP_ToDo_ID());
 
-				//Events.postEvent("onRefresh", parent, null);
 				i_CallPersonalToDoPopupwindow.createContents();
 
-//					Events.echoEvent("onRefresh", parent, null);
 			}
 			else
 			{
-				FDialog.error(0, this, "Request record not saved");//TODO 多言語化: 予期せぬエラー / 保存できませんでした。
+				FDialog.error(0, this, Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 				return;
 			}
 
@@ -764,7 +779,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			this.detach();
 		}
-		else if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
+		else if (event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
 		{
 			this.detach();
 
@@ -816,7 +831,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			}
 		}
 	}
-
 
 
 	@Override

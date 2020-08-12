@@ -481,7 +481,6 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 				}else if(BUTTON_NAME_NEW_TODO.equals(btnName)){
 
-					;//TODO
 					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
