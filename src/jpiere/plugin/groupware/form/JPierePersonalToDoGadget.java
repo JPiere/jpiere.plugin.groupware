@@ -127,7 +127,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 		/**User Search Field**/
 		Label label_User = new Label(Msg.translate(Env.getCtx(), "AD_User_ID"));
-		row.appendCellChild(label_User.rightAlign());
+		row.appendCellChild(createLabelDiv(label_User, true),1);
 
 		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor("AD_User_ID", true, false, true, lookupUser);
@@ -138,7 +138,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 		/**ToDo Type List Field**/
 		Label label_ToDoType = new Label(Msg.translate(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
-		row.appendCellChild(label_ToDoType.rightAlign());
+		row.appendCellChild(createLabelDiv(label_ToDoType, true),1);
 
 		MLookup lookupToDoType = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
 		WTableDirEditor toDoListEditor = new WTableDirEditor(MToDo.COLUMNNAME_JP_ToDo_Type, true, false, true, lookupToDoType);
@@ -148,6 +148,18 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		row.appendCellChild(toDoListEditor.getComponent(),1);
 	}
 
+	private Div createLabelDiv(Label label, boolean isMandatory )
+	{
+		label.rightAlign();
+		label.setMandatory(isMandatory);
+		Div div = new Div();
+		div.setSclass("form-label");
+		div.appendChild(label);
+		if(isMandatory)
+			div.appendChild(label.getDecorator());
+
+		return div;
+	}
 
 	private void createMessage()
 	{

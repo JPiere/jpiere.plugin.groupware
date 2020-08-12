@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.adempiere.util.Callback;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -30,7 +31,6 @@ import org.adempiere.webui.component.GridFactory;
 import org.adempiere.webui.component.Label;
 import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
-import org.adempiere.webui.component.Textbox;
 import org.adempiere.webui.component.Window;
 import org.adempiere.webui.editor.WDatetimeEditor;
 import org.adempiere.webui.editor.WEditor;
@@ -93,6 +93,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsUpdatable = false;
 	private boolean p_IsNewRecord = false;
 	private boolean p_IsTeamToDo = false;
+	private boolean p_RequeryOnCancel = false;
 
 	private MToDo p_MToDo = null;
 	private MToDoTeam p_TeamMToDo = null;
@@ -100,6 +101,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private int p_AD_User_ID = 0;
 	private String p_JP_ToDo_Type = null;
 	private Timestamp p_SelectedDate = null;
+	private boolean p_IsDirty = false;
+	private boolean p_Debug = false;
 
 
 	private North north = null;
@@ -112,8 +115,20 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Properties ctx = null;
 
 	private final static String BUTTON_NAME_ZOOM = "ZOOM";
+	private final static String BUTTON_NAME_UNDO = "REDO";
+	private final static String BUTTON_NAME_SAVE = "SAVE";
 	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
+	private final static String BUTTON_NAME_DELETE = "DELETE";
+
+	//*** Button ***//
+	Button zoomBtn = null;
+	Button undoBtn = null;
+	Button saveBtn = null;
+	Button leftBtn = null;
+	Button rightBtn = null;
+	Button deleteBtn = null;
+
 
 	public PersonalToDoPopupWindow(JPierePersonalToDoGadget parent, int index)
 	{
@@ -168,24 +183,23 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		center = new Center();
 		center.setSclass("dialog-content");
 		center.setAutoscroll(true);
-
 		center = updateCenter();
 		borderlayout.appendChild(center);
 
-
-		confirmPanel = new ConfirmPanel(true);
-		confirmPanel.addActionListener(this);
-
-		South southPane = new South();
-		southPane.setSclass("dialog-footer");
-		borderlayout.appendChild(southPane);
-		southPane.appendChild(confirmPanel);
-
+		if(p_IsNewRecord)
+		{
+			South southPane = new South();
+			southPane.setSclass("dialog-footer");
+			borderlayout.appendChild(southPane);
+			confirmPanel = new ConfirmPanel(true);
+			confirmPanel.addActionListener(this);
+			southPane.appendChild(confirmPanel);
+		}
 	}
 
-	private void updateControlParameter(int JP_ToDO_ID)
+	private void updateControlParameter(int JP_ToDo_ID)
 	{
-		p_JP_ToDo_ID = JP_ToDO_ID;
+		p_JP_ToDo_ID = JP_ToDo_ID;
 		p_SelectedDate = i_CallPersonalToDoPopupwindow.getSelectedDate();
 
 		if(p_JP_ToDo_ID == 0)
@@ -226,8 +240,10 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(p_IsNewRecord)
 		{
 			p_IsTeamToDo = false;
+			p_TeamMToDo = null;
 		}else if(p_MToDo.getJP_ToDo_Team_ID() == 0) {
 			p_IsTeamToDo = false;
+			p_TeamMToDo = null;
 		}else {
 			p_IsTeamToDo = true;
 			p_TeamMToDo = new MToDoTeam(ctx, p_MToDo.getJP_ToDo_Team_ID(), null);
@@ -261,7 +277,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		//*** JP_ToDo_Type ***//
 		MLookup lookup_JP_ToDo_Type = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
-		WTableDirEditor editor_JP_ToDo_Type = new WTableDirEditor(lookup_JP_ToDo_Type, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type), null, true, p_IsTeamToDo? true : !p_IsUpdatable, true);
+		//WTableDirEditor editor_JP_ToDo_Type = new WTableDirEditor(lookup_JP_ToDo_Type, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type), null, true, p_IsTeamToDo? true : !p_IsUpdatable, true);
+		WTableDirEditor editor_JP_ToDo_Type = new WTableDirEditor(MToDo.COLUMNNAME_JP_ToDo_Type, true, p_IsTeamToDo? true : !p_IsUpdatable, true, lookup_JP_ToDo_Type);
 		editor_JP_ToDo_Type.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Type.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Type, editor_JP_ToDo_Type);
@@ -287,7 +304,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		WStringEditor editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, p_IsTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
 		editor_Description.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
-		editor_Description.getComponent().setRows(2);
+		editor_Description.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Description, editor_Description);
 
 
@@ -295,7 +312,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		WStringEditor editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, !p_IsUpdatable, true, 30, 30, "", null);
 		editor_Comments.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
-		editor_Comments.getComponent().setRows(2);
+		editor_Comments.getComponent().setRows(p_IsNewRecord? 2 : 3);
 		map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
 
 
@@ -351,6 +368,24 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		WNumberEditor editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, !p_IsUpdatable, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
 		ZKUpdateUtil.setHflex(editor_JP_Statistics_Number.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
+	}
+
+	private void updateEditorStatus()
+	{
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_Name).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_Description).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_Comments).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).setReadWrite(p_IsUpdatable);
+
 	}
 
 	private void updateEditorValue()
@@ -436,57 +471,131 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		Hlayout hlyaout = new Hlayout();
 		north.appendChild(hlyaout);
 
+		Div div = new Div();
+		hlyaout.appendChild(div);
+
+		//Zoom Button
+		if(zoomBtn == null)
+		{
+			zoomBtn = new Button();
+			zoomBtn.setImage(ThemeManager.getThemeResource("images/" + "Zoom16.png"));
+			zoomBtn.setClass("btn-small");
+			zoomBtn.setName(BUTTON_NAME_ZOOM);
+			zoomBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		hlyaout.appendChild(zoomBtn);
+
+
+		Div div0 = new Div();
+		div0.appendChild(new Html("&nbsp;"));
+		div0.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		hlyaout.appendChild(div0);
+
+
+		//Undo Button
+		if(undoBtn == null)
+		{
+			undoBtn = new Button();
+			undoBtn.setImage(ThemeManager.getThemeResource("images/" + "Undo16.png"));
+			undoBtn.setClass("btn-small");
+			undoBtn.setName(BUTTON_NAME_UNDO);
+			undoBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		if(p_IsDirty)
+			undoBtn.setEnabled(true);
+		else
+			undoBtn.setEnabled(false);
+		hlyaout.appendChild(undoBtn);
+
+
+		//Save Button
+		if(saveBtn == null)
+		{
+			saveBtn = new Button();
+			saveBtn.setImage(ThemeManager.getThemeResource("images/" + "Save16.png"));
+			saveBtn.setClass("btn-small");
+			saveBtn.setName(BUTTON_NAME_SAVE);
+			saveBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		if(p_IsDirty)
+			saveBtn.setEnabled(true);
+		else
+			saveBtn.setEnabled(false);
+		hlyaout.appendChild(saveBtn);
+
 		Div div1 = new Div();
 		div1.appendChild(new Html("&nbsp;"));
-		//div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-
+		div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
 		hlyaout.appendChild(div1);
 
-		Button zoom = new Button();
-		zoom.setImage(ThemeManager.getThemeResource("images/" + "Zoom16.png"));
-		zoom.setClass("btn-small");
-		zoom.setName(BUTTON_NAME_ZOOM);
-		zoom.setId(String.valueOf(p_JP_ToDo_ID));
-		zoom.addEventListener(Events.ON_CLICK, this);
-		hlyaout.appendChild(zoom);
 
-		String imageLeft = "MoveLeft16.png";
-		String imageRight = "MoveRight16.png";
-
-		Button leftBtn = new Button();
-		leftBtn.setImage(ThemeManager.getThemeResource("images/" + imageLeft));
-		leftBtn.setClass("btn-small");
-		leftBtn.setName(BUTTON_NAME_PREVIOUS_TODO);
-		leftBtn.addEventListener(Events.ON_CLICK, this);
-		hlyaout.appendChild(leftBtn);
-
-		Button rightBtn = new Button();
-		rightBtn.setImage(ThemeManager.getThemeResource("images/" + imageRight));
-		rightBtn.setClass("btn-small");
-		rightBtn.addEventListener(Events.ON_CLICK, this);
-		rightBtn.setName(BUTTON_NAME_NEXT_TODO);
-		hlyaout.appendChild(rightBtn);
-
-		StringBuilder msg = new StringBuilder((index + 1) + "/" + list_ToDoes.size());
-		msg = msg.append("  |  " + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID) +  ":" + p_MToDo.getJP_ToDo_ID());
-
-		if(p_IsTeamToDo)
+		//Left Button
+		if(leftBtn  == null)
 		{
-			msg = msg.append("  |  " + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +  ":" + p_MToDo.getJP_ToDo_Team_ID());
+			leftBtn = new Button();
+			leftBtn.setImage(ThemeManager.getThemeResource("images/" + "MoveLeft16.png"));
+			leftBtn.setClass("btn-small");
+			leftBtn.setName(BUTTON_NAME_PREVIOUS_TODO);
+			leftBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		hlyaout.appendChild(leftBtn);
+		if(index == 0)
+			leftBtn.setEnabled(false);
+		else
+			leftBtn.setEnabled(true);
+
+
+		//Right Button
+		if(rightBtn == null)
+		{
+			rightBtn = new Button();
+			rightBtn.setImage(ThemeManager.getThemeResource("images/" + "MoveRight16.png"));
+			rightBtn.setClass("btn-small");
+			rightBtn.addEventListener(Events.ON_CLICK, this);
+			rightBtn.setName(BUTTON_NAME_NEXT_TODO);
+		}
+		hlyaout.appendChild(rightBtn);
+		if(index == list_ToDoes.size()-1)
+			rightBtn.setEnabled(false);
+		else
+			rightBtn.setEnabled(true);
+
+
+		StringBuilder msg = new StringBuilder(p_IsDirty? "*" : "");
+		msg = msg.append((index + 1) + " / " + list_ToDoes.size());
+
+		if(p_Debug)
+		{
+			msg = msg.append(" | " + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID) +  ":" + p_MToDo.getJP_ToDo_ID());
+
+			if(p_IsTeamToDo)
+			{
+				msg = msg.append(" | " + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +  ":" + p_MToDo.getJP_ToDo_Team_ID());
+			}
 		}
 
-		Textbox textBox = new Textbox();
-		textBox.setText(msg.toString());
-		textBox.setReadonly(true);
-		ZKUpdateUtil.setHflex(textBox, "true");
-
-		hlyaout.appendChild(textBox);
-
 		Div div2 = new Div();
-		div1.appendChild(new Html("&nbsp;"));
-		//div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-
+		div2.setStyle("padding-top:4px");
+		div2.appendChild(new Label(msg.toString()));
 		hlyaout.appendChild(div2);
+
+		Div div3 = new Div();
+		div3.appendChild(new Html("&nbsp;"));
+		div3.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		hlyaout.appendChild(div3);
+
+
+		//Delete Button
+		if(deleteBtn == null)
+		{
+			deleteBtn = new Button();
+			deleteBtn.setImage(ThemeManager.getThemeResource("images/" + "Delete16.png"));
+			deleteBtn.setClass("btn-small");
+			deleteBtn.addEventListener(Events.ON_CLICK, this);
+			deleteBtn.setName(BUTTON_NAME_DELETE);
+		}
+		deleteBtn.setEnabled(p_IsUpdatable);
+		hlyaout.appendChild(deleteBtn);
 
 		return north;
 
@@ -645,142 +754,23 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	{
 		Component comp = event.getTarget();
 
-		if (event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK))
+		if (p_IsNewRecord && event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_OK))
 		{
 
-			if(!p_IsUpdatable)
+			if(saveToDo())
 			{
-				return;
-			}
-
-			if(p_IsNewRecord)
-				p_MToDo = new MToDo(Env.getCtx(), 0, null);
-
-			p_MToDo.setAD_Org_ID(0);
-
-			//Check AD_User_ID
-			WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
-			if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
-			{
-				FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID));
-				return ;
-			}else {
-				p_MToDo.setAD_User_ID((Integer)editor.getValue());
-			}
-
-			//Check JP_ToDo_Type
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type);
-			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
-			{
-				FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
-				return ;
-			}else {
-				p_MToDo.setJP_ToDo_Type((String)editor.getValue());
-			}
-
-			//Check JP_ToDo_Category_ID
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
-			if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
-			{
-				;
-			}else {
-				p_MToDo.setJP_ToDo_Category_ID((Integer)editor.getValue());
-			}
-
-			//Check Name
-			editor = map_Editor.get(MToDo.COLUMNNAME_Name);
-			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
-			{
-				FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_Name));
-				return ;
-			}else {
-				p_MToDo.setName((String)editor.getValue());
-			}
-
-			//Check Description
-			editor = map_Editor.get(MToDo.COLUMNNAME_Description);
-			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
-			{
-
-			}else {
-				p_MToDo.setDescription(editor.getValue().toString());
-			}
-
-			//Check Comments
-			editor = map_Editor.get(MToDo.COLUMNNAME_Comments);
-			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
-			{
-
-			}else {
-				p_MToDo.setComments(editor.getValue().toString());
-			}
-
-			//Check JP_ToDo_ScheduledStartTime
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
-			p_MToDo.setJP_ToDo_ScheduledStartTime((Timestamp)editor.getValue());
-
-			//Check JP_ToDo_ScheduledEndTime
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
-			p_MToDo.setJP_ToDo_ScheduledEndTime((Timestamp)editor.getValue());
-
-			//Check JP_ToDo_Status
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
-			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
-			{
-				FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Status));
-				return ;
-
-			}else {
-				p_MToDo.setJP_ToDo_Status(editor.getValue().toString());
-			}
-
-			//Check IsOpenToDoJP
-			editor = map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP);
-			p_MToDo.setIsOpenToDoJP(((boolean)editor.getValue()));
-
-			//Check JP_Statistics_YesNo
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo);
-			p_MToDo.setJP_Statistics_YesNo(((String)editor.getValue()));
-
-			//Check JP_Statistics_Choice
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice);
-			p_MToDo.setJP_Statistics_Choice(((String)editor.getValue()));
-
-			//Check JP_Statistics_DateAndTime
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
-			p_MToDo.setJP_Statistics_DateAndTime(((Timestamp)editor.getValue()));
-
-			//Check JP_Statistics_Number
-			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
-			p_MToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
-
-			String msg = p_MToDo.beforeSavePreCheck(true);
-			if(!Util.isEmpty(msg))
-			{
-				FDialog.error(0, this, msg);
-				return;
-			}
-
-			if (p_MToDo.save())
-			{
-				if (log.isLoggable(Level.FINE)) log.fine("JP_ToDo_ID=" + p_MToDo.getJP_ToDo_ID());
-
 				i_CallPersonalToDoPopupwindow.createContents();
-
-			}
-			else
-			{
-				FDialog.error(0, this, Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
-				return;
+				this.detach();
 			}
 
 
-
-
-			this.detach();
 		}
-		else if (event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
+		else if (p_IsNewRecord && event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
 		{
+			if(p_RequeryOnCancel)
+			{
+				i_CallPersonalToDoPopupwindow.createContents();
+			}
 			this.detach();
 
 		}else{
@@ -791,35 +781,44 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				String btnName = btn.getName();
 				if(BUTTON_NAME_PREVIOUS_TODO.equals(btnName))
 				{
+					if(p_IsDirty)
+						saveToDo();
+
 					index--;
 					if(index >= 0 )
 					{
+						p_IsDirty = false;
 						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
 						updateWindowTitle();
 						updateEditorValue();
+						//updateEditorStatus();
 						updateNorth();
 						updateCenter();
 
 					}else {
 						index = 0;
-						btn.setEnabled(false);
+						updateNorth();
 					}
 
 				}else if(BUTTON_NAME_NEXT_TODO.equals(btnName)){
 
+					if(p_IsDirty)
+						saveToDo();
+
 					index++;
 					if(index < list_ToDoes.size())
 					{
+						p_IsDirty = false;
 						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
 						updateWindowTitle();
 						updateEditorValue();
+						updateEditorStatus();
 						updateNorth();
 						updateCenter();
 
 					}else {
-
 						index = list_ToDoes.size()-1;
-						btn.setEnabled(false);
+						updateNorth();
 					}
 
 				}else if(BUTTON_NAME_ZOOM.equals(btnName)){
@@ -827,15 +826,250 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 					AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_JP_ToDo_ID);
 					this.detach();
 
+				}else if(BUTTON_NAME_SAVE.equals(btnName)){
+
+					saveToDo();
+
+				}else if(BUTTON_NAME_DELETE.equals(btnName)){
+
+					deleteToDo();
+
+				}else if(BUTTON_NAME_UNDO.equals(btnName)) {
+
+					p_IsDirty = false;
+					//updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+					//updateWindowTitle();
+					updateEditorValue();
+					//updateEditorStatus();
+					updateNorth();
+					updateCenter();
 				}
+
 			}
 		}
 	}
 
+	private boolean saveToDo()
+	{
+		if(!p_IsUpdatable)
+		{
+			return true;
+		}
+
+		if(p_IsNewRecord)
+			p_MToDo = new MToDo(Env.getCtx(), 0, null);
+
+		p_MToDo.setAD_Org_ID(0);
+
+		//Check AD_User_ID
+		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
+		if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
+		{
+			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID));
+			return false;
+		}else {
+			p_MToDo.setAD_User_ID((Integer)editor.getValue());
+		}
+
+		//Check JP_ToDo_Type
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
+			return false;
+		}else {
+			p_MToDo.setJP_ToDo_Type((String)editor.getValue());
+		}
+
+		//Check JP_ToDo_Category_ID
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
+		if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
+		{
+			;
+		}else {
+			p_MToDo.setJP_ToDo_Category_ID((Integer)editor.getValue());
+		}
+
+		//Check Name
+		editor = map_Editor.get(MToDo.COLUMNNAME_Name);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_Name));
+			return false;
+		}else {
+			p_MToDo.setName((String)editor.getValue());
+		}
+
+		//Check Description
+		editor = map_Editor.get(MToDo.COLUMNNAME_Description);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+
+		}else {
+			p_MToDo.setDescription(editor.getValue().toString());
+		}
+
+		//Check Comments
+		editor = map_Editor.get(MToDo.COLUMNNAME_Comments);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+
+		}else {
+			p_MToDo.setComments(editor.getValue().toString());
+		}
+
+		//Check JP_ToDo_ScheduledStartTime
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+		p_MToDo.setJP_ToDo_ScheduledStartTime((Timestamp)editor.getValue());
+
+		//Check JP_ToDo_ScheduledEndTime
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
+		p_MToDo.setJP_ToDo_ScheduledEndTime((Timestamp)editor.getValue());
+
+		//Check JP_ToDo_Status
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Status));
+			return false;
+
+		}else {
+			p_MToDo.setJP_ToDo_Status(editor.getValue().toString());
+		}
+
+		//Check IsOpenToDoJP
+		editor = map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP);
+		p_MToDo.setIsOpenToDoJP(((boolean)editor.getValue()));
+
+		//Check JP_Statistics_YesNo
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo);
+		p_MToDo.setJP_Statistics_YesNo(((String)editor.getValue()));
+
+		//Check JP_Statistics_Choice
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice);
+		p_MToDo.setJP_Statistics_Choice(((String)editor.getValue()));
+
+		//Check JP_Statistics_DateAndTime
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
+		p_MToDo.setJP_Statistics_DateAndTime(((Timestamp)editor.getValue()));
+
+		//Check JP_Statistics_Number
+		editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
+		p_MToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
+
+		String msg = p_MToDo.beforeSavePreCheck(true);
+		if(!Util.isEmpty(msg))
+		{
+			FDialog.error(0, this, msg);
+			return false;
+		}
+
+		if (p_MToDo.save())
+		{
+			if (log.isLoggable(Level.FINE)) log.fine("JP_ToDo_ID=" + p_MToDo.getJP_ToDo_ID());
+
+			p_IsDirty = false;
+			p_RequeryOnCancel = true;
+			updateNorth();
+
+		}
+		else
+		{
+			FDialog.error(0, this, Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean deleteToDo()
+	{
+		p_MToDo.delete(false);
+		p_MToDo = null;
+		p_TeamMToDo = null;
+		list_ToDoes.remove(index);
+		p_RequeryOnCancel = true;
+
+		if(index >= list_ToDoes.size())
+			index--;
+
+		if(index >= 0 && list_ToDoes.size() > 0)
+		{
+			p_IsDirty = false;
+			updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+			updateWindowTitle();
+			updateEditorValue();
+			updateEditorStatus();
+			updateNorth();
+			updateCenter();
+
+		}else {
+
+			i_CallPersonalToDoPopupwindow.createContents();
+			this.detach();
+		}
+
+		return true;
+	}
 
 	@Override
 	public void valueChange(ValueChangeEvent evt)
 	{
-		;
+		Object source = evt.getSource();
+		if(source instanceof WTableDirEditor)
+		{
+			WTableDirEditor editor = (WTableDirEditor)source;
+			if(editor.getColumnName().equals(MToDo.COLUMNNAME_JP_ToDo_Type))
+			{
+				p_JP_ToDo_Type = (String)evt.getNewValue();
+				updateCenter();
+			}
+		}
+
+
+		p_IsDirty = true;
+		updateNorth();
 	}
+
+	@Override
+	public void onClose()
+	{
+		if(p_IsDirty)
+		{
+
+			FDialog.ask(0, null, "SaveChanges?", new Callback<Boolean>() {//Do you want to save changes?
+
+				@Override
+				public void onCallback(Boolean result)
+				{
+					if (result)
+					{
+						saveToDo();
+
+					}else{
+						;
+					}
+
+					if(p_RequeryOnCancel)
+					{
+						i_CallPersonalToDoPopupwindow.createContents();
+					}
+					detach();
+		        }
+
+			});//FDialog.
+
+		}else {
+
+			if(p_RequeryOnCancel)
+			{
+				i_CallPersonalToDoPopupwindow.createContents();
+			}
+			detach();
+		}
+
+
+	}
+
+
 }

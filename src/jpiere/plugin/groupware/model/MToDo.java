@@ -241,7 +241,7 @@ public class MToDo extends X_JP_ToDo {
 			}if(MToDo.JP_TODO_TYPE_Schedule.equals(getJP_ToDo_Type())) {
 
 
-				if(getJP_ToDo_ScheduledEndTime() == null)
+				if(getJP_ToDo_ScheduledStartTime() == null)
 				{
 					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)};
 					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
