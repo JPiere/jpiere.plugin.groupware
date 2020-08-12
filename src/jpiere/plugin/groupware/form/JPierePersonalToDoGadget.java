@@ -85,7 +85,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 	private Language lang = Env.getLanguage(Env.getCtx());
 	private int login_User_ID = 0;
-	WDateEditor editor_Date = null;
+	private WDateEditor editor_Date = null;
+
+	private List<MToDo>  list_ToDoes = null;
 
 	public JPierePersonalToDoGadget()
 	{
@@ -295,7 +297,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 
-		List<MToDo>  list_ToDoes = getToDoes(whereClause.toString(), orderClause.toString(), parameters);
+		list_ToDoes = getToDoes(whereClause.toString(), orderClause.toString(), parameters);
 
 		if(list_ToDoes.size() <= 0)
 		{
@@ -456,7 +458,6 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 	public void onEvent(Event event) throws Exception
 	{
 		Component comp = event.getTarget();
-		Object list_index = comp.getAttribute("index");
 		String eventName = event.getName();
 		if(eventName.equals(Events.ON_CLICK))
 		{
@@ -481,7 +482,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 				}else if(BUTTON_NAME_NEW_TODO.equals(btnName)){
 
 					;//TODO
-					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(event, this);
+					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
 				}else if(BUTTON_NAME_REFRESH.equals(btnName)){
@@ -494,7 +495,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 			}else if(comp instanceof ToolBarButton) {
 
-				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(event, this);
+				Object list_index = comp.getAttribute("index");
+				int index = Integer.valueOf(list_index.toString()).intValue();
+				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, index);
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 
 			}
@@ -526,5 +529,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 	public Timestamp getSelectedDate()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
+	}
+
+	public List<MToDo>  getListToDoes()
+	{
+		return list_ToDoes;
 	}
 }

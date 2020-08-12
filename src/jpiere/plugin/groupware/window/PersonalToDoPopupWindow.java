@@ -15,6 +15,7 @@ package jpiere.plugin.groupware.window;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -28,6 +29,7 @@ import org.adempiere.webui.component.GridFactory;
 import org.adempiere.webui.component.Label;
 import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
+import org.adempiere.webui.component.Textbox;
 import org.adempiere.webui.component.Window;
 import org.adempiere.webui.editor.WDatetimeEditor;
 import org.adempiere.webui.editor.WEditor;
@@ -67,6 +69,7 @@ import org.zkoss.zul.South;
 
 import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoTeam;
 
 /**
  * JPIERE-0470 Personal ToDo Popup Window
@@ -91,6 +94,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsTeamToDo = false;
 
 	private MToDo p_MToDo = null;
+	private MToDoTeam p_TeamMToDo = null;
 	private int p_JP_ToDo_ID = 0;
 	private int p_AD_User_ID = 0;
 	private String p_JP_ToDo_Type = null;
@@ -102,13 +106,20 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private ConfirmPanel confirmPanel;
 
 	private JPierePersonalToDoGadget i_CallPersonalToDoPopupwindow;
-
+	private  List<MToDo>  list_ToDoes = null;
+	private int index = 0;
 	private Properties ctx = null;
 
-	public PersonalToDoPopupWindow(Event event, JPierePersonalToDoGadget parent)
+	private final static String BUTTON_NAME_ZOOM = "ZOOM";
+	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
+	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
+
+	public PersonalToDoPopupWindow(JPierePersonalToDoGadget parent, int index)
 	{
 		super();
 		this.i_CallPersonalToDoPopupwindow = parent;
+		this.list_ToDoes =parent.getListToDoes();
+		this.index = index;
 		ctx = Env.getCtx();
 
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
@@ -128,15 +139,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		this.setClosable(true);
 
 
-		Component comp = event.getTarget();
-		String string_ID = comp.getId();
-		if(Util.isEmpty(string_ID))
+		if(index <= -1)
 		{
-			;//TODO エラー
+			p_JP_ToDo_ID = 0;
 
 		}else {
 
-			p_JP_ToDo_ID = Integer.valueOf(string_ID).intValue();
+			p_JP_ToDo_ID = list_ToDoes.get(index).getJP_ToDo_ID();
 		}
 
 		updateControlParameter(p_JP_ToDo_ID);
@@ -214,11 +223,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 		if(p_IsNewRecord)
+		{
 			p_IsTeamToDo = false;
-		else if(p_MToDo.getJP_ToDo_Team_ID() == 0)
+		}else if(p_MToDo.getJP_ToDo_Team_ID() == 0) {
 			p_IsTeamToDo = false;
-		else
+		}else {
 			p_IsTeamToDo = true;
+			p_TeamMToDo = new MToDoTeam(ctx, p_MToDo.getJP_ToDo_Team_ID(), null);
+		}
 
 	}
 
@@ -426,7 +438,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		Div div1 = new Div();
 		div1.appendChild(new Html("&nbsp;"));
-		div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		//div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+
 		hlyaout.appendChild(div1);
 
 		Button zoom = new Button();
@@ -436,18 +449,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		zoom.addEventListener(Events.ON_CLICK, this);
 		hlyaout.appendChild(zoom);
 
-		Div div2 = new Div();
-		div2.appendChild(new Html("&nbsp;"));
-		div2.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-		hlyaout.appendChild(div2);
-
 		String imageLeft = "MoveLeft16.png";
 		String imageRight = "MoveRight16.png";
 
 		Button leftBtn = new Button();
 		leftBtn.setImage(ThemeManager.getThemeResource("images/" + imageLeft));
 		leftBtn.setClass("btn-small");
-		leftBtn.setName("Pre");
+		leftBtn.setName(BUTTON_NAME_PREVIOUS_TODO);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
 		hlyaout.appendChild(leftBtn);
 
@@ -455,13 +463,29 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		rightBtn.setImage(ThemeManager.getThemeResource("images/" + imageRight));
 		rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
-		rightBtn.setName("Next");
+		rightBtn.setName(BUTTON_NAME_NEXT_TODO);
 		hlyaout.appendChild(rightBtn);
 
-		Div div3 = new Div();
-		div3.appendChild(new Html("&nbsp;"));
-		div3.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-		hlyaout.appendChild(div3);
+		StringBuilder msg = new StringBuilder((index + 1) + "/" + list_ToDoes.size());
+		msg = msg.append("  |  " + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID) +  ":" + p_MToDo.getJP_ToDo_ID());
+
+		if(p_IsTeamToDo)
+		{
+			msg = msg.append("  |  " + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +  ":" + p_MToDo.getJP_ToDo_Team_ID());
+		}
+
+		Textbox textBox = new Textbox();
+		textBox.setText(msg.toString());
+		textBox.setReadonly(true);
+		ZKUpdateUtil.setHflex(textBox, "true");
+
+		hlyaout.appendChild(textBox);
+
+		Div div2 = new Div();
+		div1.appendChild(new Html("&nbsp;"));
+		//div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+
+		hlyaout.appendChild(div2);
 
 		return north;
 
@@ -564,29 +588,54 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		Rows statisticsInfo_rows = statisticsInfo_Grid.newRows();
 
+		String JP_Mandatory_Statistics_Info = null;
+		if(p_TeamMToDo!=null)
+		{
+			JP_Mandatory_Statistics_Info = p_TeamMToDo.getJP_Mandatory_Statistics_Info();
+		}
+
 		//*** JP_Statistics_YesNo  ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), false),2);
+		if(p_IsTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(JP_Mandatory_Statistics_Info))
+		{
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), true),2);
+		}else {
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), false),2);
+		}
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getComponent(),4);
 
 
 		//*** JP_Statistics_Choice ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), false),2);
+		if(p_IsTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(JP_Mandatory_Statistics_Info))
+		{
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), true),2);
+		}else{
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), false),2);
+		}
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getComponent(),4);
 
 
 		//*** JP_Statistics_DateAndTime ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), false),2);
+		if(p_IsTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(JP_Mandatory_Statistics_Info))
+		{
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), true),2);
+		}else {
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), false),2);
+		}
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getComponent(),4);
 
 
 		//*** JP_Statistics_Number ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), false),2);
+		if(p_IsTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(JP_Mandatory_Statistics_Info))
+		{
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), true),2);
+		}else {
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), false),2);
+		}
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).getComponent(),4);
-
 
 		return center;
 	}
@@ -718,10 +767,53 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		else if (e.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
 		{
 			this.detach();
-		}else {
 
-			AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), Integer.valueOf(comp.getId()).intValue());
-			this.detach();
+		}else{
+
+			if(comp instanceof Button)
+			{
+				Button btn = (Button) comp;
+				String btnName = btn.getName();
+				if(BUTTON_NAME_PREVIOUS_TODO.equals(btnName))
+				{
+					index--;
+					if(index >= 0 )
+					{
+						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+						updateWindowTitle();
+						updateEditorValue();
+						updateNorth();
+						updateCenter();
+
+					}else {
+						index = 0;
+						btn.setEnabled(false);
+					}
+
+				}else if(BUTTON_NAME_NEXT_TODO.equals(btnName)){
+
+					index++;
+					if(index < list_ToDoes.size())
+					{
+						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+						updateWindowTitle();
+						updateEditorValue();
+						updateNorth();
+						updateCenter();
+
+					}else {
+
+						index = list_ToDoes.size()-1;
+						btn.setEnabled(false);
+					}
+
+				}else if(BUTTON_NAME_ZOOM.equals(btnName)){
+
+					AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_JP_ToDo_ID);
+					this.detach();
+
+				}
+			}
 		}
 	}
 
