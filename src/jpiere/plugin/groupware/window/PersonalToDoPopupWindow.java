@@ -144,6 +144,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		createLabelMap();
 		createEditorMap();
+		updateEditorValue();
 
 		Borderlayout borderlayout = new Borderlayout();
 		this.appendChild(borderlayout);
@@ -307,8 +308,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Status, editor_JP_ToDo_Status);
 
 		//*** IsOpenToDoJP ***//
-		WYesNoEditor editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, !p_IsUpdatable, true);
-		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, editor_IsOpenToDoJP);
+		WYesNoEditor editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_IsOpenToDoJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, !p_IsUpdatable, true);
+		map_Editor.put(MToDo.COLUMNNAME_IsOpenToDoJP, editor_IsOpenToDoJP);
 
 
 		//*** JP_Statistics_YesNo  ***//
@@ -339,6 +340,43 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
 	}
 
+	private void updateEditorValue()//TODO
+	{
+		if(p_IsNewRecord)
+		{
+
+			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_JP_ToDo_Type);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_SelectedDate);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_SelectedDate);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(MToDo.JP_TODO_STATUS_NotYetStarted);
+			map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setValue("Y");
+
+		}else {
+
+			MTable m_table = MTable.get(ctx, MToDo.Table_Name);
+			MColumn[] m_Columns = m_table.getColumns(false);
+			String columnName = null;
+			WEditor editor = null;
+			for(int i = 0; i < m_Columns.length; i++)
+			{
+				columnName = m_Columns[i].getColumnName();
+				editor = map_Editor.get(columnName);
+				if(editor != null)
+				{
+					if(m_Columns[i].getAD_Reference_ID()==DisplayType.YesNo)
+					{
+						editor.setValue(p_MToDo.isOpenToDoJP()==true ? "Y" : "N");
+					}else{
+						editor.setValue(p_MToDo.get_Value(columnName));
+					}
+				}
+			}
+
+		}
+
+	}
+
 	private Div createLabelDiv(Label label, boolean isMandatory )
 	{
 		label.setMandatory(isMandatory);
@@ -353,8 +391,11 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	private void updateWindowTitle()
 	{
-		if(p_JP_ToDo_ID != 0 )
+		if(p_IsNewRecord)
 		{
+			setTitle("[" + Msg.getElement(ctx,MToDo.COLUMNNAME_JP_ToDo_ID) + "] " + Msg.getMsg(ctx, "NewRecord"));
+
+		}else {
 			if(p_MToDo.getJP_ToDo_Team_ID() == 0)
 			{
 				setTitle("[" + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID) + "] "
@@ -368,8 +409,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 						+ ":" + MUser.getNameOfUser(p_MToDo.getCreatedBy()));
 			}
 
-		}else {
-			setTitle("[" + Msg.getElement(ctx,MToDo.COLUMNNAME_JP_ToDo_ID) + "]");
 		}
 
 	}
@@ -445,143 +484,67 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		Rows rows = grid.newRows();
 
 		//*** AD_User_ID ***//
-		Div div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_User_ID), true);
-		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
-		if(p_IsNewRecord)
-		{
-			editor.setValue(p_AD_User_ID);
-		}else {
-			editor.setValue(p_AD_User_ID);
-		}
 		Row row = rows.newRow();
 		rows.appendChild(row);
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_User_ID), true),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).getComponent(),4);
 
 
 		//*** JP_ToDo_Type ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Type), true);
-		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type);
-		if(p_IsNewRecord)
-		{
-			editor.setValue(p_JP_ToDo_Type);
-		}else {
-			editor.setValue(p_MToDo.getJP_ToDo_Type());
-		}
 		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Type), true),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).getComponent(),4);
 
 
 		//*** JP_ToDo_Category_ID ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID), false);
-		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
-		if(p_IsNewRecord)
-		{
-			;
-		}else {
-			editor.setValue(p_MToDo.getJP_ToDo_Category_ID());
-		}
 		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).getComponent(),4);
 
 
 		//*** Name ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Name), true);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_Name);
-		if(p_IsNewRecord)
-		{
-			;
-		}else {
-			editor.setValue(p_MToDo.getName());
-		}
 		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Name), true),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Name).getComponent(),4);
 
 
 		//*** Description ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), false);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_Description);
-		if(p_IsNewRecord)
-		{
-			;
-		}else {
-			editor.setValue(p_MToDo.getDescription());
-		}
 		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Description).getComponent(),4);
 
 
 		//*** Comments ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Comments), false);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_Comments);
-		if(p_IsNewRecord)
-		{
-			;
-		}else {
-			editor.setValue(p_MToDo.getComments());
-		}
 		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Comments), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Comments).getComponent(),4);
 
 
 		//*** JP_ToDo_ScheduledStartTime ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
-		if(p_IsNewRecord)
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 		{
-			editor.setValue(p_SelectedDate);
-		}else {
-			editor.setValue(p_MToDo.getJP_ToDo_ScheduledStartTime());
+			row = rows.newRow();
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true),2);
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).getComponent(),4);
 		}
-		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
-
 
 		//*** JP_ToDo_ScheduledEndTime ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
-		if(p_IsNewRecord)
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type) )
 		{
-			editor.setValue(p_SelectedDate);
-		}else {
-			editor.setValue(p_MToDo.getJP_ToDo_ScheduledEndTime());
+			row = rows.newRow();
+			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true),2);
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).getComponent(),4);
 		}
-		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
-
 
 		//*** JP_ToDo_Status ***//
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Status), true);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
-		if(p_IsNewRecord)
-		{
-			editor.setValue(MToDo.JP_TODO_STATUS_NotYetStarted);
-		}else {
-			editor.setValue(p_MToDo.getJP_ToDo_Status());
-		}
 		row = rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),2);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Status), true),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).getComponent(),2);
 
 
 		//*** IsOpenToDoJP ***//
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo);
-		if(p_IsNewRecord)
-		{
-			editor.setValue("Y");
-		}else {
-			editor.setValue(p_MToDo.isOpenToDoJP()==true ? "Y" : "N");
-		}
-
 		Div div_IsOpenToDoJP = new Div();
-		div_IsOpenToDoJP.appendChild(editor.getComponent());
+		div_IsOpenToDoJP.appendChild(map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).getComponent());
 		row.appendCellChild(div_IsOpenToDoJP,2);
 
 
@@ -601,62 +564,28 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		Rows statisticsInfo_rows = statisticsInfo_Grid.newRows();
 
-
-		/** JP_Statistics_YesNo  **/
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), false);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo);
-		if(p_IsNewRecord)
-		{
-
-		}else {
-			editor.setValue(p_MToDo.getJP_Statistics_YesNo());
-		}
+		//*** JP_Statistics_YesNo  ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getComponent(),4);
 
 
-		/** JP_Statistics_Choice **/
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), false);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice);
-		if(p_IsNewRecord)
-		{
-
-		}else {
-			editor.setValue(p_MToDo.getJP_Statistics_Choice());
-		}
+		//*** JP_Statistics_Choice ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getComponent(),4);
 
 
-		/** JP_Statistics_DateAndTime **/
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), false);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
-		if(p_IsNewRecord)
-		{
-
-		}else {
-			editor.setValue(p_MToDo.getJP_Statistics_DateAndTime());
-		}
+		//*** JP_Statistics_DateAndTime ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getComponent(),4);
 
 
-		//TODO
-		/** JP_Statistics_Number **/
-		div_Label = createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), false);
-		editor =  map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
-		if(p_IsNewRecord)
-		{
-
-		}else {
-			editor.setValue(p_MToDo.getJP_Statistics_Number());
-		}
+		//*** JP_Statistics_Number ***//
 		row = statisticsInfo_rows.newRow();
-		row.appendCellChild(div_Label,2);
-		row.appendCellChild(editor.getComponent(),4);
+		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).getComponent(),4);
 
 
 		return center;
