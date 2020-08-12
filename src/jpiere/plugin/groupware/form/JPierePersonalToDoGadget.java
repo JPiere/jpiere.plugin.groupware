@@ -310,6 +310,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		contentsArea.appendChild(grid);
 
 		Rows gridRows = grid.newRows();
+		int counter = 0;
 		for (MToDo toDo : list_ToDoes)
 		{
 			Row row = gridRows.newRow();
@@ -318,6 +319,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 			createTitle(toDo, btn);
 			btn.addEventListener(Events.ON_CLICK, this);
 			btn.setId(String.valueOf(toDo.getJP_ToDo_ID()));
+			btn.setAttribute("index", counter);
+			counter++;
 			row.appendChild(btn);
 		}//for
 	}
@@ -453,6 +456,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 	public void onEvent(Event event) throws Exception
 	{
 		Component comp = event.getTarget();
+		Object list_index = comp.getAttribute("index");
 		String eventName = event.getName();
 		if(eventName.equals(Events.ON_CLICK))
 		{
