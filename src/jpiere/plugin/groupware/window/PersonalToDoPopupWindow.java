@@ -56,6 +56,7 @@ import org.compiere.util.Msg;
 import org.compiere.util.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlBasedComponent;
+import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
@@ -104,7 +105,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsDirty = false;
 	private boolean p_Debug = false;
 
-
 	private North north = null;
 	private Center center = null;
 	private ConfirmPanel confirmPanel;
@@ -122,12 +122,12 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private final static String BUTTON_NAME_DELETE = "DELETE";
 
 	//*** Button ***//
-	Button zoomBtn = null;
-	Button undoBtn = null;
-	Button saveBtn = null;
-	Button leftBtn = null;
-	Button rightBtn = null;
-	Button deleteBtn = null;
+	private Button zoomBtn = null;
+	private Button undoBtn = null;
+	private Button saveBtn = null;
+	private Button leftBtn = null;
+	private Button rightBtn = null;
+	private Button deleteBtn = null;
 
 
 	public PersonalToDoPopupWindow(JPierePersonalToDoGadget parent, int index)
@@ -153,7 +153,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		this.setBorder("normal");
 		this.setShadow(true);
 		this.setClosable(true);
-
 
 		if(index <= -1)
 		{
@@ -695,7 +694,35 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		Groupbox statisticsInfo_GroupBox = new Groupbox();
 		statisticsInfo_GroupBox.setOpen(true);
 		row.appendCellChild(statisticsInfo_GroupBox,6);
-		statisticsInfo_GroupBox.appendChild(new Caption(Msg.getMsg(Env.getCtx(),"JP_StatisticsInfo")));
+
+		String caption = Msg.getMsg(Env.getCtx(),"JP_StatisticsInfo");
+		if(p_TeamMToDo != null)
+		{
+			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(p_TeamMToDo.getJP_Mandatory_Statistics_Info()))
+			{
+
+			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(p_TeamMToDo.getJP_Mandatory_Statistics_Info())) {
+
+				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getValue() + "]";
+
+			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(p_TeamMToDo.getJP_Mandatory_Statistics_Info())) {
+
+				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getValue() + "]";
+
+			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(p_TeamMToDo.getJP_Mandatory_Statistics_Info())) {
+
+				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getValue() + "]";
+
+			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(p_TeamMToDo.getJP_Mandatory_Statistics_Info())) {
+
+				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number).getValue() + "]";
+
+			}else {
+				;
+			}
+		}
+
+		statisticsInfo_GroupBox.appendChild(new Caption(caption));
 		Grid statisticsInfo_Grid  = GridFactory.newGridLayout();
 		statisticsInfo_Grid.setStyle("background-color: #E9F0FF");
 		statisticsInfo_Grid.setStyle("border: none");
@@ -796,7 +823,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
 						updateWindowTitle();
 						updateEditorValue();
-						//updateEditorStatus();
+						updateEditorStatus();
 						updateNorth();
 						updateCenter();
 
@@ -870,8 +897,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
 		if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
 		{
-			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID));
-			return false;
+			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID);
+			throw new WrongValueException(editor.getComponent(), msg);
+
 		}else {
 			p_MToDo.setAD_User_ID((Integer)editor.getValue());
 		}
@@ -880,8 +908,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type);
 		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 		{
-			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
-			return false;
+			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type);
+			throw new WrongValueException(editor.getComponent(), msg);
+
 		}else {
 			p_MToDo.setJP_ToDo_Type((String)editor.getValue());
 		}
@@ -899,8 +928,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		editor = map_Editor.get(MToDo.COLUMNNAME_Name);
 		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 		{
-			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_Name));
-			return false;
+			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_Name);
+			throw new WrongValueException(editor.getComponent(), msg);
+
 		}else {
 			p_MToDo.setName((String)editor.getValue());
 		}
@@ -925,18 +955,39 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		//Check JP_ToDo_ScheduledStartTime
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
-		p_MToDo.setJP_ToDo_ScheduledStartTime((Timestamp)editor.getValue());
+		if(editor.getValue() == null)
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
+			{
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+				throw new WrongValueException(editor.getComponent(), msg);
+			}
+
+		}else {
+			p_MToDo.setJP_ToDo_ScheduledStartTime((Timestamp)editor.getValue());
+		}
 
 		//Check JP_ToDo_ScheduledEndTime
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
-		p_MToDo.setJP_ToDo_ScheduledEndTime((Timestamp)editor.getValue());
+		if(editor.getValue() == null)
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
+			{
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
+				throw new WrongValueException(editor.getComponent(), msg);
+			}
+
+		}else {
+			p_MToDo.setJP_ToDo_ScheduledEndTime((Timestamp)editor.getValue());
+		}
+
 
 		//Check JP_ToDo_Status
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
 		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 		{
-			FDialog.error(0, this, Msg.translate(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Status));
-			return false;
+			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Status);
+			throw new WrongValueException(editor.getComponent(), msg);
 
 		}else {
 			p_MToDo.setJP_ToDo_Status(editor.getValue().toString());

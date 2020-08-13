@@ -25,11 +25,14 @@ import org.adempiere.webui.util.ZKUpdateUtil;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.zkoss.calendar.Calendars;
+import org.zkoss.calendar.api.CalendarModel;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Calendar;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.North;
+import org.zkoss.zul.West;
 
 /**
  *
@@ -66,7 +69,18 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		mainBorderLayout.appendChild(mainBorderLayout_Center);
 
 		Calendar calendar = new Calendar();
-		mainBorderLayout_Center.appendChild(calendar);
+		Calendars calendars= new Calendars();
+		mainBorderLayout_Center.appendChild(calendars);
+
+		calendars.setBeginTime(9);
+
+		CalendarModel model =calendars.getModel();
+
+		West mainBorderLayout_West = new West();
+		ZKUpdateUtil.setWidth(mainBorderLayout_West, "25%");
+		JPierePersonalToDoGadget todoG = new JPierePersonalToDoGadget();
+		mainBorderLayout_West.appendChild(todoG);
+		mainBorderLayout.appendChild(mainBorderLayout_West);
 
     }
 
