@@ -81,7 +81,7 @@ public class MTeam extends X_JP_Team {
 		{
 			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
 			String msgString = msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
-			return msgString + " " + Msg.getElement(getCtx(), "JP_DifferentUser");//Different User
+			return msgString + " : " + Msg.getMsg(getCtx(), "JP_DifferentUser");//Different User
 		}
 
 		return null;
@@ -121,7 +121,7 @@ public class MTeam extends X_JP_Team {
 		{
 			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
 			String msgString = msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
-			return msgString + " " + Msg.getElement(getCtx(), "JP_DifferentUser");//Different User
+			return msgString + " : " + Msg.getMsg(getCtx(), "JP_DifferentUser");//Different User
 		}
 
 		return null;

@@ -20,6 +20,7 @@ import java.util.Properties;
 
 import org.compiere.model.MMessage;
 import org.compiere.util.Env;
+import org.compiere.util.Msg;
 import org.compiere.util.Util;
 
 /**
@@ -91,6 +92,53 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 				setProcessed(false);
 			}
 		}
+
+		//*** Check Statistics info ***//
+		if(getJP_ToDo_Team_Reminder_ID() != 0 && isConfirmed() && is_ValueChanged("IsConfirmed"))
+		{
+			MToDoTeamReminder teamToDoReminder = new MToDoTeamReminder(getCtx(), getJP_ToDo_Team_Reminder_ID(), get_TrxName());
+			if(MToDoTeamReminder.JP_MANDATORY_STATISTICS_INFO_None.equals(teamToDoReminder.getJP_Mandatory_Statistics_Info()))
+			{
+				;//Noting to do;
+
+			}else if(MToDoTeamReminder.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(teamToDoReminder.getJP_Mandatory_Statistics_Info())){
+
+				if(Util.isEmpty(getJP_Statistics_YesNo()))
+				{
+					String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_YesNo)};
+					return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
+
+			}else if(MToDoTeamReminder.JP_MANDATORY_STATISTICS_INFO_Choice.equals(teamToDoReminder.getJP_Mandatory_Statistics_Info())){
+
+				if(Util.isEmpty(getJP_Statistics_Choice()))
+				{
+					String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_Choice)};
+					return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
+
+			}else if(MToDoTeamReminder.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(teamToDoReminder.getJP_Mandatory_Statistics_Info())){
+
+				if(getJP_Statistics_DateAndTime() == null)
+				{
+					String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_DateAndTime)};
+					return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
+
+			}else if(MToDoTeamReminder.JP_MANDATORY_STATISTICS_INFO_Number.equals(teamToDoReminder.getJP_Mandatory_Statistics_Info())){
+
+				if(get_Value("JP_Statistics_Number") == null)
+				{
+					String msg = Msg.getElement(getCtx(), MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_Statistics_Number)};
+					return msg + " : " + Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
+			}
+
+		}//if(getJP_ToDo_Team_Reminder_ID() != 0)
 
 		return null;
 	}
