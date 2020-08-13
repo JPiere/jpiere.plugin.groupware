@@ -94,8 +94,21 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 	public JPierePersonalToDoGadget()
 	{
 		super();
+		init("T");
+	}
+
+	public JPierePersonalToDoGadget(String JP_ToDo_Type)
+	{
+		super();
+		init(JP_ToDo_Type);
+	}
+
+	public void init(String JP_ToDo_Type)
+	{
+
 		setSclass("views-box");
 
+		p_JP_ToDo_Type = JP_ToDo_Type;
 		p_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
 		login_User_ID = p_AD_User_ID;
 

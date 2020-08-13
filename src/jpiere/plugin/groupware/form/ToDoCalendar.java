@@ -29,12 +29,11 @@ import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.zkoss.calendar.Calendars;
-import org.zkoss.calendar.api.CalendarModel;
 import org.zkoss.calendar.impl.SimpleCalendarModel;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
-import org.zkoss.zul.Calendar;
 import org.zkoss.zul.Center;
+import org.zkoss.zul.Div;
 import org.zkoss.zul.North;
 import org.zkoss.zul.West;
 
@@ -65,7 +64,11 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		ZKUpdateUtil.setHeight(mainBorderLayout, "100%");
 
 		North mainBorderLayout_North = new North();
-		mainBorderLayout_North.setStyle("border: none");
+//		mainBorderLayout_North.setStyle("border: none");
+		mainBorderLayout_North.setSplittable(false);
+		mainBorderLayout_North.setCollapsible(false);
+		mainBorderLayout_North.setOpen(true);
+		//mainBorderLayout_North.setTitle("トップコンテンツ");
 		mainBorderLayout.appendChild(mainBorderLayout_North);
 
 		mainBorderLayout_North.appendChild(new Label(Msg.getElement(Env.getCtx(), "C_Calendar_ID")));
@@ -74,24 +77,34 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		Center mainBorderLayout_Center = new Center();
 		mainBorderLayout.appendChild(mainBorderLayout_Center);
 
-		Calendar calendar = new Calendar();
 		Calendars calendars= new Calendars();
 		mainBorderLayout_Center.appendChild(calendars);
 
-		CalendarModel aaa  = calendars.getModel();
-
-		//calendars.setBeginTime(9);
-
-		CalendarModel model =calendars.getModel();
+		//***************** WEST **************************//
 
 		West mainBorderLayout_West = new West();
+		mainBorderLayout_West.setSplittable(true);
+		mainBorderLayout_West.setCollapsible(true);
+		mainBorderLayout_West.setOpen(true);
 		ZKUpdateUtil.setWidth(mainBorderLayout_West, "25%");
-		JPierePersonalToDoGadget todoG = new JPierePersonalToDoGadget();
-		mainBorderLayout_West.appendChild(todoG);
 		mainBorderLayout.appendChild(mainBorderLayout_West);
 
+		Div div_West = new Div();
+		mainBorderLayout_West.appendChild(div_West);
+
+		JPierePersonalToDoGadget todoS = new JPierePersonalToDoGadget("S");
+		div_West.appendChild(todoS);
+
+		JPierePersonalToDoGadget todoT = new JPierePersonalToDoGadget("T");
+		div_West.appendChild(todoT);
+
+		JPierePersonalToDoGadget todoM = new JPierePersonalToDoGadget("M");
+		div_West.appendChild(todoM);
+
+
+
 		ArrayList<ToDoCalendarEvent> events = new ArrayList<ToDoCalendarEvent>();
-		List<MToDo> list_ToDoes =  todoG.getListToDoes();
+		List<MToDo> list_ToDoes =  todoS.getListToDoes();
 		for(MToDo toDo : list_ToDoes)
 		{
 			events.add(new ToDoCalendarEvent(toDo));
