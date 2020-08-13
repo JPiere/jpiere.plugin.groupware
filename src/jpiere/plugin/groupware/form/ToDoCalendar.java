@@ -32,9 +32,11 @@ import org.zkoss.calendar.Calendars;
 import org.zkoss.calendar.impl.SimpleCalendarModel;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
-import org.zkoss.zul.Div;
+import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.North;
+import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.West;
 
 import jpiere.plugin.groupware.model.MToDo;
@@ -89,18 +91,49 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		ZKUpdateUtil.setWidth(mainBorderLayout_West, "25%");
 		mainBorderLayout.appendChild(mainBorderLayout_West);
 
-		Div div_West = new Div();
-		mainBorderLayout_West.appendChild(div_West);
+		Vlayout vlayout = new Vlayout();
+		mainBorderLayout_West.appendChild(vlayout);
+
+		Groupbox groupBox1 = new Groupbox();
+		groupBox1.setOpen(true);
+		groupBox1.setMold("3d");
+		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox1);
+
+		Caption caption = new Caption("予定");
+		caption.setIconSclass("z-icon-caret-down");
+		groupBox1.appendChild(caption);
 
 		JPierePersonalToDoGadget todoS = new JPierePersonalToDoGadget("S");
-		div_West.appendChild(todoS);
+		groupBox1.appendChild(todoS);
+
+
+		Groupbox groupBox2 = new Groupbox();
+		groupBox2.setOpen(true);
+		groupBox2.setMold("3d");
+		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox2);
+
+		Caption caption2 = new Caption("完了してないタスク");
+		caption2.setIconSclass("z-icon-caret-down");
+		groupBox2.appendChild(caption2);
 
 		JPierePersonalToDoGadget todoT = new JPierePersonalToDoGadget("T");
-		div_West.appendChild(todoT);
+		groupBox2.appendChild(todoT);
+
+
+		Groupbox groupBox3 = new Groupbox();
+		groupBox3.setOpen(false);
+		groupBox3.setMold("3d");
+		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox3);
+
+		Caption caption3 = new Caption("完了してないメモ");
+		caption3.setIconSclass("z-icon-caret-right");
+		groupBox3.appendChild(caption3);
 
 		JPierePersonalToDoGadget todoM = new JPierePersonalToDoGadget("M");
-		div_West.appendChild(todoM);
-
+		groupBox3.appendChild(todoM);
 
 
 		ArrayList<ToDoCalendarEvent> events = new ArrayList<ToDoCalendarEvent>();
