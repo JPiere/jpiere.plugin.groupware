@@ -21,10 +21,13 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.compiere.model.MMessage;
 import org.compiere.model.MUser;
 import org.compiere.model.Query;
 import org.compiere.util.DB;
+import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 
 /**
  * JPIERE-0469: JPiere Groupware
@@ -49,6 +52,32 @@ public class MToDoTeam extends X_JP_ToDo_Team {
 	@Override
 	protected boolean beforeSave(boolean newRecord)
 	{
+		String msg = beforeSavePreCheck(newRecord);
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
+			return false;
+		}
+
+		return true;
+
+	}
+
+	public String beforeSavePreCheck(boolean newRecord)
+	{
+		//** Check User**/
+		if(!newRecord)
+		{
+			int loginUser  = Env.getAD_User_ID(getCtx());
+			if(loginUser == getAD_User_ID() || loginUser == getCreatedBy())
+			{
+				;//Updatable
+
+			}else{
+				MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+				return msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
+			}
+		}
 
 		setAD_Org_ID(0);
 
@@ -56,8 +85,8 @@ public class MToDoTeam extends X_JP_ToDo_Team {
 		{
 			if(MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != 0)
 			{
-				log.saveError("Error", Msg.getMsg(getCtx(), "JP_Personal_ToDo_Category") );//Personal ToDo Category cannot be used.
-				return false;
+				//Personal ToDo Category cannot be used.
+				return Msg.getMsg(getCtx(), "JP_Personal_ToDo_Category") ;
 			}
 		}
 
@@ -66,8 +95,7 @@ public class MToDoTeam extends X_JP_ToDo_Team {
 		{
 			if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
 			{
-				log.saveError("Error", Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") );
-				return false;
+				return Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") ;
 			}
 
 		}
@@ -98,7 +126,7 @@ public class MToDoTeam extends X_JP_ToDo_Team {
 			}
 		}
 
-		return true;
+		return null;
 	}
 
 
@@ -106,35 +134,98 @@ public class MToDoTeam extends X_JP_ToDo_Team {
 	protected boolean afterSave(boolean newRecord, boolean success)
 	{
 
-		String sql = "UPDATE JP_ToDo t"
-				+ " SET JP_ToDo_Category_ID = ?"
-				+ " , JP_ToDo_Type = ? "
-				+ " , Name = ? "
-				+ " , Description = ? "
-				+ " , JP_ToDo_ScheduledStartTime = ? "
-				+ " , JP_ToDo_ScheduledEndTime = ? "
-				+ " , C_Project_ID = ? "
-				+ " , C_ProjectPhase_ID = ? "
-				+ " , C_ProjectTask_ID = ? "
-				+ "WHERE JP_ToDo_Team_ID= ? ";
+		if(!newRecord && success)
+		{
+			String sql = "UPDATE JP_ToDo t"
+					+ " SET JP_ToDo_Category_ID = ?"
+					+ " , JP_ToDo_Type = ? "
+					+ " , Name = ? "
+					+ " , Description = ? "
+					+ " , JP_ToDo_ScheduledStartTime = ? "
+					+ " , JP_ToDo_ScheduledEndTime = ? "
+					+ " , C_Project_ID = ? "
+					+ " , C_ProjectPhase_ID = ? "
+					+ " , C_ProjectTask_ID = ? "
+					+ "WHERE JP_ToDo_Team_ID= ? ";
 
-			Object[] para = {
-					getJP_ToDo_Category_ID() == 0 ? null:getJP_ToDo_Category_ID()
-					, getJP_ToDo_Type()
-					, getName()
-					, getDescription()
-					, getJP_ToDo_ScheduledStartTime()
-					,getJP_ToDo_ScheduledEndTime()
-					,getC_Project_ID() == 0 ? null : getC_Project_ID()
-					,getC_ProjectPhase_ID() == 0 ? null : getC_ProjectPhase_ID()
-					,getC_ProjectTask_ID() == 0 ? null : getC_ProjectTask_ID()
-					,getJP_ToDo_Team_ID()
-					};
+				Object[] para = {
+						getJP_ToDo_Category_ID() == 0 ? null:getJP_ToDo_Category_ID()
+						, getJP_ToDo_Type()
+						, getName()
+						, getDescription()
+						, getJP_ToDo_ScheduledStartTime()
+						,getJP_ToDo_ScheduledEndTime()
+						,getC_Project_ID() == 0 ? null : getC_Project_ID()
+						,getC_ProjectPhase_ID() == 0 ? null : getC_ProjectPhase_ID()
+						,getC_ProjectTask_ID() == 0 ? null : getC_ProjectTask_ID()
+						,getJP_ToDo_Team_ID()
+						};
 
-			DB.executeUpdate(sql, para, false, get_TrxName());
+				DB.executeUpdate(sql, para, false, get_TrxName());
+		}
+
+		if(success && !newRecord)
+		{
+			if(MToDoTeam.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status()))
+			{
+				MToDoTeamReminder[] reminders = getReminders();
+				for(int i = 0;  i < reminders.length; i++)
+				{
+					reminders[i].setProcessed(true);
+					reminders[i].saveEx(get_TrxName());
+				}
+
+			}else {
+
+				if(MToDoTeam.JP_TODO_STATUS_Completed.equals(get_ValueOld(MToDoTeam.COLUMNNAME_JP_ToDo_Status)))
+				{
+					MToDoTeamReminder[] reminders = getReminders();
+					for(int i = 0;  i < reminders.length; i++)
+					{
+						reminders[i].setProcessed(false);
+						reminders[i].saveEx(get_TrxName());
+
+
+					}//for
+				}
+			}
+		}
 
 		return true;
 	}
+
+	@Override
+	protected boolean beforeDelete()
+	{
+
+		String msg = beforeDeletePreCheck();
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
+			return false;
+		}
+
+		return true;
+	}
+
+	public String beforeDeletePreCheck()
+	{
+		//** Check User**/
+		int loginUser  = Env.getAD_User_ID(getCtx());
+		if(loginUser == getAD_User_ID() || loginUser == getCreatedBy())
+		{
+			//Deleteable;
+
+		}else{
+
+			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");
+			return msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
+		}
+
+
+		return null;
+	}
+
 
 	protected MUser[] m_AdditionalTeamMemberUser = null;
 

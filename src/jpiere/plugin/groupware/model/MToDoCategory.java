@@ -16,10 +16,12 @@ package jpiere.plugin.groupware.model;
 import java.sql.ResultSet;
 import java.util.Properties;
 
+import org.compiere.model.MMessage;
 import org.compiere.model.MRole;
 import org.compiere.util.CCache;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 
 /**
  * JPIERE-0469: ToDo & Schedule Management
@@ -42,6 +44,18 @@ public class MToDoCategory extends X_JP_ToDo_Category {
 	@Override
 	protected boolean beforeSave(boolean newRecord)
 	{
+		String msg = beforeSavePreCheck(newRecord);
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
+			return false;
+		}
+
+		return true;
+	}
+
+	public String beforeSavePreCheck(boolean newRecord)
+	{
 		setAD_Org_ID(0);
 
 		if(getAD_User_ID() == 0)
@@ -51,46 +65,59 @@ public class MToDoCategory extends X_JP_ToDo_Category {
 			if(!MRole.PREFERENCETYPE_Client.equals(role.getPreferenceType()))
 			{
 				Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), "AD_User_ID")};
-				log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));//User field  is mandatory.
-				return false;
+				return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);//User field  is mandatory.
+
 			}
 
 		}
 
-		int AD_User_ID = Env.getAD_User_ID(getCtx());
-		if(getAD_User_ID() != 0 && getAD_User_ID() != AD_User_ID)
+		int loginUser = Env.getAD_User_ID(getCtx());
+		if(getAD_User_ID() != 0 && getAD_User_ID() != loginUser)
 		{
-			log.saveError("Error", "JP_DifferentUser");//Different User
+			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+			String msgString = msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
+			return msgString + " " + Msg.getElement(getCtx(), "JP_DifferentUser");//Different User
+		}
+
+		return null;
+	}
+
+	@Override
+	protected boolean beforeDelete()
+	{
+		String msg = beforeDeletePreCheck();
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
 			return false;
 		}
 
 		return true;
 	}
 
-	@Override
-	protected boolean beforeDelete()
+	public String beforeDeletePreCheck()
 	{
-
 		if(getAD_User_ID() == 0)
 		{
 			int AD_Role_ID = Env.getAD_Role_ID(getCtx());
 			MRole role = MRole.get(getCtx(), AD_Role_ID);
 			if(!MRole.PREFERENCETYPE_Client.equals(role.getPreferenceType()))
 			{
-				log.saveError("Error", "JP_DifferentUser");//Different User
-				return false;
+				MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+				return msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
 			}
 
 		}
 
-		int AD_User_ID = Env.getAD_User_ID(getCtx());
-		if(getAD_User_ID() != 0 && getAD_User_ID() != AD_User_ID)
+		int loginUser = Env.getAD_User_ID(getCtx());
+		if(getAD_User_ID() != 0 && getAD_User_ID() != loginUser)
 		{
-			log.saveError("Error", "JP_DifferentUser");//Different User
-			return false;
+			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+			String msgString = msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
+			return msgString + " " + Msg.getElement(getCtx(), "JP_DifferentUser");//Different User
 		}
 
-		return true;
+		return null;
 	}
 
 	/**	Cache				*/

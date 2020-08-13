@@ -20,12 +20,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.compiere.model.MMessage;
 import org.compiere.model.MRole;
 import org.compiere.model.MUser;
 import org.compiere.model.Query;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 
 /**
  * JPIERE-0469: JPiere Groupware
@@ -48,6 +50,18 @@ public class MTeam extends X_JP_Team {
 	@Override
 	protected boolean beforeSave(boolean newRecord)
 	{
+		String msg = beforeSavePreCheck(newRecord);
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
+			return false;
+		}
+
+		return true;
+	}
+
+	public String beforeSavePreCheck(boolean newRecord)
+	{
 		setAD_Org_ID(0);
 
 		if(getAD_User_ID() == 0)
@@ -57,8 +71,7 @@ public class MTeam extends X_JP_Team {
 			if(!MRole.PREFERENCETYPE_Client.equals(role.getPreferenceType()))
 			{
 				Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), "AD_User_ID")};
-				log.saveError("Error", Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs));//User field  is mandatory.
-				return false;
+				return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);//User field  is mandatory.
 			}
 
 		}
@@ -66,15 +79,29 @@ public class MTeam extends X_JP_Team {
 		int AD_User_ID = Env.getAD_User_ID(getCtx());
 		if(getAD_User_ID() != 0 && getAD_User_ID() != AD_User_ID)
 		{
-			log.saveError("Error", "JP_DifferentUser");//Different User
+			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+			String msgString = msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
+			return msgString + " " + Msg.getElement(getCtx(), "JP_DifferentUser");//Different User
+		}
+
+		return null;
+	}
+
+
+	@Override
+	protected boolean beforeDelete()
+	{
+		String msg = beforeDeletePreCheck();
+		if(!Util.isEmpty(msg))
+		{
+			log.saveError("Error", msg);
 			return false;
 		}
 
 		return true;
 	}
 
-	@Override
-	protected boolean beforeDelete()
+	public String beforeDeletePreCheck()
 	{
 
 		if(getAD_User_ID() == 0)
@@ -83,8 +110,8 @@ public class MTeam extends X_JP_Team {
 			MRole role = MRole.get(getCtx(), AD_Role_ID);
 			if(!MRole.PREFERENCETYPE_Client.equals(role.getPreferenceType()))
 			{
-				log.saveError("Error", "JP_DifferentUser");//Different User
-				return false;
+				MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+				return msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
 			}
 
 		}
@@ -92,11 +119,12 @@ public class MTeam extends X_JP_Team {
 		int AD_User_ID = Env.getAD_User_ID(getCtx());
 		if(getAD_User_ID() != 0 && getAD_User_ID() != AD_User_ID)
 		{
-			log.saveError("Error", "JP_DifferentUser");//Different User
-			return false;
+			MMessage msg = MMessage.get(getCtx(), "AccessCannotUpdate");//You cannot update this record - You don't have the privileges
+			String msgString = msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
+			return msgString + " " + Msg.getElement(getCtx(), "JP_DifferentUser");//Different User
 		}
 
-		return true;
+		return null;
 	}
 
 	protected MUser[] 	m_TeamMemberUser = null;
