@@ -3,12 +3,8 @@ package jpiere.plugin.groupware.util;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 
-import org.compiere.model.MForm;
 import org.compiere.model.MUser;
-import org.compiere.model.Query;
-import org.compiere.util.Env;
 import org.compiere.util.Util;
 
 public class GroupwareTeamUtil {
@@ -96,18 +92,4 @@ public class GroupwareTeamUtil {
 		}
 	}
 
-	static public MForm getToDoCallendarForm()
-	{
-		StringBuilder whereClause = new StringBuilder("classname=?");
-
-		List<MForm> list = new Query(Env.getCtx(), MForm.Table_Name, whereClause.toString(), null)
-							.setParameters("jpiere.plugin.groupware.form.ToDoCalendar")
-							.list();
-
-
-		if(list.size() > 0)
-			return list.get(0);
-
-		return null;
-	}
 }

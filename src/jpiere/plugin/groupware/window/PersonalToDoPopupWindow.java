@@ -285,7 +285,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 		//*** JP_ToDo_Category_ID ***//
+		String validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + p_AD_User_ID;
 		MLookup lookup_JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
+		lookup_JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
 		WSearchEditor editor_JP_ToDo_Category_ID = new WSearchEditor(lookup_JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, false, p_IsTeamToDo? true : !p_IsUpdatable, true);
 		editor_JP_ToDo_Category_ID.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Category_ID.getComponent(), "true");
@@ -1027,8 +1029,27 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				p_JP_ToDo_Type = (String)evt.getNewValue();
 				updateCenter();
 			}
-		}
 
+		}else if(source instanceof WSearchEditor) {
+
+			WSearchEditor editor = (WSearchEditor)source;
+			if(editor.getColumnName().equals(MToDo.COLUMNNAME_AD_User_ID))
+			{
+				String validationCode = null;
+				if(evt.getNewValue()==null)
+				{
+					validationCode = "JP_ToDo_Category.AD_User_ID IS NULL";
+				}else {
+					validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + (Integer)evt.getNewValue();
+				}
+
+				MLookup JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
+				JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
+				WSearchEditor editor_JP_ToDo_Category_ID = new WSearchEditor(JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, true, p_IsNewRecord? false : true, true);
+				map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID,editor_JP_ToDo_Category_ID);
+				updateCenter();
+			}
+		}
 
 		p_IsDirty = true;
 		updateNorth();
@@ -1047,7 +1068,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				{
 					if (result)
 					{
-						saveToDo();
+						if(!saveToDo())
+							return ;
 
 					}else{
 						;

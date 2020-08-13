@@ -54,7 +54,7 @@ import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Html;
 
 import jpiere.plugin.groupware.model.MToDo;
-import jpiere.plugin.groupware.util.GroupwareTeamUtil;
+import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
@@ -504,8 +504,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 
 				}else if(BUTTON_NAME_CALENDER.equals(btnName)){
 
-
-					MForm form = GroupwareTeamUtil.getToDoCallendarForm();
+					MForm form = GroupwareToDoUtil.getToDoCallendarForm();
 					SessionManager.getAppDesktop().openForm(form.getAD_Form_ID());
 
 				}
