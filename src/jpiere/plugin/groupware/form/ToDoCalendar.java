@@ -14,6 +14,9 @@
 
 package jpiere.plugin.groupware.form;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Label;
 import org.adempiere.webui.event.ValueChangeEvent;
@@ -27,12 +30,15 @@ import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.zkoss.calendar.Calendars;
 import org.zkoss.calendar.api.CalendarModel;
+import org.zkoss.calendar.impl.SimpleCalendarModel;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Calendar;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.North;
 import org.zkoss.zul.West;
+
+import jpiere.plugin.groupware.model.MToDo;
 
 /**
  *
@@ -72,7 +78,9 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		Calendars calendars= new Calendars();
 		mainBorderLayout_Center.appendChild(calendars);
 
-		calendars.setBeginTime(9);
+		CalendarModel aaa  = calendars.getModel();
+
+		//calendars.setBeginTime(9);
 
 		CalendarModel model =calendars.getModel();
 
@@ -81,6 +89,22 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		JPierePersonalToDoGadget todoG = new JPierePersonalToDoGadget();
 		mainBorderLayout_West.appendChild(todoG);
 		mainBorderLayout.appendChild(mainBorderLayout_West);
+
+		ArrayList<ToDoCalendarEvent> events = new ArrayList<ToDoCalendarEvent>();
+		List<MToDo> list_ToDoes =  todoG.getListToDoes();
+		for(MToDo toDo : list_ToDoes)
+		{
+			events.add(new ToDoCalendarEvent(toDo));
+		}
+
+		SimpleCalendarModel scm = new SimpleCalendarModel();
+		calendars.setModel(scm);
+
+		scm.clear();
+		for (ToDoCalendarEvent event : events)
+			scm.add(event);
+
+		calendars.invalidate();
 
     }
 

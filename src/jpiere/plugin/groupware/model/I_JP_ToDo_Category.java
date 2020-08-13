@@ -64,21 +64,6 @@ public interface I_JP_ToDo_Category
 	  */
 	public int getAD_Org_ID();
 
-    /** Column name AD_PrintColor_ID */
-    public static final String COLUMNNAME_AD_PrintColor_ID = "AD_PrintColor_ID";
-
-	/** Set Print Color.
-	  * Color used for printing and display
-	  */
-	public void setAD_PrintColor_ID (int AD_PrintColor_ID);
-
-	/** Get Print Color.
-	  * Color used for printing and display
-	  */
-	public int getAD_PrintColor_ID();
-
-	public org.compiere.model.I_AD_PrintColor getAD_PrintColor() throws RuntimeException;
-
     /** Column name AD_User_ID */
     public static final String COLUMNNAME_AD_User_ID = "AD_User_ID";
 
@@ -135,6 +120,24 @@ public interface I_JP_ToDo_Category
 	  * The record is active in the system
 	  */
 	public boolean isActive();
+
+    /** Column name JP_ColorPicker */
+    public static final String COLUMNNAME_JP_ColorPicker = "JP_ColorPicker";
+
+	/** Set Color Picker	  */
+	public void setJP_ColorPicker (String JP_ColorPicker);
+
+	/** Get Color Picker	  */
+	public String getJP_ColorPicker();
+
+    /** Column name JP_ColorPicker2 */
+    public static final String COLUMNNAME_JP_ColorPicker2 = "JP_ColorPicker2";
+
+	/** Set Color Picker2	  */
+	public void setJP_ColorPicker2 (String JP_ColorPicker2);
+
+	/** Get Color Picker2	  */
+	public String getJP_ColorPicker2();
 
     /** Column name JP_ToDo_Category_ID */
     public static final String COLUMNNAME_JP_ToDo_Category_ID = "JP_ToDo_Category_ID";

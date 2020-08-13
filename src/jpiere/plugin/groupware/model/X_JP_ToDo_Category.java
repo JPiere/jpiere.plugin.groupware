@@ -72,34 +72,6 @@ public class X_JP_ToDo_Category extends PO implements I_JP_ToDo_Category, I_Pers
       return sb.toString();
     }
 
-	public org.compiere.model.I_AD_PrintColor getAD_PrintColor() throws RuntimeException
-    {
-		return (org.compiere.model.I_AD_PrintColor)MTable.get(getCtx(), org.compiere.model.I_AD_PrintColor.Table_Name)
-			.getPO(getAD_PrintColor_ID(), get_TrxName());	}
-
-	/** Set Print Color.
-		@param AD_PrintColor_ID 
-		Color used for printing and display
-	  */
-	public void setAD_PrintColor_ID (int AD_PrintColor_ID)
-	{
-		if (AD_PrintColor_ID < 1) 
-			set_Value (COLUMNNAME_AD_PrintColor_ID, null);
-		else 
-			set_Value (COLUMNNAME_AD_PrintColor_ID, Integer.valueOf(AD_PrintColor_ID));
-	}
-
-	/** Get Print Color.
-		@return Color used for printing and display
-	  */
-	public int getAD_PrintColor_ID () 
-	{
-		Integer ii = (Integer)get_Value(COLUMNNAME_AD_PrintColor_ID);
-		if (ii == null)
-			 return 0;
-		return ii.intValue();
-	}
-
 	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException
     {
 		return (org.compiere.model.I_AD_User)MTable.get(getCtx(), org.compiere.model.I_AD_User.Table_Name)
@@ -143,6 +115,34 @@ public class X_JP_ToDo_Category extends PO implements I_JP_ToDo_Category, I_Pers
 	public String getDescription () 
 	{
 		return (String)get_Value(COLUMNNAME_Description);
+	}
+
+	/** Set Color Picker.
+		@param JP_ColorPicker Color Picker	  */
+	public void setJP_ColorPicker (String JP_ColorPicker)
+	{
+		set_Value (COLUMNNAME_JP_ColorPicker, JP_ColorPicker);
+	}
+
+	/** Get Color Picker.
+		@return Color Picker	  */
+	public String getJP_ColorPicker () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ColorPicker);
+	}
+
+	/** Set Color Picker2.
+		@param JP_ColorPicker2 Color Picker2	  */
+	public void setJP_ColorPicker2 (String JP_ColorPicker2)
+	{
+		set_Value (COLUMNNAME_JP_ColorPicker2, JP_ColorPicker2);
+	}
+
+	/** Get Color Picker2.
+		@return Color Picker2	  */
+	public String getJP_ColorPicker2 () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ColorPicker2);
 	}
 
 	/** Set ToDo Category.
