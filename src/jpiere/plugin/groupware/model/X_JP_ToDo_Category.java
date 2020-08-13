@@ -31,7 +31,7 @@ public class X_JP_ToDo_Category extends PO implements I_JP_ToDo_Category, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200810L;
+	private static final long serialVersionUID = 20200813L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Category (Properties ctx, int JP_ToDo_Category_ID, String trxName)
@@ -51,7 +51,7 @@ public class X_JP_ToDo_Category extends PO implements I_JP_ToDo_Category, I_Pers
     }
 
     /** AccessLevel
-      * @return 2 - Client 
+      * @return 6 - System - Client 
       */
     protected int get_AccessLevel()
     {

@@ -31,7 +31,7 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200810L;
+	private static final long serialVersionUID = 20200813L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team_Reminder (Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
@@ -50,6 +50,8 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 // M
 			setJP_ToDo_Team_ID (0);
 			setJP_ToDo_Team_Reminder_ID (0);
+			setProcessed (false);
+// N
         } */
     }
 
@@ -60,7 +62,7 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
     }
 
     /** AccessLevel
-      * @return 3 - Client - Org 
+      * @return 6 - System - Client 
       */
     protected int get_AccessLevel()
     {
@@ -232,5 +234,29 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	public String getJP_ToDo_Team_Reminder_UU () 
 	{
 		return (String)get_Value(COLUMNNAME_JP_ToDo_Team_Reminder_UU);
+	}
+
+	/** Set Processed.
+		@param Processed 
+		The document has been processed
+	  */
+	public void setProcessed (boolean Processed)
+	{
+		set_Value (COLUMNNAME_Processed, Boolean.valueOf(Processed));
+	}
+
+	/** Get Processed.
+		@return The document has been processed
+	  */
+	public boolean isProcessed () 
+	{
+		Object oo = get_Value(COLUMNNAME_Processed);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
 	}
 }

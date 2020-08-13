@@ -37,9 +37,9 @@ public interface I_JP_ToDo_Reminder
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
 
-    /** AccessLevel = 2 - Client 
+    /** AccessLevel = 6 - System - Client 
      */
-    BigDecimal accessLevel = BigDecimal.valueOf(2);
+    BigDecimal accessLevel = BigDecimal.valueOf(6);
 
     /** Load Meta Data */
 
@@ -63,6 +63,19 @@ public interface I_JP_ToDo_Reminder
 	  * Organizational entity within client
 	  */
 	public int getAD_Org_ID();
+
+    /** Column name Comments */
+    public static final String COLUMNNAME_Comments = "Comments";
+
+	/** Set Comments.
+	  * Comments or additional information
+	  */
+	public void setComments (String Comments);
+
+	/** Get Comments.
+	  * Comments or additional information
+	  */
+	public String getComments();
 
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
@@ -106,6 +119,19 @@ public interface I_JP_ToDo_Reminder
 	  */
 	public boolean isActive();
 
+    /** Column name IsConfirmed */
+    public static final String COLUMNNAME_IsConfirmed = "IsConfirmed";
+
+	/** Set Confirmed.
+	  * Assignment is confirmed
+	  */
+	public void setIsConfirmed (boolean IsConfirmed);
+
+	/** Get Confirmed.
+	  * Assignment is confirmed
+	  */
+	public boolean isConfirmed();
+
     /** Column name IsSentReminderJP */
     public static final String COLUMNNAME_IsSentReminderJP = "IsSentReminderJP";
 
@@ -114,6 +140,15 @@ public interface I_JP_ToDo_Reminder
 
 	/** Get Sent Reminder	  */
 	public boolean isSentReminderJP();
+
+    /** Column name JP_Confirmed */
+    public static final String COLUMNNAME_JP_Confirmed = "JP_Confirmed";
+
+	/** Set Confirmed	  */
+	public void setJP_Confirmed (Timestamp JP_Confirmed);
+
+	/** Get Confirmed	  */
+	public Timestamp getJP_Confirmed();
 
     /** Column name JP_Statistics_Choice */
     public static final String COLUMNNAME_JP_Statistics_Choice = "JP_Statistics_Choice";
@@ -154,10 +189,10 @@ public interface I_JP_ToDo_Reminder
     /** Column name JP_ToDo_ID */
     public static final String COLUMNNAME_JP_ToDo_ID = "JP_ToDo_ID";
 
-	/** Set ToDo	  */
+	/** Set Personal ToDo	  */
 	public void setJP_ToDo_ID (int JP_ToDo_ID);
 
-	/** Get ToDo	  */
+	/** Get Personal ToDo	  */
 	public int getJP_ToDo_ID();
 
 	public I_JP_ToDo getJP_ToDo() throws RuntimeException;
@@ -208,6 +243,19 @@ public interface I_JP_ToDo_Reminder
 	public int getJP_ToDo_Team_Reminder_ID();
 
 	public I_JP_ToDo_Team_Reminder getJP_ToDo_Team_Reminder() throws RuntimeException;
+
+    /** Column name Processed */
+    public static final String COLUMNNAME_Processed = "Processed";
+
+	/** Set Processed.
+	  * The document has been processed
+	  */
+	public void setProcessed (boolean Processed);
+
+	/** Get Processed.
+	  * The document has been processed
+	  */
+	public boolean isProcessed();
 
     /** Column name Updated */
     public static final String COLUMNNAME_Updated = "Updated";

@@ -37,9 +37,9 @@ public interface I_JP_ToDo
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
 
-    /** AccessLevel = 2 - Client 
+    /** AccessLevel = 6 - System - Client 
      */
-    BigDecimal accessLevel = BigDecimal.valueOf(2);
+    BigDecimal accessLevel = BigDecimal.valueOf(6);
 
     /** Load Meta Data */
 
@@ -271,10 +271,10 @@ public interface I_JP_ToDo
     /** Column name JP_ToDo_ID */
     public static final String COLUMNNAME_JP_ToDo_ID = "JP_ToDo_ID";
 
-	/** Set ToDo	  */
+	/** Set Personal ToDo	  */
 	public void setJP_ToDo_ID (int JP_ToDo_ID);
 
-	/** Get ToDo	  */
+	/** Get Personal ToDo	  */
 	public int getJP_ToDo_ID();
 
     /** Column name JP_ToDo_Related_ID */

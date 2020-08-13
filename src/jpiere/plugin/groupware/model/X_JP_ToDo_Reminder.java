@@ -33,7 +33,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200810L;
+	private static final long serialVersionUID = 20200813L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Reminder (Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
@@ -42,6 +42,8 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
       /** if (JP_ToDo_Reminder_ID == 0)
         {
 			setDescription (null);
+			setIsConfirmed (false);
+// N
 			setIsSentReminderJP (false);
 // N
 			setJP_ToDo_ID (0);
@@ -50,6 +52,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 			setJP_ToDo_ReminderType (null);
 // M
 			setJP_ToDo_Reminder_ID (0);
+			setProcessed (false);
         } */
     }
 
@@ -60,7 +63,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
     }
 
     /** AccessLevel
-      * @return 2 - Client 
+      * @return 6 - System - Client 
       */
     protected int get_AccessLevel()
     {
@@ -81,6 +84,23 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
       return sb.toString();
     }
 
+	/** Set Comments.
+		@param Comments 
+		Comments or additional information
+	  */
+	public void setComments (String Comments)
+	{
+		set_Value (COLUMNNAME_Comments, Comments);
+	}
+
+	/** Get Comments.
+		@return Comments or additional information
+	  */
+	public String getComments () 
+	{
+		return (String)get_Value(COLUMNNAME_Comments);
+	}
+
 	/** Set Description.
 		@param Description 
 		Optional short description of the record
@@ -96,6 +116,30 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 	public String getDescription () 
 	{
 		return (String)get_Value(COLUMNNAME_Description);
+	}
+
+	/** Set Confirmed.
+		@param IsConfirmed 
+		Assignment is confirmed
+	  */
+	public void setIsConfirmed (boolean IsConfirmed)
+	{
+		set_Value (COLUMNNAME_IsConfirmed, Boolean.valueOf(IsConfirmed));
+	}
+
+	/** Get Confirmed.
+		@return Assignment is confirmed
+	  */
+	public boolean isConfirmed () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsConfirmed);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
 	}
 
 	/** Set Sent Reminder.
@@ -117,6 +161,20 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 			return "Y".equals(oo);
 		}
 		return false;
+	}
+
+	/** Set Confirmed.
+		@param JP_Confirmed Confirmed	  */
+	public void setJP_Confirmed (Timestamp JP_Confirmed)
+	{
+		set_Value (COLUMNNAME_JP_Confirmed, JP_Confirmed);
+	}
+
+	/** Get Confirmed.
+		@return Confirmed	  */
+	public Timestamp getJP_Confirmed () 
+	{
+		return (Timestamp)get_Value(COLUMNNAME_JP_Confirmed);
 	}
 
 	/** A = A */
@@ -201,8 +259,8 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 		return (I_JP_ToDo)MTable.get(getCtx(), I_JP_ToDo.Table_Name)
 			.getPO(getJP_ToDo_ID(), get_TrxName());	}
 
-	/** Set ToDo.
-		@param JP_ToDo_ID ToDo	  */
+	/** Set Personal ToDo.
+		@param JP_ToDo_ID Personal ToDo	  */
 	public void setJP_ToDo_ID (int JP_ToDo_ID)
 	{
 		if (JP_ToDo_ID < 1) 
@@ -211,8 +269,8 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 			set_ValueNoCheck (COLUMNNAME_JP_ToDo_ID, Integer.valueOf(JP_ToDo_ID));
 	}
 
-	/** Get ToDo.
-		@return ToDo	  */
+	/** Get Personal ToDo.
+		@return Personal ToDo	  */
 	public int getJP_ToDo_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_ToDo_ID);
@@ -309,5 +367,29 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
+	}
+
+	/** Set Processed.
+		@param Processed 
+		The document has been processed
+	  */
+	public void setProcessed (boolean Processed)
+	{
+		set_Value (COLUMNNAME_Processed, Boolean.valueOf(Processed));
+	}
+
+	/** Get Processed.
+		@return The document has been processed
+	  */
+	public boolean isProcessed () 
+	{
+		Object oo = get_Value(COLUMNNAME_Processed);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
 	}
 }

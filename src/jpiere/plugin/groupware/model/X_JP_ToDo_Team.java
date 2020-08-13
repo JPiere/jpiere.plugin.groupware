@@ -32,7 +32,7 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200810L;
+	private static final long serialVersionUID = 20200813L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team (Properties ctx, int JP_ToDo_Team_ID, String trxName)
@@ -40,6 +40,8 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
       super (ctx, JP_ToDo_Team_ID, trxName);
       /** if (JP_ToDo_Team_ID == 0)
         {
+			setAD_User_ID (0);
+// @#AD_User_ID@
 			setIsOpenToDoJP (true);
 // Y
 			setJP_Mandatory_Statistics_Info (null);
@@ -68,7 +70,7 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
     }
 
     /** AccessLevel
-      * @return 3 - Client - Org 
+      * @return 6 - System - Client 
       */
     protected int get_AccessLevel()
     {
@@ -112,6 +114,34 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 	public int getAD_Table_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_AD_Table_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException
+    {
+		return (org.compiere.model.I_AD_User)MTable.get(getCtx(), org.compiere.model.I_AD_User.Table_Name)
+			.getPO(getAD_User_ID(), get_TrxName());	}
+
+	/** Set User/Contact.
+		@param AD_User_ID 
+		User within the system - Internal or Business Partner Contact
+	  */
+	public void setAD_User_ID (int AD_User_ID)
+	{
+		if (AD_User_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_AD_User_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_AD_User_ID, Integer.valueOf(AD_User_ID));
+	}
+
+	/** Get User/Contact.
+		@return User within the system - Internal or Business Partner Contact
+	  */
+	public int getAD_User_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_AD_User_ID);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();

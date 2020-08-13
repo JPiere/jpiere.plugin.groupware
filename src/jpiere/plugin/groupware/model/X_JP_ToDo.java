@@ -34,7 +34,7 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200810L;
+	private static final long serialVersionUID = 20200813L;
 
     /** Standard Constructor */
     public X_JP_ToDo (Properties ctx, int JP_ToDo_ID, String trxName)
@@ -63,7 +63,7 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
     }
 
     /** AccessLevel
-      * @return 2 - Client 
+      * @return 6 - System - Client 
       */
     protected int get_AccessLevel()
     {
@@ -409,8 +409,8 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_EndTime);
 	}
 
-	/** Set ToDo.
-		@param JP_ToDo_ID ToDo	  */
+	/** Set Personal ToDo.
+		@param JP_ToDo_ID Personal ToDo	  */
 	public void setJP_ToDo_ID (int JP_ToDo_ID)
 	{
 		if (JP_ToDo_ID < 1) 
@@ -419,8 +419,8 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 			set_ValueNoCheck (COLUMNNAME_JP_ToDo_ID, Integer.valueOf(JP_ToDo_ID));
 	}
 
-	/** Get ToDo.
-		@return ToDo	  */
+	/** Get Personal ToDo.
+		@return Personal ToDo	  */
 	public int getJP_ToDo_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_ToDo_ID);

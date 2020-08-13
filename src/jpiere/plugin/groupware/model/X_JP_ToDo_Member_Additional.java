@@ -30,7 +30,7 @@ public class X_JP_ToDo_Member_Additional extends PO implements I_JP_ToDo_Member_
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200810L;
+	private static final long serialVersionUID = 20200813L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Member_Additional (Properties ctx, int JP_ToDo_Member_Additional_ID, String trxName)
@@ -50,7 +50,7 @@ public class X_JP_ToDo_Member_Additional extends PO implements I_JP_ToDo_Member_
     }
 
     /** AccessLevel
-      * @return 3 - Client - Org 
+      * @return 6 - System - Client 
       */
     protected int get_AccessLevel()
     {
