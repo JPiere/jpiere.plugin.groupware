@@ -65,13 +65,13 @@ import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.Hlayout;
-import org.zkoss.zul.Html;
 import org.zkoss.zul.North;
 import org.zkoss.zul.South;
 
 import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
+import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 /**
  * JPIERE-0470 Personal ToDo Popup Window
@@ -489,11 +489,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		}
 		hlyaout.appendChild(zoomBtn);
 
-
-		Div div0 = new Div();
-		div0.appendChild(new Html("&nbsp;"));
-		div0.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-		hlyaout.appendChild(div0);
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		//Undo Button
@@ -527,10 +523,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			saveBtn.setEnabled(false);
 		hlyaout.appendChild(saveBtn);
 
-		Div div1 = new Div();
-		div1.appendChild(new Html("&nbsp;"));
-		div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-		hlyaout.appendChild(div1);
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		//Left Button
@@ -583,10 +576,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		div2.appendChild(new Label(msg.toString()));
 		hlyaout.appendChild(div2);
 
-		Div div3 = new Div();
-		div3.appendChild(new Html("&nbsp;"));
-		div3.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-		hlyaout.appendChild(div3);
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		//Delete Button

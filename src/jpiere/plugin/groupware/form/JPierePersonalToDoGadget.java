@@ -51,7 +51,6 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Hlayout;
-import org.zkoss.zul.Html;
 
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
@@ -181,49 +180,43 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		if(messageArea.getFirstChild() != null)
 			messageArea.getFirstChild().detach();
 
-		Hlayout hlyaout = new Hlayout();
-		messageArea.appendChild(hlyaout);
+		Hlayout hlayout = new Hlayout();
+		messageArea.appendChild(hlayout);
 
-		Div div1 = new Div();
-		div1.appendChild(new Html("&nbsp;"));
-		div1.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
-		hlyaout.appendChild(div1);
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		if(p_AD_User_ID == 0)
 		{
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
 			editor_Text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "AD_User_ID"));
-			hlyaout.appendChild(editor_Text.getComponent());
+			hlayout.appendChild(editor_Text.getComponent());
 
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
 
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
 			editor_Text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
-			hlyaout.appendChild(editor_Text.getComponent());
+			hlayout.appendChild(editor_Text.getComponent());
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
-			String imageLeft = "MoveLeft16.png";
-			String imageRight = "MoveRight16.png";
-
 			Button leftBtn = new Button();
-			leftBtn.setImage(ThemeManager.getThemeResource("images/" + imageLeft));
+			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 			leftBtn.setClass("btn-small");
 			leftBtn.setName(BUTTON_NAME_PREVIOUS_DAY);
 			leftBtn.addEventListener(Events.ON_CLICK, this);
-			hlyaout.appendChild(leftBtn);
+			hlayout.appendChild(leftBtn);
 
 			editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
-			hlyaout.appendChild(editor_Date.getComponent());
+			hlayout.appendChild(editor_Date.getComponent());
 
 			Button rightBtn = new Button();
-			rightBtn.setImage(ThemeManager.getThemeResource("images/" + imageRight));
+			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 			rightBtn.setClass("btn-small");
 			rightBtn.addEventListener(Events.ON_CLICK, this);
 			rightBtn.setName(BUTTON_NAME_NEXT_DAY);
-			hlyaout.appendChild(rightBtn);
+			hlayout.appendChild(rightBtn);
 
 
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
@@ -231,48 +224,42 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
 			editor_Text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
-			hlyaout.appendChild(editor_Text.getComponent());
+			hlayout.appendChild(editor_Text.getComponent());
 
 		}else {
 
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
 			editor_Text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "JP_ToDo_Type"));
-			hlyaout.appendChild(editor_Text.getComponent());
+			hlayout.appendChild(editor_Text.getComponent());
 
 		}
 
-		Div div2 = new Div();
-		div2.appendChild(new Html("&nbsp;"));
-		div2.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 10px 0px 10px;");
-		hlyaout.appendChild(div2);
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		Button createNewToDo = new Button();
-		createNewToDo.setImage(ThemeManager.getThemeResource("images/" + "New16.png"));
+		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
 		createNewToDo.setClass("btn-small");
 		createNewToDo.setName(BUTTON_NAME_NEW_TODO);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
-		hlyaout.appendChild(createNewToDo);
+		hlayout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
-		refresh.setImage(ThemeManager.getThemeResource("images/" + "Refresh16.png"));
+		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
 		refresh.setClass("btn-small");
 		refresh.setName(BUTTON_NAME_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
-		hlyaout.appendChild(refresh);
+		hlayout.appendChild(refresh);
 
 		Button calander = new Button();
-		calander.setImage(ThemeManager.getThemeResource("images/" + "Calendar16.png"));
+		calander.setImage(ThemeManager.getThemeResource("images/Calendar16.png"));
 		calander.setClass("btn-small");
 		calander.setName(BUTTON_NAME_CALENDER);
 		calander.addEventListener(Events.ON_CLICK, this);
-		hlyaout.appendChild(calander);
+		hlayout.appendChild(calander);
 
-		Div div3 = new Div();
-		div3.appendChild(new Html("&nbsp;"));
-		div3.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 10px 0px 10px;");
-		hlyaout.appendChild(div3);
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 	}
 
