@@ -322,7 +322,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		Grid grid = GridFactory.newGridLayout();
 		grid.setMold("paging");
-		//grid.setPageSize(20); //default=20
+		if(isDashboardGadget)
+			grid.setPageSize(20); //default=20
+		else
+			grid.setPageSize(10);
 		grid.setPagingPosition("top");
 		contentsArea.appendChild(grid);
 

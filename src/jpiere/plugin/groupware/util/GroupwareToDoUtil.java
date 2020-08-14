@@ -1,5 +1,6 @@
 package jpiere.plugin.groupware.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.adempiere.webui.component.Label;
@@ -9,6 +10,9 @@ import org.compiere.model.Query;
 import org.compiere.util.Env;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Html;
+
+import jpiere.plugin.groupware.form.ToDoCalendarEvent;
+import jpiere.plugin.groupware.model.MToDo;
 
 public class GroupwareToDoUtil {
 
@@ -87,5 +91,23 @@ public class GroupwareToDoUtil {
 		div.appendChild(editor.getComponent());
 
 		return div;
+	}
+
+
+	static public List<ToDoCalendarEvent> getToDoCalendarEvents(String whereClause, String orderClause, Object ...parameters)
+	{
+
+		List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClause.toString(), null)
+										.setParameters(parameters)
+										.setOrderBy(orderClause)
+										.list();
+
+		ArrayList<ToDoCalendarEvent> list_Events = new ArrayList<ToDoCalendarEvent>();
+		for(MToDo toDo : list_ToDoes)
+		{
+			list_Events.add(new ToDoCalendarEvent(toDo));
+		}
+
+		return list_Events;
 	}
 }

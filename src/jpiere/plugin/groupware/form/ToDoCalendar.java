@@ -39,6 +39,7 @@ import org.adempiere.webui.util.ZKUpdateUtil;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MRefList;
 import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
@@ -91,6 +92,10 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 	private Calendars calendars = null;
 
+	//Query Parameter
+
+
+	//West Gadget
 	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
 	JPierePersonalToDoGadget personalToDoGadget_Task = null;
 	JPierePersonalToDoGadget personalToDoGadget_Memo = null;
@@ -115,7 +120,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		mainBorderLayout_North.setOpen(true);
 		//mainBorderLayout_North.setTitle("トップコンテンツ");
 		mainBorderLayout.appendChild(mainBorderLayout_North);
-		mainBorderLayout_North.appendChild(createMainController(this));
+		mainBorderLayout_North.appendChild(createNorthContents());
 
 
 		//***************** CENTER **************************//
@@ -134,67 +139,75 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		mainBorderLayout_West.setDroppable("true");
 		ZKUpdateUtil.setWidth(mainBorderLayout_West, "25%");
 		mainBorderLayout.appendChild(mainBorderLayout_West);
+		mainBorderLayout_West.appendChild(createWestContents());//TODO
 
-		Vlayout vlayout = new Vlayout();
-		vlayout.setDroppable("true");
-		mainBorderLayout_West.appendChild(vlayout);
-
-		Groupbox groupBox0 = new Groupbox();
-		groupBox0.setOpen(false);
-		groupBox0.setDraggable("true");
-		groupBox0.setMold("3d");
-		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox0);
-
-		Caption caption0 = new Caption("ToDo管理メニュー");//TODO 多言語化
-		caption0.setIconSclass("z-icon-caret-right");
-		groupBox0.appendChild(caption0);
-		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));
-
-
-		Groupbox groupBox1 = new Groupbox();
-		groupBox1.setOpen(true);
-		groupBox1.setDraggable("true");
-		groupBox1.setMold("3d");
-		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox1);
-
-		Caption caption1 = new Caption("予定");//TODO 多言語化
-		caption1.setIconSclass("z-icon-caret-down");
-		groupBox1.appendChild(caption1);
-
-		personalToDoGadget_Schedule = new JPierePersonalToDoGadget("S");
-		groupBox1.appendChild(personalToDoGadget_Schedule);
-
-
-		Groupbox groupBox2 = new Groupbox();
-		groupBox2.setOpen(true);
-		groupBox2.setDraggable("true");
-		groupBox2.setMold("3d");
-		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox2);
-
-		Caption caption2 = new Caption("完了してないタスク");//TODO 多言語化
-		caption2.setIconSclass("z-icon-caret-down");
-		groupBox2.appendChild(caption2);
-
-		personalToDoGadget_Task = new JPierePersonalToDoGadget("T");
-		groupBox2.appendChild(personalToDoGadget_Task);
-
-
-		Groupbox groupBox3 = new Groupbox();
-		groupBox3.setOpen(true);
-		groupBox3.setDraggable("true");
-		groupBox3.setMold("3d");
-		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox3);
-
-		Caption caption3 = new Caption("完了してないメモ");//TODO 多言語化
-		caption3.setIconSclass("z-icon-caret-down");
-		groupBox3.appendChild(caption3);
-
-		personalToDoGadget_Memo= new JPierePersonalToDoGadget("M");
-		groupBox3.appendChild(personalToDoGadget_Memo);
+//		Vlayout vlayout = new Vlayout();
+//		vlayout.setDroppable("true");
+//		mainBorderLayout_West.appendChild(vlayout);
+//
+//		//ToDo管理メニュー
+//		Groupbox groupBox0 = new Groupbox();
+//		groupBox0.setOpen(false);
+//		groupBox0.setDraggable("true");
+//		groupBox0.setMold("3d");
+//		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+//		vlayout.appendChild(groupBox0);
+//
+//		Caption caption0 = new Caption("ToDo管理メニュー");//TODO 多言語化
+//		caption0.setIconSclass("z-icon-caret-right");
+//		groupBox0.appendChild(caption0);
+//		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));
+//
+//
+//		//Schedule
+//		Groupbox groupBox1 = new Groupbox();
+//		groupBox1.setOpen(true);
+//		groupBox1.setDraggable("true");
+//		groupBox1.setMold("3d");
+//		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+//		vlayout.appendChild(groupBox1);
+//
+//		MColumn colmn = MColumn.get(ctx, MToDo.Table_Name,MToDo.COLUMNNAME_JP_ToDo_Type);
+//		String scheduleName = MRefList.getListName(ctx, colmn.getAD_Reference_Value_ID(), "S");
+//
+//		Caption caption1 = new Caption(scheduleName);
+//		caption1.setIconSclass("z-icon-caret-down");
+//		groupBox1.appendChild(caption1);
+//
+//		personalToDoGadget_Schedule = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Schedule);
+//		groupBox1.appendChild(personalToDoGadget_Schedule);
+//
+//
+//		//Unfinished Tasks
+//		Groupbox groupBox2 = new Groupbox();
+//		groupBox2.setOpen(true);
+//		groupBox2.setDraggable("true");
+//		groupBox2.setMold("3d");
+//		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+//		vlayout.appendChild(groupBox2);
+//
+//		Caption caption2 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
+//		caption2.setIconSclass("z-icon-caret-down");
+//		groupBox2.appendChild(caption2);
+//
+//		personalToDoGadget_Task = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Task);
+//		groupBox2.appendChild(personalToDoGadget_Task);
+//
+//
+//		//Unfinished Memo
+//		Groupbox groupBox3 = new Groupbox();
+//		groupBox3.setOpen(true);
+//		groupBox3.setDraggable("true");
+//		groupBox3.setMold("3d");
+//		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+//		vlayout.appendChild(groupBox3);
+//
+//		Caption caption3 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
+//		caption3.setIconSclass("z-icon-caret-down");
+//		groupBox3.appendChild(caption3);
+//
+//		personalToDoGadget_Memo= new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Memo);
+//		groupBox3.appendChild(personalToDoGadget_Memo);
 
 
 		//TODO -> SQLにする。
@@ -219,7 +232,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
     }
 
-    public Div createMainController(EventListener<Event> eventListener)
+    public Div createNorthContents()
     {
     	Div div = new Div();
 		Hlayout hlayout = new Hlayout();
@@ -233,7 +246,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		createNewToDo.setName(GroupwareToDoUtil.BUTTON_NEW);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
-		createNewToDo.setLabel("新規作成");
+		createNewToDo.setLabel("新規作成");//TODO
 		hlayout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
@@ -344,10 +357,79 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
     }
 
-    public Div createSubController(EventListener<Event> eventListener, String JP_ToDo_Type)
+    public Div createWestContents()
     {
+    	Div div = new Div();
+		Vlayout vlayout = new Vlayout();
+		vlayout.setDroppable("true");
+		div.appendChild(vlayout);
 
-    	return null;
+
+		//ToDo管理メニュー
+		Groupbox groupBox0 = new Groupbox();
+		groupBox0.setOpen(false);
+		groupBox0.setDraggable("true");
+		groupBox0.setMold("3d");
+		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox0);
+
+		Caption caption0 = new Caption("ToDo管理メニュー");//TODO 多言語化
+		caption0.setIconSclass("z-icon-caret-right");
+		groupBox0.appendChild(caption0);
+		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));
+
+
+		//Schedule
+		Groupbox groupBox1 = new Groupbox();
+		groupBox1.setOpen(true);
+		groupBox1.setDraggable("true");
+		groupBox1.setMold("3d");
+		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox1);
+
+		MColumn colmn = MColumn.get(ctx, MToDo.Table_Name,MToDo.COLUMNNAME_JP_ToDo_Type);
+		String scheduleName = MRefList.getListName(ctx, colmn.getAD_Reference_Value_ID(), "S");
+
+		Caption caption1 = new Caption(scheduleName);
+		caption1.setIconSclass("z-icon-caret-down");
+		groupBox1.appendChild(caption1);
+
+		personalToDoGadget_Schedule = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Schedule);
+		groupBox1.appendChild(personalToDoGadget_Schedule);
+
+
+		//Unfinished Tasks
+		Groupbox groupBox2 = new Groupbox();
+		groupBox2.setOpen(true);
+		groupBox2.setDraggable("true");
+		groupBox2.setMold("3d");
+		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox2);
+
+		Caption caption2 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
+		caption2.setIconSclass("z-icon-caret-down");
+		groupBox2.appendChild(caption2);
+
+		personalToDoGadget_Task = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Task);
+		groupBox2.appendChild(personalToDoGadget_Task);
+
+
+		//Unfinished Memo
+		Groupbox groupBox3 = new Groupbox();
+		groupBox3.setOpen(true);
+		groupBox3.setDraggable("true");
+		groupBox3.setMold("3d");
+		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox3);
+
+		Caption caption3 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
+		caption3.setIconSclass("z-icon-caret-down");
+		groupBox3.appendChild(caption3);
+
+		personalToDoGadget_Memo= new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Memo);
+		groupBox3.appendChild(personalToDoGadget_Memo);
+
+    	return div;
 
     }
 
@@ -524,14 +606,14 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	}
 
 	@Override
-	public boolean refresh(String JP_ToDo_Type)//TODO
+	public boolean refresh(String JP_ToDo_Type)
 	{
 		refreshWest(JP_ToDo_Type);
 
 		return true;
 	}
 
-	public boolean refreshWest(String JP_ToDo_Type)//TODO
+	public boolean refreshWest(String JP_ToDo_Type)
 	{
 		personalToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
