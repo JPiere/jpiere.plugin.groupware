@@ -43,6 +43,7 @@ import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 import org.zkoss.calendar.Calendars;
 import org.zkoss.calendar.api.CalendarEvent;
 import org.zkoss.calendar.event.CalendarsEvent;
@@ -90,7 +91,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 	private Calendars calendars = null;
 
-	JPierePersonalToDoGadget todoG = null;
+	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
+	JPierePersonalToDoGadget personalToDoGadget_Task = null;
+	JPierePersonalToDoGadget personalToDoGadget_Memo = null;
 
     public ToDoCalendar()
     {
@@ -160,8 +163,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		caption1.setIconSclass("z-icon-caret-down");
 		groupBox1.appendChild(caption1);
 
-		JPierePersonalToDoGadget todoS = new JPierePersonalToDoGadget("S");
-		groupBox1.appendChild(todoS);
+		personalToDoGadget_Schedule = new JPierePersonalToDoGadget("S");
+		groupBox1.appendChild(personalToDoGadget_Schedule);
 
 
 		Groupbox groupBox2 = new Groupbox();
@@ -175,9 +178,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		caption2.setIconSclass("z-icon-caret-down");
 		groupBox2.appendChild(caption2);
 
-		JPierePersonalToDoGadget todoT = new JPierePersonalToDoGadget("T");
-		groupBox2.appendChild(todoT);
-		todoG = todoT;
+		personalToDoGadget_Task = new JPierePersonalToDoGadget("T");
+		groupBox2.appendChild(personalToDoGadget_Task);
+
 
 		Groupbox groupBox3 = new Groupbox();
 		groupBox3.setOpen(false);
@@ -190,12 +193,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		caption3.setIconSclass("z-icon-caret-right");
 		groupBox3.appendChild(caption3);
 
-		JPierePersonalToDoGadget todoM = new JPierePersonalToDoGadget("M");
-		groupBox3.appendChild(todoM);
+		personalToDoGadget_Memo= new JPierePersonalToDoGadget("M");
+		groupBox3.appendChild(personalToDoGadget_Memo);
 
 
+		//TODO -> SQLにする。
 		ArrayList<ToDoCalendarEvent> events = new ArrayList<ToDoCalendarEvent>();
-		List<MToDo> list_ToDoes =  todoS.getListToDoes();
+		List<MToDo> list_ToDoes =  personalToDoGadget_Schedule.getListToDoes();
 		for(MToDo toDo : list_ToDoes)
 		{
 			events.add(new ToDoCalendarEvent(toDo));
@@ -245,8 +249,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
-		p_Initial_User_ID = Env.getAD_User_ID(ctx);
-		userSearchEditor.setValue(p_Initial_User_ID);
+		p_AD_User_ID = Env.getAD_User_ID(ctx);
+		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
 		hlayout.appendChild(userSearchEditor.getComponent());
@@ -356,10 +360,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		if(MToDo.COLUMNNAME_AD_User_ID.equals(name))
 		{
 			if(value == null)
-				p_Initial_User_ID = 0;
-			else
-				p_Initial_User_ID = Integer.parseInt(value.toString());
+			{
+				p_AD_User_ID = 0;
+			}else {
+				p_AD_User_ID = Integer.parseInt(value.toString());
+			}
 
+			refresh(null);
 		}
 	}
 
@@ -494,12 +501,12 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	}
 
 
-	int p_Initial_User_ID = 0;
+	int p_AD_User_ID = 0;
 
 	@Override
 	public int getInitial_User_ID()//TODO
 	{
-		return p_Initial_User_ID;
+		return p_AD_User_ID;
 	}
 
 	@Override
@@ -516,12 +523,35 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	}
 
 	@Override
-	public boolean refresh()//TODO
+	public boolean refresh(String JP_ToDo_Type)//TODO
 	{
+		refreshWest(JP_ToDo_Type);
 
-		return false;
+		return true;
 	}
 
+	public boolean refreshWest(String JP_ToDo_Type)//TODO
+	{
+		personalToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
+		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
+		personalToDoGadget_Memo.setAD_User_ID(p_AD_User_ID);
+
+		if(Util.isEmpty(JP_ToDo_Type))
+		{
+			personalToDoGadget_Schedule.refresh(MToDo.JP_TODO_TYPE_Schedule);
+			personalToDoGadget_Task.refresh(MToDo.JP_TODO_TYPE_Task);
+			personalToDoGadget_Memo.refresh(MToDo.JP_TODO_TYPE_Memo);
+		}else {
+			personalToDoGadget_Schedule.refresh(JP_ToDo_Type);
+			personalToDoGadget_Task.refresh(JP_ToDo_Type);
+			personalToDoGadget_Memo.refresh(JP_ToDo_Type);
+		}
+
+
+
+
+		return true;
+	}
 
 	private Timestamp p_CalendarsEventBeginDate = null;
 

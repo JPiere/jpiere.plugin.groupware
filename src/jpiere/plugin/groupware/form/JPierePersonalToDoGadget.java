@@ -64,7 +64,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  *  @author Hideaki Hagiwara（h.hagiwara@oss-erp.co.jp）
  *
  */
-public class JPierePersonalToDoGadget extends DashboardPanel implements I_CallerPersonalToDoPopupwindow, EventListener<Event>, ValueChangeListener {
+public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_CallerPersonalToDoPopupwindow, EventListener<Event>, ValueChangeListener {
 
 	Div headerArea = new Div();
 	Div messageArea = new Div();
@@ -540,9 +540,11 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_Caller
 	}
 
 	@Override
-	public boolean refresh()
+	public boolean refresh(String JP_ToDo_Type)
 	{
-		createContents();
+		if(p_JP_ToDo_Type.equals(JP_ToDo_Type))
+			createContents();
+
 		return true;
 	}
 
@@ -556,5 +558,12 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_Caller
 	public Timestamp getInitialScheduledEndTime()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
+	}
+
+	@Override
+	public void setAD_User_ID(int AD_User_ID)
+	{
+		p_AD_User_ID = AD_User_ID;
+		refresh(p_JP_ToDo_Type);
 	}
 }

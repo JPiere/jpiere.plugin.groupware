@@ -38,6 +38,6 @@ public interface I_CallerPersonalToDoPopupwindow {
 
 	public String getInitial_ToDo_Type();
 
-	public boolean refresh();
+	public boolean refresh(String JP_ToDO_Type);
 
 }
