@@ -85,9 +85,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	private static final CLogger log = CLogger.getCLogger(PersonalToDoPopupWindow.class);
 
-	/*** WEditors & Labels **/
-	private Map<String, Label> map_Label = new HashMap<String, Label>();
-	private Map<String, WEditor> map_Editor = new HashMap<String, WEditor>();
+	private Properties ctx = null;
 
 	/** Control Parameters	*/
 	private boolean p_IsUpdatable = false;
@@ -105,23 +103,22 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsDirty = false;
 	private boolean p_Debug = false;
 
+	private I_CallerPersonalToDoPopupwindow i_CallerPersonalToDoPopupwindow;
+	private  List<MToDo>  list_ToDoes = null;
+	private int index = 0;
+
+
+	/*** Web Components ***/
+	// WEditors & Labels
+	private Map<String, Label> map_Label = new HashMap<String, Label>();
+	private Map<String, WEditor> map_Editor = new HashMap<String, WEditor>();
+
+	//Layout
 	private North north = null;
 	private Center center = null;
 	private ConfirmPanel confirmPanel;
 
-	private I_CallerPersonalToDoPopupwindow i_CallerPersonalToDoPopupwindow;
-	private  List<MToDo>  list_ToDoes = null;
-	private int index = 0;
-	private Properties ctx = null;
-
-	private final static String BUTTON_NAME_ZOOM = "ZOOM";
-	private final static String BUTTON_NAME_UNDO = "REDO";
-	private final static String BUTTON_NAME_SAVE = "SAVE";
-	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
-	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
-	private final static String BUTTON_NAME_DELETE = "DELETE";
-
-	//*** Button ***//
+	//Buttons
 	private Button zoomBtn = null;
 	private Button undoBtn = null;
 	private Button saveBtn = null;
@@ -129,6 +126,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Button rightBtn = null;
 	private Button deleteBtn = null;
 
+	//*** Constants ***//
+	private final static String BUTTON_NAME_ZOOM = "ZOOM";
+	private final static String BUTTON_NAME_UNDO = "REDO";
+	private final static String BUTTON_NAME_SAVE = "SAVE";
+	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
+	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
+	private final static String BUTTON_NAME_DELETE = "DELETE";
 
 	public PersonalToDoPopupWindow(I_CallerPersonalToDoPopupwindow caller, int index)
 	{
