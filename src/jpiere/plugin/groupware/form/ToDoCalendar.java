@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -63,6 +64,7 @@ import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
+import jpiere.plugin.groupware.window.I_CallerPersonalToDoPopupwindow;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 /**
@@ -72,11 +74,13 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  * h.hagiwara
  *
  */
-public class ToDoCalendar implements IFormController, EventListener<Event>, ValueChangeListener {
+public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormController, EventListener<Event>, ValueChangeListener {
 
 	private static CLogger log = CLogger.getCLogger(ToDoCalendar.class);
 
 	private CustomForm form;
+
+	private Properties ctx = Env.getCtx();
 
 	@Override
 	public ADForm getForm()
@@ -241,7 +245,8 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 
 		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
-		userSearchEditor.setValue(100);
+		p_Initial_User_ID = Env.getAD_User_ID(ctx);
+		userSearchEditor.setValue(p_Initial_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
 		hlayout.appendChild(userSearchEditor.getComponent());
@@ -345,7 +350,17 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 	@Override
 	public void valueChange(ValueChangeEvent evt)
 	{
-		;
+		String name = evt.getPropertyName();
+		Object value = evt.getNewValue();
+
+		if(MToDo.COLUMNNAME_AD_User_ID.equals(name))
+		{
+			if(value == null)
+				p_Initial_User_ID = 0;
+			else
+				p_Initial_User_ID = Integer.parseInt(value.toString());
+
+		}
 	}
 
 
@@ -362,7 +377,11 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 				String btnName = btn.getName();
 				if(GroupwareToDoUtil.BUTTON_NEW.equals(btnName))
 				{
-					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(todoG, -1);
+					list_ToDoes = null;
+					p_CalendarsEventBeginDate = null;
+					p_CalendarsEventEndDate =  null;
+
+					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
 				}else if(GroupwareToDoUtil.BUTTON_PREVIOUS.equals(btnName))
@@ -403,9 +422,16 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 			}
 
 		}else if (eventName.equals("onEventCreate")) {
-			if (event instanceof CalendarsEvent) {
+
+			if (event instanceof CalendarsEvent)
+			{
+				list_ToDoes = null;
+
 				CalendarsEvent calendarsEvent = (CalendarsEvent) event;
-				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(todoG, -1);
+				p_CalendarsEventBeginDate = new Timestamp(calendarsEvent.getBeginDate().getTime());
+				p_CalendarsEventEndDate = new Timestamp(calendarsEvent.getEndDate().getTime());
+
+				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 			}
 		}
@@ -419,7 +445,13 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 				{
 					ToDoCalendarEvent ce = (ToDoCalendarEvent) calendarEvent;
 
-					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(todoG, -1);
+					list_ToDoes = new ArrayList<MToDo>();
+					list_ToDoes.add(ce.getToDoD());
+
+					p_CalendarsEventBeginDate = ce.getToDoD().getJP_ToDo_ScheduledStartTime();
+					p_CalendarsEventEndDate = ce.getToDoD().getJP_ToDo_ScheduledEndTime();
+
+					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, 0);
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 				}
 			}
@@ -450,5 +482,72 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		//sdfV.setTimeZone(calendars.getDefaultTimeZone());
 
 		lblDate.setValue(sdfV.format(b) + " - " + sdfV.format(e));
+	}
+
+
+	List<MToDo> list_ToDoes = null;
+
+	@Override
+	public List<MToDo> getListToDoes()
+	{
+		return list_ToDoes;
+	}
+
+
+	int p_Initial_User_ID = 0;
+
+	@Override
+	public int getInitial_User_ID()//TODO
+	{
+		return p_Initial_User_ID;
+	}
+
+	@Override
+	public String getInitial_ToDo_Type()
+	{
+		if(list_ToDoes == null)
+		{
+			return MToDo.JP_TODO_TYPE_Schedule;
+		}else {
+
+			return list_ToDoes.get(0).getJP_ToDo_Type();
+		}
+
+	}
+
+	@Override
+	public boolean refresh()//TODO
+	{
+
+		return false;
+	}
+
+
+	private Timestamp p_CalendarsEventBeginDate = null;
+
+	@Override
+	public Timestamp getInitialScheduledStartTime()
+	{
+		if(p_CalendarsEventBeginDate == null)
+		{
+			return new Timestamp(calendars.getCurrentDate().getTime());//TODO 時間の端数処理
+
+		}else {
+			return p_CalendarsEventBeginDate;
+		}
+	}
+
+	private Timestamp p_CalendarsEventEndDate = null;
+
+	@Override
+	public Timestamp getInitialScheduledEndTime()
+	{
+		if(p_CalendarsEventEndDate == null)
+		{
+			return new Timestamp(calendars.getCurrentDate().getTime());//TODO 時間の端数処理
+
+		}else {
+			return p_CalendarsEventEndDate;
+		}
 	}
 }

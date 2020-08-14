@@ -54,6 +54,7 @@ import org.zkoss.zul.Hlayout;
 
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
+import jpiere.plugin.groupware.window.I_CallerPersonalToDoPopupwindow;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
@@ -63,7 +64,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  *  @author Hideaki Hagiwara（h.hagiwara@oss-erp.co.jp）
  *
  */
-public class JPierePersonalToDoGadget extends DashboardPanel implements EventListener<Event>, ValueChangeListener {
+public class JPierePersonalToDoGadget extends DashboardPanel implements I_CallerPersonalToDoPopupwindow, EventListener<Event>, ValueChangeListener {
 
 	Div headerArea = new Div();
 	Div messageArea = new Div();
@@ -520,23 +521,40 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements EventLis
 		return list;
 	}
 
-	public int getAD_User_ID()
+	@Override
+	public int getInitial_User_ID()
 	{
 		return p_AD_User_ID;
 	}
 
-	public String getJP_ToDo_Type()
+	@Override
+	public String getInitial_ToDo_Type()
 	{
 		return p_JP_ToDo_Type;
 	}
 
-	public Timestamp getSelectedDate()
+	@Override
+	public List<MToDo>  getListToDoes()
+	{
+		return list_ToDoes;
+	}
+
+	@Override
+	public boolean refresh()
+	{
+		createContents();
+		return true;
+	}
+
+	@Override
+	public Timestamp getInitialScheduledStartTime()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
 	}
 
-	public List<MToDo>  getListToDoes()
+	@Override
+	public Timestamp getInitialScheduledEndTime()
 	{
-		return list_ToDoes;
+		return Timestamp.valueOf(p_LocalDateTime);
 	}
 }

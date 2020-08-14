@@ -1,15 +1,15 @@
 /******************************************************************************
- * Copyright (C) 2008 Elaine Tan                                              *
- * Copyright (C) 2008 Idalica Corporation                                     *
- * This program is free software; you can redistribute it and/or modify it    *
+ * Product: JPiere                                                            *
+ * Copyright (C) Hideaki Hagiwara (h.hagiwara@oss-erp.co.jp)                  *
+ *                                                                            *
+ * This program is free software, you can redistribute it and/or modify it    *
  * under the terms version 2 of the GNU General Public License as published   *
  * by the Free Software Foundation. This program is distributed in the hope   *
- * that it will be useful, but WITHOUT ANY WARRANTY; without even the implied *
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
+ * that it will be useful, but WITHOUT ANY WARRANTY.                          *
  * See the GNU General Public License for more details.                       *
- * You should have received a copy of the GNU General Public License along    *
- * with this program; if not, write to the Free Software Foundation, Inc.,    *
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.                     *
+ *                                                                            *
+ * JPiere is maintained by OSS ERP Solutions Co., Ltd.                        *
+ * (http://www.oss-erp.co.jp)                                                 *
  *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
@@ -68,7 +68,6 @@ import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.North;
 import org.zkoss.zul.South;
 
-import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
@@ -101,7 +100,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private int p_JP_ToDo_ID = 0;
 	private int p_AD_User_ID = 0;
 	private String p_JP_ToDo_Type = null;
-	private Timestamp p_SelectedDate = null;
+	private Timestamp p_InitialScheduledStartTime = null;
+	private Timestamp p_InitialScheduledEndTime = null;
 	private boolean p_IsDirty = false;
 	private boolean p_Debug = false;
 
@@ -109,7 +109,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Center center = null;
 	private ConfirmPanel confirmPanel;
 
-	private JPierePersonalToDoGadget i_CallPersonalToDoPopupwindow;
+	private I_CallerPersonalToDoPopupwindow i_CallerPersonalToDoPopupwindow;
 	private  List<MToDo>  list_ToDoes = null;
 	private int index = 0;
 	private Properties ctx = null;
@@ -130,11 +130,11 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Button deleteBtn = null;
 
 
-	public PersonalToDoPopupWindow(JPierePersonalToDoGadget parent, int index)
+	public PersonalToDoPopupWindow(I_CallerPersonalToDoPopupwindow caller, int index)
 	{
 		super();
-		this.i_CallPersonalToDoPopupwindow = parent;
-		this.list_ToDoes =parent.getListToDoes();
+		this.i_CallerPersonalToDoPopupwindow = caller;
+		this.list_ToDoes =caller.getListToDoes();
 		this.index = index;
 		ctx = Env.getCtx();
 
@@ -199,14 +199,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private void updateControlParameter(int JP_ToDo_ID)
 	{
 		p_JP_ToDo_ID = JP_ToDo_ID;
-		p_SelectedDate = i_CallPersonalToDoPopupwindow.getSelectedDate();
 
 		if(p_JP_ToDo_ID == 0)
 		{
 			p_IsNewRecord = true;
 			p_MToDo = null;
-			p_AD_User_ID = i_CallPersonalToDoPopupwindow.getAD_User_ID();
-			p_JP_ToDo_Type = i_CallPersonalToDoPopupwindow.getJP_ToDo_Type();
+			p_AD_User_ID = i_CallerPersonalToDoPopupwindow.getInitial_User_ID();
+			p_JP_ToDo_Type = i_CallerPersonalToDoPopupwindow.getInitial_ToDo_Type();
 
 		}else {
 
@@ -248,6 +247,23 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			p_TeamMToDo = new MToDoTeam(ctx, p_MToDo.getJP_ToDo_Team_ID(), null);
 		}
 
+
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
+		{
+			p_InitialScheduledStartTime = i_CallerPersonalToDoPopupwindow.getInitialScheduledStartTime();
+			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getInitialScheduledEndTime();
+
+		}else if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)){
+
+			p_InitialScheduledStartTime = null;
+			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getInitialScheduledStartTime();
+
+		}else {
+
+			p_InitialScheduledStartTime = null;
+			p_InitialScheduledEndTime = null;
+
+		}
 	}
 
 	private void createLabelMap()
@@ -399,8 +415,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_JP_ToDo_Type);
-			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_SelectedDate);
-			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_SelectedDate);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_InitialScheduledStartTime);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_InitialScheduledEndTime);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(MToDo.JP_TODO_STATUS_NotYetStarted);
 			map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setValue("Y");
 
@@ -778,7 +794,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if(saveToDo())
 			{
-				i_CallPersonalToDoPopupwindow.createContents();
+				i_CallerPersonalToDoPopupwindow.refresh();
 				this.detach();
 			}
 
@@ -788,7 +804,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		{
 			if(p_RequeryOnCancel)
 			{
-				i_CallPersonalToDoPopupwindow.createContents();
+				i_CallerPersonalToDoPopupwindow.refresh();
 			}
 			this.detach();
 
@@ -1048,7 +1064,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			i_CallPersonalToDoPopupwindow.createContents();
+			i_CallerPersonalToDoPopupwindow.refresh();
 			this.detach();
 		}
 
@@ -1115,7 +1131,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 					if(p_RequeryOnCancel)
 					{
-						i_CallPersonalToDoPopupwindow.createContents();
+						i_CallerPersonalToDoPopupwindow.refresh();
 					}
 					detach();
 		        }
@@ -1126,7 +1142,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if(p_RequeryOnCancel)
 			{
-				i_CallPersonalToDoPopupwindow.createContents();
+				i_CallerPersonalToDoPopupwindow.refresh();
 			}
 			detach();
 		}
