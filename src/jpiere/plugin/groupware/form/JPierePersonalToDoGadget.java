@@ -91,20 +91,23 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 	private List<MToDo>  list_ToDoes = null;
 
+	private boolean isDashboardGadget = false;
+
 	public JPierePersonalToDoGadget()
 	{
 		super();
-		init("T");
+		init(MToDo.JP_TODO_TYPE_Task, true);
 	}
 
 	public JPierePersonalToDoGadget(String JP_ToDo_Type)
 	{
 		super();
-		init(JP_ToDo_Type);
+		init(JP_ToDo_Type, false);
 	}
 
-	public void init(String JP_ToDo_Type)
+	public void init(String JP_ToDo_Type,Boolean isDashboardGadget)
 	{
+		this.isDashboardGadget = isDashboardGadget;
 
 		setSclass("views-box");
 
@@ -134,6 +137,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 	private void createHeader()
 	{
+		if(!isDashboardGadget)
+			return;
+
 		Grid grid = GridFactory.newGridLayout();
 		headerArea.appendChild(grid);
 		Rows gridRows = grid.newRows();
@@ -168,6 +174,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	{
 		if(messageArea.getFirstChild() != null)
 			messageArea.getFirstChild().detach();
+
+		if(!isDashboardGadget &&( MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) )
+			return;
 
 		Hlayout hlayout = new Hlayout();
 		messageArea.appendChild(hlayout);
@@ -225,6 +234,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		}
 
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		if(!isDashboardGadget)
+			return ;
 
 		Button createNewToDo = new Button();
 		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));

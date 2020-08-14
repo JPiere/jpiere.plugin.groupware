@@ -183,14 +183,14 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 
 		Groupbox groupBox3 = new Groupbox();
-		groupBox3.setOpen(false);
+		groupBox3.setOpen(true);
 		groupBox3.setDraggable("true");
 		groupBox3.setMold("3d");
 		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox3);
 
 		Caption caption3 = new Caption("完了してないメモ");//TODO 多言語化
-		caption3.setIconSclass("z-icon-caret-right");
+		caption3.setIconSclass("z-icon-caret-down");
 		groupBox3.appendChild(caption3);
 
 		personalToDoGadget_Memo= new JPierePersonalToDoGadget("M");
@@ -229,15 +229,16 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		Button createNewToDo = new Button();
 		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
-		createNewToDo.setClass("btn-small");
+		//createNewToDo.setClass("btn-small");
 		createNewToDo.setName(GroupwareToDoUtil.BUTTON_NEW);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
+		createNewToDo.setLabel("新規作成");
 		hlayout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
 		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
-		refresh.setClass("btn-small");
+		//refresh.setClass("btn-small");
 		refresh.setName(GroupwareToDoUtil.BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(refresh);
@@ -285,53 +286,53 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		Button leftBtn = new Button();
 		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
-		leftBtn.setClass("btn-small");
+		//leftBtn.setClass("btn-small");
 		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(leftBtn);
 
 		Button today = new Button();
 		today.setLabel("今日");
-		today.setClass("btn-small");
+		//today.setClass("btn-small");
 		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
 		today.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(today);
 
 		Button rightBtn = new Button();
 		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
-		rightBtn.setClass("btn-small");
+		//rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
 		hlayout.appendChild(rightBtn);
 
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv("表示形式:", false, true));//TODO 多言語化
+		//hlayout.appendChild(GroupwareToDoUtil.createLabelDiv("表示形式:", false, true));//TODO 多言語化
 
 		Button oneDayView = new Button();
 		oneDayView.setLabel("日");
-		oneDayView.setClass("btn-small");
+		//oneDayView.setClass("btn-small");
 		oneDayView.setName(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(oneDayView);
 
 		Button sevenDayView = new Button();
 		sevenDayView.setLabel("週");
-		sevenDayView.setClass("btn-small");
+		//sevenDayView.setClass("btn-small");
 		sevenDayView.setName(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(sevenDayView);
 
 		Button monthDayView = new Button();
 		monthDayView.setLabel("月");
-		monthDayView.setClass("btn-small");
+		//monthDayView.setClass("btn-small");
 		monthDayView.setName(GroupwareToDoUtil.BUTTON_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(monthDayView);
 
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv("表示期間:", false, true));//TODO 多言語化
+		//hlayout.appendChild(GroupwareToDoUtil.createLabelDiv("表示期間:", false, true));//TODO 多言語化
 
 		lblDate = new Label();
 		updateDateLabel();
