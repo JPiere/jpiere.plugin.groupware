@@ -14,7 +14,9 @@
 
 package jpiere.plugin.groupware.form;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +24,9 @@ import java.util.List;
 
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
+import org.adempiere.webui.component.Label;
+import org.adempiere.webui.editor.WSearchEditor;
+import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
 import org.adempiere.webui.panel.ADForm;
@@ -30,8 +35,13 @@ import org.adempiere.webui.panel.IFormController;
 import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
+import org.compiere.model.MColumn;
+import org.compiere.model.MLookup;
+import org.compiere.model.MLookupFactory;
 import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
+import org.compiere.util.Env;
+import org.compiere.util.Msg;
 import org.zkoss.calendar.Calendars;
 import org.zkoss.calendar.api.CalendarEvent;
 import org.zkoss.calendar.event.CalendarsEvent;
@@ -45,12 +55,13 @@ import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.Hlayout;
-import org.zkoss.zul.Label;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.West;
 
+import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
@@ -121,6 +132,19 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		vlayout.setDroppable("true");
 		mainBorderLayout_West.appendChild(vlayout);
 
+		Groupbox groupBox0 = new Groupbox();
+		groupBox0.setOpen(false);
+		groupBox0.setDraggable("true");
+		groupBox0.setMold("3d");
+		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		vlayout.appendChild(groupBox0);
+
+		Caption caption0 = new Caption("ToDo管理メニュー");//TODO 多言語化
+		caption0.setIconSclass("z-icon-caret-right");
+		groupBox0.appendChild(caption0);
+		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));
+
+
 		Groupbox groupBox1 = new Groupbox();
 		groupBox1.setOpen(true);
 		groupBox1.setDraggable("true");
@@ -128,9 +152,9 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox1);
 
-		Caption caption = new Caption("予定");
-		caption.setIconSclass("z-icon-caret-down");
-		groupBox1.appendChild(caption);
+		Caption caption1 = new Caption("予定");//TODO 多言語化
+		caption1.setIconSclass("z-icon-caret-down");
+		groupBox1.appendChild(caption1);
 
 		JPierePersonalToDoGadget todoS = new JPierePersonalToDoGadget("S");
 		groupBox1.appendChild(todoS);
@@ -143,7 +167,7 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox2);
 
-		Caption caption2 = new Caption("完了してないタスク");
+		Caption caption2 = new Caption("完了してないタスク");//TODO 多言語化
 		caption2.setIconSclass("z-icon-caret-down");
 		groupBox2.appendChild(caption2);
 
@@ -158,7 +182,7 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox3);
 
-		Caption caption3 = new Caption("完了してないメモ");
+		Caption caption3 = new Caption("完了してないメモ");//TODO 多言語化
 		caption3.setIconSclass("z-icon-caret-right");
 		groupBox3.appendChild(caption3);
 
@@ -203,20 +227,6 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		createNewToDo.setId(String.valueOf(0));
 		hlayout.appendChild(createNewToDo);
 
-		Button leftBtn = new Button();
-		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
-		leftBtn.setClass("btn-small");
-		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
-		leftBtn.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(leftBtn);
-
-		Button rightBtn = new Button();
-		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
-		rightBtn.setClass("btn-small");
-		rightBtn.addEventListener(Events.ON_CLICK, this);
-		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
-		hlayout.appendChild(rightBtn);
-
 		Button refresh = new Button();
 		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
 		refresh.setClass("btn-small");
@@ -226,12 +236,68 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
+		//User Search Field
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID), true, true));
+
+		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
+		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
+		userSearchEditor.setValue(100);
+		userSearchEditor.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
+		hlayout.appendChild(userSearchEditor.getComponent());
+
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+
+		//Team Search Field
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(Env.getCtx(), MTeam.COLUMNNAME_JP_Team_ID), false, true));
+
+		MLookup lookupTeam = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
+		WSearchEditor teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, true, false, true, lookupTeam);
+		teamSearchEditor.setValue(null);
+		teamSearchEditor.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(teamSearchEditor.getComponent(), "true");
+		hlayout.appendChild(teamSearchEditor.getComponent());
+		//teamSearchEditor.setVisible(false);
+
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", "予定を表示する", null, true, false, true);//TODO : 多言語化
+		IsDisplaySchedule.setValue(true);
+		IsDisplaySchedule.addValueChangeListener(this);
+		hlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
+
+		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", "タスクを表示する", null, true, false, true);//TODO : 多言語化
+		IsDisplayTask.setValue(false);
+		IsDisplayTask.addValueChangeListener(this);
+		hlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
+
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		Button leftBtn = new Button();
+		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
+		leftBtn.setClass("btn-small");
+		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
+		leftBtn.addEventListener(Events.ON_CLICK, this);
+		hlayout.appendChild(leftBtn);
+
 		Button today = new Button();
 		today.setLabel("今日");
 		today.setClass("btn-small");
 		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
 		today.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(today);
+
+		Button rightBtn = new Button();
+		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+		rightBtn.setClass("btn-small");
+		rightBtn.addEventListener(Events.ON_CLICK, this);
+		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
+		hlayout.appendChild(rightBtn);
+
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv("表示形式:", false, true));//TODO 多言語化
 
 		Button oneDayView = new Button();
 		oneDayView.setLabel("日");
@@ -254,10 +320,15 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		monthDayView.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(monthDayView);
 
-		lblDate = new Label("aaaaaa");
-		//lblDate.addEventListener(Events.ON_CREATE, this);
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv("表示期間:", false, true));//TODO 多言語化
+
+		lblDate = new Label();
 		updateDateLabel();
-		hlayout.appendChild(lblDate);
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(lblDate, false, true));
+
+		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
     	return div;
 
@@ -372,13 +443,12 @@ public class ToDoCalendar implements IFormController, EventListener<Event>, Valu
 		Date b = calendars.getBeginDate();
 		Date e = calendars.getEndDate();
 
-		//TODO 要日付調整 -> これを調整しないと終わりの日付の1日多い…
-//		LocalDateTime local = new Timestamp(e.getTime()).toLocalDateTime();
-//		e = new Date(Timestamp.valueOf(local.minusDays(1)).getTime());
+		LocalDateTime local = new Timestamp(e.getTime()).toLocalDateTime();
+		e = new Date(Timestamp.valueOf(local.minusDays(1)).getTime());
 
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
-		sdfV.setTimeZone(calendars.getDefaultTimeZone());
-		//sdfV.setTimeZone(calendars.getTimeZones().g);
+		//sdfV.setTimeZone(calendars.getDefaultTimeZone());
+
 		lblDate.setValue(sdfV.format(b) + " - " + sdfV.format(e));
 	}
 }

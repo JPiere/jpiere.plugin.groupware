@@ -482,7 +482,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(zoomBtn == null)
 		{
 			zoomBtn = new Button();
-			zoomBtn.setImage(ThemeManager.getThemeResource("images/" + "Zoom16.png"));
+			zoomBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
 			zoomBtn.setClass("btn-small");
 			zoomBtn.setName(BUTTON_NAME_ZOOM);
 			zoomBtn.addEventListener(Events.ON_CLICK, this);
@@ -496,7 +496,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(undoBtn == null)
 		{
 			undoBtn = new Button();
-			undoBtn.setImage(ThemeManager.getThemeResource("images/" + "Undo16.png"));
+			undoBtn.setImage(ThemeManager.getThemeResource("images/Undo16.png"));
 			undoBtn.setClass("btn-small");
 			undoBtn.setName(BUTTON_NAME_UNDO);
 			undoBtn.addEventListener(Events.ON_CLICK, this);
@@ -512,7 +512,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(saveBtn == null)
 		{
 			saveBtn = new Button();
-			saveBtn.setImage(ThemeManager.getThemeResource("images/" + "Save16.png"));
+			saveBtn.setImage(ThemeManager.getThemeResource("images/Save16.png"));
 			saveBtn.setClass("btn-small");
 			saveBtn.setName(BUTTON_NAME_SAVE);
 			saveBtn.addEventListener(Events.ON_CLICK, this);
@@ -530,7 +530,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(leftBtn  == null)
 		{
 			leftBtn = new Button();
-			leftBtn.setImage(ThemeManager.getThemeResource("images/" + "MoveLeft16.png"));
+			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 			leftBtn.setClass("btn-small");
 			leftBtn.setName(BUTTON_NAME_PREVIOUS_TODO);
 			leftBtn.addEventListener(Events.ON_CLICK, this);
@@ -546,7 +546,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(rightBtn == null)
 		{
 			rightBtn = new Button();
-			rightBtn.setImage(ThemeManager.getThemeResource("images/" + "MoveRight16.png"));
+			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 			rightBtn.setClass("btn-small");
 			rightBtn.addEventListener(Events.ON_CLICK, this);
 			rightBtn.setName(BUTTON_NAME_NEXT_TODO);
@@ -571,11 +571,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			}
 		}
 
-		Div div2 = new Div();
-		div2.setStyle("padding-top:4px");
-		div2.appendChild(new Label(msg.toString()));
-		hlyaout.appendChild(div2);
 
+		hlyaout.appendChild(GroupwareToDoUtil.createLabelDiv(msg.toString(),false,true));
 		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 

@@ -2,6 +2,8 @@ package jpiere.plugin.groupware.util;
 
 import java.util.List;
 
+import org.adempiere.webui.component.Label;
+import org.adempiere.webui.editor.WEditor;
 import org.compiere.model.MForm;
 import org.compiere.model.Query;
 import org.compiere.util.Env;
@@ -53,6 +55,37 @@ public class GroupwareToDoUtil {
 		Div div = new Div();
 		div.appendChild(new Html("&nbsp;"));
 		div.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
+		return div;
+	}
+
+	static public Div createLabelDiv(String string, boolean isMandatory, boolean isPositionAdjust )
+	{
+		Label label = new Label(string);
+		return createLabelDiv(label , isMandatory, isPositionAdjust);
+	}
+
+	static public Div createLabelDiv(Label label , boolean isMandatory, boolean isPositionAdjust )
+	{
+		label.rightAlign();
+		label.setMandatory(isMandatory);
+		Div div = new Div();
+		div.setSclass("form-label");
+		if(isPositionAdjust)
+			div.setStyle("padding-top:4px");
+		div.appendChild(label);
+		if(isMandatory)
+			div.appendChild(label.getDecorator());
+
+		return div;
+	}
+
+	static public Div createEditorDiv(WEditor editor, boolean isPositionAdjust )
+	{
+		Div div = new Div();
+		if(isPositionAdjust)
+			div.setStyle("padding-top:4px");
+		div.appendChild(editor.getComponent());
+
 		return div;
 	}
 }
