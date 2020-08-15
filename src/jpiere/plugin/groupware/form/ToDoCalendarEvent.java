@@ -118,7 +118,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						if(isLongTime)
 						{
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" : " +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 						}else {
 
 							this.setTitle(MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
@@ -128,9 +128,10 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}else {
 
 						this.setTitle(toDo.getName());
-						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						this.setContent(GroupwareToDoUtil.dateFormat(begin_LocalDate) + " - " + GroupwareToDoUtil.dateFormat(end_LocalDate) +" : " +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 
 					}
+
 
 				}else {
 
@@ -139,7 +140,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						if(isLongTime)
 						{
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" + toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" : " + toDo.getName());
 						}else {
 							this.setTitle(toDo.getName());
 							this.setContent(toDo.getDescription());
@@ -149,7 +150,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}else {
 
 						this.setTitle(toDo.getName());
-						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  toDo.getName());
+						this.setContent(GroupwareToDoUtil.dateFormat(begin_LocalDate) + " - " + GroupwareToDoUtil.dateFormat(end_LocalDate) +" : " +  toDo.getName());
 
 					}
 				}
@@ -163,7 +164,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						if(isLongTime)
 						{
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" : " +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 						}else {
 
 							this.setTitle(MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
@@ -173,7 +174,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}else {
 
 						this.setTitle(toDo.getName());
-						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						this.setContent(GroupwareToDoUtil.dateFormat(begin_LocalDate) + " - " + GroupwareToDoUtil.dateFormat(end_LocalDate) +" : " +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 
 					}
 
@@ -185,7 +186,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						if(isLongTime)
 						{
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" : " +  toDo.getName());
 						}else {
 							this.setTitle(toDo.getName());
 							this.setContent(toDo.getDescription());
@@ -195,7 +196,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}else {
 
 						this.setTitle(toDo.getName());
-						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  toDo.getName());
+						this.setContent(GroupwareToDoUtil.dateFormat(begin_LocalDate) + " - " + GroupwareToDoUtil.dateFormat(end_LocalDate) +" : " +  toDo.getName());
 
 					}
 				}
@@ -210,17 +211,17 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						if(isLongTime)
 						{
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" : " +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 						}else {
 
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " : " + MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 						}
 
 					}else {
 
 						this.setTitle(toDo.getName());
-						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						this.setContent(GroupwareToDoUtil.dateFormat(begin_LocalDate) + " - " + GroupwareToDoUtil.dateFormat(end_LocalDate) +" : " +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 
 					}
 
@@ -235,14 +236,14 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  toDo.getName());
 						}else {
 							this.setTitle(toDo.getName());
-							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " : " + toDo.getName());
 						}
 
 
 					}else {
 
 						this.setTitle(toDo.getName());
-						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  toDo.getName());
+						this.setContent(GroupwareToDoUtil.dateFormat(begin_LocalDate) + " - " + GroupwareToDoUtil.dateFormat(end_LocalDate) +" : "  +  toDo.getName());
 
 					}
 				}
@@ -320,13 +321,13 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				{
 
 					this.setTitle(toDo.getName());
-					this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+					this.setContent(begin_LocalTime.toString().substring(0, 5) + " : " + MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
 
 
 				}else {
 
 					this.setTitle(toDo.getName());
-					this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + toDo.getName());
+					this.setContent(begin_LocalTime.toString().substring(0, 5) + " : " + toDo.getName());
 				}
 
 

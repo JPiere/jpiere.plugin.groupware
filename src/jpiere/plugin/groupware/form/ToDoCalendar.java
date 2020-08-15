@@ -304,123 +304,127 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
     public Div createNorthContents()
     {
-    	Div div = new Div();
-    	div.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-		Hlayout hlayout = new Hlayout();
-		div.appendChild(hlayout);
+    	Div outerDiv = new Div();
+    	outerDiv.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+		Hlayout outerHlayout = new Hlayout();
+		outerDiv.appendChild(outerHlayout);
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		Button createNewToDo = new Button();
 		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
-		//createNewToDo.setClass("btn-small");
 		createNewToDo.setName(GroupwareToDoUtil.BUTTON_NEW);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
 		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
-		hlayout.appendChild(createNewToDo);
+		outerHlayout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
 		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
-		//refresh.setClass("btn-small");
 		refresh.setName(GroupwareToDoUtil.BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(refresh);
+		outerHlayout.appendChild(refresh);
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
+    	Div innerDiv = new Div();
+    	innerDiv.setStyle("padding-top:3px ;border: none;");
+    	outerHlayout.appendChild(innerDiv);
+
+		Hlayout innerHlayout = new Hlayout();
+		innerDiv.appendChild(innerHlayout);
+
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 		//User Search Field
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true, true));
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true, true));
 
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
-		hlayout.appendChild(userSearchEditor.getComponent());
+		innerHlayout.appendChild(userSearchEditor.getComponent());
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		//Team Search Field
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID), false, true));
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID), false, true));
 
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 		WSearchEditor teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, true, false, true, lookupTeam);
 		teamSearchEditor.setValue(p_JP_Team_ID);
 		teamSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(teamSearchEditor.getComponent(), "true");
-		hlayout.appendChild(teamSearchEditor.getComponent());
+		innerHlayout.appendChild(teamSearchEditor.getComponent());
 		//teamSearchEditor.setVisible(false);
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", "予定を表示する", null, true, false, true);//TODO : 多言語化
 		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
 		IsDisplaySchedule.addValueChangeListener(this);
-		hlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
+		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
 
 		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", "タスクを表示する", null, true, false, true);//TODO : 多言語化
 		IsDisplayTask.setValue(p_IsDisplayTask);
 		IsDisplayTask.addValueChangeListener(this);
-		hlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
+		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		Button leftBtn = new Button();
 		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
-		//leftBtn.setClass("btn-small");
+		leftBtn.setClass("btn-small");
 		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(leftBtn);
+		innerHlayout.appendChild(leftBtn);
 
 		Button today = new Button();
-		today.setLabel("今日");
-		//today.setClass("btn-small");
+		today.setLabel(Msg.getMsg(ctx, "Today"));
+		today.setClass("btn-small");
 		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
 		today.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(today);
+		innerHlayout.appendChild(today);
 
 		Button rightBtn = new Button();
 		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
-		//rightBtn.setClass("btn-small");
+		rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
-		hlayout.appendChild(rightBtn);
+		innerHlayout.appendChild(rightBtn);
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		Button oneDayView = new Button();
-		oneDayView.setLabel("日");
-		//oneDayView.setClass("btn-small");
+		oneDayView.setLabel(Msg.getMsg(ctx,"Day"));
+		oneDayView.setClass("btn-small");
 		oneDayView.setName(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(oneDayView);
+		innerHlayout.appendChild(oneDayView);
 
 		Button sevenDayView = new Button();
-		sevenDayView.setLabel("週");
-		//sevenDayView.setClass("btn-small");
+		sevenDayView.setLabel(Msg.getMsg(ctx, "Week"));
+		sevenDayView.setClass("btn-small");
 		sevenDayView.setName(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(sevenDayView);
+		innerHlayout.appendChild(sevenDayView);
 
 		Button monthDayView = new Button();
-		monthDayView.setLabel("月");
-		//monthDayView.setClass("btn-small");
+		monthDayView.setLabel(Msg.getMsg(ctx, "Month"));
+		monthDayView.setClass("btn-small");
 		monthDayView.setName(GroupwareToDoUtil.BUTTON_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
-		hlayout.appendChild(monthDayView);
+		innerHlayout.appendChild(monthDayView);
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		label_DisplayPeriod = new Label();
 		updateDateLabel();
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(label_DisplayPeriod, false, true));
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(label_DisplayPeriod, false, true));
 
-		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
-    	return div;
+    	return outerDiv;
 
     }
 

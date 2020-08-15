@@ -1,6 +1,8 @@
 package jpiere.plugin.groupware.util;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import org.adempiere.webui.component.Label;
 import org.adempiere.webui.editor.WEditor;
 import org.compiere.model.MForm;
 import org.compiere.model.Query;
+import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Html;
@@ -184,5 +187,12 @@ public class GroupwareToDoUtil {
 			return false;
 		}
 
+	}
+
+	private static SimpleDateFormat dateFormater = DisplayType.getDateFormat();
+
+	public static String dateFormat(LocalDate date)
+	{
+		return dateFormater.format(Date.valueOf(date));
 	}
 }
