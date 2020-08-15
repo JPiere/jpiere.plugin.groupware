@@ -353,15 +353,15 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 			Timestamp scheduledEndDay = Timestamp.valueOf(LocalDateTime.of(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate(), LocalTime.MIN));
 			if(today.compareTo(scheduledEndDay) < 0)
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/" + "InfoIndicator16.png"));
+				btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
 
 			}else if(today.compareTo(scheduledEndDay) == 0){
 
-				btn.setImage(ThemeManager.getThemeResource("images/" + "mSetVariable.png"));
+				btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
 
 			}else if(today.compareTo(scheduledEndDay) > 0) {
 
-				btn.setImage(ThemeManager.getThemeResource("images/" + "ErrorIndicator16.png"));
+				btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
 
 			}
 
