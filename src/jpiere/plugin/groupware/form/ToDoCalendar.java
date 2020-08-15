@@ -359,12 +359,12 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
-		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", "予定を表示する", null, true, false, true);//TODO : 多言語化
+		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
 		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
 		IsDisplaySchedule.addValueChangeListener(this);
 		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
 
-		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", "タスクを表示する", null, true, false, true);//TODO : 多言語化
+		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", Msg.getMsg(ctx,"JP_DisplayTask"), null, true, false, true);
 		IsDisplayTask.setValue(p_IsDisplayTask);
 		IsDisplayTask.addValueChangeListener(this);
 		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
@@ -444,10 +444,10 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox0);
 
-		Caption caption0 = new Caption("ToDo管理メニュー");//TODO 多言語化
+		Caption caption0 = new Caption(Msg.getMsg(ctx, "Menu"));
 		caption0.setIconSclass("z-icon-caret-right");
 		groupBox0.appendChild(caption0);
-		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));
+		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));//TODO 要実装
 
 
 		//Schedule
