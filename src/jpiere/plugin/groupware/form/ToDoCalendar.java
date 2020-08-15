@@ -786,7 +786,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			timestamp = p_CalendarsEventBeginDate;
 		}
 
-		return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), LocalTime.MIN));
+		return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), timestamp.toLocalDateTime().toLocalTime()));
 	}
 
 	private Timestamp p_CalendarsEventEndDate = null;
@@ -803,6 +803,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			timestamp =  p_CalendarsEventEndDate;
 		}
 
-		return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), LocalTime.MIN));
+		return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), timestamp.toLocalDateTime().toLocalTime()));
 	}
 }
