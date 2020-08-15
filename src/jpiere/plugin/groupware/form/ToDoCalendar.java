@@ -436,7 +436,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		div.appendChild(vlayout);
 
 
-		//ToDo管理メニュー
+		//Menu
 		Groupbox groupBox0 = new Groupbox();
 		groupBox0.setOpen(false);
 		groupBox0.setDraggable("true");
@@ -447,7 +447,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		Caption caption0 = new Caption(Msg.getMsg(ctx, "Menu"));
 		caption0.setIconSclass("z-icon-caret-right");
 		groupBox0.appendChild(caption0);
-		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));//TODO 要実装
+
+		GroupwareMenuGadget toDoMenu = new GroupwareMenuGadget();
+		groupBox0.appendChild(toDoMenu);
 
 
 		//Schedule
