@@ -1,5 +1,8 @@
 package jpiere.plugin.groupware.util;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,16 @@ public class GroupwareToDoUtil {
 	public final static String JP_REPETITION_INTERVAL_EVERYWEEKS = "W";
 	public final static String JP_REPETITION_INTERVAL_EVERYYEARS = "Y";
 
+	//Calendar Event
+	public final static String CALENDAR_EVENT_CREATE = "onEventCreate";
+	public final static String CALENDAR_EVENT_EDIT = "onEventEdit";
+	public final static String CALENDAR_EVENT_UPDATE = "onEventUpdate";
+
+	public final static String CALENDAR_EVENT_MOUSE_OVER = "onMouseOver";
+
+	public final static String CALENDAR_EVENT_DAY = "onDayClick";
+	public final static String CALENDAR_EVENT_WEEK = "onWeekClick";
+	public final static String CALENDAR_EVENT_MONTH = "onMonthkClick";
 
 	//Button Name
 	public final static String BUTTON_PREVIOUS = "PREVIOUS";
@@ -38,6 +51,8 @@ public class GroupwareToDoUtil {
 	public final static String BUTTON_MONTH_VIEW = "MONTH";
 	public final static String BUTTON_TODAY = "TODAY";
 
+	//other
+	public final static long JUDGMENT_LONG_TIME_HOURES = 12;
 
 	static public MForm getToDoCallendarForm()
 	{
@@ -93,7 +108,7 @@ public class GroupwareToDoUtil {
 		return div;
 	}
 
-	static public List<ToDoCalendarEvent> getToDoCalendarEvents(String whereClause, String orderClause, Object ...parameters)
+	static public List<ToDoCalendarEvent> getToDoCalendarEvents(String calendarMold, boolean isDisplayName, String whereClause, String orderClause, Object ...parameters)
 	{
 
 		List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClause.toString(), null)
@@ -104,9 +119,36 @@ public class GroupwareToDoUtil {
 		ArrayList<ToDoCalendarEvent> list_Events = new ArrayList<ToDoCalendarEvent>();
 		for(MToDo toDo : list_ToDoes)
 		{
-			list_Events.add(new ToDoCalendarEvent(toDo));
+			list_Events.add(new ToDoCalendarEvent(toDo,calendarMold, isDisplayName));
 		}
 
 		return list_Events;
+	}
+
+	static public boolean judgmentOfLongTime(Timestamp bigin, Timestamp end)
+	{
+		//Adjust Begin Time
+		LocalDate begin_LocalDate = bigin.toLocalDateTime().toLocalDate();
+		LocalTime begin_LocalTime = bigin.toLocalDateTime().toLocalTime();
+
+		//Adjust End Time
+		LocalDate end_LocalDate = end.toLocalDateTime().toLocalDate();
+		LocalTime end_LocalTime = end.toLocalDateTime().toLocalTime();
+
+		if((begin_LocalDate.compareTo(end_LocalDate) == 0))
+		{
+			int scheduleTime = end_LocalTime.minusHours(begin_LocalTime.getHour()).getHour();
+			if(scheduleTime >= JUDGMENT_LONG_TIME_HOURES)
+			{
+				return true;
+			}else {
+				return false;
+			}
+
+		}else {
+
+			return true;
+		}
+
 	}
 }

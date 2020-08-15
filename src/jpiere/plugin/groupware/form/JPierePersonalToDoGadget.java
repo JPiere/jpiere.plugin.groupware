@@ -286,7 +286,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
-			whereClause = new StringBuilder(" AD_User_ID = ? AND JP_ToDo_Type = ? AND IsActive='Y' AND JP_ToDo_ScheduledStartTime < ? AND JP_ToDo_ScheduledEndTime >= ?");
+			whereClause = new StringBuilder(" AD_User_ID = ? AND JP_ToDo_Type = ? AND IsActive='Y' AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ?");
 			orderClause = new StringBuilder("JP_ToDo_ScheduledStartTime");
 
 			LocalDateTime toDayMin = LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.MIN);

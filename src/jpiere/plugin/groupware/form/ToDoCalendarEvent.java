@@ -14,13 +14,18 @@
 package jpiere.plugin.groupware.form;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
+import org.compiere.model.MUser;
+import org.compiere.util.Env;
 import org.zkoss.calendar.impl.SimpleCalendarEvent;
 
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
+import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 /**
 *
@@ -35,41 +40,321 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	 *
 	 */
 	private static final long serialVersionUID = 2289841014956779967L;
+	private static final int TASK_HOUR = 1;
 
 	private MToDo m_ToDo = null ;
 
-	public ToDoCalendarEvent(MToDo toDo)
+	public ToDoCalendarEvent(MToDo toDo, String calendarMold, boolean isDisplayUserName)
 	{
 		super();
 		this.m_ToDo = toDo;
 
 		if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 		{
-			this.setBeginDate(new Date(toDo.getJP_ToDo_ScheduledStartTime().getTime()));
-			this.setEndDate(new Date(toDo.getJP_ToDo_ScheduledEndTime().getTime()));
+
+			/********************************************************************************************************
+			 * Adjust  Begin Time
+			 ********************************************************************************************************/
+			Timestamp begin_Timestamp = toDo.getJP_ToDo_ScheduledStartTime();
+			LocalDate begin_LocalDate = begin_Timestamp.toLocalDateTime().toLocalDate();
+			LocalTime begin_LocalTime = begin_Timestamp.toLocalDateTime().toLocalTime();
+			this.setBeginDate(new Date(begin_Timestamp.getTime()));
+
+			/********************************************************************************************************
+			 * Adjust  End Time
+			 ********************************************************************************************************/
+			Timestamp end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
+			LocalDate end_LocalDate = end_Timestamp.toLocalDateTime().toLocalDate();
+			LocalTime end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
+			if(end_LocalTime.compareTo(LocalTime.MIN) == 0)
+			{
+				end_LocalTime = LocalTime.MAX;
+			}
+
+			if(begin_Timestamp.compareTo(end_Timestamp) >= 0)
+			{
+				if(begin_Timestamp.compareTo(end_Timestamp) == 0 && begin_LocalTime.equals(LocalTime.MIN))
+				{
+					end_LocalTime = LocalTime.MAX;
+
+				}else {
+
+					end_LocalTime = begin_LocalTime.plusHours(1);
+					if(begin_LocalTime.compareTo(end_LocalTime) < 0)
+					{
+						;//Noting to do
+					}else {
+						end_LocalTime = LocalTime.MAX;
+					}
+
+				}
+			}
+
+			end_Timestamp = Timestamp.valueOf(LocalDateTime.of(end_Timestamp.toLocalDateTime().toLocalDate(), end_LocalTime));
+			this.setEndDate(new Date(end_Timestamp.getTime()));
+
+
+			/********************************************************************************************************
+			 * Adjust Display Info
+			 ********************************************************************************************************/
+			boolean isSameDate =(begin_LocalDate.compareTo(end_LocalDate) == 0);
+			boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
+
+			if(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(calendarMold))
+			{
+				if(isDisplayUserName)
+				{
+					if(isSameDate)
+					{
+						if(isLongTime)
+						{
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						}else {
+
+							this.setTitle(MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+							this.setContent(toDo.getName());
+						}
+
+					}else {
+
+						this.setTitle(toDo.getName());
+						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+
+					}
+
+				}else {
+
+					if(isSameDate)
+					{
+						if(isLongTime)
+						{
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" + toDo.getName());
+						}else {
+							this.setTitle(toDo.getName());
+							this.setContent(toDo.getDescription());
+						}
+
+
+					}else {
+
+						this.setTitle(toDo.getName());
+						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  toDo.getName());
+
+					}
+				}
+
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+
+				if(isDisplayUserName)
+				{
+					if(isSameDate)
+					{
+						if(isLongTime)
+						{
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						}else {
+
+							this.setTitle(MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+							this.setContent(toDo.getName());
+						}
+
+					}else {
+
+						this.setTitle(toDo.getName());
+						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+
+					}
+
+
+				}else {
+
+					if(isSameDate)
+					{
+						if(isLongTime)
+						{
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  toDo.getName());
+						}else {
+							this.setTitle(toDo.getName());
+							this.setContent(toDo.getDescription());
+						}
+
+
+					}else {
+
+						this.setTitle(toDo.getName());
+						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  toDo.getName());
+
+					}
+				}
+
+
+			}else if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold)) {
+
+				if(isDisplayUserName)
+				{
+					if(isSameDate)
+					{
+						if(isLongTime)
+						{
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						}else {
+
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+						}
+
+					}else {
+
+						this.setTitle(toDo.getName());
+						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+
+					}
+
+
+				}else {
+
+					if(isSameDate)
+					{
+						if(isLongTime)
+						{
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + end_LocalTime.toString().substring(0, 5) +" -" +  toDo.getName());
+						}else {
+							this.setTitle(toDo.getName());
+							this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + toDo.getName());
+						}
+
+
+					}else {
+
+						this.setTitle(toDo.getName());
+						this.setContent(begin_LocalDate.toString() + " - " + end_LocalDate.toString() +" -" +  toDo.getName());
+
+					}
+				}
+
+
+			}else {
+
+				;//impossible
+			}
 
 		}else if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
 
-			this.setBeginDate(new Date(toDo.getJP_ToDo_ScheduledEndTime().getTime()));
+			/********************************************************************************************************
+			 * Adjust Begin Time
+			 ********************************************************************************************************/
+			Timestamp begin_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
+			LocalTime begin_LocalTime = begin_Timestamp.toLocalDateTime().toLocalTime();
+			this.setBeginDate(new Date(begin_Timestamp.getTime()));
 
-			LocalDateTime local = toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime();
-			this.setEndDate(new Date(Timestamp.valueOf(local.plusHours(1)).getTime()));
+
+
+			/********************************************************************************************************
+			 * Adjust  End Time
+			 ********************************************************************************************************/
+			Timestamp end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
+			LocalTime end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
+
+
+			end_LocalTime = begin_Timestamp.toLocalDateTime().toLocalTime().plusHours(TASK_HOUR);
+			if(begin_LocalTime.compareTo(end_LocalTime) < 0)
+			{
+				;//Noting to do
+			}else {
+				end_LocalTime = LocalTime.MAX;
+			}
+
+			end_Timestamp = Timestamp.valueOf(LocalDateTime.of(end_Timestamp.toLocalDateTime().toLocalDate(), end_LocalTime));
+			this.setEndDate(new Date(end_Timestamp.getTime()));
+
+
+			/********************************************************************************************************
+			 * Adjust Display Info
+			 ********************************************************************************************************/
+
+			if(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(calendarMold))
+			{
+				if(isDisplayUserName)
+				{
+					this.setTitle(MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+					this.setContent(toDo.getName());
+
+				}else {
+
+					this.setTitle(toDo.getName());
+					this.setContent(toDo.getDescription());
+				}
+
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+
+				if(isDisplayUserName)
+				{
+					this.setTitle(MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+					this.setContent(toDo.getName());
+
+				}else {
+
+					this.setTitle(toDo.getName());
+					this.setContent(toDo.getDescription());
+				}
+
+
+			}else if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold)) {
+
+				if(isDisplayUserName)
+				{
+
+					this.setTitle(toDo.getName());
+					this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + MUser.get(Env.getCtx(), toDo.getAD_User_ID()).getName());
+
+
+				}else {
+
+					this.setTitle(toDo.getName());
+					this.setContent(begin_LocalTime.toString().substring(0, 5) + " - " + toDo.getName());
+				}
+
+
+			}else {
+
+				;//impossible
+			}
+
 
 		}else {
-			;//TODO エラー
+			;//impossible
 		}
 
-		this.setTitle(toDo.getName());
-		this.setContent(toDo.getDescription());
 
-		if(m_ToDo.getJP_ToDo_Category_ID() > 0)
+
+		/********************************************************************************************************
+		 * Color
+		 ********************************************************************************************************/
+
+		if(!isDisplayUserName && m_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
 			MToDoCategory category = MToDoCategory.get(toDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
 			this.setHeaderColor(category.getJP_ColorPicker());
 			this.setContentColor(category.getJP_ColorPicker2());
+
+		}else if(isDisplayUserName){//TODO : I would like to Set User Color
+
+			MToDoCategory category = MToDoCategory.get(toDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
+			this.setHeaderColor(category.getJP_ColorPicker());
+			this.setContentColor(category.getJP_ColorPicker2());
+
+
 		}else {
+
 			this.setHeaderColor(null);
 			this.setContentColor(null);
+
 		}
 
 		this.setLocked(true);
