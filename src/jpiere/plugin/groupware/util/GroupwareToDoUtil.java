@@ -53,6 +53,7 @@ public class GroupwareToDoUtil {
 
 	//other
 	public final static long JUDGMENT_LONG_TIME_HOURES = 12;
+	public final static long JUDGMENT_SHORT_TIME_MINUTE = 30;
 
 	static public MForm getToDoCallendarForm()
 	{
@@ -148,6 +149,39 @@ public class GroupwareToDoUtil {
 		}else {
 
 			return true;
+		}
+
+	}
+
+	static public boolean judgmentOfShortTime(Timestamp bigin, Timestamp end)
+	{
+		//Adjust Begin Time
+		LocalDate begin_LocalDate = bigin.toLocalDateTime().toLocalDate();
+		LocalTime begin_LocalTime = bigin.toLocalDateTime().toLocalTime();
+
+		//Adjust End Time
+		LocalDate end_LocalDate = end.toLocalDateTime().toLocalDate();
+		LocalTime end_LocalTime = end.toLocalDateTime().toLocalTime();
+
+		if((begin_LocalDate.compareTo(end_LocalDate) == 0))
+		{
+			int scheduleHour = end_LocalTime.minusHours(begin_LocalTime.getHour()).getHour();
+			if(scheduleHour < 1)
+			{
+				int sheduleMinute = end_LocalTime.minusMinutes(begin_LocalTime.getMinute()).getMinute();
+				if(sheduleMinute < JUDGMENT_SHORT_TIME_MINUTE)
+				{
+					return true;
+				}else {
+					return false;
+				}
+			}else {
+				return false;
+			}
+
+		}else {
+
+			return false;
 		}
 
 	}

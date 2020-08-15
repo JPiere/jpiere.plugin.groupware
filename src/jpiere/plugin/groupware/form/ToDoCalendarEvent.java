@@ -61,7 +61,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			this.setBeginDate(new Date(begin_Timestamp.getTime()));
 
 			/********************************************************************************************************
-			 * Adjust  End Time
+			 * Adjust End Time
 			 ********************************************************************************************************/
 			Timestamp end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
 			LocalDate end_LocalDate = end_Timestamp.toLocalDateTime().toLocalDate();
@@ -79,6 +79,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 				}else {
 
+					//TODO：自分で作っておいてなんだけど、ここのロジック意味不明⁉
 					end_LocalTime = begin_LocalTime.plusHours(1);
 					if(begin_LocalTime.compareTo(end_LocalTime) < 0)
 					{
@@ -87,6 +88,14 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						end_LocalTime = LocalTime.MAX;
 					}
 
+				}
+			}else {
+
+				//For Adjust Display Area
+				boolean isShortTime =GroupwareToDoUtil.judgmentOfShortTime(begin_Timestamp, end_Timestamp);
+				if(isShortTime)
+				{
+					end_LocalTime = begin_LocalTime.plusMinutes(GroupwareToDoUtil.JUDGMENT_SHORT_TIME_MINUTE);
 				}
 			}
 

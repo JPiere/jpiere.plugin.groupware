@@ -130,8 +130,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_CREATE, this);
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_EDIT, this);
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_UPDATE,this);
-		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER, this);
-//		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_DAY,this);
+//		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER, this);
+		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_DAY,this);
 //		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
 
 		//***************** NORTH **************************//
@@ -646,7 +646,20 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER.equals(eventName)){
 
+		}else if (GroupwareToDoUtil.CALENDAR_EVENT_DAY.equals(eventName)){
 
+			Calendars cal = (Calendars)comp;
+			Date date =  (Date)event.getData();
+			cal.setCurrentDate(date);
+
+			p_CalendarMold = GroupwareToDoUtil.BUTTON_ONEDAY_VIEW;
+			setCalendarMold(1);
+			updateDateLabel();
+			refresh();
+
+		}else if (GroupwareToDoUtil.CALENDAR_EVENT_WEEK.equals(eventName)){
+
+			//I don't know this Event
 
 		}else {
 
