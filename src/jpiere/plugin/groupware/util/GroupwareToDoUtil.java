@@ -93,7 +93,6 @@ public class GroupwareToDoUtil {
 		return div;
 	}
 
-
 	static public List<ToDoCalendarEvent> getToDoCalendarEvents(String whereClause, String orderClause, Object ...parameters)
 	{
 

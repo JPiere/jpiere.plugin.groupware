@@ -17,6 +17,7 @@ package jpiere.plugin.groupware.form;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -93,12 +94,17 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private Calendars calendars = null;
 
 	//Query Parameter
-
+	private int p_login_User_ID = 0;
+	private int p_AD_User_ID = 0;
+	private int p_JP_Team_ID = 0;
+	private boolean p_IsDisplaySchedule = true;
+	private boolean p_IsDisplayTask = false;
 
 	//West Gadget
 	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
 	JPierePersonalToDoGadget personalToDoGadget_Task = null;
 	JPierePersonalToDoGadget personalToDoGadget_Memo = null;
+
 
     public ToDoCalendar()
     {
@@ -109,7 +115,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		ZKUpdateUtil.setWidth(mainBorderLayout, "99%");
 		ZKUpdateUtil.setHeight(mainBorderLayout, "100%");
 
+		p_AD_User_ID = Env.getAD_User_ID(ctx);
+		p_login_User_ID = p_AD_User_ID;
+
 		calendars= new Calendars();
+		calendars.invalidate();
+		calendars.addEventListener("onEventCreate", this);
+		calendars.addEventListener("onEventEdit", this);
 
 		//***************** NORTH **************************//
 
@@ -141,95 +153,121 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		mainBorderLayout.appendChild(mainBorderLayout_West);
 		mainBorderLayout_West.appendChild(createWestContents());//TODO
 
-//		Vlayout vlayout = new Vlayout();
-//		vlayout.setDroppable("true");
-//		mainBorderLayout_West.appendChild(vlayout);
-//
-//		//ToDo管理メニュー
-//		Groupbox groupBox0 = new Groupbox();
-//		groupBox0.setOpen(false);
-//		groupBox0.setDraggable("true");
-//		groupBox0.setMold("3d");
-//		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-//		vlayout.appendChild(groupBox0);
-//
-//		Caption caption0 = new Caption("ToDo管理メニュー");//TODO 多言語化
-//		caption0.setIconSclass("z-icon-caret-right");
-//		groupBox0.appendChild(caption0);
-//		groupBox0.appendChild(new Label("ToDo管理の業務メニュを表示したい!!"));
-//
-//
-//		//Schedule
-//		Groupbox groupBox1 = new Groupbox();
-//		groupBox1.setOpen(true);
-//		groupBox1.setDraggable("true");
-//		groupBox1.setMold("3d");
-//		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-//		vlayout.appendChild(groupBox1);
-//
-//		MColumn colmn = MColumn.get(ctx, MToDo.Table_Name,MToDo.COLUMNNAME_JP_ToDo_Type);
-//		String scheduleName = MRefList.getListName(ctx, colmn.getAD_Reference_Value_ID(), "S");
-//
-//		Caption caption1 = new Caption(scheduleName);
-//		caption1.setIconSclass("z-icon-caret-down");
-//		groupBox1.appendChild(caption1);
-//
-//		personalToDoGadget_Schedule = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Schedule);
-//		groupBox1.appendChild(personalToDoGadget_Schedule);
-//
-//
-//		//Unfinished Tasks
-//		Groupbox groupBox2 = new Groupbox();
-//		groupBox2.setOpen(true);
-//		groupBox2.setDraggable("true");
-//		groupBox2.setMold("3d");
-//		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-//		vlayout.appendChild(groupBox2);
-//
-//		Caption caption2 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
-//		caption2.setIconSclass("z-icon-caret-down");
-//		groupBox2.appendChild(caption2);
-//
-//		personalToDoGadget_Task = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Task);
-//		groupBox2.appendChild(personalToDoGadget_Task);
-//
-//
-//		//Unfinished Memo
-//		Groupbox groupBox3 = new Groupbox();
-//		groupBox3.setOpen(true);
-//		groupBox3.setDraggable("true");
-//		groupBox3.setMold("3d");
-//		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-//		vlayout.appendChild(groupBox3);
-//
-//		Caption caption3 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
-//		caption3.setIconSclass("z-icon-caret-down");
-//		groupBox3.appendChild(caption3);
-//
-//		personalToDoGadget_Memo= new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Memo);
-//		groupBox3.appendChild(personalToDoGadget_Memo);
 
+		//***************** Get ToDoes **************************//
 
-		//TODO -> SQLにする。
-		ArrayList<ToDoCalendarEvent> events = new ArrayList<ToDoCalendarEvent>();
-		List<MToDo> list_ToDoes =  personalToDoGadget_Schedule.getListToDoes();
-		for(MToDo toDo : list_ToDoes)
-		{
-			events.add(new ToDoCalendarEvent(toDo));
-		}
+		 List<ToDoCalendarEvent> list_ToDoes = getToDoCalendarEvents();
+
 
 		SimpleCalendarModel scm = new SimpleCalendarModel();
 		calendars.setModel(scm);
 
 		scm.clear();
-		for (ToDoCalendarEvent event : events)
+		for (ToDoCalendarEvent event : list_ToDoes)
 			scm.add(event);
 
-		calendars.addEventListener("onEventCreate", this);
-		calendars.addEventListener("onEventEdit", this);
+    }
 
-		calendars.invalidate();
 
+    private List<ToDoCalendarEvent> getToDoCalendarEvents()//TODO
+    {
+		StringBuilder whereClauseFinal = null;
+		StringBuilder whereClauseSchedule = null;
+		StringBuilder whereClauseTask = null;
+		StringBuilder orderClause = null;
+		ArrayList<Object> list_parameters  = new ArrayList<Object>();
+		Object[] parameters = null;
+
+		if(p_IsDisplaySchedule)
+		{
+			//TODO:要確認 "JP_ToDo_ScheduledStartTime < " は <= でなくて良いの!?
+			//JP_ToDo_ScheduledStartTime
+			whereClauseSchedule = new StringBuilder(" JP_ToDo_ScheduledStartTime < ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+			orderClause = new StringBuilder("JP_ToDo_ScheduledStartTime");
+
+			Timestamp timestamp_Begin = new Timestamp(calendars.getBeginDate().getTime());
+			Timestamp timestamp_End = new Timestamp(calendars.getEndDate().getTime());
+
+			LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
+			LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+
+			list_parameters.add(Timestamp.valueOf(toDayMax));
+			list_parameters.add(Timestamp.valueOf(toDayMin));
+
+			//JP_TODO_TYPE_Schedule
+			whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
+			list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
+
+			if(p_JP_Team_ID==0)
+			{
+				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID = ? ");
+				list_parameters.add(p_AD_User_ID);
+
+				if(p_login_User_ID != p_AD_User_ID)
+				{
+					whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+					list_parameters.add(p_login_User_ID);
+				}
+
+			}else {
+
+				//TODO チームの時
+			}
+
+    	}
+
+		if(p_IsDisplayTask)
+		{
+			//TODO:要確認 "JP_ToDo_ScheduledStartTime < " は <= でなくて良いの!?
+			whereClauseTask = new StringBuilder(" JP_ToDo_ScheduledEndTime < ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+			orderClause = new StringBuilder("JP_ToDo_ScheduledEndTime");
+
+			Timestamp timestamp_Begin = new Timestamp(calendars.getBeginDate().getTime());
+			Timestamp timestamp_End = new Timestamp(calendars.getEndDate().getTime());
+
+			LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
+			LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+
+			list_parameters.add(Timestamp.valueOf(toDayMax));
+			list_parameters.add(Timestamp.valueOf(toDayMin));
+
+			//JP_TODO_TYPE_Schedule
+			whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
+			list_parameters.add(MToDo.JP_TODO_TYPE_Task);
+
+			if(p_JP_Team_ID==0)
+			{
+				whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
+				list_parameters.add(p_AD_User_ID);
+
+				if(p_login_User_ID != p_AD_User_ID)
+				{
+					whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+					list_parameters.add(p_login_User_ID);
+				}
+
+			}else {
+
+				//TODO チームの時
+			}
+		}
+
+		if(p_IsDisplaySchedule && p_IsDisplayTask)
+		{
+			whereClauseFinal = new StringBuilder("(").append( whereClauseSchedule.append(") OR (").append(whereClauseTask).append(")") );
+
+		}else if(p_IsDisplaySchedule) {
+
+			whereClauseFinal = whereClauseSchedule;
+
+		}else if(p_IsDisplayTask) {
+
+			whereClauseFinal = whereClauseTask;
+		}
+
+		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
+
+		return GroupwareToDoUtil.getToDoCalendarEvents(whereClauseFinal.toString(), orderClause.toString(), parameters);
     }
 
     public Div createNorthContents()
@@ -263,7 +301,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
-		p_AD_User_ID = Env.getAD_User_ID(ctx);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
@@ -277,7 +314,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		MLookup lookupTeam = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 		WSearchEditor teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, true, false, true, lookupTeam);
-		teamSearchEditor.setValue(null);
+		teamSearchEditor.setValue(p_JP_Team_ID);
 		teamSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(teamSearchEditor.getComponent(), "true");
 		hlayout.appendChild(teamSearchEditor.getComponent());
@@ -286,12 +323,12 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", "予定を表示する", null, true, false, true);//TODO : 多言語化
-		IsDisplaySchedule.setValue(true);
+		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
 		IsDisplaySchedule.addValueChangeListener(this);
 		hlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
 
 		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", "タスクを表示する", null, true, false, true);//TODO : 多言語化
-		IsDisplayTask.setValue(false);
+		IsDisplayTask.setValue(p_IsDisplayTask);
 		IsDisplayTask.addValueChangeListener(this);
 		hlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
 
@@ -450,7 +487,29 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			}
 
 			refresh(null);
+
+		}else if(MToDoTeam.COLUMNNAME_JP_ToDo_Team_ID.equals(name)){
+
+			if(value == null)
+			{
+				p_JP_Team_ID = 0;
+			}else {
+				p_JP_Team_ID = Integer.parseInt(value.toString());
+			}
+
+			refresh(null);
+
+		}else if("IsDisplaySchedule".equals(name)) {
+
+			p_IsDisplaySchedule = (boolean)value;
+			refresh();
+
+		}else if("IsDisplayTask".equals(name)) {
+
+			p_IsDisplayTask = (boolean)value;
+			refresh();
 		}
+
 	}
 
 
@@ -584,8 +643,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	}
 
 
-	int p_AD_User_ID = 0;
-
 	@Override
 	public int getInitial_User_ID()//TODO
 	{
@@ -605,9 +662,30 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 	}
 
+
+	private void refresh()
+	{
+		SimpleCalendarModel scm = (SimpleCalendarModel)calendars.getModel();
+		scm.clear();
+
+		if(!p_IsDisplaySchedule && !p_IsDisplayTask)
+		{
+			;//Noting to do;
+		}else {
+
+			List<ToDoCalendarEvent> list_CalEvents = getToDoCalendarEvents();
+			for (ToDoCalendarEvent event : list_CalEvents)
+				scm.add(event);
+		}
+
+		calendars.setModel(scm);
+	}
+
+
 	@Override
 	public boolean refresh(String JP_ToDo_Type)
 	{
+		refresh();
 		refreshWest(JP_ToDo_Type);
 
 		return true;
@@ -629,9 +707,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			personalToDoGadget_Task.refresh(JP_ToDo_Type);
 			personalToDoGadget_Memo.refresh(JP_ToDo_Type);
 		}
-
-
-
 
 		return true;
 	}
