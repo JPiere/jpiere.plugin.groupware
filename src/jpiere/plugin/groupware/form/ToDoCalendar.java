@@ -305,6 +305,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
     public Div createNorthContents()
     {
     	Div div = new Div();
+    	div.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 		Hlayout hlayout = new Hlayout();
 		div.appendChild(hlayout);
 
@@ -316,7 +317,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		createNewToDo.setName(GroupwareToDoUtil.BUTTON_NEW);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
-		createNewToDo.setLabel("新規作成");//TODO
+		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
 		hlayout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
@@ -329,9 +330,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		//User Search Field
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID), true, true));
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true, true));
 
-		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
+		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
@@ -342,9 +343,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 
 		//Team Search Field
-		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(Env.getCtx(), MTeam.COLUMNNAME_JP_Team_ID), false, true));
+		hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID), false, true));
 
-		MLookup lookupTeam = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
+		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 		WSearchEditor teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, true, false, true, lookupTeam);
 		teamSearchEditor.setValue(p_JP_Team_ID);
 		teamSearchEditor.addValueChangeListener(this);
@@ -472,7 +473,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox2);
 
-		Caption caption2 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
+		Caption caption2 = new Caption(Msg.getMsg(ctx, "JP_UnfinishedTasks"));//Unfinished Tasks
 		caption2.setIconSclass("z-icon-caret-down");
 		groupBox2.appendChild(caption2);
 
@@ -488,7 +489,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox3);
 
-		Caption caption3 = new Caption(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
+		Caption caption3 = new Caption(Msg.getMsg(ctx, "JP_UnfinishedMemo"));//Unfinished Memo
 		caption3.setIconSclass("z-icon-caret-down");
 		groupBox3.appendChild(caption3);
 
