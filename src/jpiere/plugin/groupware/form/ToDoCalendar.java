@@ -64,6 +64,7 @@ import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.West;
 
 import jpiere.plugin.groupware.model.MTeam;
+import jpiere.plugin.groupware.model.MTeamMember;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
@@ -203,15 +204,16 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID = ? ");
 				list_parameters.add(p_AD_User_ID);
 
-				if(p_login_User_ID != p_AD_User_ID)
-				{
-					whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-					list_parameters.add(p_login_User_ID);
-				}
-
 			}else {
 
-				//TODO チームの時
+				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
+
+			}
+
+			if(p_login_User_ID != p_AD_User_ID)
+			{
+				whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+				list_parameters.add(p_login_User_ID);
 			}
 
     	}
@@ -240,16 +242,17 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 				whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
 				list_parameters.add(p_AD_User_ID);
 
-				if(p_login_User_ID != p_AD_User_ID)
-				{
-					whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-					list_parameters.add(p_login_User_ID);
-				}
-
 			}else {
 
-				//TODO チームの時
+				whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
 			}
+
+			if(p_login_User_ID != p_AD_User_ID)
+			{
+				whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+				list_parameters.add(p_login_User_ID);
+			}
+
 		}
 
 		if(p_IsDisplaySchedule && p_IsDisplayTask)
@@ -268,6 +271,28 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 
 		return GroupwareToDoUtil.getToDoCalendarEvents(whereClauseFinal.toString(), orderClause.toString(), parameters);
+    }
+
+    private String createInUserClause(ArrayList<Object> list_parameters)
+    {
+
+    	StringBuilder users = new StringBuilder("?");
+    	list_parameters.add(p_AD_User_ID);
+
+    	String Q = ",?";
+    	MTeam team = new MTeam(ctx, p_JP_Team_ID, null);
+    	MTeamMember[] member = team.getTeamMember();
+    	for(int i = 0; i < member.length; i++)
+    	{
+    		if(p_AD_User_ID != member[i].getAD_User_ID())
+    		{
+	    		users = users.append(Q);
+	    		list_parameters.add(member[i].getAD_User_ID());
+    		}
+    	}
+
+    	return users.toString();
+
     }
 
     public Div createNorthContents()
@@ -488,7 +513,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 			refresh(null);
 
-		}else if(MToDoTeam.COLUMNNAME_JP_ToDo_Team_ID.equals(name)){
+		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
 			if(value == null)
 			{
@@ -497,7 +522,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 				p_JP_Team_ID = Integer.parseInt(value.toString());
 			}
 
-			refresh(null);
+			refresh();
 
 		}else if("IsDisplaySchedule".equals(name)) {
 
@@ -644,7 +669,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 
 	@Override
-	public int getInitial_User_ID()//TODO
+	public int getInitial_User_ID()
 	{
 		return p_AD_User_ID;
 	}
