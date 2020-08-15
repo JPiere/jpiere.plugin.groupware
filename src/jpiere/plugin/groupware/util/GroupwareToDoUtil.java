@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -189,10 +190,12 @@ public class GroupwareToDoUtil {
 
 	}
 
-	private static SimpleDateFormat dateFormater = DisplayType.getDateFormat();
-
-	public static String dateFormat(LocalDate date)
+	public static String dateFormat(LocalDate localDate)
 	{
-		return dateFormater.format(Date.valueOf(date));
+		SimpleDateFormat dateFormater = DisplayType.getDateFormat();
+
+		Date date =new Date(Timestamp.valueOf(LocalDateTime.of(localDate, LocalTime.MIN)).getTime());
+
+		return dateFormater.format(date);
 	}
 }
