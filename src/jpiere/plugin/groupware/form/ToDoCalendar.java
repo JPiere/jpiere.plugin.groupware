@@ -341,8 +341,11 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
     {
     	Div outerDiv = new Div();
     	outerDiv.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-		Hlayout outerHlayout = new Hlayout();
-		outerDiv.appendChild(outerHlayout);
+    	Vlayout vlayout = new Vlayout();
+    	outerDiv.appendChild(vlayout);
+
+		Hlayout hlayout1 = new Hlayout();
+		vlayout.appendChild(hlayout1);
 
 
 		Button createNewToDo = new Button();
@@ -351,18 +354,18 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
 		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
-		outerHlayout.appendChild(createNewToDo);
+		hlayout1.appendChild(createNewToDo);
 
 		Button refresh = new Button();
 		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
 		refresh.setName(GroupwareToDoUtil.BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
-		outerHlayout.appendChild(refresh);
+		hlayout1.appendChild(refresh);
 
 
     	Div innerDiv = new Div();
     	innerDiv.setStyle("padding-top:3px ;border: none;");
-    	outerHlayout.appendChild(innerDiv);
+    	hlayout1.appendChild(innerDiv);
 
 		Hlayout innerHlayout = new Hlayout();
 		innerDiv.appendChild(innerHlayout);
@@ -429,12 +432,21 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		teamSearchEditor.showMenu();
 
 
-		space = new Div();
-		space.appendChild(new Html("&nbsp;"));
-		innerHlayout.appendChild(space);
+//		space = new Div();
+//		space.appendChild(new Html("&nbsp;"));
+//		innerHlayout.appendChild(space);
+//
+//		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
+		Hlayout hlayout2 = new Hlayout();
+		vlayout.appendChild(hlayout2);
+
+		innerDiv = new Div();
+    	innerDiv.setStyle("padding-top:3px ;border: none;");
+    	hlayout2.appendChild(innerDiv);
+		innerHlayout = new Hlayout();
+		innerDiv.appendChild(innerHlayout);
 
 		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
 		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
@@ -446,61 +458,89 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		IsDisplayTask.addValueChangeListener(this);
 		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
-
-		Button leftBtn = new Button();
-		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
-		leftBtn.setClass("btn-small");
-		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
-		leftBtn.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(leftBtn);
-
-		Button today = new Button();
-		today.setLabel(Msg.getMsg(ctx, "Today"));
-		today.setClass("btn-small");
-		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
-		today.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(today);
-
-		Button rightBtn = new Button();
-		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
-		rightBtn.setClass("btn-small");
-		rightBtn.addEventListener(Events.ON_CLICK, this);
-		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
-		innerHlayout.appendChild(rightBtn);
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, new Label("表示形式 "), true));
+
+		innerDiv = new Div();
+    	//innerDiv.setStyle("padding-top:3px ;border: none;");
+    	hlayout2.appendChild(innerDiv);
+		innerHlayout = new Hlayout();
+		innerDiv.appendChild(innerHlayout);
 
 		Button oneDayView = new Button();
 		oneDayView.setLabel(Msg.getMsg(ctx,"Day"));
-		oneDayView.setClass("btn-small");
+		//oneDayView.setClass("btn-small");
 		oneDayView.setName(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
 		innerHlayout.appendChild(oneDayView);
 
 		Button sevenDayView = new Button();
 		sevenDayView.setLabel(Msg.getMsg(ctx, "Week"));
-		sevenDayView.setClass("btn-small");
+		//sevenDayView.setClass("btn-small");
 		sevenDayView.setName(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
 		innerHlayout.appendChild(sevenDayView);
 
 		Button monthDayView = new Button();
 		monthDayView.setLabel(Msg.getMsg(ctx, "Month"));
-		monthDayView.setClass("btn-small");
+		//monthDayView.setClass("btn-small");
 		monthDayView.setName(GroupwareToDoUtil.BUTTON_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
 		innerHlayout.appendChild(monthDayView);
 
-//		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		/*********************/
+		innerDiv = new Div();
+    	innerDiv.setStyle("padding-top:3px ;border: none;");
+    	hlayout2.appendChild(innerDiv);
+		innerHlayout = new Hlayout();
+		innerDiv.appendChild(innerHlayout);
+		/*********************/
 
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, new Label("表示期間 :"), true));
 
 		label_DisplayPeriod = new Label();
 		updateDateLabel();
 
 		//Comment out to make space.
-//		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
-//		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
+
+		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, new Label("カレンダーをめくる"), true));
+
+		/*********************/
+		innerDiv = new Div();
+    	//innerDiv.setStyle("padding-top:3px ;border: none;");
+    	hlayout2.appendChild(innerDiv);
+		innerHlayout = new Hlayout();
+		innerDiv.appendChild(innerHlayout);
+		/*********************/
+
+
+
+		Button leftBtn = new Button();
+		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
+		//leftBtn.setClass("btn-small");
+		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
+		leftBtn.addEventListener(Events.ON_CLICK, this);
+		innerHlayout.appendChild(leftBtn);
+
+		Button today = new Button();
+		today.setLabel(Msg.getMsg(ctx, "Today"));
+		//today.setClass("btn-small");
+		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
+		today.addEventListener(Events.ON_CLICK, this);
+		innerHlayout.appendChild(today);
+
+		Button rightBtn = new Button();
+		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+		//rightBtn.setClass("btn-small");
+		rightBtn.addEventListener(Events.ON_CLICK, this);
+		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
+		innerHlayout.appendChild(rightBtn);
+
 
     	return outerDiv;
 
