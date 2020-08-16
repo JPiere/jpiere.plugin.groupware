@@ -44,7 +44,6 @@ import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MRefList;
 import org.compiere.model.MTable;
-import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
@@ -63,6 +62,7 @@ import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.Hlayout;
+import org.zkoss.zul.Html;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.West;
@@ -84,7 +84,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  */
 public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormController, EventListener<Event>, ValueChangeListener {
 
-	private static CLogger log = CLogger.getCLogger(ToDoCalendar.class);
+	//private static CLogger log = CLogger.getCLogger(ToDoCalendar.class);
 
 	private CustomForm form;
 
@@ -108,6 +108,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 	private String p_CalendarMold = GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW;
 
+	private MLookup lookupCategory;
+	private WSearchEditor categorySearchEditor;
 	private WSearchEditor teamSearchEditor ;
 
 	//West Gadget
@@ -115,6 +117,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	JPierePersonalToDoGadget personalToDoGadget_Task = null;
 	JPierePersonalToDoGadget personalToDoGadget_Memo = null;
 
+	North mainBorderLayout_North ;
+
+	West mainBorderLayout_West ;
 
     public ToDoCalendar()
     {
@@ -143,7 +148,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		//***************** NORTH **************************//
 
-		North mainBorderLayout_North = new North();
+		mainBorderLayout_North = new North();
 		mainBorderLayout_North.setSplittable(false);
 		mainBorderLayout_North.setCollapsible(false);
 		mainBorderLayout_North.setOpen(true);
@@ -371,23 +376,40 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
 
-
 		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
 		innerHlayout.appendChild(userSearchEditor.getComponent());
 		userSearchEditor.showMenu();
 
 
+		Div space = new Div();
+		space.appendChild(new Html("&nbsp;"));
+		innerHlayout.appendChild(space);
+
+
 		//ToDo Category
-		MLookup lookupCategory = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
-		WSearchEditor categorySearchEditor = new WSearchEditor(MToDo.COLUMNNAME_JP_ToDo_Category_ID, false, false, true, lookupCategory);
-		categorySearchEditor.setValue(p_JP_ToDo_Category_ID);
+		lookupCategory = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
+		String validationCode = null;
+		if(p_AD_User_ID == 0)
+		{
+			validationCode = "JP_ToDo_Category.AD_User_ID IS NULL";
+		}else {
+			validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + p_AD_User_ID;
+		}
+
+		lookupCategory.getLookupInfo().ValidationCode = validationCode;
+		categorySearchEditor = new WSearchEditor(MToDo.COLUMNNAME_JP_ToDo_Category_ID, false, false, true, lookupCategory);
+		categorySearchEditor.setValue(null);
 		categorySearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(categorySearchEditor.getComponent(), "true");
 
-
 		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), true));
 		innerHlayout.appendChild(categorySearchEditor.getComponent());
-		categorySearchEditor.showMenu();//TODO 右クリックで簡易入力を表示させる‼
+		categorySearchEditor.showMenu();
+
+
+		space = new Div();
+		space.appendChild(new Html("&nbsp;"));
+		innerHlayout.appendChild(space);
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
@@ -405,6 +427,11 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(teamSearchEditor, label_JP_Team_ID, true));
 		innerHlayout.appendChild(teamSearchEditor.getComponent());
 		teamSearchEditor.showMenu();
+
+
+		space = new Div();
+		space.appendChild(new Html("&nbsp;"));
+		innerHlayout.appendChild(space);
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
@@ -465,14 +492,15 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		monthDayView.addEventListener(Events.ON_CLICK, this);
 		innerHlayout.appendChild(monthDayView);
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+//		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		label_DisplayPeriod = new Label();
 		updateDateLabel();
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		//Comment out to make space.
+//		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
+//		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
     	return outerDiv;
 
@@ -572,6 +600,20 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			}else {
 				p_AD_User_ID = Integer.parseInt(value.toString());
 			}
+
+
+
+			String validationCode = null;
+			if(evt.getNewValue()==null)
+			{
+				validationCode = "JP_ToDo_Category.AD_User_ID IS NULL";
+			}else {
+				validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + (Integer)evt.getNewValue();
+			}
+
+			lookupCategory.getLookupInfo().ValidationCode = validationCode;
+			categorySearchEditor.setValue(null);
+			p_JP_ToDo_Category_ID = 0;
 
 			refresh(null);
 
