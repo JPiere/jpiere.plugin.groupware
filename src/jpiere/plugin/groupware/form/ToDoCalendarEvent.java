@@ -23,6 +23,7 @@ import org.compiere.model.MUser;
 import org.compiere.util.Env;
 import org.zkoss.calendar.impl.SimpleCalendarEvent;
 
+import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
@@ -49,13 +50,15 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		super();
 		this.m_ToDo = toDo;
 
+		Timestamp begin_Timestamp = null;
+		Timestamp end_Timestamp = null;
 		if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 		{
 
 			/********************************************************************************************************
 			 * Adjust  Begin Time
 			 ********************************************************************************************************/
-			Timestamp begin_Timestamp = toDo.getJP_ToDo_ScheduledStartTime();
+			begin_Timestamp = toDo.getJP_ToDo_ScheduledStartTime();
 			LocalDate begin_LocalDate = begin_Timestamp.toLocalDateTime().toLocalDate();
 			LocalTime begin_LocalTime = begin_Timestamp.toLocalDateTime().toLocalTime();
 			this.setBeginDate(new Date(begin_Timestamp.getTime()));
@@ -63,7 +66,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			/********************************************************************************************************
 			 * Adjust End Time
 			 ********************************************************************************************************/
-			Timestamp end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
+			end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
 			LocalDate end_LocalDate = end_Timestamp.toLocalDateTime().toLocalDate();
 			LocalTime end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
 			if(end_LocalTime.compareTo(LocalTime.MIN) == 0)
@@ -294,7 +297,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			/********************************************************************************************************
 			 * Adjust Begin Time
 			 ********************************************************************************************************/
-			Timestamp begin_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
+			begin_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
 			LocalTime begin_LocalTime = begin_Timestamp.toLocalDateTime().toLocalTime();
 			this.setBeginDate(new Date(begin_Timestamp.getTime()));
 
@@ -303,7 +306,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			/********************************************************************************************************
 			 * Adjust  End Time
 			 ********************************************************************************************************/
-			Timestamp end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
+			end_Timestamp = toDo.getJP_ToDo_ScheduledEndTime();
 			LocalTime end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
 
 
@@ -387,12 +390,77 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			this.setHeaderColor(category.getJP_ColorPicker());
 			this.setContentColor(category.getJP_ColorPicker2());
 
-		}else if(isDisplayUserName){//TODO : I would like to Set User Color
+			if(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(calendarMold))
+			{
+				boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
+				if(isLongTime)
+				{
+					this.setHeaderColor(category.getJP_ColorPicker());
+					this.setContentColor(category.getJP_ColorPicker());
+				}else {
+					this.setHeaderColor(category.getJP_ColorPicker());
+					this.setContentColor(category.getJP_ColorPicker2());
+				}
 
-			MToDoCategory category = MToDoCategory.get(toDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
-			this.setHeaderColor(category.getJP_ColorPicker());
-			this.setContentColor(category.getJP_ColorPicker2());
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
 
+				boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
+				if(isLongTime)
+				{
+					this.setHeaderColor(category.getJP_ColorPicker());
+					this.setContentColor(category.getJP_ColorPicker());
+				}else {
+					this.setHeaderColor(category.getJP_ColorPicker());
+					this.setContentColor(category.getJP_ColorPicker2());
+				}
+
+
+			}else if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold)) {
+
+				this.setHeaderColor(category.getJP_ColorPicker());
+				this.setContentColor(category.getJP_ColorPicker());
+
+			}
+
+		}else if(isDisplayUserName){
+
+			MGroupwareUser gUser = MGroupwareUser.get(toDo.getCtx(), toDo.getAD_User_ID());
+
+			if(gUser != null)
+			{
+				if(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(calendarMold))
+				{
+					boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
+					if(isLongTime)
+					{
+						this.setHeaderColor(gUser.getJP_ColorPicker());
+						this.setContentColor(gUser.getJP_ColorPicker());
+					}else {
+						this.setHeaderColor(gUser.getJP_ColorPicker());
+						this.setContentColor(gUser.getJP_ColorPicker2());
+					}
+
+				}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+
+					boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
+					if(isLongTime)
+					{
+						this.setHeaderColor(gUser.getJP_ColorPicker());
+						this.setContentColor(gUser.getJP_ColorPicker());
+					}else {
+						this.setHeaderColor(gUser.getJP_ColorPicker());
+						this.setContentColor(gUser.getJP_ColorPicker2());
+					}
+
+
+				}else if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold)) {
+
+					this.setHeaderColor(gUser.getJP_ColorPicker());
+					this.setContentColor(gUser.getJP_ColorPicker());
+
+				}
+
+			}
 
 		}else {
 

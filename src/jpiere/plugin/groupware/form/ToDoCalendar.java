@@ -217,8 +217,11 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 			}
 
-			if(p_login_User_ID != p_AD_User_ID)
+			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
 			{
+				//Noting to do;
+
+			}else {
 				whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
 				list_parameters.add(p_login_User_ID);
 			}
@@ -254,8 +257,11 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 				whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
 			}
 
-			if(p_login_User_ID != p_AD_User_ID)
+			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
 			{
+				//Noting to do;
+
+			}else {
 				whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
 				list_parameters.add(p_login_User_ID);
 			}

@@ -43,9 +43,10 @@ import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Layout;
 import org.zkoss.zul.Panel;
 import org.zkoss.zul.Panelchildren;
-import org.zkoss.zul.Toolbar;
 import org.zkoss.zul.Toolbarbutton;
 import org.zkoss.zul.Vlayout;
+
+import jpiere.plugin.groupware.model.MGroupwareUser;
 
 
 /**
@@ -87,16 +88,28 @@ public class GroupwareMenuGadget extends DashboardPanel implements EventListener
 		toDoMenuContent.appendChild(vLayout_ToDoMenu);
 		createToDoMenuPanel();
 
-		Toolbar favToolbar = new Toolbar();
-		this.appendChild(favToolbar);
-
 	}
 
 	private void init()
 	{
 		nodeMap = new LinkedHashMap<>();
 
-		int AD_Tree_ID = 1000019;//TODO Get Menu
+		MGroupwareUser  gUser = MGroupwareUser.get(Env.getCtx(), Env.getAD_User_ID(Env.getCtx()));
+
+		int AD_Tree_ID = 0;
+		if(gUser != null)
+		{
+			AD_Tree_ID = MGroupwareUser.get(Env.getCtx(), Env.getAD_User_ID(Env.getCtx())).getAD_Tree_Menu_ID();
+		}else {
+
+			AD_Tree_ID  = 0;
+
+		}
+
+		if(AD_Tree_ID == 0)
+		{
+			return ;
+		}
 
 		MTree vTree = new MTree(Env.getCtx(), AD_Tree_ID, false, true, false, null);
 		rootNode = vTree.getRoot();
