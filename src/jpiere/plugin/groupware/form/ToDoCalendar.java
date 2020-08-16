@@ -72,6 +72,7 @@ import org.zkoss.zul.West;
 import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MTeamMember;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoCategory;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.I_CallerPersonalToDoPopupwindow;
@@ -119,9 +120,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	JPierePersonalToDoGadget personalToDoGadget_Task = null;
 	JPierePersonalToDoGadget personalToDoGadget_Memo = null;
 
-	North mainBorderLayout_North ;
-
-	West mainBorderLayout_West ;
 
     public ToDoCalendar()
     {
@@ -150,7 +148,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		//***************** NORTH **************************//
 
-		mainBorderLayout_North = new North();
+		North mainBorderLayout_North = new North();
 		mainBorderLayout_North.setSplittable(false);
 		mainBorderLayout_North.setCollapsible(false);
 		mainBorderLayout_North.setOpen(true);
@@ -401,7 +399,11 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		ZKUpdateUtil.setHflex(categorySearchEditor.getComponent(), "true");
 
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), true));
+		Label label_JP_ToDo_Category_ID = new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID));
+		label_JP_ToDo_Category_ID.setId(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
+		label_JP_ToDo_Category_ID.addEventListener(Events.ON_CLICK, this);
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, label_JP_ToDo_Category_ID, true));
 		row.appendChild(categorySearchEditor.getComponent());
 		categorySearchEditor.showMenu();
 
@@ -417,6 +419,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		ZKUpdateUtil.setHflex(teamSearchEditor.getComponent(), "true");
 
 		Label label_JP_Team_ID = new Label(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
+		label_JP_Team_ID.setId(MTeam.COLUMNNAME_JP_Team_ID);
 		label_JP_Team_ID.addEventListener(Events.ON_CLICK, this);
 
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(teamSearchEditor, label_JP_Team_ID, true));
@@ -757,14 +760,34 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 			}else if(comp instanceof Label){
 
-				//Zoom Team Window
-				Object value = teamSearchEditor.getValue();
-				if(value == null || Util.isEmpty(value.toString()))
+				String columnName = comp.getId();
+				if(!Util.isEmpty(columnName))
 				{
-					AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), 0);
-				}else {
-					AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), Integer.valueOf(value.toString()));
+					//Zoom Team Window{
+					if(MTeam.COLUMNNAME_JP_Team_ID.equals(columnName))
+					{
+						Object value = teamSearchEditor.getValue();
+						if(value == null || Util.isEmpty(value.toString()))
+						{
+							AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), 0);
+						}else {
+							AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), Integer.valueOf(value.toString()));
+						}
+
+					}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(columnName)) {
+
+						Object value = categorySearchEditor.getValue();
+						if(value == null || Util.isEmpty(value.toString()))
+						{
+							AEnv.zoom(MTable.getTable_ID(MToDoCategory.Table_Name), 0);
+						}else {
+							AEnv.zoom(MTable.getTable_ID(MToDoCategory.Table_Name), Integer.valueOf(value.toString()));
+						}
+					}
+
 				}
+
+
 			}
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_CREATE.equals(eventName)) {

@@ -101,7 +101,7 @@ public class GroupwareToDoUtil {
 		label.setMandatory(editor==null? false : editor.isMandatory());
 
 		String style = null;
-		if(editor != null && editor.getColumnName().equals(MTeam.COLUMNNAME_JP_Team_ID))//We can only zoom JP_Team_ID Fields
+		if(editor != null && (editor.getColumnName().equals(MTeam.COLUMNNAME_JP_Team_ID) || editor.getColumnName().equals(MToDo.COLUMNNAME_JP_ToDo_Category_ID)) )
 			style = STYLE_ZOOMABLE_LABEL + STYLE_NORMAL_LABEL;
 		else
 			style = STYLE_NORMAL_LABEL;

@@ -649,6 +649,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		row = rows.newRow();
 		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID), false),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).getComponent(),4);
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).showMenu();
 
 
 		//*** Name ***//
