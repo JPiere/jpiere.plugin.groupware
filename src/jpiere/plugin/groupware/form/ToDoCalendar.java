@@ -34,6 +34,7 @@ import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.editor.WEditor;
 import org.adempiere.webui.editor.WSearchEditor;
+import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
@@ -106,6 +107,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private int p_AD_User_ID = 0;
 	private int p_JP_Team_ID = 0;
 	private int p_JP_ToDo_Category_ID = 0;
+	private String p_JP_ToDo_Status = null;
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 
@@ -237,6 +239,12 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 				list_parameters.add(p_JP_ToDo_Category_ID);
 			}
 
+			//Status
+			if(!Util.isEmpty(p_JP_ToDo_Status))
+			{
+				whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Status = ? ");
+				list_parameters.add(p_JP_ToDo_Status);
+			}
 
 			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
 			{
@@ -284,6 +292,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			{
 				whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Category_ID = ? ");
 				list_parameters.add(p_JP_ToDo_Category_ID);
+			}
+
+			//Status
+			if(!Util.isEmpty(p_JP_ToDo_Status))
+			{
+				whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Status = ? ");
+				list_parameters.add(p_JP_ToDo_Status);
 			}
 
 			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
@@ -353,22 +368,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		Rows rows = grid.newRows();
 		Row row = rows.newRow();
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
-
-		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
-		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
-		IsDisplaySchedule.addValueChangeListener(this);
-		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
-
-
-		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", Msg.getMsg(ctx,"JP_DisplayTask"), null, true, false, true);
-		IsDisplayTask.setValue(p_IsDisplayTask);
-		IsDisplayTask.addValueChangeListener(this);
-		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
-
-
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine(),1);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		//User Search
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
@@ -382,7 +382,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		userSearchEditor.showMenu();
 
 
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
 		//ToDo Category Search
@@ -410,9 +410,20 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendChild(categorySearchEditor.getComponent());
 		categorySearchEditor.showMenu();
 
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		//ToDo Status List
+		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
+		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, false, false, true);
+		editor_JP_ToDo_Status.addValueChangeListener(this);
+		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), true));
+		row.appendChild(editor_JP_ToDo_Status.getComponent());
+
+
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
+
 
 		//Team Searh
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
@@ -430,7 +441,20 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		teamSearchEditor.showMenu();
 
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
+
+
+		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
+		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
+		IsDisplaySchedule.addValueChangeListener(this);
+		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
+
+
+		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", Msg.getMsg(ctx,"JP_DisplayTask"), null, true, false, true);
+		IsDisplayTask.setValue(p_IsDisplayTask);
+		IsDisplayTask.addValueChangeListener(this);
+		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
 
 
 		/******************** 2nd floor *********************************/
@@ -444,7 +468,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row = rows.newRow();
 
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		Button createNewToDo = new Button();
 		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
@@ -452,8 +476,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
 		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
-		row.appendCellChild(createNewToDo, 2);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendCellChild(createNewToDo,2);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
 		Button refresh = new Button();
@@ -464,7 +488,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendCellChild(refresh, 2);
 
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		Button oneDayView = new Button();
@@ -473,7 +497,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		oneDayView.setName(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(oneDayView);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
 		Button sevenDayView = new Button();
@@ -482,7 +506,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		sevenDayView.setName(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(sevenDayView);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
 		Button monthDayView = new Button();
@@ -491,10 +515,10 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		monthDayView.setName(GroupwareToDoUtil.BUTTON_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(monthDayView);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		Button leftBtn = new Button();
@@ -502,8 +526,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		//leftBtn.setClass("btn-small");
 		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
+		leftBtn.setLabel(" ");
 		row.appendChild(leftBtn);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button today = new Button();
 		today.setLabel(Msg.getMsg(ctx, "Today"));
@@ -511,17 +536,18 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
 		today.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(today);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button rightBtn = new Button();
 		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 		//rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
+		rightBtn.setLabel(" ");
 		row.appendChild(rightBtn);
-		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		label_DisplayPeriod = new Label();
@@ -532,7 +558,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
 
 
-		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
     	return outerDiv;
 
@@ -675,6 +701,24 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			}
 
 			refresh();
+
+		}else if("Value".equals(name)){//JP_ToDo_Status
+
+			if(value == null)
+			{
+				p_JP_ToDo_Status = null;
+			}else {
+
+				if(Util.isEmpty(value.toString()))
+				{
+					p_JP_ToDo_Status = null;
+				}else {
+					p_JP_ToDo_Status = value.toString();
+				}
+			}
+
+			refresh();
+
 
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
