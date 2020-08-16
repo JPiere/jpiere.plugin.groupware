@@ -28,6 +28,7 @@ import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Label;
+import org.adempiere.webui.editor.WEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.ValueChangeEvent;
@@ -53,6 +54,7 @@ import org.zkoss.calendar.api.CalendarEvent;
 import org.zkoss.calendar.event.CalendarsEvent;
 import org.zkoss.calendar.impl.SimpleCalendarModel;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
@@ -449,14 +451,14 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
     {
     	Div div = new Div();
 		Vlayout vlayout = new Vlayout();
-		vlayout.setDroppable("true");
+		vlayout.setDroppable("false");
 		div.appendChild(vlayout);
 
 
 		//Menu
 		Groupbox groupBox0 = new Groupbox();
 		groupBox0.setOpen(false);
-		groupBox0.setDraggable("true");
+		groupBox0.setDraggable("false");
 		groupBox0.setMold("3d");
 		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox0);
@@ -472,7 +474,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		//Schedule
 		Groupbox groupBox1 = new Groupbox();
 		groupBox1.setOpen(true);
-		groupBox1.setDraggable("true");
+		groupBox1.setDraggable("false");
 		groupBox1.setMold("3d");
 		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox1);
@@ -491,7 +493,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		//Unfinished Tasks
 		Groupbox groupBox2 = new Groupbox();
 		groupBox2.setOpen(true);
-		groupBox2.setDraggable("true");
+		groupBox2.setDraggable("false");
 		groupBox2.setMold("3d");
 		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox2);
@@ -507,7 +509,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		//Unfinished Memo
 		Groupbox groupBox3 = new Groupbox();
 		groupBox3.setOpen(true);
-		groupBox3.setDraggable("true");
+		groupBox3.setDraggable("false");
 		groupBox3.setMold("3d");
 		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox3);
@@ -535,11 +537,23 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			if(value == null)
 			{
 				p_AD_User_ID = 0;
+
 			}else {
 				p_AD_User_ID = Integer.parseInt(value.toString());
 			}
 
 			refresh(null);
+
+			if(p_AD_User_ID == 0)
+			{
+				Object obj = evt.getSource();
+				if(obj instanceof WEditor)
+				{
+					WEditor editor = (WEditor)obj;
+					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID);
+					throw new WrongValueException(editor.getComponent(), msg);
+				}
+			}
 
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 

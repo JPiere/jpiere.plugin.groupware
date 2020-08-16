@@ -15,7 +15,6 @@ import org.compiere.model.MForm;
 import org.compiere.model.Query;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
-import org.compiere.util.Util;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Html;
 
@@ -108,29 +107,13 @@ public class GroupwareToDoUtil {
 			isZoomable = editor.isZoomable();
 		}
 
-		boolean isMandatory = false;
-		if(editor == null)
-		{
-			isMandatory = false;
 
-		}else {
-
-			Object value = editor.getValue();
-			if(editor.isMandatory())
-			{
-				if(value == null || Util.isEmpty(value.toString()))
-				{
-					isMandatory = true;
-				}
-			}
-
-		}
 
 		String style = null;
 		if(editor != null && editor.getColumnName().equals("AD_User_ID"))
-			style = isMandatory ? STYLE_EMPTY_MANDATORY_LABEL : STYLE_NORMAL_LABEL;
+			style = STYLE_NORMAL_LABEL;
 		else
-			style = (isZoomable ? STYLE_ZOOMABLE_LABEL : "") + (isMandatory ? STYLE_EMPTY_MANDATORY_LABEL : STYLE_NORMAL_LABEL);
+			style = (isZoomable ? STYLE_ZOOMABLE_LABEL : "") + STYLE_NORMAL_LABEL;
 
 		label.setStyle(style);
 
