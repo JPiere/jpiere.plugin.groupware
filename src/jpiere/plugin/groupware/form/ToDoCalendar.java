@@ -27,7 +27,11 @@ import java.util.Properties;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
+import org.adempiere.webui.component.Grid;
+import org.adempiere.webui.component.GridFactory;
 import org.adempiere.webui.component.Label;
+import org.adempiere.webui.component.Row;
+import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.editor.WEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
@@ -61,8 +65,6 @@ import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
-import org.zkoss.zul.Hlayout;
-import org.zkoss.zul.Html;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.West;
@@ -337,59 +339,52 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
     }
 
-    public Div createNorthContents()
+    public Div createNorthContents()//TODO
     {
     	Div outerDiv = new Div();
     	outerDiv.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
     	Vlayout vlayout = new Vlayout();
     	outerDiv.appendChild(vlayout);
 
-		Hlayout hlayout1 = new Hlayout();
-		vlayout.appendChild(hlayout1);
+
+		Grid grid = GridFactory.newGridLayout();
+		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setHflex(grid, "min");
+		vlayout.appendChild(grid);
+
+		Rows rows = grid.newRows();
+		Row row = rows.newRow();
+
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+
+		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
+		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
+		IsDisplaySchedule.addValueChangeListener(this);
+		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
 
 
-		Button createNewToDo = new Button();
-		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
-		createNewToDo.setName(GroupwareToDoUtil.BUTTON_NEW);
-		createNewToDo.addEventListener(Events.ON_CLICK, this);
-		createNewToDo.setId(String.valueOf(0));
-		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
-		hlayout1.appendChild(createNewToDo);
-
-		Button refresh = new Button();
-		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
-		refresh.setName(GroupwareToDoUtil.BUTTON_REFRESH);
-		refresh.addEventListener(Events.ON_CLICK, this);
-		hlayout1.appendChild(refresh);
+		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", Msg.getMsg(ctx,"JP_DisplayTask"), null, true, false, true);
+		IsDisplayTask.setValue(p_IsDisplayTask);
+		IsDisplayTask.addValueChangeListener(this);
+		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
 
 
-    	Div innerDiv = new Div();
-    	innerDiv.setStyle("padding-top:3px ;border: none;");
-    	hlayout1.appendChild(innerDiv);
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine(),1);
 
-		Hlayout innerHlayout = new Hlayout();
-		innerDiv.appendChild(innerHlayout);
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
-
-		//User Search Field
+		//User Search
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
 
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
-		innerHlayout.appendChild(userSearchEditor.getComponent());
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
+		row.appendChild(userSearchEditor.getComponent());
 		userSearchEditor.showMenu();
 
 
-		Div space = new Div();
-		space.appendChild(new Html("&nbsp;"));
-		innerHlayout.appendChild(space);
-
-
-		//ToDo Category
+		//ToDo Category Search
 		lookupCategory = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
 		String validationCode = null;
 		if(p_AD_User_ID == 0)
@@ -405,19 +400,16 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		categorySearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(categorySearchEditor.getComponent(), "true");
 
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), true));
-		innerHlayout.appendChild(categorySearchEditor.getComponent());
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), true));
+		row.appendChild(categorySearchEditor.getComponent());
 		categorySearchEditor.showMenu();
 
 
-		space = new Div();
-		space.appendChild(new Html("&nbsp;"));
-		innerHlayout.appendChild(space);
-
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
 
 
-		//Team Search Field
+		//Team Searh
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 		teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, false, false, true, lookupTeam);
 		teamSearchEditor.setValue(p_JP_Team_ID);
@@ -427,97 +419,73 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		Label label_JP_Team_ID = new Label(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
 		label_JP_Team_ID.addEventListener(Events.ON_CLICK, this);
 
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(teamSearchEditor, label_JP_Team_ID, true));
-		innerHlayout.appendChild(teamSearchEditor.getComponent());
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(teamSearchEditor, label_JP_Team_ID, true));
+		row.appendChild(teamSearchEditor.getComponent());
 		teamSearchEditor.showMenu();
 
 
-//		space = new Div();
-//		space.appendChild(new Html("&nbsp;"));
-//		innerHlayout.appendChild(space);
-//
-//		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
 
 
-		Hlayout hlayout2 = new Hlayout();
-		vlayout.appendChild(hlayout2);
+		/******************** 2nd floor *********************************/
 
-		innerDiv = new Div();
-    	innerDiv.setStyle("padding-top:3px ;border: none;");
-    	hlayout2.appendChild(innerDiv);
-		innerHlayout = new Hlayout();
-		innerDiv.appendChild(innerHlayout);
+		grid = GridFactory.newGridLayout();
+		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setHflex(grid, "min");
+		vlayout.appendChild(grid);
 
-		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
-		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
-		IsDisplaySchedule.addValueChangeListener(this);
-		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
-
-		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", Msg.getMsg(ctx,"JP_DisplayTask"), null, true, false, true);
-		IsDisplayTask.setValue(p_IsDisplayTask);
-		IsDisplayTask.addValueChangeListener(this);
-		innerHlayout.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
+		rows = grid.newRows();
+		row = rows.newRow();
 
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
 
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, new Label("表示形式 "), true));
+		Button createNewToDo = new Button();
+		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
+		createNewToDo.setName(GroupwareToDoUtil.BUTTON_NEW);
+		createNewToDo.addEventListener(Events.ON_CLICK, this);
+		createNewToDo.setId(String.valueOf(0));
+		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
+		//ZKUpdateUtil.setHflex(createNewToDo, "true");
 
-		innerDiv = new Div();
-    	//innerDiv.setStyle("padding-top:3px ;border: none;");
-    	hlayout2.appendChild(innerDiv);
-		innerHlayout = new Hlayout();
-		innerDiv.appendChild(innerHlayout);
+
+		row.appendCellChild(createNewToDo, 2);
+
+
+		Button refresh = new Button();
+		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
+		refresh.setName(GroupwareToDoUtil.BUTTON_REFRESH);
+		refresh.addEventListener(Events.ON_CLICK, this);
+		refresh.setLabel(Msg.getMsg(ctx, "Refresh"));
+		row.appendCellChild(refresh, 2);
+
+
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+
 
 		Button oneDayView = new Button();
 		oneDayView.setLabel(Msg.getMsg(ctx,"Day"));
 		//oneDayView.setClass("btn-small");
 		oneDayView.setName(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(oneDayView);
+		row.appendChild(oneDayView);
 
 		Button sevenDayView = new Button();
 		sevenDayView.setLabel(Msg.getMsg(ctx, "Week"));
 		//sevenDayView.setClass("btn-small");
 		sevenDayView.setName(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(sevenDayView);
+		row.appendChild(sevenDayView);
 
 		Button monthDayView = new Button();
 		monthDayView.setLabel(Msg.getMsg(ctx, "Month"));
 		//monthDayView.setClass("btn-small");
 		monthDayView.setName(GroupwareToDoUtil.BUTTON_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(monthDayView);
+		row.appendChild(monthDayView);
 
-		/*********************/
-		innerDiv = new Div();
-    	innerDiv.setStyle("padding-top:3px ;border: none;");
-    	hlayout2.appendChild(innerDiv);
-		innerHlayout = new Hlayout();
-		innerDiv.appendChild(innerHlayout);
-		/*********************/
 
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, new Label("表示期間 :"), true));
-
-		label_DisplayPeriod = new Label();
-		updateDateLabel();
-
-		//Comment out to make space.
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
-
-		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, new Label("カレンダーをめくる"), true));
-
-		/*********************/
-		innerDiv = new Div();
-    	//innerDiv.setStyle("padding-top:3px ;border: none;");
-    	hlayout2.appendChild(innerDiv);
-		innerHlayout = new Hlayout();
-		innerDiv.appendChild(innerHlayout);
-		/*********************/
-
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
 
 
 		Button leftBtn = new Button();
@@ -525,22 +493,35 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		//leftBtn.setClass("btn-small");
 		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(leftBtn);
+		row.appendChild(leftBtn);
 
 		Button today = new Button();
 		today.setLabel(Msg.getMsg(ctx, "Today"));
 		//today.setClass("btn-small");
 		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
 		today.addEventListener(Events.ON_CLICK, this);
-		innerHlayout.appendChild(today);
+		row.appendChild(today);
 
 		Button rightBtn = new Button();
 		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 		//rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
-		innerHlayout.appendChild(rightBtn);
+		row.appendChild(rightBtn);
 
+
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
+
+
+		label_DisplayPeriod = new Label();
+		updateDateLabel();
+
+		//Comment out to make space.
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, "表示期間:", true));//TODO
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
+
+
+		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
 
     	return outerDiv;
 
@@ -633,6 +614,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		if(MToDo.COLUMNNAME_AD_User_ID.equals(name))
 		{
+			int old_JP_ToDo_Category_ID = p_JP_ToDo_Category_ID;
+
 			if(value == null)
 			{
 				p_AD_User_ID = 0;
@@ -640,8 +623,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			}else {
 				p_AD_User_ID = Integer.parseInt(value.toString());
 			}
-
-
 
 			String validationCode = null;
 			if(evt.getNewValue()==null)
@@ -666,6 +647,11 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID);
 					throw new WrongValueException(editor.getComponent(), msg);
 				}
+
+			}else if(old_JP_ToDo_Category_ID > 0) {
+
+				throw new WrongValueException(categorySearchEditor.getComponent(), "ユーザーが変更になったのでカテゴリがリフレッシュされました。");//TODO:
+
 			}
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(name)){
@@ -978,7 +964,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 
 		}else {
+
 			timestamp = p_CalendarsEventBeginDate;
+
 			return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), timestamp.toLocalDateTime().toLocalTime()));
 		}
 
@@ -999,7 +987,24 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.MIN));
 
 		}else {
+
 			timestamp =  p_CalendarsEventEndDate;
+
+			if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(p_CalendarMold))
+			{
+				timestamp = p_CalendarsEventBeginDate;
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(p_CalendarMold) || GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(p_CalendarMold)) {
+
+				LocalTime start = p_CalendarsEventBeginDate.toLocalDateTime().toLocalTime();
+				LocalTime end = p_CalendarsEventEndDate.toLocalDateTime().toLocalTime();
+
+				if(start.compareTo(LocalTime.MIN) == 0 && end.compareTo(LocalTime.MIN) == 0)
+				{
+					timestamp = p_CalendarsEventBeginDate;
+				}
+
+			}
+
 			return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), timestamp.toLocalDateTime().toLocalTime()));
 		}
 
