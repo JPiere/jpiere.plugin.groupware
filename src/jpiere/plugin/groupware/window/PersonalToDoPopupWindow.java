@@ -592,7 +592,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		}
 
 
-		hlyaout.appendChild(GroupwareToDoUtil.createLabelDiv(msg.toString(),false,true));
+		hlyaout.appendChild(GroupwareToDoUtil.createLabelDiv(null, msg.toString(),true));
 		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 

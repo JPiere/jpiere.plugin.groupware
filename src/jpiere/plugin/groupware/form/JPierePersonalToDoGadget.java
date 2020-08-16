@@ -147,25 +147,28 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 		/**User Search Field**/
-		Label label_User = new Label(Msg.translate(Env.getCtx(), "AD_User_ID"));
-		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(label_User, true,false),1);
+
 
 		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor("AD_User_ID", true, false, true, lookupUser);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
+
+		Label label_User = new Label(Msg.translate(Env.getCtx(), "AD_User_ID"));
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, label_User, false),1);
 		row.appendCellChild(userSearchEditor.getComponent(),1);
 
-		/**ToDo Type List Field**/
-		Label label_ToDoType = new Label(Msg.translate(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
-		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(label_ToDoType, true,false),1);
 
+		/**ToDo Type List Field**/
 		MLookup lookupToDoType = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
 		WTableDirEditor toDoListEditor = new WTableDirEditor(MToDo.COLUMNNAME_JP_ToDo_Type, true, false, true, lookupToDoType);
 		toDoListEditor.setValue(p_JP_ToDo_Type);
 		toDoListEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(toDoListEditor.getComponent(), "true");
+
+		Label label_ToDoType = new Label(Msg.translate(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(toDoListEditor ,label_ToDoType, false),1);
 		row.appendCellChild(toDoListEditor.getComponent(),1);
 	}
 

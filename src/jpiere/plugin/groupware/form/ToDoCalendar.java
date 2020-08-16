@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Label;
@@ -41,6 +42,7 @@ import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MRefList;
+import org.compiere.model.MTable;
 import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
@@ -102,6 +104,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private boolean p_IsDisplayTask = false;
 
 	private String p_CalendarMold = GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW;
+
+	private WSearchEditor teamSearchEditor ;
 
 	//West Gadget
 	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
@@ -339,31 +343,38 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		innerDiv.appendChild(innerHlayout);
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
-		//User Search Field
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true, true));
 
+		//User Search Field
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
+
+
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
 		innerHlayout.appendChild(userSearchEditor.getComponent());
+		userSearchEditor.showMenu();
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
 		//Team Search Field
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID), false, true));
-
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
-		WSearchEditor teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, true, false, true, lookupTeam);
+		teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, false, false, true, lookupTeam);
 		teamSearchEditor.setValue(p_JP_Team_ID);
 		teamSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(teamSearchEditor.getComponent(), "true");
+
+		Label label_JP_Team_ID = new Label(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
+		label_JP_Team_ID.addEventListener(Events.ON_CLICK, this);
+
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(teamSearchEditor, label_JP_Team_ID, true));
 		innerHlayout.appendChild(teamSearchEditor.getComponent());
-		//teamSearchEditor.setVisible(false);
+		teamSearchEditor.showMenu();
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
+
 
 		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
 		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
@@ -426,7 +437,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		label_DisplayPeriod = new Label();
 		updateDateLabel();
-		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(label_DisplayPeriod, false, true));
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
@@ -620,6 +631,16 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 				}
 
+			}else if(comp instanceof Label){
+
+				//Zoom Team Window
+				Object value = teamSearchEditor.getValue();
+				if(value == null || Util.isEmpty(value.toString()))
+				{
+					AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), 0);
+				}else {
+					AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), Integer.valueOf(value.toString()));
+				}
 			}
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_CREATE.equals(eventName)) {
@@ -674,9 +695,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 			//I don't know this Event
 
-		}else {
-
-			//impossible
 		}
 	}
 

@@ -15,6 +15,7 @@ import org.compiere.model.MForm;
 import org.compiere.model.Query;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
+import org.compiere.util.Util;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Html;
 
@@ -59,6 +60,12 @@ public class GroupwareToDoUtil {
 	public final static long JUDGMENT_LONG_TIME_HOURES = 12;
 	public final static long JUDGMENT_SHORT_TIME_MINUTE = 30;
 
+
+	//CSS
+	public static final String STYLE_EMPTY_MANDATORY_LABEL = "color: red;";
+	public static final String STYLE_NORMAL_LABEL = "color: #333;";
+	public static final String STYLE_ZOOMABLE_LABEL = "cursor: pointer; text-decoration: underline;";
+
 	static public MForm getToDoCallendarForm()
 	{
 		StringBuilder whereClause = new StringBuilder("classname=?");
@@ -82,22 +89,57 @@ public class GroupwareToDoUtil {
 		return div;
 	}
 
-	static public Div createLabelDiv(String string, boolean isMandatory, boolean isPositionAdjust )
+	static public Div createLabelDiv(WEditor editor, String string, boolean isPositionAdjust )
 	{
 		Label label = new Label(string);
-		return createLabelDiv(label , isMandatory, isPositionAdjust);
+		return createLabelDiv(editor, label , isPositionAdjust);
 	}
 
-	static public Div createLabelDiv(Label label , boolean isMandatory, boolean isPositionAdjust )
+	static public Div createLabelDiv(WEditor editor, Label label , boolean isPositionAdjust )
 	{
 		label.rightAlign();
-		label.setMandatory(isMandatory);
+		label.setMandatory(editor==null? false : editor.isMandatory());
+
+		boolean isZoomable = false;
+		if(editor == null)
+		{
+			isZoomable = false;
+		}else {
+			isZoomable = editor.isZoomable();
+		}
+
+		boolean isMandatory = false;
+		if(editor == null)
+		{
+			isMandatory = false;
+
+		}else {
+
+			Object value = editor.getValue();
+			if(editor.isMandatory())
+			{
+				if(value == null || Util.isEmpty(value.toString()))
+				{
+					isMandatory = true;
+				}
+			}
+
+		}
+
+		String style = null;
+		if(editor != null && editor.getColumnName().equals("AD_User_ID"))
+			style = isMandatory ? STYLE_EMPTY_MANDATORY_LABEL : STYLE_NORMAL_LABEL;
+		else
+			style = (isZoomable ? STYLE_ZOOMABLE_LABEL : "") + (isMandatory ? STYLE_EMPTY_MANDATORY_LABEL : STYLE_NORMAL_LABEL);
+
+		label.setStyle(style);
+
 		Div div = new Div();
 		div.setSclass("form-label");
 		if(isPositionAdjust)
 			div.setStyle("padding-top:4px");
 		div.appendChild(label);
-		if(isMandatory)
+		if(editor==null? false : editor.isMandatory())
 			div.appendChild(label.getDecorator());
 
 		return div;
