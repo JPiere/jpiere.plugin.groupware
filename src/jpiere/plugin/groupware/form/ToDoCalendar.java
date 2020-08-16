@@ -102,6 +102,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private int p_login_User_ID = 0;
 	private int p_AD_User_ID = 0;
 	private int p_JP_Team_ID = 0;
+	private int p_JP_ToDo_Category_ID = 0;
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 
@@ -212,6 +213,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
 			list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
 
+			//Team
 			if(p_JP_Team_ID==0)
 			{
 				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID = ? ");
@@ -222,6 +224,14 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
 
 			}
+
+			//Category
+			if(p_JP_ToDo_Category_ID > 0)
+			{
+				whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Category_ID = ? ");
+				list_parameters.add(p_JP_ToDo_Category_ID);
+			}
+
 
 			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
 			{
@@ -253,6 +263,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
 			list_parameters.add(MToDo.JP_TODO_TYPE_Task);
 
+			//Team
 			if(p_JP_Team_ID==0)
 			{
 				whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
@@ -261,6 +272,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			}else {
 
 				whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
+			}
+
+			//Category
+			if(p_JP_ToDo_Category_ID > 0)
+			{
+				whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Category_ID = ? ");
+				list_parameters.add(p_JP_ToDo_Category_ID);
 			}
 
 			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
@@ -357,6 +375,19 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
 		innerHlayout.appendChild(userSearchEditor.getComponent());
 		userSearchEditor.showMenu();
+
+
+		//ToDo Category
+		MLookup lookupCategory = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
+		WSearchEditor categorySearchEditor = new WSearchEditor(MToDo.COLUMNNAME_JP_ToDo_Category_ID, false, false, true, lookupCategory);
+		categorySearchEditor.setValue(p_JP_ToDo_Category_ID);
+		categorySearchEditor.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(categorySearchEditor.getComponent(), "true");
+
+
+		innerHlayout.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), true));
+		innerHlayout.appendChild(categorySearchEditor.getComponent());
+		categorySearchEditor.showMenu();//TODO 右クリックで簡易入力を表示させる‼
 
 		innerHlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
@@ -554,6 +585,17 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 					throw new WrongValueException(editor.getComponent(), msg);
 				}
 			}
+
+		}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(name)){
+
+			if(value == null)
+			{
+				p_JP_ToDo_Category_ID = 0;
+			}else {
+				p_JP_ToDo_Category_ID = Integer.parseInt(value.toString());
+			}
+
+			refresh();
 
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
@@ -755,11 +797,33 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		return p_AD_User_ID;
 	}
 
+
+	@Override
+	public int getInitial_ToDo_Category_ID()
+	{
+		return p_JP_ToDo_Category_ID;
+	}
+
+
 	@Override
 	public String getInitial_ToDo_Type()
 	{
 		if(list_ToDoes == null)
 		{
+			if(p_IsDisplaySchedule && !p_IsDisplayTask)
+			{
+				return MToDo.JP_TODO_TYPE_Schedule;
+
+			}else if (!p_IsDisplaySchedule && p_IsDisplayTask) {
+
+				return MToDo.JP_TODO_TYPE_Task;
+
+			}else if (!p_IsDisplaySchedule && !p_IsDisplayTask) {
+
+				return MToDo.JP_TODO_TYPE_Memo;
+
+			}
+
 			return MToDo.JP_TODO_TYPE_Schedule;
 		}else {
 

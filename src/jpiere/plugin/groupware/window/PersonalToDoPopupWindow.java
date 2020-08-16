@@ -98,6 +98,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private int p_JP_ToDo_ID = 0;
 	private int p_AD_User_ID = 0;
 	private String p_JP_ToDo_Type = null;
+	private int p_JP_ToDo_Category_ID = 0;
 	private Timestamp p_InitialScheduledStartTime = null;
 	private Timestamp p_InitialScheduledEndTime = null;
 	private boolean p_IsDirty = false;
@@ -210,6 +211,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			p_MToDo = null;
 			p_AD_User_ID = i_CallerPersonalToDoPopupwindow.getInitial_User_ID();
 			p_JP_ToDo_Type = i_CallerPersonalToDoPopupwindow.getInitial_ToDo_Type();
+			p_JP_ToDo_Category_ID = i_CallerPersonalToDoPopupwindow.getInitial_ToDo_Category_ID ();
 
 		}else {
 
@@ -217,6 +219,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			p_MToDo = new MToDo(ctx, p_JP_ToDo_ID, null);
 			p_AD_User_ID = p_MToDo.getAD_User_ID();
 			p_JP_ToDo_Type = p_MToDo.getJP_ToDo_Type();
+			p_JP_ToDo_Category_ID = p_MToDo.getJP_ToDo_Category_ID();
 		}
 
 		if(p_IsNewRecord)
@@ -419,6 +422,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_JP_ToDo_Type);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_JP_ToDo_Category_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_InitialScheduledStartTime);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_InitialScheduledEndTime);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(MToDo.JP_TODO_STATUS_NotYetStarted);

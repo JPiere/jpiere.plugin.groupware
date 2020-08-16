@@ -19,6 +19,7 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Html;
 
 import jpiere.plugin.groupware.form.ToDoCalendarEvent;
+import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MToDo;
 
 public class GroupwareToDoUtil {
@@ -99,21 +100,11 @@ public class GroupwareToDoUtil {
 		label.rightAlign();
 		label.setMandatory(editor==null? false : editor.isMandatory());
 
-		boolean isZoomable = false;
-		if(editor == null)
-		{
-			isZoomable = false;
-		}else {
-			isZoomable = editor.isZoomable();
-		}
-
-
-
 		String style = null;
-		if(editor != null && editor.getColumnName().equals("AD_User_ID"))
-			style = STYLE_NORMAL_LABEL;
+		if(editor != null && editor.getColumnName().equals(MTeam.COLUMNNAME_JP_Team_ID))//We can only zoom JP_Team_ID Fields
+			style = STYLE_ZOOMABLE_LABEL + STYLE_NORMAL_LABEL;
 		else
-			style = (isZoomable ? STYLE_ZOOMABLE_LABEL : "") + STYLE_NORMAL_LABEL;
+			style = STYLE_NORMAL_LABEL;
 
 		label.setStyle(style);
 

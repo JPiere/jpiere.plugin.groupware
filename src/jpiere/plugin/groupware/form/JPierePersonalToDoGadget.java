@@ -584,4 +584,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		p_AD_User_ID = AD_User_ID;
 		refresh(p_JP_ToDo_Type);
 	}
+
+	@Override
+	public int getInitial_ToDo_Category_ID()
+	{
+		return 0;
+	}
 }
