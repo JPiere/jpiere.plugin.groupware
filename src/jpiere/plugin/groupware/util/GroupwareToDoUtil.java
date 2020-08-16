@@ -81,6 +81,8 @@ public class GroupwareToDoUtil {
 		return null;
 	}
 
+
+
 	static public Div getDividingLine()
 	{
 		Div div = new Div();
@@ -88,6 +90,17 @@ public class GroupwareToDoUtil {
 		div.setStyle("display: inline-block; border-left: 1px dotted #888888;margin: 5px 2px 0px 2px;");
 		return div;
 	}
+
+
+	static public Div createSpaceDiv()
+	{
+		Div div = new Div();
+		div.appendChild(new Html("&nbsp;"));
+
+		return div;
+	}
+
+
 
 	static public Div createLabelDiv(WEditor editor, String string, boolean isPositionAdjust )
 	{

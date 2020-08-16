@@ -368,7 +368,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 
 		row.appendCellChild(GroupwareToDoUtil.getDividingLine(),1);
-
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 		//User Search
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
@@ -380,6 +380,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
 		row.appendChild(userSearchEditor.getComponent());
 		userSearchEditor.showMenu();
+
+
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 
 		//ToDo Category Search
@@ -409,7 +412,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 
 		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
-
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 		//Team Searh
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
@@ -449,10 +452,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
 		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
-		//ZKUpdateUtil.setHflex(createNewToDo, "true");
-
-
 		row.appendCellChild(createNewToDo, 2);
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 
 		Button refresh = new Button();
@@ -472,6 +473,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		oneDayView.setName(GroupwareToDoUtil.BUTTON_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(oneDayView);
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+
 
 		Button sevenDayView = new Button();
 		sevenDayView.setLabel(Msg.getMsg(ctx, "Week"));
@@ -479,6 +482,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		sevenDayView.setName(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(sevenDayView);
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
+
 
 		Button monthDayView = new Button();
 		monthDayView.setLabel(Msg.getMsg(ctx, "Month"));
@@ -486,6 +491,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		monthDayView.setName(GroupwareToDoUtil.BUTTON_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(monthDayView);
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 
 		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
@@ -497,6 +503,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(leftBtn);
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 		Button today = new Button();
 		today.setLabel(Msg.getMsg(ctx, "Today"));
@@ -504,6 +511,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		today.setName(GroupwareToDoUtil.BUTTON_TODAY);
 		today.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(today);
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 		Button rightBtn = new Button();
 		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
@@ -511,7 +519,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
 		row.appendChild(rightBtn);
-
+		row.appendCellChild(GroupwareToDoUtil.createSpaceDiv(),1);
 
 		row.appendCellChild(GroupwareToDoUtil.getDividingLine());
 
