@@ -37,13 +37,24 @@ import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 */
 public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 2289841014956779967L;
-	private static final int INITIAL_TASK_HOUR = 1;
 
 	private MToDo m_ToDo = null ;
+
+	private static final int INITIAL_TASK_HOUR = 1;
+	private static final long JUDGMENT_LONG_TIME_HOURES = 12;
+	private static final long JUDGMENT_SHORT_TIME_MINUTE = 30;
+
+	private LocalDate begin_LocalDate = null;
+	private LocalTime begin_LocalTime = null;
+
+	private LocalTime end_LocalTime  = null;
+	private LocalDate end_LocalDate = null;
+
+	private boolean isSameDate = false;	//for Change Dispay Text Info;
+	private boolean isLongTime = false;	//for Change Dispay Text Info;
+	private boolean isShortTime = false;	//For Adjust Display Area;
+
 
 	public ToDoCalendarEvent(MToDo toDo, String calendarMold, boolean isDisplayUserName)
 	{
@@ -54,39 +65,14 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		adjustDisplayText(calendarMold, isDisplayUserName);
 		setColor(calendarMold, isDisplayUserName);
 
-
-		Timestamp begin_Timestamp = null;
-		Timestamp end_Timestamp = null;
-		if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
-		{
-
-
-
-		}else if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
-
-
-		}else {
-			;//impossible
-		}
-
 		this.setLocked(true);
 	}
 
 
-	public final static long JUDGMENT_LONG_TIME_HOURES = 12;
-	public final static long JUDGMENT_SHORT_TIME_MINUTE = 30;
-
-	private LocalDate begin_LocalDate = null;
-	private LocalTime begin_LocalTime = null;
-
-	private LocalTime end_LocalTime  = null;
-	private LocalDate end_LocalDate = null;
-
-	boolean isSameDate = false;	//for Change Dispay Text Info;
-	boolean isLongTime = false;	//for Change Dispay Text Info;
-	boolean isShortTime = false;	//For Adjust Display Area;
-
-	private void adjustTimeToZK()//TODO
+	/**
+	 * Adjust Time form Timestamp of JPiere to Bigen data and End data of ZK Calendar Event	 *
+	 */
+	private void adjustTimeToZK()
 	{
 
 		Timestamp begin_Timestamp = m_ToDo.getJP_ToDo_ScheduledStartTime();
@@ -102,6 +88,8 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			begin_LocalDate = begin_Timestamp.toLocalDateTime().toLocalDate();
 			begin_LocalTime = begin_Timestamp.toLocalDateTime().toLocalTime();
 			this.setBeginDate(new Date(begin_Timestamp.getTime()));
+
+
 
 			/********************************************************************************************************
 			 * Adjust End Time
@@ -137,9 +125,8 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}
 
 				}
+
 			}else {
-
-
 
 				if(isShortTime)
 				{
@@ -183,10 +170,14 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			end_Timestamp = Timestamp.valueOf(LocalDateTime.of(end_Timestamp.toLocalDateTime().toLocalDate(), end_LocalTime));
 			this.setEndDate(new Date(end_Timestamp.getTime()));
 		}
-	}
+	}//adjustTimeToZK
 
 
-	private void adjustDisplayText(String calendarMold, boolean isDisplayUserName)//TODO
+
+	/**
+	 * Adjustment Text form JPiere ToDo to ZK Calendar Event
+	 */
+	private void adjustDisplayText(String calendarMold, boolean isDisplayUserName)
 	{
 		String userName = " [" +MUser.get(Env.getCtx(), m_ToDo.getAD_User_ID()).getName() + "] " ;
 
@@ -248,12 +239,14 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 
 			}
-
 		}
+	}//adjustDisplayText
 
-	}
 
-	private void setColor(String calendarMold, boolean isDisplayUserName)//TODO
+	/**
+	 * Set Color from JPiere to ZK Calendar Event
+	 */
+	private void setColor(String calendarMold, boolean isDisplayUserName)
 	{
 		if(!isDisplayUserName && m_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
@@ -305,15 +298,22 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			}
 		}
 
-	}
+	}//setColor
 
 
 
-	static public boolean judgmentOfLongTime(Timestamp bigin, Timestamp end)
+	/**
+	 * Util metod
+	 *
+	 * @param bigin
+	 * @param end
+	 * @return
+	 */
+	private boolean judgmentOfLongTime(Timestamp begin, Timestamp end)
 	{
 		//Adjust Begin Time
-		LocalDate begin_LocalDate = bigin.toLocalDateTime().toLocalDate();
-		LocalTime begin_LocalTime = bigin.toLocalDateTime().toLocalTime();
+		LocalDate begin_LocalDate = begin.toLocalDateTime().toLocalDate();
+		LocalTime begin_LocalTime = begin.toLocalDateTime().toLocalTime();
 
 		//Adjust End Time
 		LocalDate end_LocalDate = end.toLocalDateTime().toLocalDate();
@@ -336,11 +336,11 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	}
 
-	static public boolean judgmentOfShortTime(Timestamp bigin, Timestamp end)
+	private boolean judgmentOfShortTime(Timestamp begin, Timestamp end)
 	{
 		//Adjust Begin Time
-		LocalDate begin_LocalDate = bigin.toLocalDateTime().toLocalDate();
-		LocalTime begin_LocalTime = bigin.toLocalDateTime().toLocalTime();
+		LocalDate begin_LocalDate = begin.toLocalDateTime().toLocalDate();
+		LocalTime begin_LocalTime = begin.toLocalDateTime().toLocalTime();
 
 		//Adjust End Time
 		LocalDate end_LocalDate = end.toLocalDateTime().toLocalDate();
@@ -369,7 +369,8 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	}
 
-	public MToDo getToDoD() {
+	public MToDo getToDoD()
+	{
 		return m_ToDo;
 	}
 
