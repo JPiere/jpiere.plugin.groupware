@@ -118,6 +118,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private WSearchEditor categorySearchEditor;
 	private WSearchEditor teamSearchEditor ;
 	private WTableDirEditor editor_FirstDayOfWeek ;
+	private Label label_FirstDayOfWeek;
 	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 
 	//West Gadget
@@ -150,7 +151,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_UPDATE,this);
 //		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER, this);
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_DAY,this);
-		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
+//		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
 
 		//***************** NORTH **************************//
 
@@ -595,12 +596,10 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		editor_FirstDayOfWeek.addValueChangeListener(this);
 		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_FirstDayOfWeek, Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek), true));
+		label_FirstDayOfWeek = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek));
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_FirstDayOfWeek, label_FirstDayOfWeek, true));
 		row.appendChild(editor_FirstDayOfWeek.getComponent());
 
-
-
-		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
     	return outerDiv;
 
@@ -855,13 +854,17 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 					p_CalendarMold = GroupwareToDoUtil.BUTTON_ONEDAY_VIEW;
 					setCalendarMold(1);
 					updateDateLabel();
+					editor_FirstDayOfWeek.setVisible(false);
+					label_FirstDayOfWeek.setVisible(false);
 					refresh();
 
-				}else if(GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(btnName)){//TODO
+				}else if(GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(btnName)){
 
 					p_CalendarMold = GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW;
 					setCalendarMold(5);
 					updateDateLabel();
+					editor_FirstDayOfWeek.setVisible(false);
+					label_FirstDayOfWeek.setVisible(false);
 					refresh();
 
 				}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(btnName)){
@@ -869,6 +872,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 					p_CalendarMold = GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW;
 					setCalendarMold(7);
 					updateDateLabel();
+					editor_FirstDayOfWeek.setVisible(false);
+					label_FirstDayOfWeek.setVisible(false);
 					refresh();
 
 				}else if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(btnName)){
@@ -876,6 +881,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 					p_CalendarMold = GroupwareToDoUtil.BUTTON_MONTH_VIEW;
 					setCalendarMold(0);
 					updateDateLabel();
+					editor_FirstDayOfWeek.setVisible(true);
+					label_FirstDayOfWeek.setVisible(true);
 					refresh();
 
 				}
