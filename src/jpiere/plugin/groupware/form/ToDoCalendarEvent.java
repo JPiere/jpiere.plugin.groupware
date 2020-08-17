@@ -169,7 +169,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}
 				}
 
-			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold) || GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(calendarMold)) {
 
 				if(isDisplayUserName)
 				{
@@ -339,7 +339,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					this.setContent(toDo.getDescription());
 				}
 
-			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold) || GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(calendarMold) ) {
 
 				if(isDisplayUserName)
 				{
@@ -402,7 +402,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					this.setContentColor(category.getJP_ColorPicker2());
 				}
 
-			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold) || GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(calendarMold) ) {
 
 				boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
 				if(isLongTime)
@@ -440,7 +440,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 						this.setContentColor(gUser.getJP_ColorPicker2());
 					}
 
-				}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold)) {
+				}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(calendarMold) || GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(calendarMold)) {
 
 					boolean isLongTime =GroupwareToDoUtil.judgmentOfLongTime(begin_Timestamp, end_Timestamp);
 					if(isLongTime)

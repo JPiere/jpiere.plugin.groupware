@@ -519,7 +519,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		Button fivDayView = new Button();
 		fivDayView.setLabel(Msg.getMsg(ctx,"5Days"));//
 		//oneDayView.setClass("btn-small");
-		fivDayView.setName(GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW );
+		fivDayView.setName(GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW );
 		fivDayView.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(fivDayView);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
@@ -817,9 +817,9 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 					updateDateLabel();
 					refresh();
 
-				}else if(GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW.equals(btnName)){//TODO
+				}else if(GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(btnName)){//TODO
 
-					p_CalendarMold = GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW;
+					p_CalendarMold = GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW;
 					setCalendarMold(5);
 					updateDateLabel();
 					refresh();
@@ -1099,7 +1099,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			{
 				timestamp = p_CalendarsEventBeginDate;
 			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(p_CalendarMold) || GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(p_CalendarMold)
-																				|| GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW.equals(p_CalendarMold) ) {
+																				|| GroupwareToDoUtil.BUTTON_FIVEDAYS_VIEW.equals(p_CalendarMold) ) {
 
 				LocalTime start = p_CalendarsEventBeginDate.toLocalDateTime().toLocalTime();
 				LocalTime end = p_CalendarsEventEndDate.toLocalDateTime().toLocalTime();

@@ -73,7 +73,7 @@ import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 /**
- * JPIERE-0470 Personal ToDo Popup Window
+ * JPIERE-0473 Personal ToDo Popup Window
  *
  *
  * @author h.hagiwara
