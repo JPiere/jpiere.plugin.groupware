@@ -181,6 +181,24 @@ public interface I_JP_GroupwareUser
 	  */
 	public boolean isActive();
 
+    /** Column name IsDisplayScheduleJP */
+    public static final String COLUMNNAME_IsDisplayScheduleJP = "IsDisplayScheduleJP";
+
+	/** Set Display Schedule	  */
+	public void setIsDisplayScheduleJP (boolean IsDisplayScheduleJP);
+
+	/** Get Display Schedule	  */
+	public boolean isDisplayScheduleJP();
+
+    /** Column name IsDisplayTaskJP */
+    public static final String COLUMNNAME_IsDisplayTaskJP = "IsDisplayTaskJP";
+
+	/** Set Display Task	  */
+	public void setIsDisplayTaskJP (boolean IsDisplayTaskJP);
+
+	/** Get Display Task	  */
+	public boolean isDisplayTaskJP();
+
     /** Column name JP_ColorPicker */
     public static final String COLUMNNAME_JP_ColorPicker = "JP_ColorPicker";
 
@@ -198,6 +216,15 @@ public interface I_JP_GroupwareUser
 
 	/** Get Color Picker2	  */
 	public String getJP_ColorPicker2();
+
+    /** Column name JP_FirstDayOfWeek */
+    public static final String COLUMNNAME_JP_FirstDayOfWeek = "JP_FirstDayOfWeek";
+
+	/** Set First Day of Week	  */
+	public void setJP_FirstDayOfWeek (String JP_FirstDayOfWeek);
+
+	/** Get First Day of Week	  */
+	public String getJP_FirstDayOfWeek();
 
     /** Column name JP_GroupwareUser_ID */
     public static final String COLUMNNAME_JP_GroupwareUser_ID = "JP_GroupwareUser_ID";

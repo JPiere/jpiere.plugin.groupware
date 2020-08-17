@@ -117,6 +117,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private MLookup lookupCategory;
 	private WSearchEditor categorySearchEditor;
 	private WSearchEditor teamSearchEditor ;
+	private WTableDirEditor editor_FirstDayOfWeek ;
+	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 
 	//West Gadget
 	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
@@ -141,13 +143,14 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		calendars.setMold("default");
 		calendars.setDays(7);
+		calendars.setFirstDayOfWeek(p_JP_FristDayOfWeek);
 
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_CREATE, this);
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_EDIT, this);
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_UPDATE,this);
 //		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER, this);
 		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_DAY,this);
-//		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
+		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
 
 		//***************** NORTH **************************//
 
@@ -369,7 +372,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
     }
 
-    public Div createNorthContents()//TODO
+    public Div createNorthContents()
     {
     	Div outerDiv = new Div();
     	outerDiv.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
@@ -432,6 +435,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		//ToDo Status List
 		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
 		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, false, false, true);
+		editor_JP_ToDo_Status.getComponent().setId(MToDo.COLUMNNAME_JP_ToDo_Status);
 		editor_JP_ToDo_Status.addValueChangeListener(this);
 		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 
@@ -462,13 +466,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
-		WYesNoEditor IsDisplaySchedule = new WYesNoEditor("IsDisplaySchedule", Msg.getMsg(ctx,"JP_DisplaySchedule"), null, true, false, true);
+		WYesNoEditor IsDisplaySchedule = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP), null, true, false, true);
 		IsDisplaySchedule.setValue(p_IsDisplaySchedule);
 		IsDisplaySchedule.addValueChangeListener(this);
 		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplaySchedule, true));
 
 
-		WYesNoEditor IsDisplayTask = new WYesNoEditor("IsDisplayTask", Msg.getMsg(ctx,"JP_DisplayTask"), null, true, false, true);
+		WYesNoEditor IsDisplayTask = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayTaskJP), null, true, false, true);
 		IsDisplayTask.setValue(p_IsDisplayTask);
 		IsDisplayTask.addValueChangeListener(this);
 		row.appendChild(GroupwareToDoUtil.createEditorDiv(IsDisplayTask, true));
@@ -579,6 +583,21 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null,  Msg.getMsg(ctx, "JP_DisplayPeriod") + " : ", true));
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
+
+		row.appendChild(GroupwareToDoUtil.getDividingLine());
+
+		//TODO:First day ot week
+		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
+		editor_FirstDayOfWeek = new WTableDirEditor(lookup_FirstDayOfWeek, Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek), null, false, false, true);
+		editor_FirstDayOfWeek.getComponent().setId(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
+		editor_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
+//		editor_FirstDayOfWeek.setReadWrite(false);
+		editor_FirstDayOfWeek.addValueChangeListener(this);
+		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_FirstDayOfWeek, Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek), true));
+		row.appendChild(editor_FirstDayOfWeek.getComponent());
+
 
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
@@ -725,24 +744,6 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 			refresh();
 
-		}else if("Value".equals(name)){//JP_ToDo_Status
-
-			if(value == null)
-			{
-				p_JP_ToDo_Status = null;
-			}else {
-
-				if(Util.isEmpty(value.toString()))
-				{
-					p_JP_ToDo_Status = null;
-				}else {
-					p_JP_ToDo_Status = value.toString();
-				}
-			}
-
-			refresh();
-
-
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
 			if(value == null)
@@ -754,19 +755,58 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 			refresh();
 
-		}else if("IsDisplaySchedule".equals(name)) {
+		}else if(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP.equals(name)) {
 
 			p_IsDisplaySchedule = (boolean)value;
 			refresh();
 
-		}else if("IsDisplayTask".equals(name)) {
+		}else if(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP.equals(name)) {
 
 			p_IsDisplayTask = (boolean)value;
 			refresh();
+
+		}else if("Value".equals(name)){ //List
+
+			Object source =  evt.getSource();
+			if(source instanceof WTableDirEditor )
+			{
+				WTableDirEditor editor = (WTableDirEditor)source;
+				String id = editor.getComponent().getId();
+
+				if(editor.getComponent().getId().equals(MToDo.COLUMNNAME_JP_ToDo_Status))
+				{
+					if(value == null)
+					{
+						p_JP_ToDo_Status = null;
+					}else {
+
+						if(Util.isEmpty(value.toString()))
+						{
+							p_JP_ToDo_Status = null;
+						}else {
+							p_JP_ToDo_Status = value.toString();
+						}
+					}
+
+					refresh();
+
+				}else if(editor.getComponent().getId().equals(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek)){
+
+					editor_FirstDayOfWeek.setValue(value.toString());
+
+					int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
+					int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
+					MRefList refList =MRefList.get(ctx, AD_Reference_Value_ID, value.toString(),null);
+
+					calendars.setMold("month");
+					calendars.setFirstDayOfWeek(refList.getName());
+
+					;
+				}
+			}
 		}
 
 	}
-
 
 	@Override
 	public void onEvent(Event event) throws Exception

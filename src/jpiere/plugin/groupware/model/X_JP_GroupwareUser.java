@@ -41,6 +41,10 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 			setAD_Tree_Menu_ID (0);
 			setAD_User_ID (0);
 // null
+			setIsDisplayScheduleJP (true);
+// Y
+			setIsDisplayTaskJP (false);
+// N
 			setJP_GroupwareUser_ID (0);
         } */
     }
@@ -230,6 +234,48 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
+	/** Set Display Schedule.
+		@param IsDisplayScheduleJP Display Schedule	  */
+	public void setIsDisplayScheduleJP (boolean IsDisplayScheduleJP)
+	{
+		set_Value (COLUMNNAME_IsDisplayScheduleJP, Boolean.valueOf(IsDisplayScheduleJP));
+	}
+
+	/** Get Display Schedule.
+		@return Display Schedule	  */
+	public boolean isDisplayScheduleJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsDisplayScheduleJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set Display Task.
+		@param IsDisplayTaskJP Display Task	  */
+	public void setIsDisplayTaskJP (boolean IsDisplayTaskJP)
+	{
+		set_Value (COLUMNNAME_IsDisplayTaskJP, Boolean.valueOf(IsDisplayTaskJP));
+	}
+
+	/** Get Display Task.
+		@return Display Task	  */
+	public boolean isDisplayTaskJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsDisplayTaskJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
 	/** Set Color Picker.
 		@param JP_ColorPicker Color Picker	  */
 	public void setJP_ColorPicker (String JP_ColorPicker)
@@ -256,6 +302,37 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public String getJP_ColorPicker2 () 
 	{
 		return (String)get_Value(COLUMNNAME_JP_ColorPicker2);
+	}
+
+	/** JP_FirstDayOfWeek AD_Reference_ID=167 */
+	public static final int JP_FIRSTDAYOFWEEK_AD_Reference_ID=167;
+	/** Sunday = 7 */
+	public static final String JP_FIRSTDAYOFWEEK_Sunday = "7";
+	/** Monday = 1 */
+	public static final String JP_FIRSTDAYOFWEEK_Monday = "1";
+	/** Tuesday = 2 */
+	public static final String JP_FIRSTDAYOFWEEK_Tuesday = "2";
+	/** Wednesday = 3 */
+	public static final String JP_FIRSTDAYOFWEEK_Wednesday = "3";
+	/** Thursday = 4 */
+	public static final String JP_FIRSTDAYOFWEEK_Thursday = "4";
+	/** Friday = 5 */
+	public static final String JP_FIRSTDAYOFWEEK_Friday = "5";
+	/** Saturday = 6 */
+	public static final String JP_FIRSTDAYOFWEEK_Saturday = "6";
+	/** Set First Day of Week.
+		@param JP_FirstDayOfWeek First Day of Week	  */
+	public void setJP_FirstDayOfWeek (String JP_FirstDayOfWeek)
+	{
+
+		set_Value (COLUMNNAME_JP_FirstDayOfWeek, JP_FirstDayOfWeek);
+	}
+
+	/** Get First Day of Week.
+		@return First Day of Week	  */
+	public String getJP_FirstDayOfWeek () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_FirstDayOfWeek);
 	}
 
 	/** Set Groupware User Preference.
