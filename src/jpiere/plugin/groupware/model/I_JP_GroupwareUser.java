@@ -94,6 +94,51 @@ public interface I_JP_GroupwareUser
 
 	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException;
 
+    /** Column name C_ProjectPhase_ID */
+    public static final String COLUMNNAME_C_ProjectPhase_ID = "C_ProjectPhase_ID";
+
+	/** Set Project Phase.
+	  * Phase of a Project
+	  */
+	public void setC_ProjectPhase_ID (int C_ProjectPhase_ID);
+
+	/** Get Project Phase.
+	  * Phase of a Project
+	  */
+	public int getC_ProjectPhase_ID();
+
+	public org.compiere.model.I_C_ProjectPhase getC_ProjectPhase() throws RuntimeException;
+
+    /** Column name C_ProjectTask_ID */
+    public static final String COLUMNNAME_C_ProjectTask_ID = "C_ProjectTask_ID";
+
+	/** Set Project Task.
+	  * Actual Project Task in a Phase
+	  */
+	public void setC_ProjectTask_ID (int C_ProjectTask_ID);
+
+	/** Get Project Task.
+	  * Actual Project Task in a Phase
+	  */
+	public int getC_ProjectTask_ID();
+
+	public org.compiere.model.I_C_ProjectTask getC_ProjectTask() throws RuntimeException;
+
+    /** Column name C_Project_ID */
+    public static final String COLUMNNAME_C_Project_ID = "C_Project_ID";
+
+	/** Set Project.
+	  * Financial Project
+	  */
+	public void setC_Project_ID (int C_Project_ID);
+
+	/** Get Project.
+	  * Financial Project
+	  */
+	public int getC_Project_ID();
+
+	public org.compiere.model.I_C_Project getC_Project() throws RuntimeException;
+
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
 
@@ -171,6 +216,46 @@ public interface I_JP_GroupwareUser
 
 	/** Get JP_GroupwareUser_UU	  */
 	public String getJP_GroupwareUser_UU();
+
+    /** Column name JP_Team_ID */
+    public static final String COLUMNNAME_JP_Team_ID = "JP_Team_ID";
+
+	/** Set Team	  */
+	public void setJP_Team_ID (int JP_Team_ID);
+
+	/** Get Team	  */
+	public int getJP_Team_ID();
+
+	public I_JP_Team getJP_Team() throws RuntimeException;
+
+    /** Column name JP_ToDo_Category_ID */
+    public static final String COLUMNNAME_JP_ToDo_Category_ID = "JP_ToDo_Category_ID";
+
+	/** Set ToDo Category	  */
+	public void setJP_ToDo_Category_ID (int JP_ToDo_Category_ID);
+
+	/** Get ToDo Category	  */
+	public int getJP_ToDo_Category_ID();
+
+	public I_JP_ToDo_Category getJP_ToDo_Category() throws RuntimeException;
+
+    /** Column name JP_ToDo_Status */
+    public static final String COLUMNNAME_JP_ToDo_Status = "JP_ToDo_Status";
+
+	/** Set ToDo Status	  */
+	public void setJP_ToDo_Status (String JP_ToDo_Status);
+
+	/** Get ToDo Status	  */
+	public String getJP_ToDo_Status();
+
+    /** Column name JP_ToDo_Type */
+    public static final String COLUMNNAME_JP_ToDo_Type = "JP_ToDo_Type";
+
+	/** Set ToDo Type	  */
+	public void setJP_ToDo_Type (String JP_ToDo_Type);
+
+	/** Get ToDo Type	  */
+	public String getJP_ToDo_Type();
 
     /** Column name Updated */
     public static final String COLUMNNAME_Updated = "Updated";

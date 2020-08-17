@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200816L;
+	private static final long serialVersionUID = 20200817L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -129,6 +129,90 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 		return ii.intValue();
 	}
 
+	public org.compiere.model.I_C_ProjectPhase getC_ProjectPhase() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_ProjectPhase)MTable.get(getCtx(), org.compiere.model.I_C_ProjectPhase.Table_Name)
+			.getPO(getC_ProjectPhase_ID(), get_TrxName());	}
+
+	/** Set Project Phase.
+		@param C_ProjectPhase_ID 
+		Phase of a Project
+	  */
+	public void setC_ProjectPhase_ID (int C_ProjectPhase_ID)
+	{
+		if (C_ProjectPhase_ID < 1) 
+			set_Value (COLUMNNAME_C_ProjectPhase_ID, null);
+		else 
+			set_Value (COLUMNNAME_C_ProjectPhase_ID, Integer.valueOf(C_ProjectPhase_ID));
+	}
+
+	/** Get Project Phase.
+		@return Phase of a Project
+	  */
+	public int getC_ProjectPhase_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_C_ProjectPhase_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_C_ProjectTask getC_ProjectTask() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_ProjectTask)MTable.get(getCtx(), org.compiere.model.I_C_ProjectTask.Table_Name)
+			.getPO(getC_ProjectTask_ID(), get_TrxName());	}
+
+	/** Set Project Task.
+		@param C_ProjectTask_ID 
+		Actual Project Task in a Phase
+	  */
+	public void setC_ProjectTask_ID (int C_ProjectTask_ID)
+	{
+		if (C_ProjectTask_ID < 1) 
+			set_Value (COLUMNNAME_C_ProjectTask_ID, null);
+		else 
+			set_Value (COLUMNNAME_C_ProjectTask_ID, Integer.valueOf(C_ProjectTask_ID));
+	}
+
+	/** Get Project Task.
+		@return Actual Project Task in a Phase
+	  */
+	public int getC_ProjectTask_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_C_ProjectTask_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_C_Project getC_Project() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_Project)MTable.get(getCtx(), org.compiere.model.I_C_Project.Table_Name)
+			.getPO(getC_Project_ID(), get_TrxName());	}
+
+	/** Set Project.
+		@param C_Project_ID 
+		Financial Project
+	  */
+	public void setC_Project_ID (int C_Project_ID)
+	{
+		if (C_Project_ID < 1) 
+			set_Value (COLUMNNAME_C_Project_ID, null);
+		else 
+			set_Value (COLUMNNAME_C_Project_ID, Integer.valueOf(C_Project_ID));
+	}
+
+	/** Get Project.
+		@return Financial Project
+	  */
+	public int getC_Project_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_C_Project_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
 	/** Set Description.
 		@param Description 
 		Optional short description of the record
@@ -206,5 +290,99 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public String getJP_GroupwareUser_UU () 
 	{
 		return (String)get_Value(COLUMNNAME_JP_GroupwareUser_UU);
+	}
+
+	public I_JP_Team getJP_Team() throws RuntimeException
+    {
+		return (I_JP_Team)MTable.get(getCtx(), I_JP_Team.Table_Name)
+			.getPO(getJP_Team_ID(), get_TrxName());	}
+
+	/** Set Team.
+		@param JP_Team_ID Team	  */
+	public void setJP_Team_ID (int JP_Team_ID)
+	{
+		if (JP_Team_ID < 1) 
+			set_Value (COLUMNNAME_JP_Team_ID, null);
+		else 
+			set_Value (COLUMNNAME_JP_Team_ID, Integer.valueOf(JP_Team_ID));
+	}
+
+	/** Get Team.
+		@return Team	  */
+	public int getJP_Team_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Team_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public I_JP_ToDo_Category getJP_ToDo_Category() throws RuntimeException
+    {
+		return (I_JP_ToDo_Category)MTable.get(getCtx(), I_JP_ToDo_Category.Table_Name)
+			.getPO(getJP_ToDo_Category_ID(), get_TrxName());	}
+
+	/** Set ToDo Category.
+		@param JP_ToDo_Category_ID ToDo Category	  */
+	public void setJP_ToDo_Category_ID (int JP_ToDo_Category_ID)
+	{
+		if (JP_ToDo_Category_ID < 1) 
+			set_Value (COLUMNNAME_JP_ToDo_Category_ID, null);
+		else 
+			set_Value (COLUMNNAME_JP_ToDo_Category_ID, Integer.valueOf(JP_ToDo_Category_ID));
+	}
+
+	/** Get ToDo Category.
+		@return ToDo Category	  */
+	public int getJP_ToDo_Category_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_ToDo_Category_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Completed = CO */
+	public static final String JP_TODO_STATUS_Completed = "CO";
+	/** Not yet started = NY */
+	public static final String JP_TODO_STATUS_NotYetStarted = "NY";
+	/** Work in progress = WP */
+	public static final String JP_TODO_STATUS_WorkInProgress = "WP";
+	/** Not Completed = NC */
+	public static final String JP_TODO_STATUS_NotCompleted = "NC";
+	/** Set ToDo Status.
+		@param JP_ToDo_Status ToDo Status	  */
+	public void setJP_ToDo_Status (String JP_ToDo_Status)
+	{
+
+		set_Value (COLUMNNAME_JP_ToDo_Status, JP_ToDo_Status);
+	}
+
+	/** Get ToDo Status.
+		@return ToDo Status	  */
+	public String getJP_ToDo_Status () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ToDo_Status);
+	}
+
+	/** Task = T */
+	public static final String JP_TODO_TYPE_Task = "T";
+	/** Schedule = S */
+	public static final String JP_TODO_TYPE_Schedule = "S";
+	/** Memo = M */
+	public static final String JP_TODO_TYPE_Memo = "M";
+	/** Set ToDo Type.
+		@param JP_ToDo_Type ToDo Type	  */
+	public void setJP_ToDo_Type (String JP_ToDo_Type)
+	{
+
+		set_Value (COLUMNNAME_JP_ToDo_Type, JP_ToDo_Type);
+	}
+
+	/** Get ToDo Type.
+		@return ToDo Type	  */
+	public String getJP_ToDo_Type () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ToDo_Type);
 	}
 }

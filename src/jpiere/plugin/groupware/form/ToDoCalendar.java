@@ -70,6 +70,7 @@ import org.zkoss.zul.North;
 import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.West;
 
+import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MTeamMember;
 import jpiere.plugin.groupware.model.MToDo;
@@ -242,8 +243,15 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			//Status
 			if(!Util.isEmpty(p_JP_ToDo_Status))
 			{
-				whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Status = ? ");
-				list_parameters.add(p_JP_ToDo_Status);
+				if(MGroupwareUser.JP_TODO_STATUS_NotCompleted.equals(p_JP_ToDo_Status))
+				{
+					whereClauseTask = whereClauseSchedule.append(" AND JP_ToDo_Status IN (?,?) ");
+					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_NotYetStarted);
+					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_WorkInProgress);
+				}else {
+					whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Status = ? ");
+					list_parameters.add(p_JP_ToDo_Status);
+				}
 			}
 
 			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
@@ -297,8 +305,17 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			//Status
 			if(!Util.isEmpty(p_JP_ToDo_Status))
 			{
-				whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Status = ? ");
-				list_parameters.add(p_JP_ToDo_Status);
+				if(MGroupwareUser.JP_TODO_STATUS_NotCompleted.equals(p_JP_ToDo_Status))
+				{
+					whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Status IN (?,?) ");
+					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_NotYetStarted);
+					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_WorkInProgress);
+
+				}else {
+
+					whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Status = ? ");
+					list_parameters.add(p_JP_ToDo_Status);
+				}
 			}
 
 			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
@@ -413,7 +430,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		//ToDo Status List
-		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
+		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
 		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, false, false, true);
 		editor_JP_ToDo_Status.addValueChangeListener(this);
 		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
@@ -499,6 +516,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		row.appendChild(oneDayView);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
+		Button fivDayView = new Button();
+		fivDayView.setLabel(Msg.getMsg(ctx,"5Days"));//
+		//oneDayView.setClass("btn-small");
+		fivDayView.setName(GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW );
+		fivDayView.addEventListener(Events.ON_CLICK, this);
+		row.appendChild(fivDayView);
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button sevenDayView = new Button();
 		sevenDayView.setLabel(Msg.getMsg(ctx, "Week"));
@@ -553,8 +577,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		label_DisplayPeriod = new Label();
 		updateDateLabel();
 
-		//Comment out to make space.
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, "表示期間:", true));//TODO
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null,  Msg.getMsg(ctx, "JP_DisplayPeriod") + " : ", true));
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
 
 
@@ -791,6 +814,13 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 					p_CalendarMold = GroupwareToDoUtil.BUTTON_ONEDAY_VIEW;
 					setCalendarMold(1);
+					updateDateLabel();
+					refresh();
+
+				}else if(GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW.equals(btnName)){//TODO
+
+					p_CalendarMold = GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW;
+					setCalendarMold(5);
 					updateDateLabel();
 					refresh();
 
@@ -1068,7 +1098,8 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 			if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(p_CalendarMold))
 			{
 				timestamp = p_CalendarsEventBeginDate;
-			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(p_CalendarMold) || GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(p_CalendarMold)) {
+			}else if(GroupwareToDoUtil.BUTTON_SEVENDAYS_VIEW.equals(p_CalendarMold) || GroupwareToDoUtil.BUTTON_ONEDAY_VIEW.equals(p_CalendarMold)
+																				|| GroupwareToDoUtil.BUTTON_FIVENDAYS_VIEW.equals(p_CalendarMold) ) {
 
 				LocalTime start = p_CalendarsEventBeginDate.toLocalDateTime().toLocalTime();
 				LocalTime end = p_CalendarsEventEndDate.toLocalDateTime().toLocalTime();
