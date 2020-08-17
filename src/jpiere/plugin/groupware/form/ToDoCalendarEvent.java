@@ -203,9 +203,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 					if(begin_LocalTime == LocalTime.MIN && end_LocalTime == LocalTime.MAX)
 					{
-						this.setContent(begin_FormatTime + (isDisplayUserName? userName :"") +  m_ToDo.getName() );
+						this.setContent(begin_FormatTime + (isDisplayUserName? userName :" ") +  m_ToDo.getName() );
 					}else {
-						this.setContent(begin_FormatTime + " - " + end_FormatTime +  (isDisplayUserName? userName :"")  + (isDisplayUserName ? " " : m_ToDo.getName()) );
+						this.setContent(begin_FormatTime + " - " + end_FormatTime +  (isDisplayUserName? userName :" ")  + (isDisplayUserName ? " " : m_ToDo.getName()) );
 					}
 
 				}else {
@@ -214,7 +214,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold))
 					{
 						String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
-						this.setContent(begin_FormatTime + (isDisplayUserName ? userName :"") + m_ToDo.getName() );
+						this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") + m_ToDo.getName() );
 
 					}else {
 
@@ -239,7 +239,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 				String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
 				this.setTitle(m_ToDo.getName());
-				this.setContent(begin_FormatTime + (isDisplayUserName ? userName :"") +  m_ToDo.getName() );
+				this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
 
 			}else {
 
