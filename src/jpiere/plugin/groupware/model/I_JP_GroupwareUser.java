@@ -217,6 +217,15 @@ public interface I_JP_GroupwareUser
 	/** Get Color Picker2	  */
 	public String getJP_ColorPicker2();
 
+    /** Column name JP_DefaultCalendarView */
+    public static final String COLUMNNAME_JP_DefaultCalendarView = "JP_DefaultCalendarView";
+
+	/** Set Default Calendar View	  */
+	public void setJP_DefaultCalendarView (String JP_DefaultCalendarView);
+
+	/** Get Default Calendar View	  */
+	public String getJP_DefaultCalendarView();
+
     /** Column name JP_FirstDayOfWeek */
     public static final String COLUMNNAME_JP_FirstDayOfWeek = "JP_FirstDayOfWeek";
 

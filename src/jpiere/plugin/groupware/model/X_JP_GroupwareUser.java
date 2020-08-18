@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200817L;
+	private static final long serialVersionUID = 20200818L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -302,6 +302,29 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public String getJP_ColorPicker2 () 
 	{
 		return (String)get_Value(COLUMNNAME_JP_ColorPicker2);
+	}
+
+	/** Day = 01 */
+	public static final String JP_DEFAULTCALENDARVIEW_Day = "01";
+	/** Five Days = 05 */
+	public static final String JP_DEFAULTCALENDARVIEW_FiveDays = "05";
+	/** Week = 07 */
+	public static final String JP_DEFAULTCALENDARVIEW_Week = "07";
+	/** Month = 31 */
+	public static final String JP_DEFAULTCALENDARVIEW_Month = "31";
+	/** Set Default Calendar View.
+		@param JP_DefaultCalendarView Default Calendar View	  */
+	public void setJP_DefaultCalendarView (String JP_DefaultCalendarView)
+	{
+
+		set_Value (COLUMNNAME_JP_DefaultCalendarView, JP_DefaultCalendarView);
+	}
+
+	/** Get Default Calendar View.
+		@return Default Calendar View	  */
+	public String getJP_DefaultCalendarView () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_DefaultCalendarView);
 	}
 
 	/** JP_FirstDayOfWeek AD_Reference_ID=167 */

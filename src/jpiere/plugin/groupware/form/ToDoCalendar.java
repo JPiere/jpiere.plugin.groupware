@@ -799,7 +799,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 
 					calendars.setMold("month");
 					calendars.setFirstDayOfWeek(refList.getName());
-
+					updateDateLabel();
 					;
 				}
 			}
