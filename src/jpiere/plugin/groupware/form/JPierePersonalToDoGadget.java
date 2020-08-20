@@ -125,7 +125,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		setSclass("views-box");
 
 		p_JP_ToDo_Type = JP_ToDo_Type;
-		p_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
+		p_AD_User_ID = Env.getAD_User_ID(ctx);
 		login_User_ID = p_AD_User_ID;
 
 		p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
@@ -162,25 +162,25 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		/**User Search Field**/
 
 
-		MLookup lookupUser = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
+		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor("AD_User_ID", true, false, true, lookupUser);
 		userSearchEditor.setValue(p_AD_User_ID);
 		userSearchEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
 
-		Label label_User = new Label(Msg.translate(Env.getCtx(), "AD_User_ID"));
+		Label label_User = new Label(Msg.translate(ctx, "AD_User_ID"));
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, label_User, false),1);
 		row.appendCellChild(userSearchEditor.getComponent(),1);
 
 
 		/**ToDo Type List Field**/
-		MLookup lookupToDoType = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
+		MLookup lookupToDoType = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
 		WTableDirEditor toDoListEditor = new WTableDirEditor(MToDo.COLUMNNAME_JP_ToDo_Type, true, false, true, lookupToDoType);
 		toDoListEditor.setValue(p_JP_ToDo_Type);
 		toDoListEditor.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(toDoListEditor.getComponent(), "true");
 
-		Label label_ToDoType = new Label(Msg.translate(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type));
+		Label label_ToDoType = new Label(Msg.translate(ctx, MToDo.COLUMNNAME_JP_ToDo_Type));
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(toDoListEditor ,label_ToDoType, false),1);
 		row.appendCellChild(toDoListEditor.getComponent(),1);
 	}
@@ -203,14 +203,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		{
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
-			editor_Text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "AD_User_ID"));
+			editor_Text.setValue(Msg.getMsg(ctx,"enter") + ":" +Msg.getElement(ctx, "AD_User_ID"));
 			hlayout.appendChild(editor_Text.getComponent());
 
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
 
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
-			editor_Text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedTasks"));//Unfinished Tasks
+			editor_Text.setValue(Msg.getMsg(ctx, "JP_UnfinishedTasks"));//Unfinished Tasks
 			hlayout.appendChild(editor_Text.getComponent());
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
@@ -237,14 +237,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
-			editor_Text.setValue(Msg.getMsg(Env.getCtx(), "JP_UnfinishedMemo"));//Unfinished Memo
+			editor_Text.setValue(Msg.getMsg(ctx, "JP_UnfinishedMemo"));//Unfinished Memo
 			hlayout.appendChild(editor_Text.getComponent());
 
 		}else {
 
 			WStringEditor editor_Text = new WStringEditor();
 			editor_Text.setReadWrite(false);
-			editor_Text.setValue(Msg.getMsg(Env.getCtx(),"enter") + ":" +Msg.getElement(Env.getCtx(), "JP_ToDo_Type"));
+			editor_Text.setValue(Msg.getMsg(ctx,"enter") + ":" +Msg.getElement(ctx, "JP_ToDo_Type"));
 			hlayout.appendChild(editor_Text.getComponent());
 
 		}
@@ -332,7 +332,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		if(list_ToDoes.size() <= 0)
 		{
-			contentsArea.appendChild(new Label(Msg.getMsg(Env.getCtx(), "not.found")));
+			contentsArea.appendChild(new Label(Msg.getMsg(ctx, "not.found")));
 			return ;
 		}
 
@@ -386,7 +386,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
 			}else {
 				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime())
-						+" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
 			}
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
@@ -408,7 +408,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 					btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString() + " " + toDo.getName());
 				}else {
 					btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString()
-						+" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
 				}
 
 			}else {
@@ -419,7 +419,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
 				}else {
 					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime
-						+" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
 				}
 
 
@@ -432,7 +432,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 			{
 				btn.setLabel(toDo.getName());
 			}else {
-				btn.setLabel(" ["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+				btn.setLabel(" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
 			}
 
 
@@ -545,7 +545,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	private List<MToDo> getToDoes(String whereClause, String orderClause, Object ...parameters)
 	{
 
-		List<MToDo> list = new Query(Env.getCtx(), MToDo.Table_Name, whereClause.toString(), null)
+		List<MToDo> list = new Query(ctx, MToDo.Table_Name, whereClause.toString(), null)
 										.setParameters(parameters)
 										.setOrderBy(orderClause)
 										.list();
