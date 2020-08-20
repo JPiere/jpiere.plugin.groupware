@@ -202,7 +202,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				}else {
 
 					this.setTitle(isDisplayUserName ? userName : m_ToDo.getName());
-					if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold))
+					if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold))
 					{
 						String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
 						this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") + m_ToDo.getName() );
@@ -226,7 +226,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(m_ToDo.getJP_ToDo_Type())) {
 
 
-			if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold)) {
+			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold)) {
 
 				String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
 				this.setTitle(m_ToDo.getName());
@@ -252,7 +252,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		{
 			MToDoCategory category = MToDoCategory.get(m_ToDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
 
-			if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold))
+			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold))
 			{
 
 				this.setHeaderColor(category.getJP_ColorPicker());
@@ -277,7 +277,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			if(gUser != null)
 			{
-				if(GroupwareToDoUtil.BUTTON_MONTH_VIEW.equals(calendarMold))
+				if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold))
 				{
 
 					this.setHeaderColor(gUser.getJP_ColorPicker());
