@@ -231,8 +231,30 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				String begin_FromatDate = (begin_LocalTime == null ? null : GroupwareToDoUtil.dateFormat(begin_LocalDate));
 				String end_FromatDate = (end_LocalTime == null ? null : GroupwareToDoUtil.dateFormat(end_LocalDate));
 
-				this.setTitle(m_ToDo.getName());
-				this.setContent(begin_FromatDate + " - " + end_FromatDate +  (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+				this.setTitle(null);
+				if(begin_LocalTime == LocalTime.MIN )
+				{
+					if(end_LocalTime == LocalTime.MAX)
+					{
+						this.setContent(begin_FromatDate + " - " + end_FromatDate +  (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+
+					}else {
+
+						this.setContent(begin_FromatDate + " - "
+								+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+					}
+
+
+				}else if(end_LocalTime == LocalTime.MAX){
+
+					this.setContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
+							+ end_FromatDate + (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+
+
+				}else {
+					this.setContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
+							+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+				}
 
 			}
 
@@ -243,19 +265,26 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			{
 				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 				{
-					this.setTitle(m_ToDo.getName());
+					this.setTitle(null);
 					this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
 
 				}else {
-					String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
-					this.setTitle(m_ToDo.getName());
-					this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
+
+					this.setTitle(null);
+					this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
 				}
 
 			}else {
 
-				this.setTitle(isDisplayUserName? userName : m_ToDo.getName());
-				this.setContent(isDisplayUserName? m_ToDo.getName() :  m_ToDo.getDescription());
+				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
+				{
+					this.setTitle(null);
+					this.setContent((isDisplayUserName? userName : m_ToDo.getName()) + " " + (isDisplayUserName? m_ToDo.getName() :  m_ToDo.getDescription()) );
+				}else {
+					this.setTitle(isDisplayUserName? userName : m_ToDo.getName());
+					this.setContent((isDisplayUserName? userName : m_ToDo.getName()) + " " + (isDisplayUserName? m_ToDo.getName() :  m_ToDo.getDescription()) );
+				}
+
 
 
 			}
