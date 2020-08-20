@@ -164,14 +164,21 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
 
-			end_LocalTime = begin_LocalTime.plusHours(INITIAL_TASK_HOUR);
-			if(begin_LocalTime.compareTo(end_LocalTime) < 0)
+			if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 			{
-				;//Noting to do
-			}else {
 				end_LocalTime = LocalTime.MAX;
-			}
 
+			}else {
+
+				end_LocalTime = begin_LocalTime.plusHours(INITIAL_TASK_HOUR);
+				if(begin_LocalTime.compareTo(end_LocalTime) < 0)//In case of end_LocalTime is Tommorow
+				{
+					;//Noting to do
+				}else {
+					end_LocalTime = LocalTime.MAX;
+				}
+
+			}
 			end_Timestamp = Timestamp.valueOf(LocalDateTime.of(end_Timestamp.toLocalDateTime().toLocalDate(), end_LocalTime));
 			this.setEndDate(new Date(end_Timestamp.getTime()));
 		}
@@ -234,7 +241,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 			{
-				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )//TODO
+				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 				{
 					this.setTitle(m_ToDo.getName());
 					this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
