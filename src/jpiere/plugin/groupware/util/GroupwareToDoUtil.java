@@ -15,6 +15,7 @@ import org.compiere.model.MForm;
 import org.compiere.model.Query;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
+import org.zkoss.calendar.Calendars;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Html;
 
@@ -138,7 +139,7 @@ public class GroupwareToDoUtil {
 		return div;
 	}
 
-	static public List<ToDoCalendarEvent> getToDoCalendarEvents(String calendarMold, boolean isDisplayName, String whereClause, String orderClause, Object ...parameters)
+	static public List<ToDoCalendarEvent> getToDoCalendarEvents(Calendars calendars, boolean isDisplayName, String whereClause, String orderClause, Object ...parameters)
 	{
 
 		List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClause.toString(), null)
@@ -149,7 +150,7 @@ public class GroupwareToDoUtil {
 		ArrayList<ToDoCalendarEvent> list_Events = new ArrayList<ToDoCalendarEvent>();
 		for(MToDo toDo : list_ToDoes)
 		{
-			list_Events.add(new ToDoCalendarEvent(toDo,calendarMold, isDisplayName));
+			list_Events.add(new ToDoCalendarEvent(toDo, calendars, isDisplayName));
 		}
 
 		return list_Events;

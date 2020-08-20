@@ -21,6 +21,7 @@ import java.util.Date;
 
 import org.compiere.model.MUser;
 import org.compiere.util.Env;
+import org.zkoss.calendar.Calendars;
 import org.zkoss.calendar.impl.SimpleCalendarEvent;
 
 import jpiere.plugin.groupware.model.MGroupwareUser;
@@ -55,15 +56,19 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private boolean isLongTime = false;	//for Change Dispay Text Info;
 	private boolean isShortTime = false;	//For Adjust Display Area;
 
+	private Calendars calendars= null;
+	private boolean isDisplayUserName = false;
 
-	public ToDoCalendarEvent(MToDo toDo, String calendarMold, boolean isDisplayUserName)
+	public ToDoCalendarEvent(MToDo toDo, Calendars calendars, boolean isDisplayUserName)
 	{
 		super();
 		this.m_ToDo = toDo;
+		this.calendars = calendars;
+		this.isDisplayUserName = isDisplayUserName;
 
 		adjustTimeToZK();
-		adjustDisplayText(calendarMold, isDisplayUserName);
-		setColor(calendarMold, isDisplayUserName);
+		adjustDisplayText();
+		setColor();
 
 		this.setLocked(true);
 	}
@@ -157,7 +162,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			 * Adjust  End Time
 			 ********************************************************************************************************/
 
-			LocalTime end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
+			end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
 
 			end_LocalTime = begin_LocalTime.plusHours(INITIAL_TASK_HOUR);
 			if(begin_LocalTime.compareTo(end_LocalTime) < 0)
@@ -177,9 +182,10 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	/**
 	 * Adjustment Text form JPiere ToDo to ZK Calendar Event
 	 */
-	private void adjustDisplayText(String calendarMold, boolean isDisplayUserName)
+	private void adjustDisplayText()
 	{
 		String userName = " [" +MUser.get(Env.getCtx(), m_ToDo.getAD_User_ID()).getName() + "] " ;
+		String calendarMold = calendars.getMold();
 
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(m_ToDo.getJP_ToDo_Type()))
 		{
@@ -190,25 +196,25 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
 					String end_FormatTime = 	(end_LocalTime == null ? null :  end_LocalTime.toString().substring(0, 5));
 
-					this.setTitle(m_ToDo.getName());
-
 					if(begin_LocalTime == LocalTime.MIN && end_LocalTime == LocalTime.MAX)
 					{
-						this.setContent(begin_FormatTime + (isDisplayUserName? userName :" ") +  m_ToDo.getName() );
+						this.setTitle(m_ToDo.getName());
+						this.setContent((isDisplayUserName? userName :" ") +  m_ToDo.getName() );
 					}else {
+						this.setTitle(m_ToDo.getName());
 						this.setContent(begin_FormatTime + " - " + end_FormatTime +  (isDisplayUserName? userName :" ")  + (isDisplayUserName ? " " : m_ToDo.getName()) );
 					}
 
 				}else {
 
-					this.setTitle(isDisplayUserName ? userName : m_ToDo.getName());
-					if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold))
+					if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 					{
-						String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
-						this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") + m_ToDo.getName() );
+						this.setTitle(null);
+						this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName());
 
 					}else {
 
+						this.setTitle(isDisplayUserName ? userName :  m_ToDo.getName());
 						this.setContent(isDisplayUserName ? m_ToDo.getName() : m_ToDo.getDescription());
 					}
 				}
@@ -226,11 +232,18 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(m_ToDo.getJP_ToDo_Type())) {
 
 
-			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold)) {
+			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
+			{
+				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )//TODO
+				{
+					this.setTitle(m_ToDo.getName());
+					this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
 
-				String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
-				this.setTitle(m_ToDo.getName());
-				this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
+				}else {
+					String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
+					this.setTitle(m_ToDo.getName());
+					this.setContent(begin_FormatTime + (isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
+				}
 
 			}else {
 
@@ -246,13 +259,15 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	/**
 	 * Set Color from JPiere to ZK Calendar Event
 	 */
-	private void setColor(String calendarMold, boolean isDisplayUserName)
+	private void setColor()
 	{
+		String calendarMold = calendars.getMold();
+
 		if(!isDisplayUserName && m_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
 			MToDoCategory category = MToDoCategory.get(m_ToDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
 
-			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold))
+			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 			{
 
 				this.setHeaderColor(category.getJP_ColorPicker());
@@ -277,7 +292,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			if(gUser != null)
 			{
-				if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(calendarMold))
+				if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 				{
 
 					this.setHeaderColor(gUser.getJP_ColorPicker());

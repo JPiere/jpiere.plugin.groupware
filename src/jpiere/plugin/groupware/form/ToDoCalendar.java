@@ -433,7 +433,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 
-		return GroupwareToDoUtil.getToDoCalendarEvents(p_CalendarMold, p_JP_Team_ID > 0 ? true : false, whereClauseFinal.toString(), orderClause.toString(), parameters);
+		return GroupwareToDoUtil.getToDoCalendarEvents(calendars, p_JP_Team_ID > 0 ? true : false, whereClauseFinal.toString(), orderClause.toString(), parameters);
     }
 
 
