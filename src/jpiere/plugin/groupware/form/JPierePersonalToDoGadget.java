@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Grid;
@@ -45,6 +46,7 @@ import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Language;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
@@ -52,6 +54,7 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Hlayout;
 
+import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
@@ -73,7 +76,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	Div footerArea = new Div();
 
 	private int p_AD_User_ID = 0;
-	private String p_JP_ToDo_Type = "T";
+	private String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Task;
 	private LocalDateTime p_LocalDateTime =null;
 	private String p_FormattedLocalDateTime = null;
 
@@ -94,10 +97,19 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 	private boolean isDashboardGadget = false;
 
+	private Properties ctx = Env.getCtx();
+
 	public JPierePersonalToDoGadget()
 	{
 		super();
-		init(MToDo.JP_TODO_TYPE_Task, true);
+		MGroupwareUser gUser = MGroupwareUser.get(ctx, Env.getAD_User_ID(ctx));
+		if(gUser != null && !Util.isEmpty(gUser.getJP_ToDo_Type()))
+		{
+			init(gUser.getJP_ToDo_Type(), true);
+		}else {
+
+			init(MToDo.JP_TODO_TYPE_Task, true);
+		}
 	}
 
 	public JPierePersonalToDoGadget(String JP_ToDo_Type)
