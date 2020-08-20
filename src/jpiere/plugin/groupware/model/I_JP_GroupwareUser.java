@@ -264,6 +264,24 @@ public interface I_JP_GroupwareUser
 
 	public I_JP_Team getJP_Team() throws RuntimeException;
 
+    /** Column name JP_ToDo_Calendar_BeginTime */
+    public static final String COLUMNNAME_JP_ToDo_Calendar_BeginTime = "JP_ToDo_Calendar_BeginTime";
+
+	/** Set ToDo Calendar Begin Time	  */
+	public void setJP_ToDo_Calendar_BeginTime (int JP_ToDo_Calendar_BeginTime);
+
+	/** Get ToDo Calendar Begin Time	  */
+	public int getJP_ToDo_Calendar_BeginTime();
+
+    /** Column name JP_ToDo_Calendar_EndTime */
+    public static final String COLUMNNAME_JP_ToDo_Calendar_EndTime = "JP_ToDo_Calendar_EndTime";
+
+	/** Set ToDo Calendar End Time	  */
+	public void setJP_ToDo_Calendar_EndTime (int JP_ToDo_Calendar_EndTime);
+
+	/** Get ToDo Calendar End Time	  */
+	public int getJP_ToDo_Calendar_EndTime();
+
     /** Column name JP_ToDo_Category_ID */
     public static final String COLUMNNAME_JP_ToDo_Category_ID = "JP_ToDo_Category_ID";
 

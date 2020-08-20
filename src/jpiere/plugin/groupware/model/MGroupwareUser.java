@@ -40,6 +40,30 @@ public class MGroupwareUser extends X_JP_GroupwareUser {
 		super(ctx, rs, trxName);
 	}
 
+
+	@Override
+	protected boolean beforeSave(boolean newRecord)
+	{
+		if(getJP_ToDo_Calendar_BeginTime() >= getJP_ToDo_Calendar_EndTime())
+		{
+			log.saveError("Error", "時間の入力が間違っています。");//TODO
+			return false;
+		}
+
+		return true;
+	}
+
+
+
+	@Override
+	protected boolean afterDelete(boolean success)
+	{
+		s_cache.put (getAD_User_ID(), this);
+		return true;
+	}
+
+
+
 	/**	Cache				*/
 	private static CCache<Integer,MGroupwareUser>	s_cache = new CCache<Integer,MGroupwareUser>(Table_Name, 20);
 

@@ -116,11 +116,19 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 	private String p_CalendarMold = GroupwareToDoUtil.CALENDAR_SEVENDAYS_VIEW;
 
-	private MLookup lookupCategory;
-	private WSearchEditor categorySearchEditor;
-	private WSearchEditor teamSearchEditor ;
-	private WTableDirEditor editor_FirstDayOfWeek ;
-	private Label label_FirstDayOfWeek;
+
+	private MLookup lookup_JP_ToDo_Category_ID;
+
+	private WSearchEditor editor_AD_User_ID;
+	private WSearchEditor editor_JP_ToDo_Category_ID;
+	private WSearchEditor editor_JP_Team_ID ;
+	private WTableDirEditor editor_JP_FirstDayOfWeek ;
+
+	private Label label_AD_User_ID ;
+	private Label label_JP_ToDo_Category_ID ;
+	private Label label_JP_Team_ID ;
+	private Label label_JP_FirstDayOfWeek;
+
 	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 
 	//West Gadget
@@ -157,6 +165,22 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
     {
 		calendars= new Calendars();
 		calendars.invalidate();
+		if(groupwareUser != null)
+		{
+			if(groupwareUser.getJP_ToDo_Calendar_BeginTime() >= groupwareUser.getJP_ToDo_Calendar_EndTime())
+			{
+				;
+			}else if(groupwareUser.getJP_ToDo_Calendar_BeginTime() < 0 || groupwareUser.getJP_ToDo_Calendar_BeginTime() >= 24) {
+				;
+			}else if(groupwareUser.getJP_ToDo_Calendar_EndTime() <= 0 || groupwareUser.getJP_ToDo_Calendar_EndTime() > 24) {
+				;
+			}else {
+
+				calendars.setBeginTime(groupwareUser.getJP_ToDo_Calendar_BeginTime());
+				calendars.setEndTime(groupwareUser.getJP_ToDo_Calendar_EndTime());
+
+			}
+		}
 
     	form = new CustomForm();
     	Borderlayout mainBorderLayout = new Borderlayout();
@@ -212,7 +236,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			if(!Util.isEmpty(fdow))
 			{
 				p_JP_FristDayOfWeek = fdow;
-				editor_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
+				editor_JP_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
 
 				int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
 				int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
@@ -412,6 +436,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		return GroupwareToDoUtil.getToDoCalendarEvents(p_CalendarMold, p_JP_Team_ID > 0 ? true : false, whereClauseFinal.toString(), orderClause.toString(), parameters);
     }
 
+
+
     private String createInUserClause(ArrayList<Object> list_parameters)
     {
 
@@ -434,6 +460,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
     }
 
+
+
     public Div createNorthContents()
     {
     	Div outerDiv = new Div();
@@ -452,23 +480,27 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
-		//User Search
+		//TODO User Search
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
-		WSearchEditor userSearchEditor = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
-		userSearchEditor.setValue(p_AD_User_ID);
-		userSearchEditor.addValueChangeListener(this);
-		ZKUpdateUtil.setHflex(userSearchEditor.getComponent(), "true");
+		editor_AD_User_ID = new WSearchEditor(MToDo.COLUMNNAME_AD_User_ID, true, false, true, lookupUser);
+		editor_AD_User_ID.setValue(p_AD_User_ID);
+		editor_AD_User_ID.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_AD_User_ID.getComponent(), "true");
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(userSearchEditor, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), true));
-		row.appendChild(userSearchEditor.getComponent());
-		userSearchEditor.showMenu();
+		label_AD_User_ID = new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID));
+		label_AD_User_ID.setId(MToDo.COLUMNNAME_AD_User_ID);
+		label_AD_User_ID.addEventListener(Events.ON_CLICK, this);
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_AD_User_ID, label_AD_User_ID, true));
+		row.appendChild(editor_AD_User_ID.getComponent());
+		editor_AD_User_ID.showMenu();
 
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
 		//ToDo Category Search
-		lookupCategory = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
+		lookup_JP_ToDo_Category_ID = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
 		String validationCode = null;
 		if(p_AD_User_ID == 0)
 		{
@@ -477,20 +509,19 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + p_AD_User_ID;
 		}
 
-		lookupCategory.getLookupInfo().ValidationCode = validationCode;
-		categorySearchEditor = new WSearchEditor(MToDo.COLUMNNAME_JP_ToDo_Category_ID, false, false, true, lookupCategory);
-		categorySearchEditor.setValue(null);
-		categorySearchEditor.addValueChangeListener(this);
-		ZKUpdateUtil.setHflex(categorySearchEditor.getComponent(), "true");
+		lookup_JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
+		editor_JP_ToDo_Category_ID = new WSearchEditor(MToDo.COLUMNNAME_JP_ToDo_Category_ID, false, false, true, lookup_JP_ToDo_Category_ID);
+		editor_JP_ToDo_Category_ID.setValue(null);
+		editor_JP_ToDo_Category_ID.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_JP_ToDo_Category_ID.getComponent(), "true");
 
 
-		Label label_JP_ToDo_Category_ID = new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID));
-		label_JP_ToDo_Category_ID.setId(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
+		label_JP_ToDo_Category_ID = new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID));
 		label_JP_ToDo_Category_ID.addEventListener(Events.ON_CLICK, this);
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(categorySearchEditor, label_JP_ToDo_Category_ID, true));
-		row.appendChild(categorySearchEditor.getComponent());
-		categorySearchEditor.showMenu();
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Category_ID, label_JP_ToDo_Category_ID, true));
+		row.appendChild(editor_JP_ToDo_Category_ID.getComponent());
+		editor_JP_ToDo_Category_ID.showMenu();
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
@@ -509,18 +540,17 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		//Team Searh
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
-		teamSearchEditor = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, false, false, true, lookupTeam);
-		teamSearchEditor.setValue(p_JP_Team_ID);
-		teamSearchEditor.addValueChangeListener(this);
-		ZKUpdateUtil.setHflex(teamSearchEditor.getComponent(), "true");
+		editor_JP_Team_ID = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, false, false, true, lookupTeam);
+		editor_JP_Team_ID.setValue(p_JP_Team_ID);
+		editor_JP_Team_ID.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_JP_Team_ID.getComponent(), "true");
 
-		Label label_JP_Team_ID = new Label(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
-		label_JP_Team_ID.setId(MTeam.COLUMNNAME_JP_Team_ID);
+		label_JP_Team_ID = new Label(Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
 		label_JP_Team_ID.addEventListener(Events.ON_CLICK, this);
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(teamSearchEditor, label_JP_Team_ID, true));
-		row.appendChild(teamSearchEditor.getComponent());
-		teamSearchEditor.showMenu();
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_Team_ID, label_JP_Team_ID, true));
+		row.appendChild(editor_JP_Team_ID.getComponent());
+		editor_JP_Team_ID.showMenu();
 
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
@@ -649,14 +679,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		//First day ot week
 		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
-		editor_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, false, false, true, lookup_FirstDayOfWeek);
-		editor_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
-		editor_FirstDayOfWeek.addValueChangeListener(this);
+		editor_JP_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, false, false, true, lookup_FirstDayOfWeek);
+		editor_JP_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
+		editor_JP_FirstDayOfWeek.addValueChangeListener(this);
 		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 
-		label_FirstDayOfWeek = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek));
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_FirstDayOfWeek, label_FirstDayOfWeek, true));
-		row.appendChild(editor_FirstDayOfWeek.getComponent());
+		label_JP_FirstDayOfWeek = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek));
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_FirstDayOfWeek, label_JP_FirstDayOfWeek, true));
+		row.appendChild(editor_JP_FirstDayOfWeek.getComponent());
 
 
     	return outerDiv;
@@ -755,6 +785,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			if(value == null)
 			{
 				p_AD_User_ID = 0;
+				editor_AD_User_ID.setValue(null);
 
 			}else {
 				p_AD_User_ID = Integer.parseInt(value.toString());
@@ -768,8 +799,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + (Integer)evt.getNewValue();
 			}
 
-			lookupCategory.getLookupInfo().ValidationCode = validationCode;
-			categorySearchEditor.setValue(null);
+			lookup_JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
+			editor_JP_ToDo_Category_ID.setValue(null);
 			p_JP_ToDo_Category_ID = 0;
 
 			refresh(null);
@@ -786,7 +817,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}else if(old_JP_ToDo_Category_ID > 0) {
 
-				throw new WrongValueException(categorySearchEditor.getComponent(), "ユーザーが変更になったのでカテゴリがリフレッシュされました。");//TODO:
+				throw new WrongValueException(editor_JP_ToDo_Category_ID.getComponent(), "ユーザーが変更になったのでカテゴリがリフレッシュされました。");//TODO:
 
 			}
 
@@ -841,7 +872,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek.equals(name)){
 
-			editor_FirstDayOfWeek.setValue(value.toString());
+			editor_JP_FirstDayOfWeek.setValue(value.toString());
 
 			int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
 			int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
@@ -936,34 +967,46 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}else if(comp instanceof Label){
 
-				String columnName = comp.getId();
-				if(!Util.isEmpty(columnName))
+				//Zoom AD_User_ID -> Groupware User window
+				if(label_AD_User_ID.equals(comp))
 				{
-					//Zoom Team Window{
-					if(MTeam.COLUMNNAME_JP_Team_ID.equals(columnName))
+					Object value = editor_AD_User_ID.getValue();
+					if(value == null || Util.isEmpty(value.toString()))
 					{
-						Object value = teamSearchEditor.getValue();
-						if(value == null || Util.isEmpty(value.toString()))
-						{
-							AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), 0);
-						}else {
-							AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), Integer.valueOf(value.toString()));
-						}
+						AEnv.zoom(MTable.getTable_ID(MGroupwareUser.Table_Name), 0);
+					}else {
 
-					}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(columnName)) {
-
-						Object value = categorySearchEditor.getValue();
-						if(value == null || Util.isEmpty(value.toString()))
+						if(groupwareUser == null)
 						{
-							AEnv.zoom(MTable.getTable_ID(MToDoCategory.Table_Name), 0);
+							AEnv.zoom(MTable.getTable_ID(MGroupwareUser.Table_Name), 0);
+
 						}else {
-							AEnv.zoom(MTable.getTable_ID(MToDoCategory.Table_Name), Integer.valueOf(value.toString()));
+
+							MGroupwareUser gUser = MGroupwareUser.get(ctx, Integer.valueOf(value.toString()));
+							AEnv.zoom(MTable.getTable_ID(MGroupwareUser.Table_Name), gUser.getJP_GroupwareUser_ID());
 						}
 					}
 
+				}else if(label_JP_ToDo_Category_ID.equals(comp)) {
+
+					Object value = editor_JP_Team_ID.getValue();
+					if(value == null || Util.isEmpty(value.toString()))
+					{
+						AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), 0);
+					}else {
+						AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), Integer.valueOf(value.toString()));
+					}
+
+				}else if(label_JP_Team_ID.equals(comp)) {
+
+					Object value = editor_JP_ToDo_Category_ID.getValue();
+					if(value == null || Util.isEmpty(value.toString()))
+					{
+						AEnv.zoom(MTable.getTable_ID(MToDoCategory.Table_Name), 0);
+					}else {
+						AEnv.zoom(MTable.getTable_ID(MToDoCategory.Table_Name), Integer.valueOf(value.toString()));
+					}
 				}
-
-
 			}
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_CREATE.equals(eventName)) {
@@ -1027,20 +1070,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		{
 			calendars.setMold("default");
 			calendars.setDays(days);
-			editor_FirstDayOfWeek.setVisible(true);
-			label_FirstDayOfWeek.setVisible(true);
+			editor_JP_FirstDayOfWeek.setVisible(true);
+			label_JP_FirstDayOfWeek.setVisible(true);
 		}
 		else  if (days > 0)
 		{
 			calendars.setMold("default");
 			calendars.setDays(days);
-			editor_FirstDayOfWeek.setVisible(false);
-			label_FirstDayOfWeek.setVisible(false);
+			editor_JP_FirstDayOfWeek.setVisible(false);
+			label_JP_FirstDayOfWeek.setVisible(false);
 
 		} else {
 			calendars.setMold("month");
-			editor_FirstDayOfWeek.setVisible(true);
-			label_FirstDayOfWeek.setVisible(true);
+			editor_JP_FirstDayOfWeek.setVisible(true);
+			label_JP_FirstDayOfWeek.setVisible(true);
 		}
 
 	}

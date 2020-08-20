@@ -60,14 +60,8 @@ public class GroupwareToDoUtil {
 
 	public final static String BUTTON_TODAY = "TODAY";
 
-	//other
-//	public final static long JUDGMENT_LONG_TIME_HOURES = 12;
-//	public final static long JUDGMENT_SHORT_TIME_MINUTE = 30;
-
 
 	//CSS
-	public static final String STYLE_EMPTY_MANDATORY_LABEL = "color: red;";
-	public static final String STYLE_NORMAL_LABEL = "color: #333;";
 	public static final String STYLE_ZOOMABLE_LABEL = "cursor: pointer; text-decoration: underline;";
 
 	static public MForm getToDoCallendarForm()
@@ -115,15 +109,13 @@ public class GroupwareToDoUtil {
 	static public Div createLabelDiv(WEditor editor, Label label , boolean isPositionAdjust )
 	{
 		label.rightAlign();
-		label.setMandatory(editor==null? false : editor.isMandatory());
+		label.setMandatory(editor==null? false : editor.isMandatory());//TODO
 
-		String style = null;
-		if(editor != null && (editor.getColumnName().equals(MTeam.COLUMNNAME_JP_Team_ID) || editor.getColumnName().equals(MToDo.COLUMNNAME_JP_ToDo_Category_ID)) )
-			style = STYLE_ZOOMABLE_LABEL + STYLE_NORMAL_LABEL;
-		else
-			style = STYLE_NORMAL_LABEL;
-
-		label.setStyle(style);
+		if(editor != null && (editor.getColumnName().equals(MToDo.COLUMNNAME_AD_User_ID)
+				|| editor.getColumnName().equals(MToDo.COLUMNNAME_JP_ToDo_Category_ID) || editor.getColumnName().equals(MTeam.COLUMNNAME_JP_Team_ID) ))
+		{
+			label.setStyle(STYLE_ZOOMABLE_LABEL);
+		}
 
 		Div div = new Div();
 		div.setSclass("form-label");

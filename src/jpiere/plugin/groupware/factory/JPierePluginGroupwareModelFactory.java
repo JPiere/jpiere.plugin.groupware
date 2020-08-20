@@ -42,7 +42,7 @@ public class JPierePluginGroupwareModelFactory implements IModelFactory {
 	@Override
 	public Class<?> getClass(String tableName)
 	{
-		if(tableName.startsWith("JP_ToDo") ||  tableName.startsWith("JP_Team"))
+		if(tableName.startsWith("JP_ToDo") ||  tableName.startsWith("JP_Team") || tableName.startsWith("JP_Groupware"))
 		{
 			if (tableName.endsWith("_Trl"))
 				return null;

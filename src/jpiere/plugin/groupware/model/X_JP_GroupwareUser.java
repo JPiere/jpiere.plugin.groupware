@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200818L;
+	private static final long serialVersionUID = 20200820L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -46,6 +46,10 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 			setIsDisplayTaskJP (false);
 // N
 			setJP_GroupwareUser_ID (0);
+			setJP_ToDo_Calendar_BeginTime (0);
+// 0
+			setJP_ToDo_Calendar_EndTime (0);
+// 24
         } */
     }
 
@@ -412,6 +416,40 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public int getJP_Team_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Team_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Set ToDo Calendar Begin Time.
+		@param JP_ToDo_Calendar_BeginTime ToDo Calendar Begin Time	  */
+	public void setJP_ToDo_Calendar_BeginTime (int JP_ToDo_Calendar_BeginTime)
+	{
+		set_Value (COLUMNNAME_JP_ToDo_Calendar_BeginTime, Integer.valueOf(JP_ToDo_Calendar_BeginTime));
+	}
+
+	/** Get ToDo Calendar Begin Time.
+		@return ToDo Calendar Begin Time	  */
+	public int getJP_ToDo_Calendar_BeginTime () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_ToDo_Calendar_BeginTime);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Set ToDo Calendar End Time.
+		@param JP_ToDo_Calendar_EndTime ToDo Calendar End Time	  */
+	public void setJP_ToDo_Calendar_EndTime (int JP_ToDo_Calendar_EndTime)
+	{
+		set_Value (COLUMNNAME_JP_ToDo_Calendar_EndTime, Integer.valueOf(JP_ToDo_Calendar_EndTime));
+	}
+
+	/** Get ToDo Calendar End Time.
+		@return ToDo Calendar End Time	  */
+	public int getJP_ToDo_Calendar_EndTime () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_ToDo_Calendar_EndTime);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
