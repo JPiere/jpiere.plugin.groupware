@@ -77,7 +77,7 @@ import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
-import jpiere.plugin.groupware.window.I_CallerPersonalToDoPopupwindow;
+import jpiere.plugin.groupware.window.I_CallerToDoPopupwindow;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 /**
@@ -87,7 +87,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  * h.hagiwara
  *
  */
-public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormController, EventListener<Event>, ValueChangeListener {
+public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, EventListener<Event>, ValueChangeListener {
 
 	//private static CLogger log = CLogger.getCLogger(ToDoCalendar.class);
 
@@ -1005,28 +1005,28 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	List<MToDo> list_ToDoes = null;
 
 	@Override
-	public List<MToDo> getListToDoes()
+	public List<MToDo> getPersonalToDoList()
 	{
 		return list_ToDoes;
 	}
 
 
 	@Override
-	public int getInitial_User_ID()
+	public int getDefault_AD__User_ID()
 	{
 		return p_AD_User_ID;
 	}
 
 
 	@Override
-	public int getInitial_ToDo_Category_ID()
+	public int getDefault_JP_ToDo_Category_ID()
 	{
 		return p_JP_ToDo_Category_ID;
 	}
 
 
 	@Override
-	public String getInitial_ToDo_Type()
+	public String getDefault_JP_ToDo_Type()
 	{
 		if(list_ToDoes == null)
 		{
@@ -1104,7 +1104,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private Timestamp p_CalendarsEventBeginDate = null;
 
 	@Override
-	public Timestamp getInitialScheduledStartTime()
+	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()
 	{
 		Timestamp timestamp = null;
 		if(p_CalendarsEventBeginDate == null)
@@ -1128,7 +1128,7 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 	private Timestamp p_CalendarsEventEndDate = null;
 
 	@Override
-	public Timestamp getInitialScheduledEndTime()
+	public Timestamp getDefault_JP_ToDo_ScheduledEndTime()
 	{
 		Timestamp timestamp = null;
 		if(p_CalendarsEventEndDate == null)
@@ -1162,5 +1162,12 @@ public class ToDoCalendar implements I_CallerPersonalToDoPopupwindow, IFormContr
 		}
 
 
+	}
+
+
+	@Override
+	public List<MToDoTeam> getTeamToDoList()
+	{
+		return null;
 	}
 }

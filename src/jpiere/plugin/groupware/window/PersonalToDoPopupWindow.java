@@ -104,7 +104,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsDirty = false;
 	private boolean p_Debug = false;
 
-	private I_CallerPersonalToDoPopupwindow i_CallerPersonalToDoPopupwindow;
+	private I_CallerToDoPopupwindow i_CallerPersonalToDoPopupwindow;
 	private  List<MToDo>  list_ToDoes = null;
 	private int index = 0;
 
@@ -135,11 +135,11 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
 	private final static String BUTTON_NAME_DELETE = "DELETE";
 
-	public PersonalToDoPopupWindow(I_CallerPersonalToDoPopupwindow caller, int index)
+	public PersonalToDoPopupWindow(I_CallerToDoPopupwindow caller, int index)
 	{
 		super();
 		this.i_CallerPersonalToDoPopupwindow = caller;
-		this.list_ToDoes =caller.getListToDoes();
+		this.list_ToDoes =caller.getPersonalToDoList();
 		this.index = index;
 		ctx = Env.getCtx();
 
@@ -209,9 +209,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		{
 			p_IsNewRecord = true;
 			p_MToDo = null;
-			p_AD_User_ID = i_CallerPersonalToDoPopupwindow.getInitial_User_ID();
-			p_JP_ToDo_Type = i_CallerPersonalToDoPopupwindow.getInitial_ToDo_Type();
-			p_JP_ToDo_Category_ID = i_CallerPersonalToDoPopupwindow.getInitial_ToDo_Category_ID ();
+			p_AD_User_ID = i_CallerPersonalToDoPopupwindow.getDefault_AD__User_ID();
+			p_JP_ToDo_Type = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_Type();
+			p_JP_ToDo_Category_ID = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_Category_ID ();
 
 		}else {
 
@@ -257,13 +257,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 		{
-			p_InitialScheduledStartTime = i_CallerPersonalToDoPopupwindow.getInitialScheduledStartTime();
-			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getInitialScheduledEndTime();
+			p_InitialScheduledStartTime = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_ScheduledStartTime();
+			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_ScheduledEndTime();
 
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)){
 
 			p_InitialScheduledStartTime = null;
-			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getInitialScheduledStartTime();
+			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_ScheduledStartTime();
 
 		}else {
 

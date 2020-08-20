@@ -53,8 +53,9 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Hlayout;
 
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
-import jpiere.plugin.groupware.window.I_CallerPersonalToDoPopupwindow;
+import jpiere.plugin.groupware.window.I_CallerToDoPopupwindow;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
@@ -64,7 +65,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  *  @author Hideaki Hagiwara（h.hagiwara@oss-erp.co.jp）
  *
  */
-public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_CallerPersonalToDoPopupwindow, EventListener<Event>, ValueChangeListener {
+public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_CallerToDoPopupwindow, EventListener<Event>, ValueChangeListener {
 
 	Div headerArea = new Div();
 	Div messageArea = new Div();
@@ -540,19 +541,19 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 	@Override
-	public int getInitial_User_ID()
+	public int getDefault_AD__User_ID()
 	{
 		return p_AD_User_ID;
 	}
 
 	@Override
-	public String getInitial_ToDo_Type()
+	public String getDefault_JP_ToDo_Type()
 	{
 		return p_JP_ToDo_Type;
 	}
 
 	@Override
-	public List<MToDo>  getListToDoes()
+	public List<MToDo>  getPersonalToDoList()
 	{
 		return list_ToDoes;
 	}
@@ -567,13 +568,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 	@Override
-	public Timestamp getInitialScheduledStartTime()
+	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
 	}
 
 	@Override
-	public Timestamp getInitialScheduledEndTime()
+	public Timestamp getDefault_JP_ToDo_ScheduledEndTime()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
 	}
@@ -586,8 +587,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 	@Override
-	public int getInitial_ToDo_Category_ID()
+	public int getDefault_JP_ToDo_Category_ID()
 	{
 		return 0;
+	}
+
+	@Override
+	public List<MToDoTeam> getTeamToDoList()
+	{
+		return null;
 	}
 }
