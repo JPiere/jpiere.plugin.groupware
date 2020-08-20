@@ -167,10 +167,12 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(index <= -1)
 		{
 			p_JP_ToDo_ID = 0;
+			p_IsNewRecord = true;
 
 		}else {
 
 			p_JP_ToDo_ID = list_ToDoes.get(index).getJP_ToDo_ID();
+			p_IsNewRecord = false;
 		}
 
 		updateControlParameter(p_JP_ToDo_ID);
@@ -212,7 +214,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		if(p_JP_ToDo_ID == 0)
 		{
-			p_IsNewRecord = true;
 			p_MToDo = null;
 			p_AD_User_ID = i_CallerPersonalToDoPopupwindow.getDefault_AD__User_ID();
 			p_JP_ToDo_Type = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_Type();
@@ -220,7 +221,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			p_IsNewRecord = false;
 			p_MToDo = new MToDo(ctx, p_JP_ToDo_ID, null);
 			p_AD_User_ID = p_MToDo.getAD_User_ID();
 			p_JP_ToDo_Type = p_MToDo.getJP_ToDo_Type();
@@ -615,7 +615,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(deleteBtn == null)
 		{
 			deleteBtn = new Button();
-			deleteBtn.setImage(ThemeManager.getThemeResource("images/" + "Delete16.png"));
+			deleteBtn.setImage(ThemeManager.getThemeResource("images/Delete16.png"));
 			deleteBtn.setClass("btn-small");
 			deleteBtn.addEventListener(Events.ON_CLICK, this);
 			deleteBtn.setName(BUTTON_NAME_DELETE);
@@ -1101,7 +1101,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	{
 		String name = evt.getPropertyName();
 		Object value = evt.getNewValue();
-		Object source = evt.getSource();
 
 		if(MToDo.COLUMNNAME_JP_ToDo_Type.equals(name))
 		{
