@@ -70,34 +70,36 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  */
 public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_CallerToDoPopupwindow, EventListener<Event>, ValueChangeListener {
 
-	Div headerArea = new Div();
-	Div messageArea = new Div();
-	Div contentsArea = new Div();
-	Div footerArea = new Div();
+
+	private Properties ctx = Env.getCtx();
 
 	private int p_AD_User_ID = 0;
+	private int login_User_ID = 0;
+
 	private String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Task;
 	private LocalDateTime p_LocalDateTime =null;
 	private String p_FormattedLocalDateTime = null;
 
 	private Timestamp today = null;
 
-
-	private final static String BUTTON_NAME_PREVIOUS_DAY = "PREVIOUSDAY";
-	private final static String BUTTON_NAME_NEXT_DAY = "NEXTDAY";
-	private final static String BUTTON_NAME_NEW_TODO = "NEW";
-	private final static String BUTTON_NAME_REFRESH = "REFRESH";
-	private final static String BUTTON_NAME_CALENDER = "CALENDER";
-
 	private Language lang = Env.getLanguage(Env.getCtx());
-	private int login_User_ID = 0;
+
 	private WDateEditor editor_Date = null;
 
 	private List<MToDo>  list_ToDoes = null;
 
 	private boolean isDashboardGadget = false;
 
-	private Properties ctx = Env.getCtx();
+	private Div headerArea = new Div();
+	private Div messageArea = new Div();
+	private Div contentsArea = new Div();
+	private Div footerArea = new Div();
+
+	private final static String BUTTON_NAME_PREVIOUS_DAY = "PREVIOUSDAY";
+	private final static String BUTTON_NAME_NEXT_DAY = "NEXTDAY";
+	private final static String BUTTON_NAME_NEW_TODO = "NEW";
+	private final static String BUTTON_NAME_REFRESH = "REFRESH";
+	private final static String BUTTON_NAME_CALENDER = "CALENDER";
 
 	public JPierePersonalToDoGadget()
 	{

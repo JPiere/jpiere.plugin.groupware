@@ -89,6 +89,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	/** Control Parameters	*/
 	private boolean p_IsUpdatable = false;
+	private boolean p_IsUpdatable_ToDoStatus = false;
 	private boolean p_IsNewRecord = false;
 	private boolean p_IsTeamToDo = false;
 	private boolean p_RequeryOnCancel = false;
@@ -96,7 +97,10 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private MToDo p_MToDo = null;
 	private MToDoTeam p_TeamMToDo = null;
 	private int p_JP_ToDo_ID = 0;
+
 	private int p_AD_User_ID = 0;
+	private int login_User_ID = 0;
+
 	private String p_JP_ToDo_Type = null;
 	private int p_JP_ToDo_Category_ID = 0;
 	private Timestamp p_InitialScheduledStartTime = null;
@@ -142,6 +146,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		this.list_ToDoes =caller.getPersonalToDoList();
 		this.index = index;
 		ctx = Env.getCtx();
+		login_User_ID = Env.getAD_User_ID(ctx);
 
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		if (!ThemeManager.isUseCSSForWindowSize()) {
@@ -228,7 +233,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			if(p_AD_User_ID == Env.getAD_User_ID(ctx) || p_MToDo.getCreatedBy() == Env.getAD_User_ID(ctx))
+			if(p_AD_User_ID == login_User_ID || p_MToDo.getCreatedBy() == login_User_ID)
 			{
 				if(p_MToDo.isProcessed())
 					p_IsUpdatable = false;
@@ -241,6 +246,12 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			}
 		}
 
+		if(p_AD_User_ID == login_User_ID || p_MToDo.getCreatedBy() == login_User_ID)
+		{
+			p_IsUpdatable_ToDoStatus = true;
+		}else {
+			p_IsUpdatable_ToDoStatus = false;
+		}
 
 		if(p_IsNewRecord)
 		{
@@ -356,7 +367,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		//*** JP_ToDo_Status ***//
 		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
-		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, p_IsUpdatable? false: true, true);
+		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, p_IsUpdatable_ToDoStatus? false: true, true);//TODO
 		editor_JP_ToDo_Status.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Status, editor_JP_ToDo_Status);
@@ -406,7 +417,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		map_Editor.get(MToDo.COLUMNNAME_Comments).setReadWrite(p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setReadWrite(p_IsTeamToDo? false : p_IsUpdatable);
-		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setReadWrite(p_IsUpdatable_ToDoStatus? true: false);
 		map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setReadWrite(p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).setReadWrite(p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).setReadWrite(p_IsUpdatable);
@@ -895,7 +906,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	private boolean saveToDo()
 	{
-		if(!p_IsUpdatable)
+		if(!p_IsUpdatable && !p_IsUpdatable_ToDoStatus)
 		{
 			return true;
 		}
@@ -1038,7 +1049,12 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			p_IsDirty = false;
 			p_RequeryOnCancel = true;
+
+			updateControlParameter(p_MToDo.getJP_ToDo_ID());
+			updateEditorValue();
+			updateEditorStatus();
 			updateNorth();
+			updateCenter();
 
 		}
 		else
@@ -1081,37 +1097,35 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	}
 
 	@Override
-	public void valueChange(ValueChangeEvent evt)
+	public void valueChange(ValueChangeEvent evt)//TODo
 	{
+		String name = evt.getPropertyName();
+		Object value = evt.getNewValue();
 		Object source = evt.getSource();
-		if(source instanceof WTableDirEditor)
+
+		if(MToDo.COLUMNNAME_JP_ToDo_Type.equals(name))
 		{
-			WTableDirEditor editor = (WTableDirEditor)source;
-			if(editor.getColumnName().equals(MToDo.COLUMNNAME_JP_ToDo_Type))
+			if(value != null)
+				p_JP_ToDo_Type = (String)value;
+
+			updateCenter();
+
+		}else if(MToDo.COLUMNNAME_AD_User_ID.equals(name)) {
+
+			String validationCode = null;
+			if(evt.getNewValue()==null)
 			{
-				p_JP_ToDo_Type = (String)evt.getNewValue();
-				updateCenter();
+				validationCode = "JP_ToDo_Category.AD_User_ID IS NULL";
+			}else {
+				validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + (Integer)evt.getNewValue();
 			}
 
-		}else if(source instanceof WSearchEditor) {
+			MLookup JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
+			JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
+			WSearchEditor editor_JP_ToDo_Category_ID = new WSearchEditor(JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, true, p_IsNewRecord? false : true, true);
+			map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID,editor_JP_ToDo_Category_ID);
+			updateCenter();
 
-			WSearchEditor editor = (WSearchEditor)source;
-			if(editor.getColumnName().equals(MToDo.COLUMNNAME_AD_User_ID))
-			{
-				String validationCode = null;
-				if(evt.getNewValue()==null)
-				{
-					validationCode = "JP_ToDo_Category.AD_User_ID IS NULL";
-				}else {
-					validationCode = "JP_ToDo_Category.AD_User_ID IS NULL OR JP_ToDo_Category.AD_User_ID=" + (Integer)evt.getNewValue();
-				}
-
-				MLookup JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
-				JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
-				WSearchEditor editor_JP_ToDo_Category_ID = new WSearchEditor(JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, true, p_IsNewRecord? false : true, true);
-				map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID,editor_JP_ToDo_Category_ID);
-				updateCenter();
-			}
 		}
 
 		p_IsDirty = true;
