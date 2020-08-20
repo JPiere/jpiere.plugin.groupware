@@ -495,9 +495,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		//ToDo Status List
-		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
-		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, false, false, true);
-		editor_JP_ToDo_Status.getComponent().setId(MToDo.COLUMNNAME_JP_ToDo_Status);
+		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
+		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(MToDo.COLUMNNAME_JP_ToDo_Status, false, false, true, lookup_JP_ToDo_Status);
 		editor_JP_ToDo_Status.addValueChangeListener(this);
 		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 
@@ -648,12 +647,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
-		//TODO:First day ot week
+		//First day ot week
 		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
-		editor_FirstDayOfWeek = new WTableDirEditor(lookup_FirstDayOfWeek, Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek), null, false, false, true);
-		editor_FirstDayOfWeek.getComponent().setId(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
+		editor_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, false, false, true, lookup_FirstDayOfWeek);
 		editor_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
-//		editor_FirstDayOfWeek.setReadWrite(false);
 		editor_FirstDayOfWeek.addValueChangeListener(this);
 		//ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 
@@ -825,43 +822,36 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			p_IsDisplayTask = (boolean)value;
 			refresh();
 
-		}else if("Value".equals(name)){ //List
+		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
-			Object source =  evt.getSource();
-			if(source instanceof WTableDirEditor )
+			if(value == null)
 			{
-				WTableDirEditor editor = (WTableDirEditor)source;
-				if(editor.getComponent().getId().equals(MToDo.COLUMNNAME_JP_ToDo_Status))
+				p_JP_ToDo_Status = null;
+			}else {
+
+				if(Util.isEmpty(value.toString()))
 				{
-					if(value == null)
-					{
-						p_JP_ToDo_Status = null;
-					}else {
-
-						if(Util.isEmpty(value.toString()))
-						{
-							p_JP_ToDo_Status = null;
-						}else {
-							p_JP_ToDo_Status = value.toString();
-						}
-					}
-
-					refresh();
-
-				}else if(editor.getComponent().getId().equals(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek)){
-
-					editor_FirstDayOfWeek.setValue(value.toString());
-
-					int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
-					int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
-					MRefList refList =MRefList.get(ctx, AD_Reference_Value_ID, value.toString(),null);
-
-					calendars.setFirstDayOfWeek(refList.getName());
-
-					updateDateLabel();
-					refresh();
+					p_JP_ToDo_Status = null;
+				}else {
+					p_JP_ToDo_Status = value.toString();
 				}
 			}
+
+			refresh();
+
+		}else if(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek.equals(name)){
+
+			editor_FirstDayOfWeek.setValue(value.toString());
+
+			int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
+			int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
+			MRefList refList =MRefList.get(ctx, AD_Reference_Value_ID, value.toString(),null);
+
+			calendars.setFirstDayOfWeek(refList.getName());
+
+			updateDateLabel();
+			refresh();
+
 		}
 
 	}

@@ -366,8 +366,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 		//*** JP_ToDo_Status ***//
-		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
-		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, p_IsUpdatable_ToDoStatus? false: true, true);//TODO
+		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
+		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, p_IsUpdatable_ToDoStatus? false: true, true);
 		editor_JP_ToDo_Status.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Status, editor_JP_ToDo_Status);
@@ -1097,7 +1097,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	}
 
 	@Override
-	public void valueChange(ValueChangeEvent evt)//TODo
+	public void valueChange(ValueChangeEvent evt)
 	{
 		String name = evt.getPropertyName();
 		Object value = evt.getNewValue();
