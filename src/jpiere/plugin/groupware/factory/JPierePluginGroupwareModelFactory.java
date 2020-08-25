@@ -26,6 +26,8 @@ import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.compiere.util.Util;
 
+import jpiere.plugin.groupware.model.MJPToDoTeam;
+
 
 /**
  *  JPIERE-0469
@@ -94,6 +96,9 @@ public class JPierePluginGroupwareModelFactory implements IModelFactory {
 				return clazz;
 			}
 
+		}else if(tableName.equals("RV_JP_ToDo_Team")) {
+
+			return MJPToDoTeam.class;
 		}
 
 		return null;
@@ -154,6 +159,9 @@ public class JPierePluginGroupwareModelFactory implements IModelFactory {
 
 			return null;
 
+		}else if(tableName.equals("RV_JP_ToDo_Team")) {
+
+			return new MJPToDoTeam(Env.getCtx(), Record_ID, trxName);
 		}
 
 		return null;
@@ -188,6 +196,9 @@ public class JPierePluginGroupwareModelFactory implements IModelFactory {
 
 			return null;
 
+		}else if(tableName.equals("RV_JP_ToDo_Team")) {
+
+			return new MJPToDoTeam(Env.getCtx(), rs, trxName);
 		}
 
 		return null;
