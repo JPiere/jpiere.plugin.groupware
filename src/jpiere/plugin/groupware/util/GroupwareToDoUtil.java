@@ -53,6 +53,7 @@ public class GroupwareToDoUtil {
 	public final static String BUTTON_NEW = "NEW";
 
 	public final static String BUTTON_REFRESH = "REFRESH";
+	public final static String BUTTON_THREE_LINES = "THREELINES";
 
 	public final static String CALENDAR_ONEDAY_VIEW = "ONE";
 	public final static String CALENDAR_FIVEDAYS_VIEW = "FIVE";
