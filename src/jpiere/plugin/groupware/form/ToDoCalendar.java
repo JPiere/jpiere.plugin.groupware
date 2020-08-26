@@ -481,7 +481,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 
 		Grid grid = GridFactory.newGridLayout();
-		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setVflex(grid, "max");
 		ZKUpdateUtil.setHflex(grid, "min");
 		vlayout.appendChild(grid);
 
