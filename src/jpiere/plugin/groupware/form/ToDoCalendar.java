@@ -137,6 +137,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private Label label_JP_ToDo_Calendar_BeginTime;
 	private Label label_JP_ToDo_Calendar_EndTime;
 
+	private Button btn_ThreeLines;
+
 	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 
 	//West Gadget
@@ -687,13 +689,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 
 		//TODO : Three Lines
-		Button threelines = new Button();
-		threelines.setImage(ThemeManager.getThemeResource("images/threelines.png"));
+		btn_ThreeLines = new Button();
+		btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/threelines.png"));
 		//rightBtn.setClass("btn-small");
-		threelines.addEventListener(Events.ON_CLICK, this);
-		threelines.setName(GroupwareToDoUtil.BUTTON_THREE_LINES);
-		threelines.setLabel(" ");
-		row.appendChild(threelines);
+		btn_ThreeLines.addEventListener(Events.ON_CLICK, this);
+		btn_ThreeLines.setName(GroupwareToDoUtil.BUTTON_THREE_LINES);
+		btn_ThreeLines.setLabel(" ");
+		row.appendChild(btn_ThreeLines);
 
 
 		//First day ot week
@@ -915,7 +917,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			updateDateLabel();
 			refresh();
 
-		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime.equals(name)){
+		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime.equals(name)){//TODO
 
 			if(value == null)
 			{
@@ -924,6 +926,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}
 
 			int beginTime = ((Integer)value).intValue();
+			editor_JP_ToDo_Calendar_BeginTime.setValue(beginTime);
+
 			if(beginTime < 0)
 			{
 
@@ -952,29 +956,31 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				throw new WrongValueException(editor_JP_ToDo_Calendar_BeginTime.getComponent(), msg);
 			}
 
-			editor_JP_ToDo_Calendar_BeginTime.setValue(value);
-			calendars.setBeginTime(Integer.valueOf(value.toString()));
+			calendars.setBeginTime(beginTime);
+			createThreeLinesPopup();
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_EndTime.equals(name)){
 
 			if(value == null)
 			{
 				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_EndTime);//。
-				throw new WrongValueException(editor_JP_ToDo_Calendar_BeginTime.getComponent(), msg);
+				throw new WrongValueException(editor_JP_ToDo_Calendar_EndTime.getComponent(), msg);
 			}
 
 			int endTime = ((Integer)value).intValue();
+			editor_JP_ToDo_Calendar_EndTime.setValue(endTime);
+
 			if(endTime < 1)
 			{
 
 				String msg = Msg.getMsg(Env.getCtx(), "LessThanMinValue", new Object[] {1}) ;
-				throw new WrongValueException(editor_JP_ToDo_Calendar_BeginTime.getComponent(), msg);
+				throw new WrongValueException(editor_JP_ToDo_Calendar_EndTime.getComponent(), msg);
 			}
 
 			if(endTime > 24)
 			{
 				String msg = Msg.getMsg(Env.getCtx(), "MoreThanMaxValue", new Object[] {24});
-				throw new WrongValueException(editor_JP_ToDo_Calendar_BeginTime.getComponent(), msg);
+				throw new WrongValueException(editor_JP_ToDo_Calendar_EndTime.getComponent(), msg);
 			}
 
 
@@ -982,7 +988,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			if(obj_BeginTime == null)
 			{
 				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime);
-				throw new WrongValueException(editor_JP_ToDo_Calendar_EndTime.getComponent(), msg);
+				throw new WrongValueException(editor_JP_ToDo_Calendar_BeginTime.getComponent(), msg);
 			}
 
 			int beginTime =  ((BigDecimal)obj_BeginTime).intValue();
@@ -992,9 +998,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				throw new WrongValueException(editor_JP_ToDo_Calendar_EndTime.getComponent(), msg);
 			}
 
-			editor_JP_ToDo_Calendar_EndTime.setValue(value);
-			calendars.setEndTime(Integer.valueOf(value.toString()));
-
+			calendars.setEndTime(endTime);
+			createThreeLinesPopup();
 		}
 
 	}
@@ -1075,37 +1080,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					updateDateLabel();
 					refresh();
 
-				}else if(GroupwareToDoUtil.BUTTON_THREE_LINES.equals(btnName)){//TODO
+				}else if(GroupwareToDoUtil.BUTTON_THREE_LINES.equals(btnName)){
 
-					Popup popup = new Popup();
-					popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
-
-					Grid grid = GridFactory.newGridLayout();
-					ZKUpdateUtil.setVflex(grid, "min");
-					ZKUpdateUtil.setHflex(grid, "min");
-
-					popup.appendChild(grid);
-					Rows rows = grid.newRows();
-					Row row = rows.newRow();
-
-					row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_FirstDayOfWeek, label_JP_FirstDayOfWeek, true));
-					row.appendChild(editor_JP_FirstDayOfWeek.getComponent());
-
-					row = rows.newRow();
-					row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar_BeginTime, label_JP_ToDo_Calendar_BeginTime, true));
-					row.appendChild(editor_JP_ToDo_Calendar_BeginTime.getComponent());
-					row = rows.newRow();
-
-					row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar_EndTime, label_JP_ToDo_Calendar_EndTime, true));
-					row.appendChild(editor_JP_ToDo_Calendar_EndTime.getComponent());
-
-					popup.setPage(btn.getPage());
-					popup.open(btn, "after_start");
-
-
+					createThreeLinesPopup();
 
 					return;
-
 				}
 
 			}else if(comp instanceof Label){
@@ -1205,6 +1184,46 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			//I don't know this Event
 
 		}
+	}
+
+	Popup popup = null;
+	private void createThreeLinesPopup()
+	{
+		Grid grid = null;
+		if(popup == null)
+		{
+			popup = new Popup();
+			popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
+			grid = GridFactory.newGridLayout();
+			ZKUpdateUtil.setVflex(grid, "min");
+			ZKUpdateUtil.setHflex(grid, "min");
+			popup.appendChild(grid);
+		}else {
+			grid =(Grid)popup.getFirstChild();
+			grid.detach();
+			grid = GridFactory.newGridLayout();
+			ZKUpdateUtil.setVflex(grid, "min");
+			ZKUpdateUtil.setHflex(grid, "min");
+			popup.appendChild(grid);
+		}
+
+		Rows rows = grid.newRows();
+		Row row = rows.newRow();
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_FirstDayOfWeek, label_JP_FirstDayOfWeek, true));
+		row.appendChild(editor_JP_FirstDayOfWeek.getComponent());
+
+		row = rows.newRow();
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar_BeginTime, label_JP_ToDo_Calendar_BeginTime, true));
+		row.appendChild(editor_JP_ToDo_Calendar_BeginTime.getComponent());
+		row = rows.newRow();
+
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar_EndTime, label_JP_ToDo_Calendar_EndTime, true));
+		row.appendChild(editor_JP_ToDo_Calendar_EndTime.getComponent());
+
+		popup.setPage(btn_ThreeLines.getPage());
+		popup.open(btn_ThreeLines, "after_start");
+
 	}
 
 	private void setCalendarMold(int days)
