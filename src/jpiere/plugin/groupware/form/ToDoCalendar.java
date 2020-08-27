@@ -161,7 +161,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private Tabbox tabbox;
 	private Tab tab_p_AD_User_ID;
 	private Tabpanel tabpanel_p_AD_User_ID;
-	private boolean isIntegratedCalendarView = false;
+	private boolean isIntegratedCalendarView = true;
 
 	//West Gadget
 	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
@@ -972,12 +972,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}
 
+			refresh(null);
+
 			tabbox = null;
 
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
-			refresh();
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(name)){
 
@@ -1010,6 +1011,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			map_Calendars.clear();
 			map_Calendars.put(p_AD_User_ID, syncCalendars(from, to));
 			p_SelectedTab_User_ID = p_AD_User_ID;
+
+			refresh();
 
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
@@ -1607,13 +1610,19 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					{
 
 						list_CalEvents = map_ScheduleCalendarEvent.get(members[i].getAD_User_ID());
-						for (ToDoCalendarEvent event : list_CalEvents)
-							scm.add(event);
+						if(list_CalEvents != null)
+						{
+							for (ToDoCalendarEvent event : list_CalEvents)
+								scm.add(event);
+						}
 
 						list_CalEvents = map_TaskCalendarEvent.get(members[i].getAD_User_ID());
-						for (ToDoCalendarEvent event : list_CalEvents)
-							scm.add(event);
-					}
+						if(list_CalEvents != null)
+						{
+							for (ToDoCalendarEvent event : list_CalEvents)
+								scm.add(event);
+						}
+					}//for
 				}
 			}
 
