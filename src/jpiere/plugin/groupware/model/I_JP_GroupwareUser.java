@@ -293,6 +293,15 @@ public interface I_JP_GroupwareUser
 
 	public I_JP_ToDo_Category getJP_ToDo_Category() throws RuntimeException;
 
+    /** Column name JP_ToDo_Main_Calendar_View */
+    public static final String COLUMNNAME_JP_ToDo_Main_Calendar_View = "JP_ToDo_Main_Calendar_View";
+
+	/** Set ToDo Main Calendar View	  */
+	public void setJP_ToDo_Main_Calendar_View (String JP_ToDo_Main_Calendar_View);
+
+	/** Get ToDo Main Calendar View	  */
+	public String getJP_ToDo_Main_Calendar_View();
+
     /** Column name JP_ToDo_Status */
     public static final String COLUMNNAME_JP_ToDo_Status = "JP_ToDo_Status";
 

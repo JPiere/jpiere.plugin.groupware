@@ -131,9 +131,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private MTeam m_Team = null;
 
 	private int p_JP_ToDo_Category_ID = 0;
-	private String p_JP_ToDo_Status = null;
+	private String p_JP_ToDo_Status = MToDo.JP_TODO_STATUS_NotYetStarted;
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
+	private String p_JP_ToDo_Main_Calendar_View = MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Personal;
 
 	private String p_CalendarMold = null;
 
@@ -146,6 +147,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private WTableDirEditor editor_JP_FirstDayOfWeek ;
 	private WNumberEditor editor_JP_ToDo_Calendar_BeginTime ;
 	private WNumberEditor editor_JP_ToDo_Calendar_EndTime ;
+	private WTableDirEditor editor_JP_ToDo_Main_Calendar_View ;
 
 	private Label label_AD_User_ID ;
 	private Label label_JP_ToDo_Category_ID ;
@@ -153,6 +155,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private Label label_JP_FirstDayOfWeek;
 	private Label label_JP_ToDo_Calendar_BeginTime;
 	private Label label_JP_ToDo_Calendar_EndTime;
+	private Label label_JP_ToDo_Main_Calendar_View;
+
 
 	private Button btn_ThreeLines;
 
@@ -161,7 +165,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private Tabbox tabbox;
 	private Tab tab_p_AD_User_ID;
 	private Tabpanel tabpanel_p_AD_User_ID;
-	private boolean isIntegratedCalendarView = true;
 
 	//West Gadget
 	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
@@ -217,9 +220,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
 					int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
 					MRefList refList =MRefList.get(ctx, AD_Reference_Value_ID, fdow,null);
-					p_JP_FristDayOfWeek = refList.getName();
-					calendars.setFirstDayOfWeek(p_JP_FristDayOfWeek);
+					p_JP_FristDayOfWeek = refList.getValue();
+					calendars.setFirstDayOfWeek(refList.getName());
 				}
+
+				p_JP_ToDo_Main_Calendar_View = groupwareUser.getJP_ToDo_Main_Calendar_View();
 
 			}
 		}
@@ -751,7 +756,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		//First day ot week
 		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
-		editor_JP_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, false, false, true, lookup_FirstDayOfWeek);
+		editor_JP_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, true, false, true, lookup_FirstDayOfWeek);
 		editor_JP_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
 		editor_JP_FirstDayOfWeek.addValueChangeListener(this);
 		label_JP_FirstDayOfWeek = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek));
@@ -773,6 +778,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			editor_JP_ToDo_Calendar_EndTime.setValue(0);
 		editor_JP_ToDo_Calendar_EndTime.addValueChangeListener(this);
 		label_JP_ToDo_Calendar_EndTime = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_EndTime));
+
+
+		MLookup lookup_Main_Calendar_View = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View),  DisplayType.List);
+		editor_JP_ToDo_Main_Calendar_View = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View, true, false, true, lookup_Main_Calendar_View);
+		editor_JP_ToDo_Main_Calendar_View.setValue(p_JP_ToDo_Main_Calendar_View);
+		editor_JP_ToDo_Main_Calendar_View.addValueChangeListener(this);
+		label_JP_ToDo_Main_Calendar_View = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View));
 
     	return outerDiv;
 
@@ -800,6 +812,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
     		tab_p_AD_User_ID  = new Tab(MUser.get(ctx, p_AD_User_ID).getName());
     		tab_p_AD_User_ID.setAttribute("AD_User_ID", p_AD_User_ID);
+    		tab_p_AD_User_ID.setClosable(false);
     		tab_p_AD_User_ID.addEventListener(Events.ON_CLICK, this);
 
     		tabpanel_p_AD_User_ID = new Tabpanel();
@@ -827,6 +840,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	    		{
 	    			tab = new Tab(MUser.get(ctx, menbers[i].getAD_User_ID()).getName());
 	    			tab.setAttribute("AD_User_ID", menbers[i].getAD_User_ID());
+	    			tab.setClosable(true);
 	    			tab.addEventListener(Events.ON_CLICK, this);
 	    			tabs.appendChild(tab);
 
@@ -1453,6 +1467,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar_EndTime, label_JP_ToDo_Calendar_EndTime, true));
 		row.appendChild(editor_JP_ToDo_Calendar_EndTime.getComponent());
 
+		row = rows.newRow();
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Main_Calendar_View, label_JP_ToDo_Main_Calendar_View, true));
+		row.appendChild(editor_JP_ToDo_Main_Calendar_View.getComponent());
+
 		popup.setPage(btn_ThreeLines.getPage());
 		popup.open(btn_ThreeLines, "after_start");
 
@@ -1571,7 +1589,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		getToDoCalendarEvents();
 
-		if(isIntegratedCalendarView || p_JP_Team_ID == 0)
+		if(p_JP_Team_ID == 0)
 		{
 			SimpleCalendarModel scm =null;
 			CalendarModel  cm = map_Calendars.get(p_AD_User_ID).getModel();

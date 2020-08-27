@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200820L;
+	private static final long serialVersionUID = 20200827L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -50,6 +50,8 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 // 0
 			setJP_ToDo_Calendar_EndTime (0);
 // 24
+			setJP_ToDo_Main_Calendar_View (null);
+// P
         } */
     }
 
@@ -478,6 +480,25 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
+	}
+
+	/** Team = T */
+	public static final String JP_TODO_MAIN_CALENDAR_VIEW_Team = "T";
+	/** Personal = P */
+	public static final String JP_TODO_MAIN_CALENDAR_VIEW_Personal = "P";
+	/** Set ToDo Main Calendar View.
+		@param JP_ToDo_Main_Calendar_View ToDo Main Calendar View	  */
+	public void setJP_ToDo_Main_Calendar_View (String JP_ToDo_Main_Calendar_View)
+	{
+
+		set_Value (COLUMNNAME_JP_ToDo_Main_Calendar_View, JP_ToDo_Main_Calendar_View);
+	}
+
+	/** Get ToDo Main Calendar View.
+		@return ToDo Main Calendar View	  */
+	public String getJP_ToDo_Main_Calendar_View () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ToDo_Main_Calendar_View);
 	}
 
 	/** Completed = CO */
