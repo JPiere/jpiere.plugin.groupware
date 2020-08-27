@@ -57,14 +57,12 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private boolean isShortTime = false;	//For Adjust Display Area;
 
 	private Calendars calendars= null;
-	private boolean isDisplayUserName = false;
 
-	public ToDoCalendarEvent(MToDo toDo, Calendars calendars, boolean isDisplayUserName)
+	public ToDoCalendarEvent(MToDo toDo, Calendars calendars)
 	{
 		super();
 		this.m_ToDo = toDo;
 		this.calendars = calendars;
-		this.isDisplayUserName = isDisplayUserName;
 
 		adjustTimeToZK();
 		adjustDisplayText();
@@ -205,24 +203,39 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 					if(begin_LocalTime == LocalTime.MIN && end_LocalTime == LocalTime.MAX)
 					{
-						this.setTitle(m_ToDo.getName());
-						this.setContent((isDisplayUserName? userName :" ") +  m_ToDo.getName() );
+						this.setPersonalViewTitle(m_ToDo.getName());
+						this.setPersonalViewContent((" ") +  m_ToDo.getName() );
+
+						this.setTeamViewTitle(m_ToDo.getName());
+						this.setTeamViewContent(userName +  m_ToDo.getName() );
+
 					}else {
-						this.setTitle(m_ToDo.getName());
-						this.setContent(begin_FormatTime + " - " + end_FormatTime +  (isDisplayUserName? userName :" ")  + (isDisplayUserName ? " " : m_ToDo.getName()) );
+
+						this.setPersonalViewTitle(m_ToDo.getName());
+						this.setPersonalViewContent(begin_FormatTime + " - " + end_FormatTime +  (" ")  +  m_ToDo.getName() );
+
+						this.setTeamViewTitle(m_ToDo.getName());
+						this.setTeamViewContent(begin_FormatTime + " - " + end_FormatTime +  userName + " ");
+
 					}
 
 				}else {
 
 					if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 					{
-						this.setTitle(null);
-						this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName());
+						this.setPersonalViewTitle(null);
+						this.setPersonalViewContent((" ") +  m_ToDo.getName());
+
+						this.setTeamViewTitle(null);
+						this.setTeamViewContent(userName +  m_ToDo.getName());
 
 					}else {
 
-						this.setTitle(isDisplayUserName ? userName :  m_ToDo.getName());
-						this.setContent(isDisplayUserName ? m_ToDo.getName() : m_ToDo.getDescription());
+						this.setPersonalViewTitle(m_ToDo.getName());
+						this.setPersonalViewContent(m_ToDo.getDescription());
+
+						this.setTeamViewTitle(userName);
+						this.setTeamViewContent(m_ToDo.getName());
 					}
 				}
 
@@ -236,24 +249,31 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				{
 					if(end_LocalTime == LocalTime.MAX)
 					{
-						this.setContent(begin_FromatDate + " - " + end_FromatDate +  (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+						this.setPersonalViewContent(begin_FromatDate + " - " + end_FromatDate +  (" ")   + m_ToDo.getName());
+						this.setTeamViewContent(begin_FromatDate + " - " + end_FromatDate +  userName + m_ToDo.getName());
 
 					}else {
 
-						this.setContent(begin_FromatDate + " - "
-								+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+						this.setPersonalViewContent(begin_FromatDate + " - "
+								+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName());
+
+						this.setTeamViewContent(begin_FromatDate + " - "
+								+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName  + m_ToDo.getName());
 					}
 
 
 				}else if(end_LocalTime == LocalTime.MAX){
 
-					this.setContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
-							+ end_FromatDate + (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+					this.setPersonalViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "	+ end_FromatDate + (" ")   + m_ToDo.getName());
+					this.setTeamViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " 	+ end_FromatDate + userName  + m_ToDo.getName());
 
 
 				}else {
-					this.setContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
-							+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (isDisplayUserName? userName :" ")   + m_ToDo.getName());
+					this.setPersonalViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
+							+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName());
+
+					this.setTeamViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
+							+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName   + m_ToDo.getName());
 				}
 
 			}
@@ -265,24 +285,38 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			{
 				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 				{
-					this.setTitle(null);
-					this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
+					this.setPersonalViewTitle(null);
+					this.setPersonalViewContent((" ") +  m_ToDo.getName() );
+
+					this.setTeamViewTitle(null);
+					this.setTeamViewContent(userName +  m_ToDo.getName() );
 
 				}else {
 
-					this.setTitle(null);
-					this.setContent((isDisplayUserName ? userName :" ") +  m_ToDo.getName() );
+					this.setPersonalViewTitle(null);
+					this.setPersonalViewContent((" ") +  m_ToDo.getName() );
+
+					this.setTeamViewTitle(null);
+					this.setTeamViewContent(userName +  m_ToDo.getName() );
 				}
 
 			}else {
 
 				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 				{
-					this.setTitle(null);
-					this.setContent((isDisplayUserName? userName : m_ToDo.getName()) + " " + (isDisplayUserName? m_ToDo.getName() :  m_ToDo.getDescription()) );
+					this.setPersonalViewTitle(null);
+					this.setPersonalViewContent(m_ToDo.getName() + " " +  m_ToDo.getDescription() );
+
+					this.setTeamViewTitle(null);
+					this.setTeamViewContent(userName + " " + m_ToDo.getName() );
+
 				}else {
-					this.setTitle(isDisplayUserName? userName : m_ToDo.getName());
-					this.setContent((isDisplayUserName? userName : m_ToDo.getName()) + " " + (isDisplayUserName? m_ToDo.getName() :  m_ToDo.getDescription()) );
+
+					this.setPersonalViewTitle(m_ToDo.getName());
+					this.setPersonalViewContent(m_ToDo.getName() + " " + m_ToDo.getDescription() );
+
+					this.setTeamViewTitle(userName);
+					this.setTeamViewContent(userName + " " + m_ToDo.getName());
 				}
 
 
@@ -299,55 +333,55 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	{
 		String calendarMold = calendars.getMold();
 
-		if(!isDisplayUserName && m_ToDo.getJP_ToDo_Category_ID() > 0)
+		if(m_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
 			MToDoCategory category = MToDoCategory.get(m_ToDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
 
 			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 			{
 
-				this.setHeaderColor(category.getJP_ColorPicker());
-				this.setContentColor(category.getJP_ColorPicker());
+				this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
+				this.setPersonalViewContentColor(category.getJP_ColorPicker());
 
 			}else {
 
 				if(isLongTime)
 				{
-					this.setHeaderColor(category.getJP_ColorPicker());
-					this.setContentColor(category.getJP_ColorPicker());
+					this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
+					this.setPersonalViewContentColor(category.getJP_ColorPicker());
 				}else {
-					this.setHeaderColor(category.getJP_ColorPicker());
-					this.setContentColor(category.getJP_ColorPicker2());
+					this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
+					this.setPersonalViewContentColor(category.getJP_ColorPicker2());
 				}
 
 			}
 
-		}else if(isDisplayUserName){
+		}
 
-			MGroupwareUser gUser = MGroupwareUser.get(m_ToDo.getCtx(), m_ToDo.getAD_User_ID());
+		MGroupwareUser gUser = MGroupwareUser.get(m_ToDo.getCtx(), m_ToDo.getAD_User_ID());
 
-			if(gUser != null)
+		if(gUser != null)
+		{
+			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 			{
-				if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
+
+				this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
+				this.setTeamViewContentColor(gUser.getJP_ColorPicker());
+
+			}else {
+
+				if(isLongTime)
 				{
-
-					this.setHeaderColor(gUser.getJP_ColorPicker());
-					this.setContentColor(gUser.getJP_ColorPicker());
-
+					this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
+					this.setTeamViewContentColor(gUser.getJP_ColorPicker());
 				}else {
-
-					if(isLongTime)
-					{
-						this.setHeaderColor(gUser.getJP_ColorPicker());
-						this.setContentColor(gUser.getJP_ColorPicker());
-					}else {
-						this.setHeaderColor(gUser.getJP_ColorPicker());
-						this.setContentColor(gUser.getJP_ColorPicker2());
-					}
-
+					this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
+					this.setTeamViewContentColor(gUser.getJP_ColorPicker2());
 				}
+
 			}
 		}
+
 
 	}//setColor
 
@@ -426,4 +460,97 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	}
 
 
+
+	/**
+	 *
+	 */
+	private String teamViewTitle;
+	private String teamViewContent;
+
+	public String getPersonalViewTitle()
+	{
+		return getTitle();
+	}
+
+	public void setPersonalViewTitle(String s)
+	{
+		this.setTitle(s);
+	}
+
+	public String getPersonalViewContent()
+	{
+		return getContent();
+	}
+
+	public void setPersonalViewContent(String s)
+	{
+		this.setContent(s);
+	}
+
+	public String getTeamViewTitle()
+	{
+		return teamViewTitle;
+	}
+
+	public void setTeamViewTitle(String s)
+	{
+		this.teamViewTitle = s;
+	}
+
+
+	public String getTeamViewContent()
+	{
+		return teamViewContent;
+	}
+
+	public void setTeamViewContent(String s)
+	{
+		this.teamViewContent = s;
+	}
+
+	/**
+	 *
+	 */
+	private String teamViewHeaderColor;
+	private String teamViewContentColor;
+
+	public void setPersonalViewHeaderColor(String color)
+	{
+		this.setHeaderColor(color);
+	}
+
+	public void setPersonalViewContentColor(String color)
+	{
+		this.setContentColor(color);
+	}
+
+	public String getPersonalViewHeaderColor()
+	{
+		return getHeaderColor();
+	}
+
+	public String getPersonalViewContentColor()
+	{
+		return getContentColor();
+	}
+
+	public String getTeamViewHeaderColor()
+	{
+		return teamViewHeaderColor;
+	}
+
+	public String getTeamViewContentColor()
+	{
+		return teamViewContentColor;
+	}
+
+	public void setTeamViewHeaderColor(String color)
+	{
+		this.teamViewHeaderColor = color;
+	}
+
+	public void setTeamViewContentColor(String color)
+	{
+		this.teamViewContentColor = color;
+	}
 }

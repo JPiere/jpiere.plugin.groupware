@@ -151,7 +151,7 @@ public class GroupwareToDoUtil {
 		ArrayList<ToDoCalendarEvent> list_Events = new ArrayList<ToDoCalendarEvent>();
 		for(MToDo toDo : list_ToDoes)
 		{
-			list_Events.add(new ToDoCalendarEvent(toDo, calendars, isDisplayName));
+			list_Events.add(new ToDoCalendarEvent(toDo, calendars));
 		}
 
 		return list_Events;

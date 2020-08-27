@@ -486,8 +486,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		for(MToDo todo :list_ToDoes)//TODO
 		{
-			event_Personal = new ToDoCalendarEvent(todo, map_Calendars.get(p_AD_User_ID), false);
-			event_Team = new ToDoCalendarEvent(todo, map_Calendars.get(p_AD_User_ID), true);
+			event_Personal = new ToDoCalendarEvent(todo, map_Calendars.get(p_AD_User_ID));
+			event_Team = new ToDoCalendarEvent(todo, map_Calendars.get(p_AD_User_ID));
 
 			if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type()))
 			{
