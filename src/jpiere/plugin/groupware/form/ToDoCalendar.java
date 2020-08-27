@@ -631,7 +631,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		/******************** 2nd floor *********************************/
 
 		grid = GridFactory.newGridLayout();
-		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setVflex(grid, "max");
 		ZKUpdateUtil.setHflex(grid, "min");
 		vlayout.appendChild(grid);
 
@@ -740,11 +740,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		//Three Lines
 		btn_ThreeLines = new Button();
 		btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/threelines.png"));
-		//rightBtn.setClass("btn-small");
+		//btn_ThreeLines.setClass("btn-small");
 		btn_ThreeLines.addEventListener(Events.ON_CLICK, this);
 		btn_ThreeLines.setName(GroupwareToDoUtil.BUTTON_THREE_LINES);
 		btn_ThreeLines.setLabel(" ");
-		row.appendCellChild(btn_ThreeLines);
+		row.appendChild(btn_ThreeLines);
+		//ZKUpdateUtil.setHflex(btn_ThreeLines, "true");
+		//row.appendCellChild(btn_ThreeLines);
 
 
 		//First day ot week
@@ -937,6 +939,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				p_AD_User_ID = Integer.parseInt(value.toString());
 			}
 
+			p_OldSelectedTab_User_ID = p_SelectedTab_User_ID;
 			p_SelectedTab_User_ID = p_AD_User_ID;
 			map_Calendars.clear();
 			map_Calendars.put(p_AD_User_ID, createInitialCalendar());
@@ -1010,6 +1013,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			Calendars to = map_Calendars.get(p_AD_User_ID);
 			map_Calendars.clear();
 			map_Calendars.put(p_AD_User_ID, syncCalendars(from, to));
+
+			p_OldSelectedTab_User_ID = p_SelectedTab_User_ID;
 			p_SelectedTab_User_ID = p_AD_User_ID;
 
 			refresh();
