@@ -842,6 +842,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	    			tab = new Tab(MUser.get(ctx, menbers[i].getAD_User_ID()).getName());
 	    			tab.setAttribute("AD_User_ID", menbers[i].getAD_User_ID());
 	    			tab.setClosable(true);
+	    			tab.addEventListener(Events.ON_CLOSE, this);//onClose
 	    			tab.addEventListener(Events.ON_CLICK, this);
 	    			tabs.appendChild(tab);
 
@@ -1397,6 +1398,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_WEEK.equals(eventName)){
 
 			//I don't know this Event
+
+		}else if (Events.ON_CLOSE.equals(eventName)) {
+
+			int a = 1+1;
+
+			int b = a+1;
+
 
 		}
 	}
