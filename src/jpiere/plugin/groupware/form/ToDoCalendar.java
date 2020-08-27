@@ -1709,10 +1709,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					{
 						for (ToDoCalendarEvent event : list_CalEvents)
 						{
-							event.setTeamViewTitle();
-							event.setTeamViewContent();
-							event.setTeamViewHeaderColor();
-							event.setTeamViewContentColor();
+							setEventTextAndColor(event);
 							scm.add(event);
 						}
 					}
@@ -1722,10 +1719,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					{
 						for (ToDoCalendarEvent event : list_CalEvents)
 						{
-							event.setTeamViewTitle();
-							event.setTeamViewContent();
-							event.setTeamViewHeaderColor();
-							event.setTeamViewContentColor();
+							setEventTextAndColor(event);
 							scm.add(event);
 						}
 					}
@@ -1741,10 +1735,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						{
 							for (ToDoCalendarEvent event : list_CalEvents)
 							{
-								event.setTeamViewTitle();
-								event.setTeamViewContent();
-								event.setTeamViewHeaderColor();
-								event.setTeamViewContentColor();
+								setEventTextAndColor(event);
 								scm.add(event);
 							}
 						}
@@ -1754,10 +1745,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						{
 							for (ToDoCalendarEvent event : list_CalEvents)
 							{
-								event.setTeamViewTitle();
-								event.setTeamViewContent();
-								event.setTeamViewHeaderColor();
-								event.setTeamViewContentColor();
+								setEventTextAndColor(event);
 								scm.add(event);
 							}
 						}
@@ -1769,14 +1757,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					if(list_CalEvents != null)
 					{
 						for (ToDoCalendarEvent event : list_CalEvents)
+						{
+							setEventTextAndColor(event);
 							scm.add(event);
+						}
 					}
 
 					list_CalEvents = map_TaskCalendarEvent.get(p_AD_User_ID);
 					if(list_CalEvents != null)
 					{
 						for (ToDoCalendarEvent event : list_CalEvents)
+						{
+							setEventTextAndColor(event);
 							scm.add(event);
+						}
 					}
 
 				}
@@ -1789,6 +1783,119 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 	}
 
+	private void setEventTextAndColor(ToDoCalendarEvent event)
+	{
+
+		Calendars cal = map_Calendars.get(p_SelectedTab_User_ID);
+
+		if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team.equals(p_JP_ToDo_Main_Calendar_View) && p_JP_Team_ID > 0 && p_SelectedTab_User_ID == p_AD_User_ID)
+		{
+
+			if(cal.getMold().equalsIgnoreCase("MONTH"))
+			{
+				if(event.isShortTime)
+				{
+					event.setTitle(event.team_Month_Short_Title);
+					event.setContent(event.team_Month_Short_Content);
+					event.setHeaderColor(event.team_Month_Short_HeaderColor);
+					event.setContentColor(event.team_Month_Short_ContentColor);
+
+				}else if(event.isMiddleTime) {
+
+					event.setTitle(event.team_Month_Middle_Title);
+					event.setContent(event.team_Month_Middle_Content);
+					event.setHeaderColor(event.team_Month_Middle_HeaderColor);
+					event.setContentColor(event.team_Month_Middle_ContentColor);
+
+				}else {
+
+					event.setTitle(event.team_Month_Long_Title);
+					event.setContent(event.team_Month_Long_Content);
+					event.setHeaderColor(event.team_Month_Long_HeaderColor);
+					event.setContentColor(event.team_Month_Long_ContentColor);
+				}
+
+			}else {
+
+				if(event.isShortTime)
+				{
+					event.setTitle(event.team_Default_Short_Title);
+					event.setContent(event.team_Default_Short_Content);
+					event.setHeaderColor(event.team_Default_Short_HeaderColor);
+					event.setContentColor(event.team_Default_Short_ContentColor);
+
+				}else if(event.isMiddleTime) {
+
+					event.setTitle(event.team_Default_Middle_Title);
+					event.setContent(event.team_Default_Middle_Content);
+					event.setHeaderColor(event.team_Default_Middle_HeaderColor);
+					event.setContentColor(event.team_Default_Middle_ContentColor);
+
+				}else {
+
+					event.setTitle(event.team_Default_Long_Title);
+					event.setContent(event.team_Default_Long_Content);
+					event.setHeaderColor(event.team_Default_Long_HeaderColor);
+					event.setContentColor(event.team_Default_Long_ContentColor);
+				}
+			}
+
+
+		}else {
+
+
+			if(cal.getMold().equalsIgnoreCase("MONTH"))
+			{
+				if(event.isShortTime)
+				{
+					event.setTitle(event.personal_Month_Short_Title);
+					event.setContent(event.personal_Month_Short_Content);
+					event.setHeaderColor(event.personal_Month_Short_HeaderColor);
+					event.setContentColor(event.personal_Month_Short_ContentColor);
+
+				}else if(event.isMiddleTime) {
+
+					event.setTitle(event.personal_Month_Middle_Title);
+					event.setContent(event.personal_Month_Middle_Content);
+					event.setHeaderColor(event.personal_Month_Middle_HeaderColor);
+					event.setContentColor(event.personal_Month_Middle_ContentColor);
+
+				}else {
+
+					event.setTitle(event.personal_Month_Long_Title);
+					event.setContent(event.personal_Month_Long_Content);
+					event.setHeaderColor(event.personal_Month_Long_HeaderColor);
+					event.setContentColor(event.personal_Month_Long_ContentColor);
+				}
+
+			}else {
+
+				if(event.isShortTime)
+				{
+					event.setTitle(event.personal_Default_Short_Title);
+					event.setContent(event.personal_Default_Short_Content);
+					event.setHeaderColor(event.personal_Default_Short_HeaderColor);
+					event.setContentColor(event.personal_Default_Short_ContentColor);
+
+				}else if(event.isMiddleTime) {
+
+					event.setTitle(event.personal_Default_Middle_Title);
+					event.setContent(event.personal_Default_Middle_Content);
+					event.setHeaderColor(event.personal_Default_Middle_HeaderColor);
+					event.setContentColor(event.personal_Default_Middle_ContentColor);
+
+				}else {
+
+					event.setTitle(event.personal_Default_Long_Title);
+					event.setContent(event.personal_Default_Long_Content);
+					event.setHeaderColor(event.personal_Default_Long_HeaderColor);
+					event.setContentColor(event.personal_Default_Long_ContentColor);
+				}
+			}
+
+		}
+
+	}
 
 	@Override
 	public boolean refresh(String JP_ToDo_Type)
