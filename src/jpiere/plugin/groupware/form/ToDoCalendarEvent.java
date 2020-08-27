@@ -43,18 +43,47 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private MToDo m_ToDo = null ;
 
 	private static final int INITIAL_TASK_HOUR = 1;
-	private static final long JUDGMENT_LONG_TIME_HOURES = 12;
+	private static final long JUDGMENT_Middle_TIME_HOURES = 12;
 	private static final long JUDGMENT_SHORT_TIME_MINUTE = 30;
 
 	private LocalDate begin_LocalDate = null;
 	private LocalTime begin_LocalTime = null;
 
-	private LocalTime end_LocalTime  = null;
-	private LocalDate end_LocalDate = null;
+	private LocalTime end_LocalTime  	= null;
+	private LocalDate end_LocalDate		= null;
 
-	private boolean isSameDate = false;	//for Change Dispay Text Info;
-	private boolean isLongTime = false;	//for Change Dispay Text Info;
-	private boolean isShortTime = false;	//For Adjust Display Area;
+	private boolean isSameDate 	= false;
+	public boolean isLongTime 		= false;
+	public boolean isMiddleTime 	= false;
+	public boolean isShortTime 	= false;
+
+	public String personal_Month_Long_Title  = null;
+	public String personal_Month_Long_Content = null;
+	public String personal_Month_Middle_Title  = null;
+	public String personal_Month_Middle_Content = null;
+	public String personal_Month_Short_Title  = null;
+	public String personal_Month_Short_Content = null;
+
+	public String team_Month_Long_Title  = null;
+	public String team_Month_Long_Content = null;
+	public String team_Month_Middle_Title  = null;
+	public String team_Month_Middle_Content = null;
+	public String team_Month_Short_Title  = null;
+	public String team_Month_Short_Content = null;
+
+	public String personal_Default_Long_Title  = null;
+	public String personal_Default_Long_Content = null;
+	public String personal_Default_Middle_Title  = null;
+	public String personal_Default_Middle_Content = null;
+	public String personal_Default_Short_Title  = null;
+	public String personal_Default_Short_Content = null;
+
+	public String team_Default_Long_Title  = null;
+	public String team_Default_Long_Content = null;
+	public String team_Default_Middle_Title  = null;
+	public String team_Default_Middle_Content = null;
+	public String team_Default_Short_Title  = null;
+	public String team_Default_Short_Content = null;
 
 	private Calendars calendars= null;
 
@@ -141,7 +170,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			this.setEndDate(new Date(end_Timestamp.getTime()));
 
 
-			isLongTime =judgmentOfLongTime(begin_Timestamp, end_Timestamp);
+			isMiddleTime =judgmentOfMiddleTime(begin_Timestamp, end_Timestamp);
 
 
 
@@ -196,50 +225,74 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		{
 			if(isSameDate)
 			{
-				if(isLongTime)
+				if(isMiddleTime)
 				{
+					isLongTime = false;
+					isMiddleTime = true;
+					isShortTime = false;
+
 					String begin_FormatTime = (begin_LocalTime == null ? null :  begin_LocalTime.toString().substring(0, 5));
 					String end_FormatTime = 	(end_LocalTime == null ? null :  end_LocalTime.toString().substring(0, 5));
 
 					if(begin_LocalTime == LocalTime.MIN && end_LocalTime == LocalTime.MAX)
 					{
-						this.setPersonalViewTitle(m_ToDo.getName());
-						this.setPersonalViewContent((" ") +  m_ToDo.getName() );
+						personal_Month_Middle_Title   = m_ToDo.getName();
+						personal_Default_Middle_Title   = personal_Month_Middle_Title;
 
-						this.setTeamViewTitle(m_ToDo.getName());
-						this.setTeamViewContent(userName +  m_ToDo.getName() );
+						personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
+						personal_Default_Middle_Content = personal_Month_Middle_Content;
+
+						team_Month_Middle_Title 	= m_ToDo.getName();
+						team_Default_Middle_Title 	= team_Month_Middle_Title;
+
+						team_Month_Middle_Content 	= userName +  m_ToDo.getName() ;
+						team_Default_Middle_Content 	= team_Month_Middle_Content;
 
 					}else {
 
-						this.setPersonalViewTitle(m_ToDo.getName());
-						this.setPersonalViewContent(begin_FormatTime + " - " + end_FormatTime +  (" ")  +  m_ToDo.getName() );
+						personal_Month_Middle_Title = m_ToDo.getName();
+						personal_Default_Middle_Title = personal_Month_Middle_Title;
 
-						this.setTeamViewTitle(m_ToDo.getName());
-						this.setTeamViewContent(begin_FormatTime + " - " + end_FormatTime +  userName + " ");
+						personal_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  (" ")  +  m_ToDo.getName();
+						personal_Default_Middle_Content = personal_Month_Middle_Content;
+
+						team_Month_Middle_Title = m_ToDo.getName();
+						team_Default_Middle_Title = team_Month_Middle_Title;
+
+						team_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  userName + " ";
+						team_Default_Middle_Content = team_Month_Middle_Content;
 
 					}
 
 				}else {
 
+					isLongTime = false;
+					isMiddleTime = false;
+					isShortTime = true;
+
 					if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 					{
-						this.setPersonalViewTitle(null);
-						this.setPersonalViewContent((" ") +  m_ToDo.getName());
+						personal_Month_Short_Title = null;
+						personal_Month_Short_Content =(" ") +  m_ToDo.getName();
 
-						this.setTeamViewTitle(null);
-						this.setTeamViewContent(userName +  m_ToDo.getName());
+						team_Month_Short_Title = null;
+						team_Month_Short_Content = userName +  m_ToDo.getName();
 
 					}else {
 
-						this.setPersonalViewTitle(m_ToDo.getName());
-						this.setPersonalViewContent(m_ToDo.getDescription());
+						personal_Default_Short_Title = m_ToDo.getName();
+						personal_Default_Short_Content = m_ToDo.getDescription();
 
-						this.setTeamViewTitle(userName);
-						this.setTeamViewContent(m_ToDo.getName());
+						team_Default_Short_Title = userName;
+						team_Default_Short_Content = m_ToDo.getName();
 					}
 				}
 
 			}else { //Long Text Space -> Dispay Content Text
+
+				isLongTime = true;
+				isMiddleTime = false;
+				isShortTime = false;
 
 				String begin_FromatDate = (begin_LocalTime == null ? null : GroupwareToDoUtil.dateFormat(begin_LocalDate));
 				String end_FromatDate = (end_LocalTime == null ? null : GroupwareToDoUtil.dateFormat(end_LocalDate));
@@ -249,31 +302,42 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				{
 					if(end_LocalTime == LocalTime.MAX)
 					{
-						this.setPersonalViewContent(begin_FromatDate + " - " + end_FromatDate +  (" ")   + m_ToDo.getName());
-						this.setTeamViewContent(begin_FromatDate + " - " + end_FromatDate +  userName + m_ToDo.getName());
+						personal_Month_Long_Title = null;
+						personal_Default_Long_Title = personal_Month_Long_Title;
+						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  (" ")   + m_ToDo.getName();
+						personal_Default_Long_Content = personal_Month_Long_Content;
+
+						team_Month_Long_Title = null;
+						team_Default_Long_Title = team_Month_Long_Title;
+						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  userName + m_ToDo.getName();
+						team_Default_Long_Content = team_Month_Long_Content;
 
 					}else {
 
-						this.setPersonalViewContent(begin_FromatDate + " - "
-								+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName());
+						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName();
+						personal_Default_Long_Content = personal_Month_Long_Content;
 
-						this.setTeamViewContent(begin_FromatDate + " - "
-								+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName  + m_ToDo.getName());
+						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName  + m_ToDo.getName();
+						team_Default_Long_Content = team_Month_Long_Content;
 					}
 
 
 				}else if(end_LocalTime == LocalTime.MAX){
 
-					this.setPersonalViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "	+ end_FromatDate + (" ")   + m_ToDo.getName());
-					this.setTeamViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " 	+ end_FromatDate + userName  + m_ToDo.getName());
+					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "	+ end_FromatDate + (" ")   + m_ToDo.getName();
+					personal_Default_Long_Content = personal_Month_Long_Content;
+
+					team_Month_Long_Content  = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " 	+ end_FromatDate + userName  + m_ToDo.getName();
+					team_Default_Long_Content = team_Month_Long_Content;
 
 
 				}else {
-					this.setPersonalViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
-							+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName());
 
-					this.setTeamViewContent(begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "
-							+ end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName   + m_ToDo.getName());
+					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName();
+					personal_Default_Long_Content = personal_Month_Long_Content;
+
+					team_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName   + m_ToDo.getName();
+					team_Default_Long_Content = team_Month_Long_Content;
 				}
 
 			}
@@ -281,45 +345,57 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(m_ToDo.getJP_ToDo_Type())) {
 
 
+			isLongTime = false;
+
 			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
 			{
 				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 				{
-					this.setPersonalViewTitle(null);
-					this.setPersonalViewContent((" ") +  m_ToDo.getName() );
+					isMiddleTime = true;
+					isShortTime = false;
 
-					this.setTeamViewTitle(null);
-					this.setTeamViewContent(userName +  m_ToDo.getName() );
+					personal_Month_Middle_Title = null;
+					personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
+
+					team_Month_Middle_Title = null;
+					team_Month_Middle_Content = userName +  m_ToDo.getName() ;
 
 				}else {
 
-					this.setPersonalViewTitle(null);
-					this.setPersonalViewContent((" ") +  m_ToDo.getName() );
+					isMiddleTime = false;
+					isShortTime = true;
 
-					this.setTeamViewTitle(null);
-					this.setTeamViewContent(userName +  m_ToDo.getName() );
+					personal_Month_Short_Title = null;
+					personal_Month_Short_Content =(" ") +  m_ToDo.getName();
+
+					team_Month_Short_Title = null;
+					team_Month_Short_Content =userName +  m_ToDo.getName();
 				}
 
 			}else {
 
 				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 				{
-					this.setPersonalViewTitle(null);
-					this.setPersonalViewContent(m_ToDo.getName() + " " +  m_ToDo.getDescription() );
+					isMiddleTime = true;
+					isShortTime = false;
 
-					this.setTeamViewTitle(null);
-					this.setTeamViewContent(userName + " " + m_ToDo.getName() );
+					personal_Default_Middle_Title = null;
+					personal_Default_Middle_Content = m_ToDo.getName() + " " +  m_ToDo.getDescription() ;
+
+					team_Default_Middle_Title = null;
+					team_Default_Middle_Content = userName + " " + m_ToDo.getName() ;
 
 				}else {
 
-					this.setPersonalViewTitle(m_ToDo.getName());
-					this.setPersonalViewContent(m_ToDo.getName() + " " + m_ToDo.getDescription() );
+					isMiddleTime = false;
+					isShortTime = true;
 
-					this.setTeamViewTitle(userName);
-					this.setTeamViewContent(userName + " " + m_ToDo.getName());
+					personal_Default_Short_Title = m_ToDo.getName();
+					personal_Default_Short_Content = m_ToDo.getName() + " " + m_ToDo.getDescription();
+
+					team_Default_Short_Title = userName;
+					team_Default_Short_Content = userName + " " + m_ToDo.getName();
 				}
-
-
 
 			}
 		}
@@ -347,7 +423,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 				if(isSameDate)
 				{
-					if(isLongTime)
+					if(isMiddleTime)
 					{
 						this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
 						this.setPersonalViewContentColor(category.getJP_ColorPicker());
@@ -380,7 +456,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 				if(isSameDate)
 				{
-					if(isLongTime)
+					if(isMiddleTime)
 					{
 						this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
 						this.setTeamViewContentColor(gUser.getJP_ColorPicker());
@@ -409,7 +485,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	 * @param end
 	 * @return
 	 */
-	private boolean judgmentOfLongTime(Timestamp begin, Timestamp end)
+	private boolean judgmentOfMiddleTime(Timestamp begin, Timestamp end)
 	{
 		//Adjust Begin Time
 		LocalDate begin_LocalDate = begin.toLocalDateTime().toLocalDate();
@@ -422,7 +498,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		if((begin_LocalDate.compareTo(end_LocalDate) == 0))
 		{
 			int scheduleTime = end_LocalTime.minusHours(begin_LocalTime.getHour()).getHour();
-			if(scheduleTime >= JUDGMENT_LONG_TIME_HOURES)
+			if(scheduleTime >= JUDGMENT_Middle_TIME_HOURES)
 			{
 				return true;
 			}else {
