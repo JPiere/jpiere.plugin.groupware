@@ -812,6 +812,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
     		tab_p_AD_User_ID  = new Tab(MUser.get(ctx, p_AD_User_ID).getName());
     		tab_p_AD_User_ID.setAttribute("AD_User_ID", p_AD_User_ID);
+    		tab_p_AD_User_ID.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
     		tab_p_AD_User_ID.setClosable(false);
     		tab_p_AD_User_ID.addEventListener(Events.ON_CLICK, this);
 
@@ -1014,12 +1015,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			{
 				p_JP_Team_ID = 0;
 				m_Team = null;
-
+				tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
 
 			}else {
 
 				p_JP_Team_ID = Integer.parseInt(value.toString());
 				m_Team = new MTeam(ctx, p_JP_Team_ID, null);
+				tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
 
 			}
 
