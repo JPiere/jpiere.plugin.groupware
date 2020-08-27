@@ -1637,14 +1637,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					if(list_CalEvents != null)
 					{
 						for (ToDoCalendarEvent event : list_CalEvents)
+						{
+							setEventTextAndColor(event);
 							scm.add(event);
+						}
 					}
 
 					list_CalEvents = map_TaskCalendarEvent.get(p_AD_User_ID);
 					if(list_CalEvents != null)
 					{
 						for (ToDoCalendarEvent event : list_CalEvents)
+						{
+							setEventTextAndColor(event);
 							scm.add(event);
+						}
 					}
 
 				}else {
@@ -1658,14 +1664,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						if(list_CalEvents != null)
 						{
 							for (ToDoCalendarEvent event : list_CalEvents)
+							{
+								setEventTextAndColor(event);
 								scm.add(event);
+							}
 						}
 
 						list_CalEvents = map_TaskCalendarEvent.get(members[i].getAD_User_ID());
 						if(list_CalEvents != null)
 						{
 							for (ToDoCalendarEvent event : list_CalEvents)
+							{
+								setEventTextAndColor(event);
 								scm.add(event);
+							}
 						}
 					}//for
 				}
