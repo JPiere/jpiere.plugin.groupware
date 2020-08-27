@@ -345,13 +345,21 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			}else {
 
-				if(isLongTime)
+				if(isSameDate)
 				{
+					if(isLongTime)
+					{
+						this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
+						this.setPersonalViewContentColor(category.getJP_ColorPicker());
+					}else {
+						this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
+						this.setPersonalViewContentColor(category.getJP_ColorPicker2());
+					}
+
+				}else {
+
 					this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
 					this.setPersonalViewContentColor(category.getJP_ColorPicker());
-				}else {
-					this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
-					this.setPersonalViewContentColor(category.getJP_ColorPicker2());
 				}
 
 			}
@@ -370,13 +378,20 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			}else {
 
-				if(isLongTime)
+				if(isSameDate)
 				{
+					if(isLongTime)
+					{
+						this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
+						this.setTeamViewContentColor(gUser.getJP_ColorPicker());
+					}else {
+						this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
+						this.setTeamViewContentColor(gUser.getJP_ColorPicker2());
+					}
+				}else {
+
 					this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
 					this.setTeamViewContentColor(gUser.getJP_ColorPicker());
-				}else {
-					this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
-					this.setTeamViewContentColor(gUser.getJP_ColorPicker2());
 				}
 
 			}
@@ -464,32 +479,31 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	/**
 	 *
 	 */
+	private String personalViewTitle;
+	private String personalViewContent;
 	private String teamViewTitle;
 	private String teamViewContent;
 
-	public String getPersonalViewTitle()
-	{
-		return getTitle();
-	}
-
 	public void setPersonalViewTitle(String s)
 	{
-		this.setTitle(s);
+		this.personalViewTitle = s;
+		setTitle(personalViewTitle);
 	}
 
-	public String getPersonalViewContent()
+	public void setPersonalViewTitle()
 	{
-		return getContent();
+		setTitle(personalViewTitle);
 	}
 
 	public void setPersonalViewContent(String s)
 	{
-		this.setContent(s);
+		this.personalViewContent  = s;
+		setContent(personalViewContent);
 	}
 
-	public String getTeamViewTitle()
+	public void setPersonalViewContent()
 	{
-		return teamViewTitle;
+		setContent(personalViewContent);
 	}
 
 	public void setTeamViewTitle(String s)
@@ -497,10 +511,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		this.teamViewTitle = s;
 	}
 
-
-	public String getTeamViewContent()
+	public void setTeamViewTitle()
 	{
-		return teamViewContent;
+		setTitle(teamViewTitle);
 	}
 
 	public void setTeamViewContent(String s)
@@ -508,40 +521,39 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		this.teamViewContent = s;
 	}
 
+	public void setTeamViewContent()
+	{
+		setContent(teamViewContent);
+	}
+
 	/**
 	 *
 	 */
+	private String personalViewHeaderColor;
+	private String pesronalViewContentColor;
 	private String teamViewHeaderColor;
 	private String teamViewContentColor;
 
 	public void setPersonalViewHeaderColor(String color)
 	{
-		this.setHeaderColor(color);
+		this.personalViewHeaderColor=color;
+		this.setHeaderColor(personalViewHeaderColor);
+	}
+
+	public void setPersonalViewHeaderColor()
+	{
+		this.setHeaderColor(personalViewHeaderColor);
 	}
 
 	public void setPersonalViewContentColor(String color)
 	{
-		this.setContentColor(color);
+		this.pesronalViewContentColor = color;
+		this.setContentColor(pesronalViewContentColor);
 	}
 
-	public String getPersonalViewHeaderColor()
+	public void setPersonalViewContentColor()
 	{
-		return getHeaderColor();
-	}
-
-	public String getPersonalViewContentColor()
-	{
-		return getContentColor();
-	}
-
-	public String getTeamViewHeaderColor()
-	{
-		return teamViewHeaderColor;
-	}
-
-	public String getTeamViewContentColor()
-	{
-		return teamViewContentColor;
+		this.setContentColor(pesronalViewContentColor);
 	}
 
 	public void setTeamViewHeaderColor(String color)
@@ -549,8 +561,18 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		this.teamViewHeaderColor = color;
 	}
 
+	public void setTeamViewHeaderColor()
+	{
+		this.setHeaderColor(teamViewHeaderColor);
+	}
+
 	public void setTeamViewContentColor(String color)
 	{
 		this.teamViewContentColor = color;
+	}
+
+	public void setTeamViewContentColor()
+	{
+		this.setContentColor(teamViewContentColor);
 	}
 }
