@@ -246,7 +246,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			}
 		}
 
-		if(p_MToDo != null)
+		if(p_MToDo == null)
 		{
 			p_IsUpdatable_ToDoStatus = true;
 		}else if(p_AD_User_ID == login_User_ID || p_MToDo.getCreatedBy() == login_User_ID){
