@@ -21,7 +21,6 @@ import java.util.Date;
 
 import org.compiere.model.MUser;
 import org.compiere.util.Env;
-import org.zkoss.calendar.Calendars;
 import org.zkoss.calendar.impl.SimpleCalendarEvent;
 
 import jpiere.plugin.groupware.model.MGroupwareUser;
@@ -52,11 +51,15 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private LocalTime end_LocalTime  	= null;
 	private LocalDate end_LocalDate		= null;
 
+
+	/** Type **/
 	private boolean isSameDate 	= false;
 	public boolean isLongTime 		= false;
 	public boolean isMiddleTime 	= false;
 	public boolean isShortTime 	= false;
 
+
+	/**Text**/
 	public String personal_Month_Long_Title  = null;
 	public String personal_Month_Long_Content = null;
 	public String personal_Month_Middle_Title  = null;
@@ -85,13 +88,41 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	public String team_Default_Short_Title  = null;
 	public String team_Default_Short_Content = null;
 
-	private Calendars calendars= null;
 
-	public ToDoCalendarEvent(MToDo toDo, Calendars calendars)
+	/**Color**/
+	public String personal_Month_Long_HeaderColor  = null;
+	public String personal_Month_Long_ContentColor = null;
+	public String personal_Month_Middle_HeaderColor = null;
+	public String personal_Month_Middle_ContentColor = null;
+	public String personal_Month_Short_HeaderColor = null;
+	public String personal_Month_Short_ContentColor = null;
+
+	public String team_Month_Long_HeaderColor = null;
+	public String team_Month_Long_ContentColor = null;
+	public String team_Month_Middle_HeaderColor  = null;
+	public String team_Month_Middle_ContentColor = null;
+	public String team_Month_Short_HeaderColor= null;
+	public String team_Month_Short_ContentColor = null;
+
+	public String personal_Default_Long_HeaderColor  = null;
+	public String personal_Default_Long_ContentColor = null;
+	public String personal_Default_Middle_HeaderColor  = null;
+	public String personal_Default_Middle_ContentColor = null;
+	public String personal_Default_Short_HeaderColor  = null;
+	public String personal_Default_Short_ContentColor = null;
+
+	public String team_Default_Long_HeaderColor  = null;
+	public String team_Default_Long_ContentColor = null;
+	public String team_Default_Middle_HeaderColor  = null;
+	public String team_Default_Middle_ContentColor = null;
+	public String team_Default_Short_HeaderColor  = null;
+	public String team_Default_Short_ContentColor = null;
+
+
+	public ToDoCalendarEvent(MToDo toDo)
 	{
 		super();
 		this.m_ToDo = toDo;
-		this.calendars = calendars;
 
 		adjustTimeToZK();
 		adjustDisplayText();
@@ -219,7 +250,6 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private void adjustDisplayText()
 	{
 		String userName = " [" +MUser.get(Env.getCtx(), m_ToDo.getAD_User_ID()).getName() + "] " ;
-		String calendarMold = calendars.getMold();
 
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(m_ToDo.getJP_ToDo_Type()))
 		{
@@ -236,30 +266,31 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 					if(begin_LocalTime == LocalTime.MIN && end_LocalTime == LocalTime.MAX)
 					{
+						//Month - Middle
 						personal_Month_Middle_Title   = m_ToDo.getName();
-						personal_Default_Middle_Title   = personal_Month_Middle_Title;
-
 						personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
-						personal_Default_Middle_Content = personal_Month_Middle_Content;
-
 						team_Month_Middle_Title 	= m_ToDo.getName();
-						team_Default_Middle_Title 	= team_Month_Middle_Title;
-
 						team_Month_Middle_Content 	= userName +  m_ToDo.getName() ;
+
+						//Default - Middle
+						personal_Default_Middle_Title   = personal_Month_Middle_Title;
+						personal_Default_Middle_Content = personal_Month_Middle_Content;
+						team_Default_Middle_Title 	= team_Month_Middle_Title;
 						team_Default_Middle_Content 	= team_Month_Middle_Content;
 
 					}else {
 
+						//Month - Middle
 						personal_Month_Middle_Title = m_ToDo.getName();
-						personal_Default_Middle_Title = personal_Month_Middle_Title;
-
 						personal_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  (" ")  +  m_ToDo.getName();
-						personal_Default_Middle_Content = personal_Month_Middle_Content;
-
 						team_Month_Middle_Title = m_ToDo.getName();
-						team_Default_Middle_Title = team_Month_Middle_Title;
-
 						team_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  userName + " ";
+
+
+						//Default - Middle
+						personal_Default_Middle_Title = personal_Month_Middle_Title;
+						personal_Default_Middle_Content = personal_Month_Middle_Content;
+						team_Default_Middle_Title = team_Month_Middle_Title;
 						team_Default_Middle_Content = team_Month_Middle_Content;
 
 					}
@@ -270,22 +301,18 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					isMiddleTime = false;
 					isShortTime = true;
 
-					if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
-					{
-						personal_Month_Short_Title = null;
-						personal_Month_Short_Content =(" ") +  m_ToDo.getName();
+					//Month - Short
+					personal_Month_Short_Title = null;
+					personal_Month_Short_Content =(" ") +  m_ToDo.getName();
+					team_Month_Short_Title = null;
+					team_Month_Short_Content = userName +  m_ToDo.getName();
 
-						team_Month_Short_Title = null;
-						team_Month_Short_Content = userName +  m_ToDo.getName();
+					//Default - Short
+					personal_Default_Short_Title = m_ToDo.getName();
+					personal_Default_Short_Content = m_ToDo.getDescription();
+					team_Default_Short_Title = userName;
+					team_Default_Short_Content = m_ToDo.getName();
 
-					}else {
-
-						personal_Default_Short_Title = m_ToDo.getName();
-						personal_Default_Short_Content = m_ToDo.getDescription();
-
-						team_Default_Short_Title = userName;
-						team_Default_Short_Content = m_ToDo.getName();
-					}
 				}
 
 			}else { //Long Text Space -> Dispay Content Text
@@ -302,41 +329,55 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				{
 					if(end_LocalTime == LocalTime.MAX)
 					{
+						//Month - Long
 						personal_Month_Long_Title = null;
-						personal_Default_Long_Title = personal_Month_Long_Title;
 						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  (" ")   + m_ToDo.getName();
-						personal_Default_Long_Content = personal_Month_Long_Content;
-
 						team_Month_Long_Title = null;
-						team_Default_Long_Title = team_Month_Long_Title;
 						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  userName + m_ToDo.getName();
+
+
+						//Default - Long
+						personal_Default_Long_Title = personal_Month_Long_Title;
+						personal_Default_Long_Content = personal_Month_Long_Content;
+						team_Default_Long_Title = team_Month_Long_Title;
 						team_Default_Long_Content = team_Month_Long_Content;
 
 					}else {
 
+						//Month - Long
+						personal_Month_Long_Title = null;
 						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName();
-						personal_Default_Long_Content = personal_Month_Long_Content;
-
+						team_Month_Long_Title = null;
 						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName  + m_ToDo.getName();
+
+
+						//Default - Long
+						personal_Default_Long_Title = personal_Month_Long_Title;
+						personal_Default_Long_Content = personal_Month_Long_Content;
+						team_Default_Long_Title = team_Month_Long_Title;
 						team_Default_Long_Content = team_Month_Long_Content;
 					}
 
 
 				}else if(end_LocalTime == LocalTime.MAX){
 
+					//Month - Long
 					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "	+ end_FromatDate + (" ")   + m_ToDo.getName();
-					personal_Default_Long_Content = personal_Month_Long_Content;
-
 					team_Month_Long_Content  = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " 	+ end_FromatDate + userName  + m_ToDo.getName();
+
+					//Default - Long
+					personal_Default_Long_Content = personal_Month_Long_Content;
 					team_Default_Long_Content = team_Month_Long_Content;
 
 
 				}else {
 
+					//Month - Long
 					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName();
-					personal_Default_Long_Content = personal_Month_Long_Content;
-
 					team_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName   + m_ToDo.getName();
+
+					//Default - Long
+					personal_Default_Long_Content = personal_Month_Long_Content;
 					team_Default_Long_Content = team_Month_Long_Content;
 				}
 
@@ -347,59 +388,46 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			isLongTime = false;
 
-			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
+			if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 			{
-				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
-				{
-					isMiddleTime = true;
-					isShortTime = false;
+				isMiddleTime = true;
+				isShortTime = false;
 
-					personal_Month_Middle_Title = null;
-					personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
+				//Month - Middle
+				personal_Month_Middle_Title = null;
+				personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
+				team_Month_Middle_Title = null;
+				team_Month_Middle_Content = userName +  m_ToDo.getName() ;
 
-					team_Month_Middle_Title = null;
-					team_Month_Middle_Content = userName +  m_ToDo.getName() ;
-
-				}else {
-
-					isMiddleTime = false;
-					isShortTime = true;
-
-					personal_Month_Short_Title = null;
-					personal_Month_Short_Content =(" ") +  m_ToDo.getName();
-
-					team_Month_Short_Title = null;
-					team_Month_Short_Content =userName +  m_ToDo.getName();
-				}
+				//Default - Midle
+				personal_Default_Middle_Title = null;
+				personal_Default_Middle_Content = m_ToDo.getName() + " " +  m_ToDo.getDescription() ;
+				team_Default_Middle_Title = null;
+				team_Default_Middle_Content = userName + " " + m_ToDo.getName() ;
 
 			}else {
 
-				if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
-				{
-					isMiddleTime = true;
-					isShortTime = false;
+				isMiddleTime = false;
+				isShortTime = true;
 
-					personal_Default_Middle_Title = null;
-					personal_Default_Middle_Content = m_ToDo.getName() + " " +  m_ToDo.getDescription() ;
+				//Month - Short
+				personal_Month_Short_Title = null;
+				personal_Month_Short_Content =(" ") +  m_ToDo.getName();
+				team_Month_Short_Title = null;
+				team_Month_Short_Content =userName +  m_ToDo.getName();
 
-					team_Default_Middle_Title = null;
-					team_Default_Middle_Content = userName + " " + m_ToDo.getName() ;
-
-				}else {
-
-					isMiddleTime = false;
-					isShortTime = true;
-
-					personal_Default_Short_Title = m_ToDo.getName();
-					personal_Default_Short_Content = m_ToDo.getName() + " " + m_ToDo.getDescription();
-
-					team_Default_Short_Title = userName;
-					team_Default_Short_Content = userName + " " + m_ToDo.getName();
-				}
-
+				//Default - Short
+				personal_Default_Short_Title = m_ToDo.getName();
+				personal_Default_Short_Content = m_ToDo.getName() + " " + m_ToDo.getDescription();
+				team_Default_Short_Title = userName;
+				team_Default_Short_Content = userName + " " + m_ToDo.getName();
 			}
+
+
 		}
 	}//adjustDisplayText
+
+
 
 
 	/**
@@ -407,38 +435,35 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	 */
 	private void setColor()
 	{
-		String calendarMold = calendars.getMold();
 
 		if(m_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
-			MToDoCategory category = MToDoCategory.get(m_ToDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
+			 MToDoCategory category = MToDoCategory.get(m_ToDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
 
-			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
-			{
+			 //Month - Long
+			 personal_Month_Long_HeaderColor  = category.getJP_ColorPicker();
+			 personal_Month_Long_ContentColor = category.getJP_ColorPicker();
 
-				this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
-				this.setPersonalViewContentColor(category.getJP_ColorPicker());
+			//Month - Middle
+			 personal_Month_Middle_HeaderColor  = category.getJP_ColorPicker();
+			 personal_Month_Middle_ContentColor = category.getJP_ColorPicker();
 
-			}else {
+			//Month - Short
+			 personal_Month_Short_HeaderColor  = category.getJP_ColorPicker();
+			 personal_Month_Short_ContentColor = category.getJP_ColorPicker();
 
-				if(isSameDate)
-				{
-					if(isMiddleTime)
-					{
-						this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
-						this.setPersonalViewContentColor(category.getJP_ColorPicker());
-					}else {
-						this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
-						this.setPersonalViewContentColor(category.getJP_ColorPicker2());
-					}
+			 //Default - Long
+			 personal_Default_Long_HeaderColor  = category.getJP_ColorPicker();
+			 personal_Default_Long_ContentColor  = category.getJP_ColorPicker();
 
-				}else {
+			 //Default - Middle
+			 personal_Default_Middle_HeaderColor  = category.getJP_ColorPicker();
+			 personal_Default_Middle_ContentColor  = category.getJP_ColorPicker();
 
-					this.setPersonalViewHeaderColor(category.getJP_ColorPicker());
-					this.setPersonalViewContentColor(category.getJP_ColorPicker());
-				}
+			//Default - Short
+			 personal_Default_Short_HeaderColor  = category.getJP_ColorPicker();
+			 personal_Default_Short_ContentColor  = category.getJP_ColorPicker2();
 
-			}
 
 		}
 
@@ -446,31 +471,29 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 		if(gUser != null)
 		{
-			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equalsIgnoreCase(calendarMold))
-			{
+			 //Month - Long
+			 team_Month_Long_HeaderColor  = gUser.getJP_ColorPicker();
+			 team_Month_Long_ContentColor = gUser.getJP_ColorPicker();
 
-				this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
-				this.setTeamViewContentColor(gUser.getJP_ColorPicker());
+			//Month - Middle
+			 team_Month_Middle_HeaderColor  = gUser.getJP_ColorPicker();
+			 team_Month_Middle_ContentColor = gUser.getJP_ColorPicker();
 
-			}else {
+			//Month - Short
+			 team_Month_Short_HeaderColor  = gUser.getJP_ColorPicker();
+			 team_Month_Short_ContentColor = gUser.getJP_ColorPicker();
 
-				if(isSameDate)
-				{
-					if(isMiddleTime)
-					{
-						this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
-						this.setTeamViewContentColor(gUser.getJP_ColorPicker());
-					}else {
-						this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
-						this.setTeamViewContentColor(gUser.getJP_ColorPicker2());
-					}
-				}else {
+			 //Default - Long
+			 team_Default_Long_HeaderColor  = gUser.getJP_ColorPicker();
+			 team_Default_Long_ContentColor  = gUser.getJP_ColorPicker();
 
-					this.setTeamViewHeaderColor(gUser.getJP_ColorPicker());
-					this.setTeamViewContentColor(gUser.getJP_ColorPicker());
-				}
+			 //Default - Middle
+			 team_Default_Middle_HeaderColor  = gUser.getJP_ColorPicker();
+			 team_Default_Middle_ContentColor  = gUser.getJP_ColorPicker();
 
-			}
+			//Default - Short
+			 team_Default_Short_HeaderColor  = gUser.getJP_ColorPicker();
+			 team_Default_Short_ContentColor  = gUser.getJP_ColorPicker2();
 		}
 
 
