@@ -573,7 +573,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 	@Override
-	public boolean refresh(String JP_ToDo_Type)
+	public boolean refresh(int AD_User_ID, String JP_ToDo_Type)
 	{
 		if(p_JP_ToDo_Type.equals(JP_ToDo_Type))
 			createContents();
@@ -597,7 +597,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	public void setAD_User_ID(int AD_User_ID)
 	{
 		p_AD_User_ID = AD_User_ID;
-		refresh(p_JP_ToDo_Type);
+		refresh(p_AD_User_ID, p_JP_ToDo_Type);
 	}
 
 	@Override

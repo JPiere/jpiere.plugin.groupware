@@ -816,7 +816,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if(saveToDo())
 			{
-				i_CallerPersonalToDoPopupwindow.refresh(p_JP_ToDo_Type);
+				i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type);
 				this.detach();
 			}
 
@@ -826,7 +826,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		{
 			if(p_RequeryOnCancel)
 			{
-				i_CallerPersonalToDoPopupwindow.refresh(p_JP_ToDo_Type);
+				i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type);
 			}
 			this.detach();
 
@@ -1091,7 +1091,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			i_CallerPersonalToDoPopupwindow.refresh(p_JP_ToDo_Type);
+			i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type);
 			this.detach();
 		}
 
@@ -1155,7 +1155,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 					if(p_RequeryOnCancel)
 					{
-						i_CallerPersonalToDoPopupwindow.refresh(p_JP_ToDo_Type);
+						i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type);
 					}
 					detach();
 		        }
@@ -1166,7 +1166,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if(p_RequeryOnCancel)
 			{
-				i_CallerPersonalToDoPopupwindow.refresh(p_JP_ToDo_Type);
+				i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(),p_JP_ToDo_Type);
 			}
 			detach();
 		}

@@ -47,6 +47,6 @@ public interface I_CallerToDoPopupwindow {
 
 
 
-	public boolean refresh(String JP_ToDO_Type);
+	public boolean refresh(int AD_User_ID, String JP_ToDO_Type);
 
 }
