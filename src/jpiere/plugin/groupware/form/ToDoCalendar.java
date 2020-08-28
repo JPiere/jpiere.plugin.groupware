@@ -1131,7 +1131,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					}
 				}
 
-			}else if(comp instanceof Tab) {
+			}else if(comp instanceof Tab) {//TODO
 
 				Object obj_AD_User_ID = comp.getAttribute("AD_User_ID");
 				int AD_User_ID = Integer.valueOf(obj_AD_User_ID.toString());
@@ -1212,14 +1212,15 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			//I don't know this Event
 
-		}else if (Events.ON_CLOSE.equals(eventName)) {
+		}else if (Events.ON_CLOSE.equals(eventName)) {//TODO
 
 			if(comp instanceof Tab)
 			{
 				Tab tab = (Tab)comp;
-				int delete_AD_User_ID = ((Integer)tab.getAttribute("AD_User_ID")).intValue();
+				int deleteTab_AD_User_ID = ((Integer)tab.getAttribute("AD_User_ID")).intValue();
+				Calendars deleteCalendars = map_Calendars.get(deleteTab_AD_User_ID);
 
-				if(p_SelectedTab_AD_User_ID == delete_AD_User_ID)
+				if(p_SelectedTab_AD_User_ID == deleteTab_AD_User_ID)
 				{
 					int tabSize = tabbox.getTabs().getChildren().size();
 					int nextTabIndex = tab.getIndex();
@@ -1235,23 +1236,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					p_OldSelectedTab_AD_User_ID = next_AD_User_ID;
 					p_SelectedTab_AD_User_ID = next_AD_User_ID;
 
+					updateCalendarModel(false, false, 0);
 					if(tabpanel.getFirstChild() == null)
 					{
-						updateCalendarModel(false, false, 0);
-
 						Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 						tabpanel.appendChild(calendars);
-
 					}else {
-
-						updateCalendarModel(false, false, 0);
-						syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
+						syncCalendars(deleteCalendars==null? map_Calendars.get(p_AD_User_ID):deleteCalendars, map_Calendars.get(p_SelectedTab_AD_User_ID));
 					}
+
 				}
 
-				map_Calendars.remove(delete_AD_User_ID);
-				map_ScheduleCalendarEvent_Team.remove(delete_AD_User_ID);
-				map_TaskCalendarEvent_Team.remove(delete_AD_User_ID);
+				map_Calendars.remove(deleteTab_AD_User_ID);
+				map_ScheduleCalendarEvent_Team.remove(deleteTab_AD_User_ID);
+				map_TaskCalendarEvent_Team.remove(deleteTab_AD_User_ID);
 
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 				{
