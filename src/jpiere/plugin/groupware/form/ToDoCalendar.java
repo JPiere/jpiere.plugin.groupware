@@ -1458,14 +1458,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 					if(tabpanel.getFirstChild() == null)
 					{
-						updateSelectedUserCalendarModel(true);
+						updateSelectedUserCalendarModel(false);
 
 						Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 						tabpanel.appendChild(calendars);
 
 					}else {
 
-						updateSelectedUserCalendarModel(true);
+						updateSelectedUserCalendarModel(false);
 						syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 					}
 				}
