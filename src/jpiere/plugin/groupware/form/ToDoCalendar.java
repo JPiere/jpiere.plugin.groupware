@@ -1436,9 +1436,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 	private void updateSelectedUserCalendarModel(boolean isUserRequery, boolean isTeamRequery, int update_AD_User_ID)
 	{
-		if(isUserRequery ||  p_AD_User_ID == update_AD_User_ID)//TODO
+		if(isUserRequery ||  p_AD_User_ID == update_AD_User_ID)
 		{
 			getToDoCalendarEvents_User();
+
+		}else {
+
+			;//TODO データ保持期間のチェック と 再クエリ
 		}
 
 		if(isTeamRequery)//TODO
@@ -1451,6 +1455,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}else {
 				getToDoCalendarEvents_Team(0);
 			}
+
+		}else {
+
+			;//TODO データ保持期間のチェック と 再クエリ
+
 		}
 
 
@@ -1678,8 +1687,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		//JP_ToDo_ScheduledStartTime
 		whereClauseSchedule = new StringBuilder(" JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
 		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime");
-
-
 
 		list_parameters.add(Timestamp.valueOf(toDayMax));
 		list_parameters.add(Timestamp.valueOf(toDayMin));
