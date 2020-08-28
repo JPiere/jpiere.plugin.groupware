@@ -1008,10 +1008,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				p_AD_User_ID = Integer.parseInt(value.toString());
 			}
 
+			Calendars from = map_Calendars.get(p_SelectedTab_AD_User_ID);
 			p_OldSelectedTab_AD_User_ID = p_SelectedTab_AD_User_ID;
 			p_SelectedTab_AD_User_ID = p_AD_User_ID;
 			map_Calendars.clear();
-			map_Calendars.put(p_AD_User_ID, createInitialCalendar());
+			map_Calendars.put(p_AD_User_ID, createSyncCalendars(from));//TODO
 
 
 			String validationCode = null;
@@ -1369,7 +1370,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				}else if(tabpanel.getFirstChild() == null) {
 
-					updateSelectedUserCalendarModel(true);
+					updateSelectedUserCalendarModel(false);
 					Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 					tabpanel.appendChild(calendars);
 
@@ -1433,7 +1434,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			//I don't know this Event
 
-		}else if (Events.ON_CLOSE.equals(eventName)) {//TODO
+		}else if (Events.ON_CLOSE.equals(eventName)) {
 
 			if(comp instanceof Tab)
 			{
@@ -1489,7 +1490,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	{
 		Calendars to = new Calendars();
 
-
 		to.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_CREATE, this);
 		to.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_EDIT, this);
 		to.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_UPDATE,this);
@@ -1514,17 +1514,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		to.setFirstDayOfWeek(from.getFirstDayOfWeek());
 		to.invalidate();
 
-		Calendars cal = map_Calendars.get(p_AD_User_ID);
-		cal.setMold(from.getMold());
-		cal.setDays(from.getDays());
+		if(map_Calendars != null && map_Calendars.size() > 0)
+		{
+			Calendars cal = map_Calendars.get(p_AD_User_ID);
+			cal.setMold(from.getMold());
+			cal.setDays(from.getDays());
 
-		cal.setCurrentDate(from.getCurrentDate());
+			cal.setCurrentDate(from.getCurrentDate());
 
-		cal.setBeginTime(from.getBeginTime());
-		cal.setEndTime(from.getEndTime());
+			cal.setBeginTime(from.getBeginTime());
+			cal.setEndTime(from.getEndTime());
 
-		cal.setFirstDayOfWeek(from.getFirstDayOfWeek());
-		cal.invalidate();
+			cal.setFirstDayOfWeek(from.getFirstDayOfWeek());
+			cal.invalidate();
+		}
 
 		return to;
 	}
