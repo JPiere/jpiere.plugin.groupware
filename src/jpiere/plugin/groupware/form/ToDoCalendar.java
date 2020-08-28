@@ -319,266 +319,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
     }
 
 
-    private void getToDoCalendarEvents()
-    {
-		StringBuilder whereClauseFinal = null;
-		StringBuilder whereClauseSchedule = null;
-		StringBuilder whereClauseTask = null;
-		StringBuilder orderClause = null;
-		ArrayList<Object> list_parameters  = new ArrayList<Object>();
-		Object[] parameters = null;
-
-		if(p_IsDisplaySchedule)
-		{
-			//JP_ToDo_ScheduledStartTime
-			whereClauseSchedule = new StringBuilder(" JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
-			orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime");
-
-			Timestamp timestamp_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-			Timestamp timestamp_End = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
-
-			LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
-			LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
-
-			list_parameters.add(Timestamp.valueOf(toDayMax));
-			list_parameters.add(Timestamp.valueOf(toDayMin));
-
-			//JP_TODO_TYPE_Schedule
-			whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
-			list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
-
-			//Team
-			if(p_JP_Team_ID==0)
-			{
-				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID = ? ");
-				list_parameters.add(p_AD_User_ID);
-
-			}else {
-
-				whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
-
-			}
-
-			//Category
-			if(p_JP_ToDo_Category_ID > 0)
-			{
-				whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Category_ID = ? ");
-				list_parameters.add(p_JP_ToDo_Category_ID);
-			}
-
-			//Status
-			if(!Util.isEmpty(p_JP_ToDo_Status))
-			{
-				if(MGroupwareUser.JP_TODO_STATUS_NotCompleted.equals(p_JP_ToDo_Status))
-				{
-					whereClauseTask = whereClauseSchedule.append(" AND JP_ToDo_Status IN (?,?) ");
-					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_NotYetStarted);
-					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_WorkInProgress);
-				}else {
-					whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Status = ? ");
-					list_parameters.add(p_JP_ToDo_Status);
-				}
-			}
-
-			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
-			{
-				//Noting to do;
-
-			}else {
-				whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-				list_parameters.add(p_login_User_ID);
-			}
-
-    	}
-
-		if(p_IsDisplayTask)
-		{
-			//JP_ToDo_ScheduledStartTime
-			whereClauseTask = new StringBuilder(" JP_ToDo_ScheduledEndTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
-			orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledEndTime");
-
-			Timestamp timestamp_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-			Timestamp timestamp_End = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
-
-			LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
-			LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
-
-			list_parameters.add(Timestamp.valueOf(toDayMax));
-			list_parameters.add(Timestamp.valueOf(toDayMin));
-
-			//JP_TODO_TYPE_Schedule
-			whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
-			list_parameters.add(MToDo.JP_TODO_TYPE_Task);
-
-			//Team
-			if(p_JP_Team_ID==0)
-			{
-				whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
-				list_parameters.add(p_AD_User_ID);
-
-			}else {
-
-				whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
-			}
-
-			//Category
-			if(p_JP_ToDo_Category_ID > 0)
-			{
-				whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Category_ID = ? ");
-				list_parameters.add(p_JP_ToDo_Category_ID);
-			}
-
-			//Status
-			if(!Util.isEmpty(p_JP_ToDo_Status))
-			{
-				if(MGroupwareUser.JP_TODO_STATUS_NotCompleted.equals(p_JP_ToDo_Status))
-				{
-					whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Status IN (?,?) ");
-					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_NotYetStarted);
-					list_parameters.add(MGroupwareUser.JP_TODO_STATUS_WorkInProgress);
-
-				}else {
-
-					whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Status = ? ");
-					list_parameters.add(p_JP_ToDo_Status);
-				}
-			}
-
-			if(p_login_User_ID == p_AD_User_ID && p_JP_Team_ID == 0)
-			{
-				//Noting to do;
-
-			}else {
-				whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-				list_parameters.add(p_login_User_ID);
-			}
-
-		}
-
-		if(p_IsDisplaySchedule && p_IsDisplayTask)
-		{
-			whereClauseFinal = new StringBuilder("(").append( whereClauseSchedule.append(") OR (").append(whereClauseTask).append(")") );
-
-		}else if(p_IsDisplaySchedule) {
-
-			whereClauseFinal = whereClauseSchedule;
-
-		}else if(p_IsDisplayTask) {
-
-			whereClauseFinal = whereClauseTask;
-		}
-
-		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
-
-//		List<ToDoCalendarEvent> list_CalEvents = GroupwareToDoUtil.getToDoCalendarEvents(map_Calendars.get(p_AD_User_ID), p_JP_Team_ID > 0 ? true : false, whereClauseFinal.toString(), orderClause.toString(), parameters);
-
-		List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClauseFinal.toString(), null)
-				.setParameters(parameters)
-				.setOrderBy(orderClause.toString())
-				.list();
-
-
-		map_TaskCalendarEvent_User.clear();
-		map_ScheduleCalendarEvent_User.clear();
-
-		HashMap<Integer,ToDoCalendarEvent> eventMap = null;
-		ToDoCalendarEvent event = null;
-
-		for(MToDo todo :list_ToDoes)
-		{
-			event = new ToDoCalendarEvent(todo);
-
-			if(event.getToDo().getAD_User_ID() == p_AD_User_ID)
-			{
-				if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type()))
-				{
-
-					eventMap = map_TaskCalendarEvent_User.get(p_AD_User_ID);
-					if(eventMap == null)
-					{
-						eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-						map_TaskCalendarEvent_User.put(p_AD_User_ID, eventMap);
-					}else {
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-					}
-
-
-				}else {
-
-					eventMap = map_ScheduleCalendarEvent_User.get(p_AD_User_ID);
-					if(eventMap == null)
-					{
-						eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-						map_ScheduleCalendarEvent_User.put(p_AD_User_ID, eventMap);
-					}else {
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-					}
-
-				}
-
-			}else {
-
-				if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type()))
-				{
-
-					eventMap = map_TaskCalendarEvent_Team.get(event.getToDo().getAD_User_ID());
-					if(eventMap == null)
-					{
-						eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-						map_TaskCalendarEvent_Team.put(event.getToDo().getAD_User_ID(), eventMap);
-					}else {
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-					}
-
-
-				}else {
-
-					eventMap = map_ScheduleCalendarEvent_Team.get(event.getToDo().getAD_User_ID());
-					if(eventMap == null)
-					{
-						eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-						map_ScheduleCalendarEvent_Team.put(event.getToDo().getAD_User_ID(), eventMap);
-					}else {
-						eventMap.put(todo.getJP_ToDo_ID(), event);
-					}
-
-				}
-			}
-
-		}//for
-
-		return ;
-    }
-
-
-
-    private String createInUserClause(ArrayList<Object> list_parameters)
-    {
-
-    	StringBuilder users = new StringBuilder("?");
-    	list_parameters.add(p_AD_User_ID);
-
-    	String Q = ",?";
-    	MTeamMember[] member = m_Team.getTeamMember();
-    	for(int i = 0; i < member.length; i++)
-    	{
-    		if(p_AD_User_ID != member[i].getAD_User_ID())
-    		{
-	    		users = users.append(Q);
-	    		list_parameters.add(member[i].getAD_User_ID());
-    		}
-    	}
-
-    	return users.toString();
-
-    }
-
-
-
     public Div createNorthContents()
     {
     	Div outerDiv = new Div();
@@ -1094,10 +834,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			p_OldSelectedTab_AD_User_ID = p_SelectedTab_AD_User_ID;
 			p_SelectedTab_AD_User_ID = p_AD_User_ID;
 
-			updateSelectedUserCalendarModel(true);
 
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
+
+			updateSelectedUserCalendarModel(true);
 
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP.equals(name)) {
@@ -1688,8 +1429,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private void updateSelectedUserCalendarModel(boolean requery)
 	{
 
+//		if(requery)
+//			getToDoCalendarEvents();//TODO もっと効率よい制御にする。
+
 		if(requery)
-			getToDoCalendarEvents();//TODO もっと効率よい制御にする。
+		{
+			getToDoCalendarEvents_User();
+			getToDoCalendarEvents_Team();
+		}
 
 		SimpleCalendarModel scm =null;
 		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
@@ -1854,6 +1601,283 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		calendars.setModel(scm);
 	}
+
+    private void getToDoCalendarEvents_User()
+    {
+		map_TaskCalendarEvent_User.clear();
+		map_ScheduleCalendarEvent_User.clear();
+
+		StringBuilder whereClauseFinal = null;
+		StringBuilder whereClauseSchedule = null;
+		StringBuilder whereClauseTask = null;
+		StringBuilder orderClause = null;
+		ArrayList<Object> list_parameters  = new ArrayList<Object>();
+		Object[] parameters = null;
+
+
+		Timestamp timestamp_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
+		Timestamp timestamp_End = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+
+		LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+
+		//JP_ToDo_ScheduledStartTime
+		whereClauseSchedule = new StringBuilder(" JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime");
+
+
+
+		list_parameters.add(Timestamp.valueOf(toDayMax));
+		list_parameters.add(Timestamp.valueOf(toDayMin));
+
+		//JP_TODO_TYPE_Schedule
+		whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
+		list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
+
+		//AD_User_ID
+		whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID = ? ");
+		list_parameters.add(p_AD_User_ID);
+
+		if(p_login_User_ID == p_AD_User_ID)
+		{
+			//Noting to do;
+
+		}else {
+
+			whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+			list_parameters.add(p_login_User_ID);
+		}
+
+
+		//JP_ToDo_ScheduledStartTime
+		whereClauseTask = new StringBuilder(" JP_ToDo_ScheduledEndTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledEndTime");
+
+		list_parameters.add(Timestamp.valueOf(toDayMax));
+		list_parameters.add(Timestamp.valueOf(toDayMin));
+
+		//JP_TODO_TYPE_Schedule
+		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
+		list_parameters.add(MToDo.JP_TODO_TYPE_Task);
+
+		//AD_User_ID
+		whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
+		list_parameters.add(p_AD_User_ID);
+
+		if(p_login_User_ID == p_AD_User_ID)
+		{
+			//Noting to do;
+
+		}else {
+			whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+			list_parameters.add(p_login_User_ID);
+		}
+
+
+		whereClauseFinal = new StringBuilder("(").append( whereClauseSchedule.append(") OR (").append(whereClauseTask).append(")") );
+
+
+
+		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
+
+		List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClauseFinal.toString(), null)
+											.setParameters(parameters)
+											.setOrderBy(orderClause.toString())
+											.list();
+
+
+		if(list_ToDoes == null || list_ToDoes.size() == 0)
+		{
+			return ;
+		}
+
+		HashMap<Integer,ToDoCalendarEvent> eventMap = null;
+		ToDoCalendarEvent event = null;
+
+		for(MToDo todo :list_ToDoes)
+		{
+			event = new ToDoCalendarEvent(todo);
+
+			if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type()))
+			{
+
+				eventMap = map_TaskCalendarEvent_User.get(p_AD_User_ID);
+				if(eventMap == null)
+				{
+					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+					map_TaskCalendarEvent_User.put(p_AD_User_ID, eventMap);
+				}else {
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+				}
+
+
+			}else {
+
+				eventMap = map_ScheduleCalendarEvent_User.get(p_AD_User_ID);
+				if(eventMap == null)
+				{
+					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+					map_ScheduleCalendarEvent_User.put(p_AD_User_ID, eventMap);
+				}else {
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+				}
+
+			}
+
+		}//for
+
+		return ;
+    }
+
+
+    private void getToDoCalendarEvents_Team()
+    {
+
+		map_TaskCalendarEvent_Team.clear();
+		map_ScheduleCalendarEvent_Team.clear();
+
+    	if(p_JP_Team_ID == 0 || m_Team == null)
+    	{
+    		return ;
+    	}
+
+		StringBuilder whereClauseFinal = null;
+		StringBuilder whereClauseSchedule = null;
+		StringBuilder whereClauseTask = null;
+		StringBuilder orderClause = null;
+		ArrayList<Object> list_parameters  = new ArrayList<Object>();
+		Object[] parameters = null;
+
+		Timestamp timestamp_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
+		Timestamp timestamp_End = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+
+		LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+
+
+		//JP_ToDo_ScheduledStartTime
+		whereClauseSchedule = new StringBuilder(" JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime");
+
+		list_parameters.add(Timestamp.valueOf(toDayMax));
+		list_parameters.add(Timestamp.valueOf(toDayMin));
+
+		//JP_TODO_TYPE_Schedule
+		whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
+		list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
+
+		//AD_User_ID
+		whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");//TODO
+
+		whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+		list_parameters.add(p_login_User_ID);
+
+
+
+		//JP_ToDo_ScheduledStartTime
+		whereClauseTask = new StringBuilder(" JP_ToDo_ScheduledEndTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledEndTime");
+
+		list_parameters.add(Timestamp.valueOf(toDayMax));
+		list_parameters.add(Timestamp.valueOf(toDayMin));
+
+		//JP_TODO_TYPE_Schedule
+		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
+		list_parameters.add(MToDo.JP_TODO_TYPE_Task);
+
+		//AD_User_ID
+		whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
+
+
+		whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+		list_parameters.add(p_login_User_ID);
+
+
+		whereClauseFinal = new StringBuilder("(").append( whereClauseSchedule.append(") OR (").append(whereClauseTask).append(")") );
+
+		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
+
+
+		List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClauseFinal.toString(), null)
+										.setParameters(parameters)
+										.setOrderBy(orderClause.toString())
+										.list();
+
+		if(list_ToDoes == null || list_ToDoes.size() == 0)
+		{
+			return ;
+		}
+
+		HashMap<Integer,ToDoCalendarEvent> eventMap = null;
+		ToDoCalendarEvent event = null;
+
+		for(MToDo todo :list_ToDoes)
+		{
+			event = new ToDoCalendarEvent(todo);
+
+			if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type()))
+			{
+
+				eventMap = map_TaskCalendarEvent_Team.get(event.getToDo().getAD_User_ID());
+				if(eventMap == null)
+				{
+					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+					map_TaskCalendarEvent_Team.put(event.getToDo().getAD_User_ID(), eventMap);
+				}else {
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+				}
+
+
+			}else {
+
+				eventMap = map_ScheduleCalendarEvent_Team.get(event.getToDo().getAD_User_ID());
+				if(eventMap == null)
+				{
+					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+					map_ScheduleCalendarEvent_Team.put(event.getToDo().getAD_User_ID(), eventMap);
+				}else {
+					eventMap.put(todo.getJP_ToDo_ID(), event);
+				}
+
+			}
+
+
+		}//for
+
+		return ;
+    }
+
+    private String createInUserClause(ArrayList<Object> list_parameters)
+    {
+
+    	StringBuilder users = null;
+    	String Q = ",?";
+
+    	MTeamMember[] member = m_Team.getTeamMember();
+    	for(int i = 0; i < member.length; i++)
+    	{
+    		if(p_AD_User_ID != member[i].getAD_User_ID())
+    		{
+    			if(users == null)
+    			{
+    				users = new StringBuilder("?");
+    				list_parameters.add(member[i].getAD_User_ID());
+
+    			}else {
+
+		    		users = users.append(Q);
+		    		list_parameters.add(member[i].getAD_User_ID());
+    			}
+    		}
+    	}
+
+    	return users.toString();
+
+    }
 
 	private void setEventTextAndColor(ToDoCalendarEvent event)
 	{
