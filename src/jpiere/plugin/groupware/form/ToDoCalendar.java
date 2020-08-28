@@ -752,7 +752,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			p_OldSelectedTab_AD_User_ID = p_SelectedTab_AD_User_ID;
 			p_SelectedTab_AD_User_ID = p_AD_User_ID;
 			map_Calendars.clear();
-			map_Calendars.put(p_AD_User_ID, createSyncCalendars(from));//TODO
+			map_Calendars.put(p_AD_User_ID, createSyncCalendars(from));
 
 
 			String validationCode = null;
@@ -790,9 +790,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
 			if(p_JP_Team_ID == 0)
-				updateSelectedUserCalendarModel(true,false, p_AD_User_ID);
+				updateSelectedUserCalendarModel(true,false, 0);
 			else
-				updateSelectedUserCalendarModel(true,true, p_AD_User_ID);
+				updateSelectedUserCalendarModel(true,true, 0);
 
 			refreshWest(null);
 
