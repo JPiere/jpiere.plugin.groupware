@@ -568,7 +568,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	}
 
-	public MToDo getToDoD()
+	public MToDo getToDo()
 	{
 		return m_ToDo;
 	}
