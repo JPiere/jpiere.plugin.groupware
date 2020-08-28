@@ -1745,6 +1745,46 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team.equals(p_JP_ToDo_Main_Calendar_View) && p_JP_Team_ID > 0 && m_Team != null)
 			{
+				int tabSize = tabbox.getTabs().getChildren().size();
+				Tabpanel tabpanel = null;
+				int AD_User_ID = 0;
+				for(int i = 0; i < tabSize; i++)
+				{
+					tabpanel = tabbox.getTabpanel(i);
+					AD_User_ID = ((Integer)tabpanel.getAttribute("AD_User_ID")).intValue();
+
+					if(p_AD_User_ID == AD_User_ID)
+						continue;
+
+					map_CalEvents = map_ScheduleCalendarEvent_Team.get(AD_User_ID);
+					if(map_CalEvents != null)
+					{
+						Set<Integer> keySet = map_CalEvents.keySet();
+						ToDoCalendarEvent toDoCalEvent = null;
+						for (Integer JP_ToDo_ID : keySet)
+						{
+							toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+							setEventTextAndColor(toDoCalEvent);
+							scm.add(toDoCalEvent);
+						}
+					}
+
+					map_CalEvents = map_TaskCalendarEvent_Team.get(AD_User_ID);
+					if(map_CalEvents != null)
+					{
+						Set<Integer> keySet = map_CalEvents.keySet();
+						ToDoCalendarEvent toDoCalEvent = null;
+						for (Integer JP_ToDo_ID : keySet)
+						{
+							toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+							setEventTextAndColor(toDoCalEvent);
+							scm.add(toDoCalEvent);
+						}
+					}
+
+				}//for
+
+				/***** Old Logic
 				MTeamMember[] members = m_Team.getTeamMember();
 				for(int i = 0; i < members.length; i++)
 				{
@@ -1777,6 +1817,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						}
 					}
 				}
+ 				******/
+
 			}
 
 
