@@ -1456,40 +1456,46 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		scm.clear();
 
 		HashMap<Integer, ToDoCalendarEvent> map_CalEvents = null;
-		if(p_SelectedTab_AD_User_ID == p_AD_User_ID)
+		if(p_SelectedTab_AD_User_ID == p_AD_User_ID) //Main Tab
 		{
-
-			map_CalEvents = map_ScheduleCalendarEvent_User.get(p_AD_User_ID);
-			if(map_CalEvents != null)
+			if(p_IsDisplaySchedule)
 			{
-				Set<Integer> keySet = map_CalEvents.keySet();
-				ToDoCalendarEvent toDoCalEvent = null;
-				for (Integer JP_ToDo_ID : keySet)
+				map_CalEvents = map_ScheduleCalendarEvent_User.get(p_AD_User_ID);
+				if(map_CalEvents != null)
 				{
-					toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+					Set<Integer> keySet = map_CalEvents.keySet();
+					ToDoCalendarEvent toDoCalEvent = null;
+					for (Integer JP_ToDo_ID : keySet)
+					{
+						toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
 
-					if(isSkip(toDoCalEvent))
-						continue;
+						if(isSkip(toDoCalEvent))
+							continue;
 
-					setEventTextAndColor(toDoCalEvent);
-					scm.add(toDoCalEvent);
+						setEventTextAndColor(toDoCalEvent);
+						scm.add(toDoCalEvent);
+					}
 				}
 			}
 
-			map_CalEvents = map_TaskCalendarEvent_User.get(p_AD_User_ID);
-			if(map_CalEvents != null)
+
+			if(p_IsDisplayTask)
 			{
-				Set<Integer> keySet = map_CalEvents.keySet();
-				ToDoCalendarEvent toDoCalEvent = null;
-				for (Integer JP_ToDo_ID : keySet)
+				map_CalEvents = map_TaskCalendarEvent_User.get(p_AD_User_ID);
+				if(map_CalEvents != null)
 				{
-					toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+					Set<Integer> keySet = map_CalEvents.keySet();
+					ToDoCalendarEvent toDoCalEvent = null;
+					for (Integer JP_ToDo_ID : keySet)
+					{
+						toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
 
-					if(isSkip(toDoCalEvent))
-						continue;
+						if(isSkip(toDoCalEvent))
+							continue;
 
-					setEventTextAndColor(toDoCalEvent);
-					scm.add(toDoCalEvent);
+						setEventTextAndColor(toDoCalEvent);
+						scm.add(toDoCalEvent);
+					}
 				}
 			}
 
@@ -1507,37 +1513,43 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					if(p_AD_User_ID == AD_User_ID)
 						continue;
 
-					map_CalEvents = map_ScheduleCalendarEvent_Team.get(AD_User_ID);
-					if(map_CalEvents != null)
+					if(p_IsDisplaySchedule)
 					{
-						Set<Integer> keySet = map_CalEvents.keySet();
-						ToDoCalendarEvent toDoCalEvent = null;
-						for (Integer JP_ToDo_ID : keySet)
+						map_CalEvents = map_ScheduleCalendarEvent_Team.get(AD_User_ID);
+						if(map_CalEvents != null)
 						{
-							toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+							Set<Integer> keySet = map_CalEvents.keySet();
+							ToDoCalendarEvent toDoCalEvent = null;
+							for (Integer JP_ToDo_ID : keySet)
+							{
+								toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
 
-							if(isSkip(toDoCalEvent))
-								continue;
+								if(isSkip(toDoCalEvent))
+									continue;
 
-							setEventTextAndColor(toDoCalEvent);
-							scm.add(toDoCalEvent);
+								setEventTextAndColor(toDoCalEvent);
+								scm.add(toDoCalEvent);
+							}
 						}
 					}
 
-					map_CalEvents = map_TaskCalendarEvent_Team.get(AD_User_ID);
-					if(map_CalEvents != null)
+					if(p_IsDisplayTask)
 					{
-						Set<Integer> keySet = map_CalEvents.keySet();
-						ToDoCalendarEvent toDoCalEvent = null;
-						for (Integer JP_ToDo_ID : keySet)
+						map_CalEvents = map_TaskCalendarEvent_Team.get(AD_User_ID);
+						if(map_CalEvents != null)
 						{
-							toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+							Set<Integer> keySet = map_CalEvents.keySet();
+							ToDoCalendarEvent toDoCalEvent = null;
+							for (Integer JP_ToDo_ID : keySet)
+							{
+								toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
 
-							if(isSkip(toDoCalEvent))
-								continue;
+								if(isSkip(toDoCalEvent))
+									continue;
 
-							setEventTextAndColor(toDoCalEvent);
-							scm.add(toDoCalEvent);
+								setEventTextAndColor(toDoCalEvent);
+								scm.add(toDoCalEvent);
+							}
 						}
 					}
 
@@ -1545,39 +1557,45 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}
 
-		}else {
+		}else {//if(p_SelectedTab_AD_User_ID != p_AD_User_ID) //Sub Tab
 
-			map_CalEvents = map_ScheduleCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
-			if(map_CalEvents != null)
+			if(p_IsDisplaySchedule)
 			{
-				Set<Integer> keySet = map_CalEvents.keySet();
-				ToDoCalendarEvent toDoCalEvent = null;
-				for (Integer JP_ToDo_ID : keySet)
+				map_CalEvents = map_ScheduleCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
+				if(map_CalEvents != null)
 				{
-					toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+					Set<Integer> keySet = map_CalEvents.keySet();
+					ToDoCalendarEvent toDoCalEvent = null;
+					for (Integer JP_ToDo_ID : keySet)
+					{
+						toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
 
-					if(isSkip(toDoCalEvent))
-						continue;
+						if(isSkip(toDoCalEvent))
+							continue;
 
-					setEventTextAndColor(toDoCalEvent);
-					scm.add(toDoCalEvent);
+						setEventTextAndColor(toDoCalEvent);
+						scm.add(toDoCalEvent);
+					}
 				}
 			}
 
-			map_CalEvents = map_TaskCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
-			if(map_CalEvents != null)
+			if(p_IsDisplayTask)
 			{
-				Set<Integer> keySet = map_CalEvents.keySet();
-				ToDoCalendarEvent toDoCalEvent = null;
-				for (Integer JP_ToDo_ID : keySet)
+				map_CalEvents = map_TaskCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
+				if(map_CalEvents != null)
 				{
-					toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
+					Set<Integer> keySet = map_CalEvents.keySet();
+					ToDoCalendarEvent toDoCalEvent = null;
+					for (Integer JP_ToDo_ID : keySet)
+					{
+						toDoCalEvent = map_CalEvents.get(JP_ToDo_ID);
 
-					if(isSkip(toDoCalEvent))
-						continue;
+						if(isSkip(toDoCalEvent))
+							continue;
 
-					setEventTextAndColor(toDoCalEvent);
-					scm.add(toDoCalEvent);
+						setEventTextAndColor(toDoCalEvent);
+						scm.add(toDoCalEvent);
+					}
 				}
 			}
 
