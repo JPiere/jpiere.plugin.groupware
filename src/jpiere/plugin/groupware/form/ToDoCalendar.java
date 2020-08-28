@@ -130,8 +130,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	//Query Parameter
 	private int p_login_User_ID = 0;
 	private int p_AD_User_ID = 0;
-	private int p_SelectedTab_User_ID = 0;
-	private int p_OldSelectedTab_User_ID = 0;
+	private int p_SelectedTab_AD_User_ID = 0;
+	private int p_OldSelectedTab_AD_User_ID = 0;
 
 	private MGroupwareUser groupwareUser = null;
 	private int p_JP_Team_ID = 0;
@@ -183,8 +183,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
     {
 		p_AD_User_ID = Env.getAD_User_ID(ctx);
 		p_login_User_ID = p_AD_User_ID;
-		p_SelectedTab_User_ID = p_AD_User_ID;
-		p_OldSelectedTab_User_ID = p_AD_User_ID;
+		p_SelectedTab_AD_User_ID = p_AD_User_ID;
+		p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
 
 		map_Calendars.put(p_AD_User_ID, createInitialCalendar());
 
@@ -192,7 +192,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		updateDateLabel();
 
-		updateSelectedUserCalendarModel();
+		updateSelectedUserCalendarModel(true);
 
     }
 
@@ -313,7 +313,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		mainBorderLayout_West.appendChild(createWestContents());
 
 
-		Calendars cal = map_Calendars.get(p_SelectedTab_User_ID);
+		Calendars cal = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		setCalendarMold(cal.getDays());
 
     }
@@ -1008,8 +1008,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				p_AD_User_ID = Integer.parseInt(value.toString());
 			}
 
-			p_OldSelectedTab_User_ID = p_SelectedTab_User_ID;
-			p_SelectedTab_User_ID = p_AD_User_ID;
+			p_OldSelectedTab_AD_User_ID = p_SelectedTab_AD_User_ID;
+			p_SelectedTab_AD_User_ID = p_AD_User_ID;
 			map_Calendars.clear();
 			map_Calendars.put(p_AD_User_ID, createInitialCalendar());
 
@@ -1061,7 +1061,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				p_JP_ToDo_Category_ID = Integer.parseInt(value.toString());
 			}
 
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
@@ -1079,21 +1079,21 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}
 
-			Calendars from = map_Calendars.get(p_SelectedTab_User_ID);
+			Calendars from = map_Calendars.get(p_SelectedTab_AD_User_ID);
 			Calendars to = map_Calendars.get(p_AD_User_ID);
 			map_Calendars.clear();
 
-			if(p_AD_User_ID == p_SelectedTab_User_ID)
+			if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 			{
 				map_Calendars.put(p_AD_User_ID, from);
 			}else {
 				map_Calendars.put(p_AD_User_ID, syncCalendars(from, to));
 			}
 
-			p_OldSelectedTab_User_ID = p_SelectedTab_User_ID;
-			p_SelectedTab_User_ID = p_AD_User_ID;
+			p_OldSelectedTab_AD_User_ID = p_SelectedTab_AD_User_ID;
+			p_SelectedTab_AD_User_ID = p_AD_User_ID;
 
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
@@ -1102,12 +1102,12 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP.equals(name)) {
 
 			p_IsDisplaySchedule = (boolean)value;
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP.equals(name)) {
 
 			p_IsDisplayTask = (boolean)value;
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
@@ -1124,7 +1124,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				}
 			}
 
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek.equals(name)){
 
@@ -1137,7 +1137,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			map_Calendars.get(p_AD_User_ID).setFirstDayOfWeek(refList.getName());
 
 			updateDateLabel();
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime.equals(name)){
 
@@ -1248,17 +1248,17 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				}else if(GroupwareToDoUtil.BUTTON_PREVIOUS.equals(btnName))
 				{
-					map_Calendars.get(p_SelectedTab_User_ID).previousPage();
+					map_Calendars.get(p_SelectedTab_AD_User_ID).previousPage();
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.BUTTON_NEXT.equals(btnName)){
 
-					map_Calendars.get(p_SelectedTab_User_ID).nextPage();
+					map_Calendars.get(p_SelectedTab_AD_User_ID).nextPage();
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.BUTTON_REFRESH.equals(btnName)){
 
@@ -1266,17 +1266,17 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				}else if(GroupwareToDoUtil.BUTTON_TODAY.equals(btnName)){
 
-					map_Calendars.get(p_SelectedTab_User_ID).setCurrentDate(Calendar.getInstance(map_Calendars.get(p_SelectedTab_User_ID).getDefaultTimeZone()).getTime());
+					map_Calendars.get(p_SelectedTab_AD_User_ID).setCurrentDate(Calendar.getInstance(map_Calendars.get(p_SelectedTab_AD_User_ID).getDefaultTimeZone()).getTime());
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW.equals(btnName)){
 
 					p_CalendarMold = GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW;
 					setCalendarMold(1);
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.CALENDAR_FIVEDAYS_VIEW.equals(btnName)){
 
@@ -1284,7 +1284,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					setCalendarMold(5);
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.CALENDAR_SEVENDAYS_VIEW.equals(btnName)){
 
@@ -1292,7 +1292,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					setCalendarMold(7);
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(btnName)){
 
@@ -1300,7 +1300,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					setCalendarMold(0);
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(true);
 
 				}else if(GroupwareToDoUtil.BUTTON_THREE_LINES.equals(btnName)){
 
@@ -1356,23 +1356,27 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				Object obj_AD_User_ID = comp.getAttribute("AD_User_ID");
 				int AD_User_ID = Integer.valueOf(obj_AD_User_ID.toString());
-				p_OldSelectedTab_User_ID = p_SelectedTab_User_ID;
-				p_SelectedTab_User_ID = AD_User_ID;
+				p_OldSelectedTab_AD_User_ID = p_SelectedTab_AD_User_ID;
+				p_SelectedTab_AD_User_ID = AD_User_ID;
 
 
 				Tabpanel tabpanel = tabbox.getTabpanel(tabbox.getSelectedIndex());
 
-				if(tabpanel.getFirstChild() == null)
+				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 				{
-					updateSelectedUserCalendarModel();
+					updateSelectedUserCalendarModel(false);
+					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 
-					Calendars  calendars = map_Calendars.get(p_SelectedTab_User_ID);
+				}else if(tabpanel.getFirstChild() == null) {
+
+					updateSelectedUserCalendarModel(true);
+					Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 					tabpanel.appendChild(calendars);
 
 				}else {
 
-					updateSelectedUserCalendarModel();
-					syncCalendars(map_Calendars.get(p_OldSelectedTab_User_ID), map_Calendars.get(p_SelectedTab_User_ID));
+					updateSelectedUserCalendarModel(false);
+					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 				}
 
 			}
@@ -1423,7 +1427,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			p_CalendarMold = GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW;
 			setCalendarMold(1);
 			updateDateLabel();
-			updateSelectedUserCalendarModel();
+			updateSelectedUserCalendarModel(true);
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_WEEK.equals(eventName)){
 
@@ -1431,10 +1435,51 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		}else if (Events.ON_CLOSE.equals(eventName)) {//TODO
 
-			int a = 1+1;
+			if(comp instanceof Tab)
+			{
+				Tab tab = (Tab)comp;
+				int delete_AD_User_ID = ((Integer)tab.getAttribute("AD_User_ID")).intValue();
 
-			int b = a+1;
+				if(p_SelectedTab_AD_User_ID == delete_AD_User_ID)
+				{
+					int tabSize = tabbox.getTabs().getChildren().size();
+					int nextTabIndex = tab.getIndex();
+					if((nextTabIndex+1) < tabSize)
+					{
+						nextTabIndex++;
+					}else {
+						nextTabIndex--;
+					}
 
+					Tabpanel tabpanel = tabbox.getTabpanel(nextTabIndex);
+					int next_AD_User_ID = ((Integer)tabpanel.getAttribute("AD_User_ID")).intValue();
+					p_OldSelectedTab_AD_User_ID = next_AD_User_ID;
+					p_SelectedTab_AD_User_ID = next_AD_User_ID;
+
+					if(tabpanel.getFirstChild() == null)
+					{
+						updateSelectedUserCalendarModel(true);
+
+						Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
+						tabpanel.appendChild(calendars);
+
+					}else {
+
+						updateSelectedUserCalendarModel(true);
+						syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
+					}
+				}
+
+				map_Calendars.remove(delete_AD_User_ID);
+				map_ScheduleCalendarEvent_Team.remove(delete_AD_User_ID);
+				map_TaskCalendarEvent_Team.remove(delete_AD_User_ID);
+
+				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+				{
+					updateSelectedUserCalendarModel(false);
+				}
+
+			}//if(comp instanceof Tab)
 
 		}
 	}
@@ -1468,6 +1513,18 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		to.setFirstDayOfWeek(from.getFirstDayOfWeek());
 		to.invalidate();
+
+		Calendars cal = map_Calendars.get(p_AD_User_ID);
+		cal.setMold(from.getMold());
+		cal.setDays(from.getDays());
+
+		cal.setCurrentDate(from.getCurrentDate());
+
+		cal.setBeginTime(from.getBeginTime());
+		cal.setEndTime(from.getEndTime());
+
+		cal.setFirstDayOfWeek(from.getFirstDayOfWeek());
+		cal.invalidate();
 
 		return to;
 	}
@@ -1518,7 +1575,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 	private void setCalendarMold(int days)
 	{
-		Calendars calendars = map_Calendars.get(p_SelectedTab_User_ID);
+		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		if (days == 7)
 		{
 			calendars.setMold("default");
@@ -1560,8 +1617,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private Label label_DisplayPeriod;
 	private void updateDateLabel()
 	{
-		Date b = map_Calendars.get(p_SelectedTab_User_ID).getBeginDate();
-		Date e = map_Calendars.get(p_SelectedTab_User_ID).getEndDate();
+		Date b = map_Calendars.get(p_SelectedTab_AD_User_ID).getBeginDate();
+		Date e = map_Calendars.get(p_SelectedTab_AD_User_ID).getEndDate();
 
 		LocalDateTime local = new Timestamp(e.getTime()).toLocalDateTime();
 		e = new Date(Timestamp.valueOf(local.minusDays(1)).getTime());
@@ -1585,7 +1642,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	@Override
 	public int getDefault_AD__User_ID()
 	{
-		return p_SelectedTab_User_ID;
+		return p_SelectedTab_AD_User_ID;
 	}
 
 
@@ -1625,18 +1682,21 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 
 
-	private void updateSelectedUserCalendarModel()
+	private void updateSelectedUserCalendarModel(boolean requery)
 	{
 
-		getToDoCalendarEvents();//TODO とりあえず‼
+		if(requery)
+			getToDoCalendarEvents();//TODO もっと効率よい制御にする。
 
 		SimpleCalendarModel scm =null;
-		Calendars calendars = map_Calendars.get(p_SelectedTab_User_ID);
+		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		if(calendars == null)
 		{
-			Calendars from = map_Calendars.get(p_OldSelectedTab_User_ID);
+			Calendars from = map_Calendars.get(p_OldSelectedTab_AD_User_ID);
+			if(from == null)
+				from = map_Calendars.get(p_AD_User_ID);
 			calendars = createSyncCalendars(from);
-			map_Calendars.put(p_SelectedTab_User_ID, calendars);
+			map_Calendars.put(p_SelectedTab_AD_User_ID, calendars);
 		}
 
 		CalendarModel  cm = calendars.getModel();
@@ -1650,10 +1710,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		scm.clear();
 
 		HashMap<Integer, ToDoCalendarEvent> map_CalEvents = null;
-		if(p_SelectedTab_User_ID == p_AD_User_ID)
+		if(p_SelectedTab_AD_User_ID == p_AD_User_ID)
 		{
 
-			map_CalEvents = map_ScheduleCalendarEvent_User.get(p_SelectedTab_User_ID);
+			map_CalEvents = map_ScheduleCalendarEvent_User.get(p_AD_User_ID);
 			if(map_CalEvents != null)
 			{
 				Set<Integer> keySet = map_CalEvents.keySet();
@@ -1666,7 +1726,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				}
 			}
 
-			map_CalEvents = map_TaskCalendarEvent_User.get(p_SelectedTab_User_ID);
+			map_CalEvents = map_TaskCalendarEvent_User.get(p_AD_User_ID);
 			if(map_CalEvents != null)
 			{
 				Set<Integer> keySet = map_CalEvents.keySet();
@@ -1719,7 +1779,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		}else {
 
-			map_CalEvents = map_ScheduleCalendarEvent_Team.get(p_SelectedTab_User_ID);
+			map_CalEvents = map_ScheduleCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
 			if(map_CalEvents != null)
 			{
 				Set<Integer> keySet = map_CalEvents.keySet();
@@ -1732,7 +1792,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				}
 			}
 
-			map_CalEvents = map_TaskCalendarEvent_Team.get(p_SelectedTab_User_ID);
+			map_CalEvents = map_TaskCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
 			if(map_CalEvents != null)
 			{
 				Set<Integer> keySet = map_CalEvents.keySet();
@@ -1753,9 +1813,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private void setEventTextAndColor(ToDoCalendarEvent event)
 	{
 
-		Calendars cal = map_Calendars.get(p_SelectedTab_User_ID);
+		Calendars cal = map_Calendars.get(p_SelectedTab_AD_User_ID);
 
-		if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team.equals(p_JP_ToDo_Main_Calendar_View) && p_JP_Team_ID > 0 && p_SelectedTab_User_ID == p_AD_User_ID)
+		if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team.equals(p_JP_ToDo_Main_Calendar_View) && p_JP_Team_ID > 0 && p_SelectedTab_AD_User_ID == p_AD_User_ID)
 		{
 
 			if(cal.getMold().equalsIgnoreCase("MONTH"))
@@ -1867,7 +1927,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	@Override
 	public boolean refresh(String JP_ToDo_Type)
 	{
-		updateSelectedUserCalendarModel();
+		updateSelectedUserCalendarModel(true);
 		refreshWest(JP_ToDo_Type);
 
 		return true;
