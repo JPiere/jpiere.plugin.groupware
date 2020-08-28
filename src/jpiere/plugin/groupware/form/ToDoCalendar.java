@@ -192,7 +192,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		updateDateLabel();
 
-		updateSelectedUserCalendarModel(true,false, p_AD_User_ID);
+		updateCalendarModel(true,false, p_AD_User_ID);
 
     }
 
@@ -322,6 +322,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
     public Div createNorthContents()
     {
     	Div outerDiv = new Div();
+		ZKUpdateUtil.setVflex(outerDiv, "max");
+		ZKUpdateUtil.setHflex(outerDiv, "max");
     	outerDiv.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
     	Vlayout vlayout = new Vlayout();
     	outerDiv.appendChild(vlayout);
@@ -445,6 +447,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
 		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
+		ZKUpdateUtil.setHflex(createNewToDo, "true");
 		row.appendCellChild(createNewToDo,2);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
@@ -454,18 +457,19 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		refresh.setName(GroupwareToDoUtil.BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
 		refresh.setLabel(Msg.getMsg(ctx, "Refresh"));
+		ZKUpdateUtil.setHflex(refresh, "true");
 		row.appendCellChild(refresh, 2);
 
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
-
 
 		Button oneDayView = new Button();
 		oneDayView.setLabel(Msg.getMsg(ctx,"Day"));
 		//oneDayView.setClass("btn-small");
 		oneDayView.setName(GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW);
 		oneDayView.addEventListener(Events.ON_CLICK, this);
-		row.appendChild(oneDayView);
+		ZKUpdateUtil.setHflex(oneDayView, "true");
+		row.appendCellChild(oneDayView);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button fivDayView = new Button();
@@ -473,7 +477,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		//oneDayView.setClass("btn-small");
 		fivDayView.setName(GroupwareToDoUtil.CALENDAR_FIVEDAYS_VIEW );
 		fivDayView.addEventListener(Events.ON_CLICK, this);
-		row.appendChild(fivDayView);
+		ZKUpdateUtil.setHflex(fivDayView, "true");
+		row.appendCellChild(fivDayView);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button sevenDayView = new Button();
@@ -481,7 +486,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		//sevenDayView.setClass("btn-small");
 		sevenDayView.setName(GroupwareToDoUtil.CALENDAR_SEVENDAYS_VIEW);
 		sevenDayView.addEventListener(Events.ON_CLICK, this);
-		row.appendChild(sevenDayView);
+		ZKUpdateUtil.setHflex(sevenDayView, "true");
+		row.appendCellChild(sevenDayView);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
@@ -490,7 +496,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		//monthDayView.setClass("btn-small");
 		monthDayView.setName(GroupwareToDoUtil.CALENDAR_MONTH_VIEW);
 		monthDayView.addEventListener(Events.ON_CLICK, this);
-		row.appendChild(monthDayView);
+		ZKUpdateUtil.setHflex(monthDayView, "true");
+		row.appendCellChild(monthDayView);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 
@@ -503,7 +510,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		leftBtn.setName(GroupwareToDoUtil.BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
 		leftBtn.setLabel(" ");
-		row.appendChild(leftBtn);
+		ZKUpdateUtil.setHflex(leftBtn, "true");
+		row.appendCellChild(leftBtn);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button today = new Button();
@@ -520,7 +528,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(GroupwareToDoUtil.BUTTON_NEXT);
 		rightBtn.setLabel(" ");
-		row.appendChild(rightBtn);
+		ZKUpdateUtil.setHflex(rightBtn, "true");
+		row.appendCellChild(rightBtn);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
@@ -532,21 +541,28 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null,  Msg.getMsg(ctx, "JP_DisplayPeriod") + " : ", true));
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
 
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
+		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
-
-		//Three Lines
+		//Three Lines(Customize)
 		btn_ThreeLines = new Button();
-		btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/threelines.png"));
+		//btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/threelines.png"));
+		btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/Customize16.png"));
 		//btn_ThreeLines.setClass("btn-small");
 		btn_ThreeLines.addEventListener(Events.ON_CLICK, this);
 		btn_ThreeLines.setName(GroupwareToDoUtil.BUTTON_THREE_LINES);
 		btn_ThreeLines.setLabel(" ");
-		row.appendChild(btn_ThreeLines);
-		//ZKUpdateUtil.setHflex(btn_ThreeLines, "true");
-		//row.appendCellChild(btn_ThreeLines);
+		ZKUpdateUtil.setVflex(btn_ThreeLines, "max");
+		ZKUpdateUtil.setHflex(btn_ThreeLines, "max");
+		row.appendCellChild(btn_ThreeLines);
 
+//		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
+//		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
+		/**
+		 * for Three Line pouup
+		 **/
 		//First day ot week
 		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
 		editor_JP_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, false, false, true, lookup_FirstDayOfWeek);
@@ -781,7 +797,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}else if(old_JP_ToDo_Category_ID > 0) {
 
-				throw new WrongValueException(editor_JP_ToDo_Category_ID.getComponent(), "ユーザーが変更になったのでカテゴリがリフレッシュされました。");//TODO:
+				//The ToDo category have been cleared as the user has changed.
+				throw new WrongValueException(editor_JP_ToDo_Category_ID.getComponent(), Msg.getMsg(ctx, "JP_ToDo_Category_Cleared"));
 
 			}
 
@@ -790,9 +807,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
 			if(p_JP_Team_ID == 0)
-				updateSelectedUserCalendarModel(true,false, 0);
+				updateCalendarModel(true,false, 0);
 			else
-				updateSelectedUserCalendarModel(true,true, 0);
+				updateCalendarModel(true,true, 0);
 
 			refreshWest(null);
 
@@ -805,7 +822,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				p_JP_ToDo_Category_ID = Integer.parseInt(value.toString());
 			}
 
-			updateSelectedUserCalendarModel(false, false, 0);
+			updateCalendarModel(false, false, 0);
 
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
@@ -841,18 +858,18 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
-			updateSelectedUserCalendarModel(false, true, 0);
+			updateCalendarModel(false, true, 0);
 
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP.equals(name)) {
 
 			p_IsDisplaySchedule = (boolean)value;
-			updateSelectedUserCalendarModel(false, false, 0);
+			updateCalendarModel(false, false, 0);
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP.equals(name)) {
 
 			p_IsDisplayTask = (boolean)value;
-			updateSelectedUserCalendarModel(false,false, 0);
+			updateCalendarModel(false,false, 0);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
@@ -869,7 +886,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				}
 			}
 
-			updateSelectedUserCalendarModel(false, false, 0);
+			updateCalendarModel(false, false, 0);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek.equals(name)){
 
@@ -882,7 +899,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			map_Calendars.get(p_AD_User_ID).setFirstDayOfWeek(refList.getName());
 
 			updateDateLabel();
-			updateSelectedUserCalendarModel(false, false, 0);
+			updateCalendarModel(false, false, 0);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime.equals(name)){
 
@@ -971,7 +988,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View.equals(name)){
 
 			p_JP_ToDo_Main_Calendar_View = value.toString();
-			updateSelectedUserCalendarModel(false, false, 0);
+			updateCalendarModel(false, false, 0);
 
 		}
 	}
@@ -1001,21 +1018,28 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					map_Calendars.get(p_SelectedTab_AD_User_ID).previousPage();
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 
 				}else if(GroupwareToDoUtil.BUTTON_NEXT.equals(btnName)){
 
 					map_Calendars.get(p_SelectedTab_AD_User_ID).nextPage();
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 
 				}else if(GroupwareToDoUtil.BUTTON_REFRESH.equals(btnName)){
 
 					if(p_JP_Team_ID > 0)
-						updateSelectedUserCalendarModel(true,true, 0);
-					else
-						updateSelectedUserCalendarModel(true,false, 0);
+					{
+					  	mainBorderLayout_Center.getFirstChild().detach();
+						mainBorderLayout_Center.appendChild(createCenterContents());
+						updateCalendarModel(true,true, 0);
+
+					}else {
+
+						updateCalendarModel(true,false, 0);
+
+					}
 
 					refreshWest(null);
 
@@ -1024,14 +1048,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					map_Calendars.get(p_SelectedTab_AD_User_ID).setCurrentDate(Calendar.getInstance(map_Calendars.get(p_SelectedTab_AD_User_ID).getDefaultTimeZone()).getTime());
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 
 				}else if(GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW.equals(btnName)){
 
 					p_CalendarMold = GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW;
 					setCalendarMold(1);
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 
 				}else if(GroupwareToDoUtil.CALENDAR_FIVEDAYS_VIEW.equals(btnName)){
 
@@ -1039,7 +1063,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					setCalendarMold(5);
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 
 				}else if(GroupwareToDoUtil.CALENDAR_SEVENDAYS_VIEW.equals(btnName)){
 
@@ -1047,7 +1071,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					setCalendarMold(7);
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 
 				}else if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(btnName)){
 
@@ -1055,7 +1079,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					setCalendarMold(0);
 
 					updateDateLabel();
-					updateSelectedUserCalendarModel(false, false, 0);
+					updateCalendarModel(false, false, 0);
 
 				}else if(GroupwareToDoUtil.BUTTON_THREE_LINES.equals(btnName)){
 
@@ -1119,18 +1143,18 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 				{
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 
 				}else if(tabpanel.getFirstChild() == null) {
 
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 					Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 					tabpanel.appendChild(calendars);
 
 				}else {
 
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 				}
 
@@ -1182,7 +1206,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			p_CalendarMold = GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW;
 			setCalendarMold(1);
 			updateDateLabel();
-			updateSelectedUserCalendarModel(false,false, 0);
+			updateCalendarModel(false,false, 0);
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_WEEK.equals(eventName)){
 
@@ -1213,14 +1237,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 					if(tabpanel.getFirstChild() == null)
 					{
-						updateSelectedUserCalendarModel(false, false, 0);
+						updateCalendarModel(false, false, 0);
 
 						Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 						tabpanel.appendChild(calendars);
 
 					}else {
 
-						updateSelectedUserCalendarModel(false, false, 0);
+						updateCalendarModel(false, false, 0);
 						syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 					}
 				}
@@ -1231,7 +1255,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 				{
-					updateSelectedUserCalendarModel(false,false, 0);
+					updateCalendarModel(false,false, 0);
 				}
 
 			}//if(comp instanceof Tab)
@@ -1439,7 +1463,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 
 
-	private void updateSelectedUserCalendarModel(boolean isUserRequery, boolean isTeamRequery, int update_AD_User_ID)
+	private void updateCalendarModel(boolean isUserRequery, boolean isTeamRequery, int update_AD_User_ID)
 	{
 		if(isUserRequery ||  p_AD_User_ID == update_AD_User_ID)
 		{
@@ -1477,7 +1501,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}else { //  calendar_Begin >= now
 
-				if(ts_GetToDoCalendarEventEnd_User.compareTo(calendar_End) > 0) // calender_End  <  now
+				if(ts_GetToDoCalendarEventEnd_User.compareTo(calendar_End) >= 0) // calender_End  <  now
 				{
 					;// Noting to do;
 
@@ -1535,7 +1559,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}else { //  calendar_Begin >= now
 
-				if(ts_GetToDoCalendarEventEnd_Team.compareTo(calendar_End) > 0) // calender_End  <  now
+				if(ts_GetToDoCalendarEventEnd_Team.compareTo(calendar_End) >= 0) // calender_End  <  now
 				{
 					;// Noting to do;
 
@@ -2162,7 +2186,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	public boolean refresh(int AD_User_ID, String JP_ToDo_Type)
 	{
 
-		updateSelectedUserCalendarModel(false,true, AD_User_ID);
+		updateCalendarModel(false,true, AD_User_ID);
 		refreshWest(JP_ToDo_Type);
 
 		return true;
