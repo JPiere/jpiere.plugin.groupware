@@ -1131,7 +1131,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					}
 				}
 
-			}else if(comp instanceof Tab) {//TODO
+			}else if(comp instanceof Tab) {
 
 				Object obj_AD_User_ID = comp.getAttribute("AD_User_ID");
 				int AD_User_ID = Integer.valueOf(obj_AD_User_ID.toString());
@@ -1212,13 +1212,17 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			//I don't know this Event
 
-		}else if (Events.ON_CLOSE.equals(eventName)) {//TODO
+		}else if (Events.ON_CLOSE.equals(eventName)) {
 
 			if(comp instanceof Tab)
 			{
 				Tab tab = (Tab)comp;
 				int deleteTab_AD_User_ID = ((Integer)tab.getAttribute("AD_User_ID")).intValue();
 				Calendars deleteCalendars = map_Calendars.get(deleteTab_AD_User_ID);
+
+				map_Calendars.remove(deleteTab_AD_User_ID);
+				map_ScheduleCalendarEvent_Team.remove(deleteTab_AD_User_ID);
+				map_TaskCalendarEvent_Team.remove(deleteTab_AD_User_ID);
 
 				if(p_SelectedTab_AD_User_ID == deleteTab_AD_User_ID)
 				{
@@ -1245,15 +1249,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						syncCalendars(deleteCalendars==null? map_Calendars.get(p_AD_User_ID):deleteCalendars, map_Calendars.get(p_SelectedTab_AD_User_ID));
 					}
 
-				}
+				}else if(p_AD_User_ID == p_SelectedTab_AD_User_ID){
 
-				map_Calendars.remove(deleteTab_AD_User_ID);
-				map_ScheduleCalendarEvent_Team.remove(deleteTab_AD_User_ID);
-				map_TaskCalendarEvent_Team.remove(deleteTab_AD_User_ID);
-
-				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
-				{
 					updateCalendarModel(false,false, 0);
+
 				}
 
 			}//if(comp instanceof Tab)
