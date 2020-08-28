@@ -1012,7 +1012,12 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				}else if(GroupwareToDoUtil.BUTTON_REFRESH.equals(btnName)){
 
-					refresh(p_SelectedTab_AD_User_ID, null);
+					if(p_JP_Team_ID > 0)
+						updateSelectedUserCalendarModel(true,true, 0);
+					else
+						updateSelectedUserCalendarModel(true,false, 0);
+
+					refreshWest(null);
 
 				}else if(GroupwareToDoUtil.BUTTON_TODAY.equals(btnName)){
 
@@ -1438,14 +1443,56 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	{
 		if(isUserRequery ||  p_AD_User_ID == update_AD_User_ID)
 		{
+			ts_GetToDoCalendarEventBegin_User = null;
+			ts_GetToDoCalendarEventEnd_User = null;
+			map_ScheduleCalendarEvent_User.clear();
+			map_TaskCalendarEvent_User.clear();
+
 			getToDoCalendarEvents_User();
 
 		}else {
 
-			;//TODO データ保持期間のチェック と 再クエリ
+			Timestamp calendar_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
+			Timestamp calendar_End =  new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+			Timestamp temp_Begin = ts_GetToDoCalendarEventBegin_User;
+			Timestamp temp_End = ts_GetToDoCalendarEventEnd_User;
+
+			if(calendar_Begin.compareTo(ts_GetToDoCalendarEventBegin_User) < 0) // calendar_Begin < now
+			{
+				ts_GetToDoCalendarEventBegin_User = calendar_Begin;
+
+				if(ts_GetToDoCalendarEventEnd_User.compareTo(calendar_End) > 0) //calendar_Begin < now  > calender_End
+				{
+					ts_GetToDoCalendarEventEnd_User = temp_Begin;
+					getToDoCalendarEvents_User();
+					ts_GetToDoCalendarEventEnd_User = temp_End;
+
+				}else { // calendar_Begin <  now < calender_End
+
+					ts_GetToDoCalendarEventEnd_User = calendar_End;
+					map_ScheduleCalendarEvent_User.clear();
+					map_TaskCalendarEvent_User.clear();
+					getToDoCalendarEvents_User();
+				}
+
+			}else { //  calendar_Begin >= now
+
+				if(ts_GetToDoCalendarEventEnd_User.compareTo(calendar_End) > 0) // calender_End  <  now
+				{
+					;// Noting to do;
+
+				}else { // calender_End  >=  End
+
+					ts_GetToDoCalendarEventBegin_User = temp_End;
+					ts_GetToDoCalendarEventEnd_User = calendar_End;
+					getToDoCalendarEvents_User();
+					ts_GetToDoCalendarEventBegin_User = temp_Begin;
+				}
+			}
+
 		}
 
-		if(isTeamRequery)//TODO
+		if(isTeamRequery)
 		{
 			if(p_AD_User_ID == update_AD_User_ID)
 			{
@@ -1453,12 +1500,53 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}else if (update_AD_User_ID > 0 ){
 				getToDoCalendarEvents_Team(update_AD_User_ID);
 			}else {
+				ts_GetToDoCalendarEventBegin_Team= null;
+				ts_GetToDoCalendarEventEnd_Team = null;
+				map_ScheduleCalendarEvent_Team.clear();
+				map_TaskCalendarEvent_Team.clear();
+
 				getToDoCalendarEvents_Team(0);
 			}
 
-		}else {
+		}else if(p_JP_Team_ID > 0) {
 
-			;//TODO データ保持期間のチェック と 再クエリ
+			Timestamp calendar_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
+			Timestamp calendar_End =  new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+			Timestamp temp_Begin = ts_GetToDoCalendarEventBegin_Team;
+			Timestamp temp_End = ts_GetToDoCalendarEventEnd_Team;
+
+			if(calendar_Begin.compareTo(ts_GetToDoCalendarEventBegin_Team) < 0) // calendar_Begin < now
+			{
+				ts_GetToDoCalendarEventBegin_Team = calendar_Begin;
+
+				if(ts_GetToDoCalendarEventEnd_Team.compareTo(calendar_End) > 0) //calendar_Begin < now  > calender_End
+				{
+					ts_GetToDoCalendarEventEnd_Team = temp_Begin;
+					getToDoCalendarEvents_Team(0);
+					ts_GetToDoCalendarEventEnd_Team = temp_End;
+
+				}else { // calendar_Begin <  now < calender_End
+
+					ts_GetToDoCalendarEventEnd_Team = calendar_End;
+					map_ScheduleCalendarEvent_Team.clear();
+					map_TaskCalendarEvent_Team.clear();
+					getToDoCalendarEvents_Team(0);
+				}
+
+			}else { //  calendar_Begin >= now
+
+				if(ts_GetToDoCalendarEventEnd_Team.compareTo(calendar_End) > 0) // calender_End  <  now
+				{
+					;// Noting to do;
+
+				}else { // calender_End  >=  End
+
+					ts_GetToDoCalendarEventBegin_Team = temp_End;
+					ts_GetToDoCalendarEventEnd_Team = calendar_End;
+					getToDoCalendarEvents_Team(0);
+					ts_GetToDoCalendarEventBegin_Team = temp_Begin;
+				}
+			}
 
 		}
 
@@ -1665,10 +1753,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		return false;
 	}
 
+	Timestamp ts_GetToDoCalendarEventBegin_User = null;
+	Timestamp ts_GetToDoCalendarEventEnd_User = null;
+
     private void getToDoCalendarEvents_User()
     {
-		map_TaskCalendarEvent_User.clear();
-		map_ScheduleCalendarEvent_User.clear();
 
 		StringBuilder whereClauseFinal = null;
 		StringBuilder whereClauseSchedule = null;
@@ -1678,11 +1767,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		Object[] parameters = null;
 
 
-		Timestamp timestamp_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-		Timestamp timestamp_End = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+		if(ts_GetToDoCalendarEventBegin_User == null)
+			ts_GetToDoCalendarEventBegin_User = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
 
-		LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
-		LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+		if(ts_GetToDoCalendarEventEnd_User == null)
+			ts_GetToDoCalendarEventEnd_User = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+
+		LocalDateTime toDayMin = LocalDateTime.of(ts_GetToDoCalendarEventBegin_User.toLocalDateTime().toLocalDate(), LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(ts_GetToDoCalendarEventEnd_User.toLocalDateTime().toLocalDate(), LocalTime.MAX);
 
 		//JP_ToDo_ScheduledStartTime
 		whereClauseSchedule = new StringBuilder(" JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
@@ -1792,6 +1884,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		return ;
     }
 
+	Timestamp ts_GetToDoCalendarEventBegin_Team = null;
+	Timestamp ts_GetToDoCalendarEventEnd_Team = null;
 
     private void getToDoCalendarEvents_Team(int AD_User_ID)
     {
@@ -1810,11 +1904,14 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		ArrayList<Object> list_parameters  = new ArrayList<Object>();
 		Object[] parameters = null;
 
-		Timestamp timestamp_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-		Timestamp timestamp_End = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+		if(ts_GetToDoCalendarEventBegin_Team == null)
+			ts_GetToDoCalendarEventBegin_Team = new Timestamp(map_Calendars.get(p_SelectedTab_AD_User_ID).getBeginDate().getTime());
 
-		LocalDateTime toDayMin = LocalDateTime.of(timestamp_Begin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
-		LocalDateTime toDayMax = LocalDateTime.of(timestamp_End.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+		if(ts_GetToDoCalendarEventEnd_Team == null)
+			ts_GetToDoCalendarEventEnd_Team = new Timestamp(map_Calendars.get(p_SelectedTab_AD_User_ID).getEndDate().getTime());
+
+		LocalDateTime toDayMin = LocalDateTime.of(ts_GetToDoCalendarEventBegin_Team.toLocalDateTime().toLocalDate(), LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(ts_GetToDoCalendarEventEnd_Team.toLocalDateTime().toLocalDate(), LocalTime.MAX);
 
 
 		//JP_ToDo_ScheduledStartTime
@@ -1835,10 +1932,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			list_parameters.add(AD_User_ID);
 
 		}else {
-			map_TaskCalendarEvent_Team.clear();
-			map_ScheduleCalendarEvent_Team.clear();
 
-			whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");//TODO
+			whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
 		}
 
 		whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
