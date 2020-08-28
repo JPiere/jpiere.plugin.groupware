@@ -967,8 +967,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			map_Calendars.get(p_AD_User_ID).setEndTime(endTime);
 			createThreeLinesPopup();
-		}
 
+		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View.equals(name)){
+
+			p_JP_ToDo_Main_Calendar_View = value.toString();
+			updateSelectedUserCalendarModel(false, false);
+
+		}
 	}
 
 	@Override
