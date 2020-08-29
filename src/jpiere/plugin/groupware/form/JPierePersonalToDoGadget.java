@@ -572,11 +572,21 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		return list_ToDoes;
 	}
 
+	I_CallerToDoPopupwindow i_CallerPersonalToDoPopupwindow;
+
+	public void setCallerPersonalToDoPopupwindow(I_CallerToDoPopupwindow callerToDoPopupwindow)
+	{
+		this.i_CallerPersonalToDoPopupwindow = callerToDoPopupwindow;
+	}
+
 	@Override
-	public boolean refresh(int AD_User_ID, String JP_ToDo_Type)
+	public boolean refresh(int AD_User_ID, String JP_ToDo_Type, boolean isRefreshChain)
 	{
 		if(p_JP_ToDo_Type.equals(JP_ToDo_Type))
 			createContents();
+
+		if(i_CallerPersonalToDoPopupwindow != null && isRefreshChain)
+			i_CallerPersonalToDoPopupwindow.refresh(AD_User_ID, JP_ToDo_Type, false);
 
 		return true;
 	}
@@ -597,7 +607,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	public void setAD_User_ID(int AD_User_ID)
 	{
 		p_AD_User_ID = AD_User_ID;
-		refresh(p_AD_User_ID, p_JP_ToDo_Type);
+		refresh(p_AD_User_ID, p_JP_ToDo_Type, false);
 	}
 
 	@Override

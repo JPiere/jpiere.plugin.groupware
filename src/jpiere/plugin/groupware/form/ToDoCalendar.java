@@ -805,6 +805,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		groupBox1.appendChild(caption1);
 
 		personalToDoGadget_Schedule = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Schedule);
+		personalToDoGadget_Schedule.setCallerPersonalToDoPopupwindow(this);
 		groupBox1.appendChild(personalToDoGadget_Schedule);
 
 
@@ -821,6 +822,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		groupBox2.appendChild(caption2);
 
 		personalToDoGadget_Task = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Task);
+		personalToDoGadget_Task.setCallerPersonalToDoPopupwindow(this);
 		groupBox2.appendChild(personalToDoGadget_Task);
 
 
@@ -837,6 +839,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		groupBox3.appendChild(caption3);
 
 		personalToDoGadget_Memo= new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Memo);
+		personalToDoGadget_Memo.setCallerPersonalToDoPopupwindow(this);
 		groupBox3.appendChild(personalToDoGadget_Memo);
 
     	return div;
@@ -912,7 +915,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			else
 				updateCalendarModel(true,true, 0);
 
-			refreshWest(null);
+			refreshWest(null,false);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(name)){
 
@@ -1197,7 +1200,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 					}
 
-					refreshWest(null);
+					refreshWest(null, false);
 
 				}else if(BUTTON_TODAY.equals(btnName)){
 
@@ -2508,11 +2511,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	 * Refresh (Implement of I_CallerToDoPopupwindow)
 	 */
 	@Override
-	public boolean refresh(int AD_User_ID, String JP_ToDo_Type)
+	public boolean refresh(int AD_User_ID, String JP_ToDo_Type , boolean isRefreshChain)
 	{
 
 		updateCalendarModel(false,true, AD_User_ID);
-		refreshWest(JP_ToDo_Type);
+		refreshWest(JP_ToDo_Type, false);
 
 		return true;
 	}
@@ -2524,7 +2527,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	 * @param JP_ToDo_Type
 	 * @return boolean
 	 */
-	private boolean refreshWest(String JP_ToDo_Type)
+	private boolean refreshWest(String JP_ToDo_Type,boolean isRefreshChain)
 	{
 		personalToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
@@ -2532,13 +2535,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		if(Util.isEmpty(JP_ToDo_Type))
 		{
-			personalToDoGadget_Schedule.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Schedule);
-			personalToDoGadget_Task.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Task);
-			personalToDoGadget_Memo.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Memo);
+			personalToDoGadget_Schedule.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Schedule,isRefreshChain);
+			personalToDoGadget_Task.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Task ,isRefreshChain);
+			personalToDoGadget_Memo.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Memo, isRefreshChain);
 		}else {
-			personalToDoGadget_Schedule.refresh(p_AD_User_ID, JP_ToDo_Type);
-			personalToDoGadget_Task.refresh(p_AD_User_ID, JP_ToDo_Type);
-			personalToDoGadget_Memo.refresh(p_AD_User_ID, JP_ToDo_Type);
+			personalToDoGadget_Schedule.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
+			personalToDoGadget_Task.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
+			personalToDoGadget_Memo.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
 		}
 
 		return true;
