@@ -366,10 +366,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		mainBorderLayout.appendChild(mainBorderLayout_West);
 		mainBorderLayout_West.appendChild(createWestContents());
 
-
-		Calendars cal = map_Calendars.get(p_SelectedTab_AD_User_ID);
-		setCalendarMold(cal.getDays());
-
     }
 
 
@@ -1231,7 +1227,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 					createCustomizePopupWindow();
 
-				}else if(BUTTON_CUSTOMIZE_SAVE.equals(btnName)){//TODO
+				}else if(BUTTON_CUSTOMIZE_SAVE.equals(btnName)){
 
 					if(m_GroupwareUser != null)
 					{
@@ -1267,7 +1263,16 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 								m_GroupwareUser.setJP_ToDo_Main_Calendar_View(JP_ToDo_Main_Calendar_View.toString());
 						}
 
-						m_GroupwareUser.saveEx();
+						try
+						{
+							m_GroupwareUser.saveEx();
+
+						}catch (Exception e) {
+
+							FDialog.error(form.getWindowNo(),"Error", e.getMessage());//TODO: 保存時のエラーメッセージ処理の改善
+
+							return;
+						}
 
 						if(button_Customize_Save.isVisible())
 							button_Customize_Save.setDisabled(true);
@@ -1574,7 +1579,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		}else {
 
-			editor_IsDisplaySchedule_For_Custom.setVisible(false);//TODO
+			editor_IsDisplaySchedule_For_Custom.setVisible(false);
 			editor_IsDisplayTask_For_Custom.setVisible(false);
 		}
 
