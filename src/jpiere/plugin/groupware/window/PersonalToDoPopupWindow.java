@@ -1070,6 +1070,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	private boolean deleteToDo()
 	{
+		int AD_User_ID = p_MToDo.getAD_User_ID();
 		p_MToDo.delete(false);
 		p_MToDo = null;
 		p_TeamMToDo = null;
@@ -1091,7 +1092,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type);
+			i_CallerPersonalToDoPopupwindow.refresh(AD_User_ID, p_JP_ToDo_Type);
 			this.detach();
 		}
 

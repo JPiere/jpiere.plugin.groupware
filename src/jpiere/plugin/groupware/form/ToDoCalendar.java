@@ -941,6 +941,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				MTeamMember[] member = m_Team.getTeamMember();
 				int JP_ToDo_Calendar_Max_Member = MSysConfig.getIntValue(JP_TODO_CALENDAR_MAX_MEMBER, 100, Env.getAD_Client_ID(ctx));
 
+				if(member.length == 0 || (member.length == 1 && member[0].getAD_User_ID() == p_AD_User_ID))
+				{
+					p_JP_Team_ID = 0;
+					m_Team = null;
+					tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
+					editor_JP_Team_ID.setValue(0);
+
+					//There are no users on the team, or there are no users on the team except the selected user.
+					FDialog.error(form.getWindowNo(), "Error", Msg.getMsg(ctx, "JP_Team_No_Users_Except_Selected_User"));
+
+					return ;
+				}
+
+
 				if(member.length > JP_ToDo_Calendar_Max_Member)
 				{
 					p_JP_Team_ID = 0;
