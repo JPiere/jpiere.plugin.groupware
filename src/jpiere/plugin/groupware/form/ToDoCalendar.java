@@ -133,7 +133,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private int p_SelectedTab_AD_User_ID = 0;
 	private int p_OldSelectedTab_AD_User_ID = 0;
 
-	private MGroupwareUser groupwareUser = null;
 	private int p_JP_Team_ID = 0;
 	private MTeam m_Team = null;
 
@@ -141,10 +140,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private String p_JP_ToDo_Status = null ;
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
-	private String p_JP_ToDo_Main_Calendar_View = MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Personal;
+
+	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
+	private String p_JP_ToDo_Main_Calendar_View = MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team;
 
 	private String p_CalendarMold = null;
 
+	private MGroupwareUser groupwareUser = null;
 
 	private MLookup lookup_JP_ToDo_Category_ID;
 
@@ -164,10 +166,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	private Label label_JP_ToDo_Calendar_EndTime;
 	private Label label_JP_ToDo_Main_Calendar_View;
 
-
-	private Button btn_ThreeLines;
-
-	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
+	private Button button_Customize;
 
 	private Tabbox tabbox;
 	private Tab tab_p_AD_User_ID;
@@ -545,23 +544,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
-		//Three Lines(Customize)
-		btn_ThreeLines = new Button();
-		//btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/threelines.png"));
-		btn_ThreeLines.setImage(ThemeManager.getThemeResource("images/Customize16.png"));
-		//btn_ThreeLines.setClass("btn-small");
-		btn_ThreeLines.addEventListener(Events.ON_CLICK, this);
-		btn_ThreeLines.setName(GroupwareToDoUtil.BUTTON_THREE_LINES);
-		btn_ThreeLines.setLabel(" ");
-		ZKUpdateUtil.setVflex(btn_ThreeLines, "max");
-		ZKUpdateUtil.setHflex(btn_ThreeLines, "max");
-		row.appendCellChild(btn_ThreeLines);
+		//Customize
+		button_Customize = new Button();
+		button_Customize.setImage(ThemeManager.getThemeResource("images/Customize16.png"));
+		button_Customize.addEventListener(Events.ON_CLICK, this);
+		button_Customize.setName(GroupwareToDoUtil.BUTTON_CUSTOMIZE);
+		button_Customize.setLabel(" ");
+		ZKUpdateUtil.setVflex(button_Customize, "max");
+		ZKUpdateUtil.setHflex(button_Customize, "max");
+		row.appendCellChild(button_Customize);
 
-//		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
-//		row.appendChild(GroupwareToDoUtil.getDividingLine());
+
 
 		/**
-		 * for Three Line pouup
+		 * for Customize Popup Window
 		 **/
 		//First day ot week
 		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
@@ -941,7 +937,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}
 
 			map_Calendars.get(p_AD_User_ID).setBeginTime(beginTime);
-			createThreeLinesPopup();
+			createCustomizePopupWindow();
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_EndTime.equals(name)){
 
@@ -983,7 +979,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}
 
 			map_Calendars.get(p_AD_User_ID).setEndTime(endTime);
-			createThreeLinesPopup();
+			createCustomizePopupWindow();
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View.equals(name)){
 
@@ -1081,9 +1077,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					updateDateLabel();
 					updateCalendarModel(false, false, 0);
 
-				}else if(GroupwareToDoUtil.BUTTON_THREE_LINES.equals(btnName)){
+				}else if(GroupwareToDoUtil.BUTTON_CUSTOMIZE.equals(btnName)){
 
-					createThreeLinesPopup();
+					createCustomizePopupWindow();
 
 					return;
 				}
@@ -1308,7 +1304,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	}
 
 	Popup popup = null;
-	private void createThreeLinesPopup()
+	private void createCustomizePopupWindow()
 	{
 		Grid grid = null;
 		if(popup == null)
@@ -1346,8 +1342,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Main_Calendar_View, label_JP_ToDo_Main_Calendar_View, true));
 		row.appendChild(editor_JP_ToDo_Main_Calendar_View.getComponent());
 
-		popup.setPage(btn_ThreeLines.getPage());
-		popup.open(btn_ThreeLines, "after_start");
+		popup.setPage(button_Customize.getPage());
+		popup.open(button_Customize, "after_start");
 
 	}
 
@@ -1388,6 +1384,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			label_JP_ToDo_Calendar_BeginTime.setVisible(false);
 			editor_JP_ToDo_Calendar_EndTime.setVisible(false);
 			label_JP_ToDo_Calendar_EndTime.setVisible(false);
+
 		}
 
 	}
