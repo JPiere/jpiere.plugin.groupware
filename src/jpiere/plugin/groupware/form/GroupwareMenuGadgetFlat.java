@@ -19,27 +19,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.adempiere.util.Callback;
-import org.adempiere.webui.adwindow.ADTabpanel;
-import org.adempiere.webui.adwindow.ADWindow;
+import org.adempiere.webui.component.Grid;
+import org.adempiere.webui.component.GridFactory;
+import org.adempiere.webui.component.Row;
+import org.adempiere.webui.component.Rows;
+import org.adempiere.webui.component.ToolBarButton;
 import org.adempiere.webui.dashboard.DashboardPanel;
-import org.adempiere.webui.exception.ApplicationException;
 import org.adempiere.webui.session.SessionManager;
-import org.adempiere.webui.theme.ITheme;
 import org.adempiere.webui.theme.ThemeManager;
-import org.compiere.model.MMenu;
-import org.compiere.model.MQuery;
 import org.compiere.model.MTree;
 import org.compiere.model.MTreeNode;
 import org.compiere.util.Env;
-import org.compiere.util.Msg;
-import org.compiere.util.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zul.A;
-import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Layout;
 import org.zkoss.zul.Panel;
 import org.zkoss.zul.Panelchildren;
@@ -50,29 +44,26 @@ import jpiere.plugin.groupware.model.MGroupwareUser;
 
 
 /**
- * JPIERE-0472: ToDo Menu Gadget
+ * JPIERE-0472: ToDo Flat Menu Gadget
  *
  * @author h.hagiwara
  *
  * Ref:DPFavourites.java
  *
  */
-public class GroupwareMenuGadget extends DashboardPanel implements EventListener<Event> {
+public class GroupwareMenuGadgetFlat extends DashboardPanel implements EventListener<Event> {
 
 	private static final long serialVersionUID = 8398216266900311289L;
 
-	private static final String NODE_ID_ATTR = "Node_ID";
-
+	private static final String NODE_ID = "Node_ID";
 
 	private Layout vLayout_ToDoMenu;
-
-	private List<A> links = new ArrayList<>();
 
 	private Map<Integer, MTreeNode> nodeMap;
 	private MTreeNode rootNode;
 
 
-	public GroupwareMenuGadget()
+	public GroupwareMenuGadgetFlat()
 	{
 		super();
 
@@ -136,58 +127,31 @@ public class GroupwareMenuGadget extends DashboardPanel implements EventListener
 			list.add(nodeMap.get(key));
 		}
 
-		for (MTreeNode nd : list)
+		setSclass("views-box");
+
+		Grid grid = GridFactory.newGridLayout();
+		grid.setMold("paging");
+		grid.setPageSize(20); //default=20
+
+		grid.setPagingPosition("top");
+		vLayout_ToDoMenu.appendChild(grid);
+
+		Rows gridRows = grid.newRows();
+		for (MTreeNode node  : list)
 		{
-			addNode(nd);
-		}
+			Row row = gridRows.newRow();
+			ToolBarButton btn = new ToolBarButton(node.toString().trim());
+			btn.setSclass("link");
+			btn.setLabel(node.toString().trim());
+			btn.setImage(ThemeManager.getThemeResource(getIconFile(node)));
+			btn.addEventListener(Events.ON_CLICK, this);
+			int node_ID = node.getNode_ID();
+			btn.setAttribute(NODE_ID, String.valueOf(node_ID));
+			row.appendChild(btn);
+		}//for
 
 	}
 
-	private void addNode(MTreeNode nd)
-	{
-		addNode(nd.getNode_ID(), nd.toString().trim(), nd.getDescription(), getIconFile(nd), (nd.isWindow() && !nd.isForm()));
-	}
-
-
-
-	protected void addNode(int nodeId, String label, String description, String imageSrc, boolean addNewBtn)
-	{
-		Hlayout hbox = new Hlayout();
-		hbox.setSclass("favourites-item");
-		hbox.setSpacing("0px");
-		hbox.setValign("middle");
-		vLayout_ToDoMenu.appendChild(hbox);
-
-		A btnToDoMenu = new A();
-		btnToDoMenu.setAttribute(NODE_ID_ATTR, String.valueOf(nodeId));
-		hbox.appendChild(btnToDoMenu);
-		btnToDoMenu.setLabel(label);
-		btnToDoMenu.setTooltiptext(description);
-		if (ThemeManager.isUseFontIconForImage())
-			btnToDoMenu.setIconSclass(imageSrc);
-		else if (imageSrc.startsWith(ITheme.THEME_PATH_PREFIX))
-			btnToDoMenu.setImage(imageSrc);
-		else
-			btnToDoMenu.setImage(ThemeManager.getThemeResource(imageSrc));
-		btnToDoMenu.addEventListener(Events.ON_CLICK, this);
-		btnToDoMenu.setSclass("menu-href");
-
-		if (addNewBtn)
-		{
-			Toolbarbutton newBtn = new Toolbarbutton(null, ThemeManager.getThemeResource("images/New16.png"));
-			if (ThemeManager.isUseFontIconForImage())
-			{
-				newBtn.setImage(null);
-				newBtn.setIconSclass("z-icon-New");
-			}
-			newBtn.setAttribute(NODE_ID_ATTR, String.valueOf(nodeId));
-			hbox.appendChild(newBtn);
-			newBtn.addEventListener(Events.ON_CLICK, this);
-			newBtn.setSclass("fav-new-btn");
-			newBtn.setTooltiptext(Util.cleanAmp(Msg.getMsg(Env.getCtx(), "New")));
-		}
-		links.add(btnToDoMenu);
-	}
 
     public void onEvent(Event event)
     {
@@ -203,28 +167,14 @@ public class GroupwareMenuGadget extends DashboardPanel implements EventListener
 
 	private void doOnClick(Component comp)
 	{
-		if(comp instanceof A)
+		if (comp instanceof Toolbarbutton)
 		{
-			A btn = (A) comp;
-
-			int menuId = 0;
-			try
-			{
-				menuId = Integer.valueOf((String)btn.getAttribute(NODE_ID_ATTR));
-			}
-			catch (Exception e) {
-
-			}
-
-			if(menuId > 0) SessionManager.getAppDesktop().onMenuSelected(menuId);
-		}
-		else if (comp instanceof Toolbarbutton) {
 			Toolbarbutton btn = (Toolbarbutton) comp;
 
 			int menuId = 0;
 			try
 			{
-				menuId = Integer.valueOf((String)btn.getAttribute(NODE_ID_ATTR));
+				menuId = Integer.valueOf((String)btn.getAttribute(NODE_ID));
 			}
 			catch (Exception e) {
 
@@ -232,31 +182,7 @@ public class GroupwareMenuGadget extends DashboardPanel implements EventListener
 
 			if(menuId > 0)
 			{
-				try
-	            {
-					MMenu menu = new MMenu(Env.getCtx(), menuId, null);
-
-		    		MQuery query = new MQuery("");
-	        		query.addRestriction("1=2");
-					query.setRecordCount(0);
-
-					SessionManager.getAppDesktop().openWindow(menu.getAD_Window_ID(), query, new Callback<ADWindow>() {
-
-						@Override
-						public void onCallback(ADWindow result) {
-							if(result == null)
-			    				return;
-
-							result.getADWindowContent().onNew();
-							ADTabpanel adtabpanel = (ADTabpanel) result.getADWindowContent().getADTab().getSelectedTabpanel();
-							adtabpanel.focusToFirstEditor(false);
-						}
-					});
-	            }
-	            catch (Exception e)
-	            {
-	                throw new ApplicationException(e.getMessage(), e);
-	            }
+				 SessionManager.getAppDesktop().onMenuSelected(menuId);
 			}
 		}
 	}

@@ -789,7 +789,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		caption0.setIconSclass("z-icon-caret-right");
 		groupBox0.appendChild(caption0);
 
-		GroupwareMenuGadget toDoMenu = new GroupwareMenuGadget();
+		GroupwareMenuGadgetFlat toDoMenu = new GroupwareMenuGadgetFlat();
 		groupBox0.appendChild(toDoMenu);
 
 

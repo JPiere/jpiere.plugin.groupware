@@ -17,7 +17,7 @@ package jpiere.plugin.groupware.factory;
 import org.adempiere.webui.factory.IDashboardGadgetFactory;
 import org.zkoss.zk.ui.Component;
 
-import jpiere.plugin.groupware.form.GroupwareMenuGadget;
+import jpiere.plugin.groupware.form.GroupwareMenuGadgetFlat;
 import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
 
 
@@ -38,7 +38,7 @@ public class JPierePluginGroupwareDashboardGadgetFactory implements IDashboardGa
 			{
 				return new JPierePersonalToDoGadget();
 			}else if(uri.equals("JP_Groupware=GroupwareMenuGadget")) {
-				return new GroupwareMenuGadget();
+				return new GroupwareMenuGadgetFlat();
 			}
 
 		}
