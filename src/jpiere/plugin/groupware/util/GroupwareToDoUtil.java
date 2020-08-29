@@ -47,20 +47,11 @@ public class GroupwareToDoUtil {
 	public final static String CALENDAR_EVENT_WEEK = "onWeekClick";
 	public final static String CALENDAR_EVENT_MONTH = "onMonthkClick";
 
-	//Button Name
-	public final static String BUTTON_PREVIOUS = "PREVIOUS";
-	public final static String BUTTON_NEXT = "NEXT";
-	public final static String BUTTON_NEW = "NEW";
-
-	public final static String BUTTON_REFRESH = "REFRESH";
-	public final static String BUTTON_CUSTOMIZE = "CUSTOMIZE";
-
+	//Type of Calendar Veiw
 	public final static String CALENDAR_ONEDAY_VIEW = "ONE";
 	public final static String CALENDAR_FIVEDAYS_VIEW = "FIVE";
 	public final static String CALENDAR_SEVENDAYS_VIEW = "SEVEN";
 	public final static String CALENDAR_MONTH_VIEW = "MONTH";
-
-	public final static String BUTTON_TODAY = "TODAY";
 
 
 	//CSS
