@@ -670,16 +670,20 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		editor_JP_ToDo_Main_Calendar_View.addValueChangeListener(this);
 		label_JP_ToDo_Main_Calendar_View = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View));
 
-		if(m_GroupwareUser != null)
-		{
-			//Save Button
-			button_Customize_Save = new Button();
-			button_Customize_Save.setImage(ThemeManager.getThemeResource("images/Save16.png"));
-			button_Customize_Save.addEventListener(Events.ON_CLICK, this);
-			button_Customize_Save.setName(BUTTON_CUSTOMIZE_SAVE);
-			button_Customize_Save.setLabel(Msg.getMsg(ctx, "save"));
-			ZKUpdateUtil.setHflex(button_Customize_Save, "true");
-		}
+
+		//Save Button
+		button_Customize_Save = new Button();
+		button_Customize_Save.setImage(ThemeManager.getThemeResource("images/Save16.png"));
+		button_Customize_Save.addEventListener(Events.ON_CLICK, this);
+		button_Customize_Save.setName(BUTTON_CUSTOMIZE_SAVE);
+		button_Customize_Save.setLabel(Msg.getMsg(ctx, "save"));
+		button_Customize_Save.setVisible(true);
+		ZKUpdateUtil.setHflex(button_Customize_Save, "true");
+
+
+		if(m_GroupwareUser == null)
+			button_Customize_Save.setVisible(false);
+
 
     }
 
@@ -986,12 +990,18 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			editor_IsDisplaySchedule_For_Custom.setValue(value);
 			updateCalendarModel(false, false, 0);
 
+			if(editor_IsDisplaySchedule_For_Custom.isVisible())
+				button_Customize_Save.setDisabled(false);
+
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP.equals(name)) {
 
 			p_IsDisplayTask = (boolean)value;
 			editor_IsDisplayTask.setValue(value);
 			editor_IsDisplayTask_For_Custom.setValue(value);
 			updateCalendarModel(false,false, 0);
+
+			if(editor_IsDisplayTask_For_Custom.isVisible())
+				button_Customize_Save.setDisabled(false);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
@@ -1022,6 +1032,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			updateDateLabel();
 			updateCalendarModel(false, false, 0);
+
+			if(button_Customize_Save.isVisible())
+				button_Customize_Save.setDisabled(false);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime.equals(name)){
 
@@ -1063,7 +1076,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}
 
 			map_Calendars.get(p_AD_User_ID).setBeginTime(beginTime);
-			createCustomizePopupWindow();
+
+			if(button_Customize_Save.isVisible())
+				button_Customize_Save.setDisabled(false);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_EndTime.equals(name)){
 
@@ -1105,12 +1120,16 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			}
 
 			map_Calendars.get(p_AD_User_ID).setEndTime(endTime);
-			createCustomizePopupWindow();
+			if(button_Customize_Save.isVisible())
+				button_Customize_Save.setDisabled(false);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Main_Calendar_View.equals(name)){
 
 			p_JP_ToDo_Main_Calendar_View = value.toString();
 			updateCalendarModel(false, false, 0);
+
+			if(button_Customize_Save.isVisible())
+				button_Customize_Save.setDisabled(false);
 
 		}
 	}
@@ -1212,7 +1231,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 					createCustomizePopupWindow();
 
-				}else if(BUTTON_CUSTOMIZE_SAVE.equals(btnName)){
+				}else if(BUTTON_CUSTOMIZE_SAVE.equals(btnName)){//TODO
 
 					if(m_GroupwareUser != null)
 					{
@@ -1249,6 +1268,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						}
 
 						m_GroupwareUser.saveEx();
+
+						if(button_Customize_Save.isVisible())
+							button_Customize_Save.setDisabled(true);
 					}
 				}
 
@@ -1522,6 +1544,9 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			ZKUpdateUtil.setVflex(grid, "min");
 			ZKUpdateUtil.setHflex(grid, "min");
 			popup.appendChild(grid);
+
+			button_Customize_Save.setDisabled(true);
+
 		}else {
 			grid =(Grid)popup.getFirstChild();
 			grid.detach();
@@ -1546,6 +1571,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			row = rows.newRow();
 			row.appendChild(new Div());
 			row.appendChild(GroupwareToDoUtil.createEditorDiv(editor_IsDisplayTask_For_Custom, true));
+
+		}else {
+
+			editor_IsDisplaySchedule_For_Custom.setVisible(false);//TODO
+			editor_IsDisplayTask_For_Custom.setVisible(false);
 		}
 
 		row = rows.newRow();
