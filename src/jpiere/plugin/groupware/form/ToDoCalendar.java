@@ -51,10 +51,12 @@ import org.adempiere.webui.panel.IFormController;
 import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
+import org.adempiere.webui.window.FDialog;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MRefList;
+import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
 import org.compiere.model.Query;
@@ -211,6 +213,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	public final static String BUTTON_REFRESH = "REFRESH";
 	public final static String BUTTON_CUSTOMIZE = "CUSTOMIZE";
 	public final static String BUTTON_CUSTOMIZE_SAVE = "CUSTOMIZE_SAVE";
+
+	public final static String JP_TODO_CALENDAR_MAX_MEMBER ="JP_TODO_CALENDAR_MAX_MEMBER";
 
 
 	/**
@@ -933,6 +937,23 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				p_JP_Team_ID = Integer.parseInt(value.toString());
 				m_Team = new MTeam(ctx, p_JP_Team_ID, null);
+
+				MTeamMember[] member = m_Team.getTeamMember();
+				int JP_ToDo_Calendar_Max_Member = MSysConfig.getIntValue(JP_TODO_CALENDAR_MAX_MEMBER, 100, Env.getAD_Client_ID(ctx));
+
+				if(member.length > JP_ToDo_Calendar_Max_Member)
+				{
+					p_JP_Team_ID = 0;
+					m_Team = null;
+					tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
+					editor_JP_Team_ID.setValue(0);
+
+					//The number of users belonging to the selected team has exceeded the maximum number of users that can be displayed on the calendar.
+					FDialog.error(form.getWindowNo(), "Error", Msg.getMsg(ctx, "JP_ToDo_Calendar_Max_Member", new Object[] {member.length,JP_ToDo_Calendar_Max_Member}));
+
+					return ;
+				}
+
 				tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
 
 			}
@@ -1253,7 +1274,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						}
 					}
 
-				}else if(label_JP_ToDo_Category_ID.equals(comp)) {
+				}else if(label_JP_Team_ID.equals(comp)) {
 
 					Object value = editor_JP_Team_ID.getValue();
 					if(value == null || Util.isEmpty(value.toString()))
@@ -1263,7 +1284,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 						AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), Integer.valueOf(value.toString()));
 					}
 
-				}else if(label_JP_Team_ID.equals(comp)) {
+				}else if(label_JP_ToDo_Category_ID.equals(comp)) {
 
 					Object value = editor_JP_ToDo_Category_ID.getValue();
 					if(value == null || Util.isEmpty(value.toString()))
