@@ -716,6 +716,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
     		tab_p_AD_User_ID.setClosable(false);
     		tab_p_AD_User_ID.addEventListener(Events.ON_CLICK, this);
 
+			MGroupwareUser gUser = MGroupwareUser.get(ctx, p_AD_User_ID);
+			if(gUser != null && gUser.getJP_ColorPicker() != null)
+			{
+    			String css = "border-top: 4px solid " + gUser.getJP_ColorPicker() + ";" ;
+    			tab_p_AD_User_ID.setStyle(css);
+			}
+
     		tabpanel_p_AD_User_ID = new Tabpanel();
     		tabpanel_p_AD_User_ID.setAttribute("AD_User_ID", p_AD_User_ID);
     		tabpanel_p_AD_User_ID.appendChild(map_Calendars.get(p_AD_User_ID));
@@ -740,6 +747,13 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	    		if(p_AD_User_ID != menbers[i].getAD_User_ID())
 	    		{
 	    			tab = new Tab(MUser.get(ctx, menbers[i].getAD_User_ID()).getName());
+
+	    			MGroupwareUser gUser = MGroupwareUser.get(ctx, menbers[i].getAD_User_ID());
+	    			if(gUser != null && gUser.getJP_ColorPicker() != null)
+	    			{
+		    			String css = "border-top: 4px solid " + gUser.getJP_ColorPicker() + ";" ;
+		    			tab.setStyle(css);
+	    			}
 	    			tab.setAttribute("AD_User_ID", menbers[i].getAD_User_ID());
 	    			tab.setClosable(true);
 	    			tab.addEventListener(Events.ON_CLOSE, this);//onClose
