@@ -128,7 +128,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		adjustDisplayText();
 		setColor();
 
-		this.setLocked(true);
+		this.setLocked(false);
 	}
 
 

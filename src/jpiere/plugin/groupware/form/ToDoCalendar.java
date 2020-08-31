@@ -1493,7 +1493,44 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 			}//if(comp instanceof Tab)
 
+		}else if(eventName.equals("onEventUpdate")){ //Drag & Drop
+
+			if(event instanceof CalendarsEvent)
+			{
+				CalendarsEvent calEvent = (CalendarsEvent) event;
+				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent) calEvent.getCalendarEvent();
+				MToDo todo = todoEvent.getToDo();
+				if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
+				{
+					todo.setJP_ToDo_ScheduledStartTime(new Timestamp(calEvent.getBeginDate().getTime()));
+					todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getEndDate().getTime()));
+
+				}else if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
+
+					todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getBeginDate().getTime()));
+
+				}
+
+
+				if(!todo.save())
+				{
+					//TODO エラー処理
+				}
+
+				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+				{
+
+					updateCalendarModel(true, false, p_AD_User_ID);
+
+				}else {
+
+					updateCalendarModel(false, true, p_SelectedTab_AD_User_ID);
+				}
+
+			}
+
 		}
+
 	}
 
 
