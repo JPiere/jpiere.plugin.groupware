@@ -1500,18 +1500,56 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				CalendarsEvent calEvent = (CalendarsEvent) event;
 				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent) calEvent.getCalendarEvent();
 				MToDo todo = todoEvent.getToDo();
+				HashMap<Integer, ToDoCalendarEvent> events = null;
+
 				if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 				{
-					todo.setJP_ToDo_ScheduledStartTime(new Timestamp(calEvent.getBeginDate().getTime()));
-					todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getEndDate().getTime()));
+					Timestamp startTime = new Timestamp(calEvent.getBeginDate().getTime());
+					todo.setJP_ToDo_ScheduledStartTime(startTime);
+
+					//Adjust
+					Timestamp endTime = new Timestamp(calEvent.getEndDate().getTime());
+					Timestamp schesuledEndTime = todo.getJP_ToDo_ScheduledEndTime();
+					if(schesuledEndTime.toLocalDateTime().toLocalTime() == LocalTime.MIN)
+					{
+						endTime = Timestamp.valueOf(LocalDateTime.of(endTime.toLocalDateTime().toLocalDate(), LocalTime.MIN));
+					}
+
+					todo.setJP_ToDo_ScheduledEndTime(endTime);
+
+					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+					{
+						if(p_AD_User_ID == todo.getAD_User_ID())
+						{
+							events = map_ScheduleCalendarEvent_User.get(p_AD_User_ID);
+						}else {
+							events = map_ScheduleCalendarEvent_Team.get(todo.getAD_User_ID());
+						}
+
+					}else {
+
+						events = map_ScheduleCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
+
+					}
 
 				}else if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
 
 					todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getBeginDate().getTime()));
+					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+					{
+						if(p_AD_User_ID == todo.getAD_User_ID())
+						{
+							events = map_TaskCalendarEvent_User.get(p_AD_User_ID);
+						}else {
+							events = map_TaskCalendarEvent_Team.get(todo.getAD_User_ID());
+						}
+					}else {
+						events = map_TaskCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
+					}
 
 				}
 
-
+				events.put(todo.getJP_ToDo_ID(), new ToDoCalendarEvent(todo));
 				if(!todo.save())
 				{
 					//TODO エラー処理
@@ -1520,11 +1558,12 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 				{
 
-					updateCalendarModel(true, false, p_AD_User_ID);
+					updateCalendarModel(false, false, 0);
+					refreshWest(todo.getJP_ToDo_Type(), false);
 
 				}else {
 
-					updateCalendarModel(false, true, p_SelectedTab_AD_User_ID);
+					updateCalendarModel(false, false, p_SelectedTab_AD_User_ID);
 				}
 
 			}

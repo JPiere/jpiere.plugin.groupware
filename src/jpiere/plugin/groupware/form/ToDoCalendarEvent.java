@@ -128,7 +128,11 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		adjustDisplayText();
 		setColor();
 
-		this.setLocked(false);
+		int login_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
+		if(m_ToDo.getAD_User_ID() == login_AD_User_ID || m_ToDo.getCreatedBy() == login_AD_User_ID)
+			this.setLocked(false);
+		else
+			this.setLocked(true);
 	}
 
 
