@@ -215,6 +215,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	public final static String BUTTON_CUSTOMIZE_SAVE = "CUSTOMIZE_SAVE";
 
 	public final static String JP_TODO_CALENDAR_MAX_MEMBER ="JP_TODO_CALENDAR_MAX_MEMBER";
+	public final static String CSS_DEFAULT_TAB_STYLE ="border-top: 4px solid #ACD5EE;";
 
 
 	/**
@@ -717,8 +718,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
     		tab_p_AD_User_ID.addEventListener(Events.ON_CLICK, this);
 
 			MGroupwareUser gUser = MGroupwareUser.get(ctx, p_AD_User_ID);
-			if(gUser != null && gUser.getJP_ColorPicker() != null)
+			if(gUser == null || gUser.getJP_ColorPicker() == null)
 			{
+				tab_p_AD_User_ID.setStyle(CSS_DEFAULT_TAB_STYLE);
+			}else {
     			String css = "border-top: 4px solid " + gUser.getJP_ColorPicker() + ";" ;
     			tab_p_AD_User_ID.setStyle(css);
 			}
@@ -749,8 +752,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	    			tab = new Tab(MUser.get(ctx, menbers[i].getAD_User_ID()).getName());
 
 	    			MGroupwareUser gUser = MGroupwareUser.get(ctx, menbers[i].getAD_User_ID());
-	    			if(gUser != null && gUser.getJP_ColorPicker() != null)
+	    			if(gUser == null || gUser.getJP_ColorPicker() == null)
 	    			{
+	    				tab.setStyle(CSS_DEFAULT_TAB_STYLE);
+	    			}else {
 		    			String css = "border-top: 4px solid " + gUser.getJP_ColorPicker() + ";" ;
 		    			tab.setStyle(css);
 	    			}
@@ -987,6 +992,15 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 				tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
 
+			}
+
+			MGroupwareUser gUser = MGroupwareUser.get(ctx, p_AD_User_ID);
+			if(gUser == null || gUser.getJP_ColorPicker() == null)
+			{
+				tab_p_AD_User_ID.setStyle(CSS_DEFAULT_TAB_STYLE);
+			}else {
+    			String css = "border-top: 4px solid " + gUser.getJP_ColorPicker() + ";" ;
+    			tab_p_AD_User_ID.setStyle(css);
 			}
 
 			Calendars from = map_Calendars.get(p_SelectedTab_AD_User_ID);
