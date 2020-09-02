@@ -1799,15 +1799,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		}
 	}
 
-	private void deleteCalendarEvent(ToDoCalendarEvent deleteEvent)//TODO
+	private void deleteCalendarEvent(ToDoCalendarEvent deleteEvent)
 	{
 		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		SimpleCalendarModel	scm = (SimpleCalendarModel)calendars.getModel();
 		scm.remove(deleteEvent);
 	}
 
-	private void createCalendarEvent(ToDoCalendarEvent newEvent)//TODO
+	private void createCalendarEvent(ToDoCalendarEvent newEvent)
 	{
+		if(isSkip(newEvent))
+			return ;
+
 		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		SimpleCalendarModel	scm = (SimpleCalendarModel)calendars.getModel();
 
@@ -1827,12 +1830,15 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 	}
 
-	private void updateCalendarEvent(ToDoCalendarEvent oldEvent, ToDoCalendarEvent newEvent)//TODO
+	private void updateCalendarEvent(ToDoCalendarEvent oldEvent, ToDoCalendarEvent newEvent)
 	{
 		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		SimpleCalendarModel	scm = (SimpleCalendarModel)calendars.getModel();
-		if(oldEvent != null)
-			scm.remove(oldEvent);
+		scm.remove(oldEvent);
+
+		if(isSkip(newEvent))
+			return ;
+
 
 		boolean isGetToDoCalendarEventRange = false;
 		if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
@@ -2640,7 +2646,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 	@Override
-	public boolean update(MToDo todo)//TODO
+	public boolean update(MToDo todo)
 	{
 		ToDoCalendarEvent oldEvent = null;
 		ToDoCalendarEvent newEvent = null;
@@ -2667,7 +2673,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 	@Override
-	public boolean create(MToDo todo)//TODO
+	public boolean create(MToDo todo)
 	{
 		ToDoCalendarEvent newEvent = null;
 		if(todo.getAD_User_ID() == p_AD_User_ID)
@@ -2687,7 +2693,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 	@Override
-	public boolean delete(MToDo deleteToDo)//TODO
+	public boolean delete(MToDo deleteToDo)
 	{
 
 		ToDoCalendarEvent deleteEvent = null;
