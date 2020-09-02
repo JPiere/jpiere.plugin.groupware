@@ -931,9 +931,17 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
+			ts_GetToDoCalendarEventBegin_User = null;
+			ts_GetToDoCalendarEventEnd_User = null;
 			queryToDoCalendarEvents_User();
+
 			if(p_JP_Team_ID > 0)
+			{
+				ts_GetToDoCalendarEventBegin_Team = null;
+				ts_GetToDoCalendarEventEnd_Team = null;
 				queryToDoCalendarEvents_Team(0);
+			}
+
 			resetSelectedTabCalendarModel();
 
 			refreshWest(null,false);
@@ -1014,6 +1022,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
+			ts_GetToDoCalendarEventBegin_Team = null;
+			ts_GetToDoCalendarEventEnd_Team = null;
 			queryToDoCalendarEvents_Team(0);
 			resetSelectedTabCalendarModel();
 
