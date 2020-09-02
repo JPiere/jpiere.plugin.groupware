@@ -1223,6 +1223,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 				}else if(BUTTON_REFRESH.equals(btnName)){
 
+					p_SelectedTab_AD_User_ID = p_AD_User_ID;
+					p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
+
 					if(p_JP_Team_ID > 0)
 					{
 					  	mainBorderLayout_Center.getFirstChild().detach();
@@ -1236,6 +1239,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					}
 
 					refreshWest(null, false);
+
+
 
 				}else if(BUTTON_TODAY.equals(btnName)){
 
