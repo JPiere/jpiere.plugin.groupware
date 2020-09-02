@@ -1386,19 +1386,40 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 				{
-					updateCalendarModel(false,false, 0);
 					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
+					resetSelectedTabCalendarModel();
 
-				}else if(tabpanel.getFirstChild() == null) {
+				}else if(tabpanel.getFirstChild() == null) {//TODO
 
-					updateCalendarModel(false,false, 0);
-					Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
+					SimpleCalendarModel scm =null;
+					Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
+					if(calendars == null)
+					{
+						Calendars from = map_Calendars.get(p_OldSelectedTab_AD_User_ID);
+						if(from == null)
+							from = map_Calendars.get(p_AD_User_ID);
+						calendars = createSyncCalendars(from);
+						map_Calendars.put(p_SelectedTab_AD_User_ID, calendars);
+					}
+
+					CalendarModel  cm = calendars.getModel();
+					if(cm == null)
+					{
+						scm = new SimpleCalendarModel();
+					}else {
+						scm = (SimpleCalendarModel)cm;
+					}
+
+					scm.clear();
+
+					resetSelectedTabCalendarModel();
 					tabpanel.appendChild(calendars);
 
 				}else {
 
-					updateCalendarModel(false,false, 0);
 					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
+					updateCalendarModel(false,false, 0);
+
 				}
 
 			}
