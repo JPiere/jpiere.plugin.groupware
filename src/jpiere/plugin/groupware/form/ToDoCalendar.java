@@ -931,10 +931,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
-			if(p_JP_Team_ID == 0)
-				updateCalendarModel(true,false, 0);
-			else
-				updateCalendarModel(true,true, 0);
+			queryToDoCalendarEvents_User();
+			if(p_JP_Team_ID > 0)
+				queryToDoCalendarEvents_Team(0);
+			resetSelectedTabCalendarModel();
 
 			refreshWest(null,false);
 
@@ -996,15 +996,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			}
 
-			MGroupwareUser gUser = MGroupwareUser.get(ctx, p_AD_User_ID);
-			if(gUser == null || gUser.getJP_ColorPicker() == null)
-			{
-				tab_p_AD_User_ID.setStyle(CSS_DEFAULT_TAB_STYLE);
-			}else {
-    			String css = "border-top: 4px solid " + gUser.getJP_ColorPicker() + ";" ;
-    			tab_p_AD_User_ID.setStyle(css);
-			}
-
 			Calendars from = map_Calendars.get(p_SelectedTab_AD_User_ID);
 			Calendars to = map_Calendars.get(p_AD_User_ID);
 			map_Calendars.clear();
@@ -1023,8 +1014,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
-			updateCalendarModel(false, true, 0);
-
+			queryToDoCalendarEvents_Team(0);
+			resetSelectedTabCalendarModel();
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP.equals(name)) {
 
@@ -1074,7 +1065,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			map_Calendars.get(p_AD_User_ID).setFirstDayOfWeek(refList.getName());
 
 			updateDateLabel();
-			updateCalendarModel(false, false, 0);
+			updateCalendarModel(false, false, 0);//TODO
 
 			if(button_Customize_Save.isVisible())
 				button_Customize_Save.setDisabled(false);
@@ -2849,18 +2840,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		return true;
 	}
 
-	/**
-	 * Refresh (Implement of I_CallerToDoPopupwindow)
-	 */
-//	@Override
-//	public boolean refresh(int AD_User_ID, String JP_ToDo_Type , boolean isRefreshChain)
-//	{
-//
-//		updateCalendarModel(false,true, AD_User_ID);
-//		refreshWest(JP_ToDo_Type, false);
-//
-//		return true;
-//	}
 
 
 	/**
@@ -2874,18 +2853,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		personalToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Memo.setAD_User_ID(p_AD_User_ID);
-
-//		if(Util.isEmpty(JP_ToDo_Type))
-//		{
-//			personalToDoGadget_Schedule.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Schedule,isRefreshChain);
-//			personalToDoGadget_Task.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Task ,isRefreshChain);
-//			personalToDoGadget_Memo.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Memo, isRefreshChain);
-//		}else {
-//			personalToDoGadget_Schedule.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
-//			personalToDoGadget_Task.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
-//			personalToDoGadget_Memo.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
-//		}
-
 		return true;
 	}
 
