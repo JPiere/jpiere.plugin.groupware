@@ -13,41 +13,19 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
-import java.sql.Timestamp;
-import java.util.List;
-
 import jpiere.plugin.groupware.model.MToDo;
-import jpiere.plugin.groupware.model.MToDoTeam;
 
 /**
  * JPIERE-0470 Personal ToDo Popup Window
  *
+ * I_ToDoCalendarEventReceiver
+ *
+ * ToDoCalendarEventReceiver can receive ToDo Calender Event from ToDo Popup Window
  *
  * @author h.hagiwara
  *
  */
-public interface I_CallerToDoPopupwindow {
-
-
-	public List<MToDo> getPersonalToDoList();
-
-	public List<MToDoTeam> getTeamToDoList();
-
-
-
-	public Timestamp getDefault_JP_ToDo_ScheduledStartTime();
-
-	public Timestamp getDefault_JP_ToDo_ScheduledEndTime();
-
-	public int getDefault_AD__User_ID();
-
-	public int getDefault_JP_ToDo_Category_ID();
-
-	public String getDefault_JP_ToDo_Type();
-
-
-
-	public boolean refresh(int AD_User_ID, String JP_ToDo_Type, boolean isRefreshChain);
+public interface I_ToDoCalendarEventReceiver {
 
 	public boolean update(MToDo todo);
 

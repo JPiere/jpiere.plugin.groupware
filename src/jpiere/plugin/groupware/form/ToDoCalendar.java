@@ -93,8 +93,9 @@ import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
-import jpiere.plugin.groupware.window.I_CallerToDoPopupwindow;
-import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
+import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
+import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
+import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;;
 
 /**
  *
@@ -103,7 +104,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  * h.hagiwara
  *
  */
-public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, EventListener<Event>, ValueChangeListener {
+public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEventReceiver, IFormController, EventListener<Event>, ValueChangeListener {
 
 	//private static CLogger log = CLogger.getCLogger(ToDoCalendar.class);
 
@@ -822,6 +823,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		personalToDoGadget_Schedule = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Schedule);
 		personalToDoGadget_Schedule.setCallerPersonalToDoPopupwindow(this);
+		personalToDoGadget_Schedule.addToDoCalenderEventReceiver(this);
 		groupBox1.appendChild(personalToDoGadget_Schedule);
 
 
@@ -839,6 +841,7 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		personalToDoGadget_Task = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Task);
 		personalToDoGadget_Task.setCallerPersonalToDoPopupwindow(this);
+		personalToDoGadget_Task.addToDoCalenderEventReceiver(this);
 		groupBox2.appendChild(personalToDoGadget_Task);
 
 
@@ -856,6 +859,8 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 
 		personalToDoGadget_Memo= new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Memo);
 		personalToDoGadget_Memo.setCallerPersonalToDoPopupwindow(this);
+		personalToDoGadget_Memo.addToDoCalenderEventReceiver(this);
+
 		groupBox3.appendChild(personalToDoGadget_Memo);
 
     	return div;
@@ -1195,6 +1200,10 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					p_CalendarsEventEndDate =  null;
 
 					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
+					todoWindow.addToDoCalenderEventReceiver(this);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
 				}else if(BUTTON_PREVIOUS.equals(btnName))
@@ -1404,6 +1413,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 				p_CalendarsEventEndDate = new Timestamp(calendarsEvent.getEndDate().getTime());
 
 				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
+				todoWindow.addToDoCalenderEventReceiver(this);
+				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
+				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
+				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
+
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 			}
 
@@ -1424,6 +1438,11 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 					p_CalendarsEventEndDate = ce.getToDo().getJP_ToDo_ScheduledEndTime();
 
 					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, 0);
+					todoWindow.addToDoCalenderEventReceiver(this);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
+
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 				}
 			}
@@ -1785,13 +1804,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 		SimpleCalendarModel	scm = (SimpleCalendarModel)calendars.getModel();
 		scm.remove(deleteEvent);
-
-		if(deleteEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
-			personalToDoGadget_Schedule.delete(deleteEvent.getToDo());
-		else if(deleteEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task))
-			personalToDoGadget_Task.delete(deleteEvent.getToDo());
-		else if(deleteEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Memo))
-			personalToDoGadget_Memo.delete(deleteEvent.getToDo());
 	}
 
 	private void createCalendarEvent(ToDoCalendarEvent newEvent)//TODO
@@ -1813,12 +1825,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			scm.add(newEvent);
 		}
 
-		if(newEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
-			personalToDoGadget_Schedule.create(newEvent.getToDo());
-		else if(newEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task))
-			personalToDoGadget_Task.create(newEvent.getToDo());
-		else if(newEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Memo))
-			personalToDoGadget_Memo.create(newEvent.getToDo());
 	}
 
 	private void updateCalendarEvent(ToDoCalendarEvent oldEvent, ToDoCalendarEvent newEvent)//TODO
@@ -1842,12 +1848,6 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 			scm.add(newEvent);
 		}
 
-		if(newEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
-			personalToDoGadget_Schedule.update(newEvent.getToDo());
-		else if(newEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task))
-			personalToDoGadget_Task.update(newEvent.getToDo());
-		else if(newEvent.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Memo))
-			personalToDoGadget_Memo.update(newEvent.getToDo());
 	}
 
 
@@ -2713,15 +2713,15 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 	/**
 	 * Refresh (Implement of I_CallerToDoPopupwindow)
 	 */
-	@Override
-	public boolean refresh(int AD_User_ID, String JP_ToDo_Type , boolean isRefreshChain)
-	{
-
-		updateCalendarModel(false,true, AD_User_ID);
-		refreshWest(JP_ToDo_Type, false);
-
-		return true;
-	}
+//	@Override
+//	public boolean refresh(int AD_User_ID, String JP_ToDo_Type , boolean isRefreshChain)
+//	{
+//
+//		updateCalendarModel(false,true, AD_User_ID);
+//		refreshWest(JP_ToDo_Type, false);
+//
+//		return true;
+//	}
 
 
 	/**
@@ -2736,16 +2736,16 @@ public class ToDoCalendar implements I_CallerToDoPopupwindow, IFormController, E
 		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Memo.setAD_User_ID(p_AD_User_ID);
 
-		if(Util.isEmpty(JP_ToDo_Type))
-		{
-			personalToDoGadget_Schedule.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Schedule,isRefreshChain);
-			personalToDoGadget_Task.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Task ,isRefreshChain);
-			personalToDoGadget_Memo.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Memo, isRefreshChain);
-		}else {
-			personalToDoGadget_Schedule.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
-			personalToDoGadget_Task.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
-			personalToDoGadget_Memo.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
-		}
+//		if(Util.isEmpty(JP_ToDo_Type))
+//		{
+//			personalToDoGadget_Schedule.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Schedule,isRefreshChain);
+//			personalToDoGadget_Task.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Task ,isRefreshChain);
+//			personalToDoGadget_Memo.refresh(p_AD_User_ID, MToDo.JP_TODO_TYPE_Memo, isRefreshChain);
+//		}else {
+//			personalToDoGadget_Schedule.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
+//			personalToDoGadget_Task.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
+//			personalToDoGadget_Memo.refresh(p_AD_User_ID, JP_ToDo_Type, isRefreshChain);
+//		}
 
 		return true;
 	}

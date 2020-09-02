@@ -15,6 +15,7 @@ package jpiere.plugin.groupware.window;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsUpdatable_ToDoStatus = false;
 	private boolean p_IsNewRecord = false;
 	private boolean p_IsTeamToDo = false;
-	private boolean p_RequeryOnCancel = false;
 
 	private MToDo p_MToDo = null;
 	private MToDoTeam p_TeamMToDo = null;
@@ -108,7 +108,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private boolean p_IsDirty = false;
 	private boolean p_Debug = false;
 
-	private I_CallerToDoPopupwindow i_CallerPersonalToDoPopupwindow;
+	private I_ToDoPopupwindowCaller i_PersonalToDoPopupwindowCaller;
+
+	private List<I_ToDoCalendarEventReceiver>  list_ToDoCalendarEventReceiver = new ArrayList<I_ToDoCalendarEventReceiver>();
+	public void addToDoCalenderEventReceiver(I_ToDoCalendarEventReceiver calendar)
+	{
+		list_ToDoCalendarEventReceiver.add(calendar);
+	}
+
 	private  List<MToDo>  list_ToDoes = null;
 	private int index = 0;
 
@@ -139,10 +146,10 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
 	private final static String BUTTON_NAME_DELETE = "DELETE";
 
-	public PersonalToDoPopupWindow(I_CallerToDoPopupwindow caller, int index)
+	public PersonalToDoPopupWindow(I_ToDoPopupwindowCaller caller, int index)
 	{
 		super();
-		this.i_CallerPersonalToDoPopupwindow = caller;
+		this.i_PersonalToDoPopupwindowCaller = caller;
 		this.list_ToDoes =caller.getPersonalToDoList();
 		this.index = index;
 		ctx = Env.getCtx();
@@ -215,9 +222,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(p_JP_ToDo_ID == 0)
 		{
 			p_MToDo = null;
-			p_AD_User_ID = i_CallerPersonalToDoPopupwindow.getDefault_AD__User_ID();
-			p_JP_ToDo_Type = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_Type();
-			p_JP_ToDo_Category_ID = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_Category_ID ();
+			p_AD_User_ID = i_PersonalToDoPopupwindowCaller.getDefault_AD__User_ID();
+			p_JP_ToDo_Type = i_PersonalToDoPopupwindowCaller.getDefault_JP_ToDo_Type();
+			p_JP_ToDo_Category_ID = i_PersonalToDoPopupwindowCaller.getDefault_JP_ToDo_Category_ID ();
 
 		}else {
 
@@ -270,13 +277,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 		{
-			p_InitialScheduledStartTime = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_ScheduledStartTime();
-			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_ScheduledEndTime();
+			p_InitialScheduledStartTime = i_PersonalToDoPopupwindowCaller.getDefault_JP_ToDo_ScheduledStartTime();
+			p_InitialScheduledEndTime = i_PersonalToDoPopupwindowCaller.getDefault_JP_ToDo_ScheduledEndTime();
 
 		}else if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)){
 
 			p_InitialScheduledStartTime = null;
-			p_InitialScheduledEndTime = i_CallerPersonalToDoPopupwindow.getDefault_JP_ToDo_ScheduledStartTime();
+			p_InitialScheduledEndTime = i_PersonalToDoPopupwindowCaller.getDefault_JP_ToDo_ScheduledStartTime();
 
 		}else {
 
@@ -823,10 +830,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		}
 		else if (p_IsNewRecord && event.getTarget() == confirmPanel.getButton(ConfirmPanel.A_CANCEL))
 		{
-			if(p_RequeryOnCancel)
-			{
-				i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type, true);
-			}
 			this.detach();
 
 		}else{
@@ -1049,7 +1052,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			if (log.isLoggable(Level.FINE)) log.fine("JP_ToDo_ID=" + p_MToDo.getJP_ToDo_ID());
 
 			p_IsDirty = false;
-			p_RequeryOnCancel = true;
 
 			updateControlParameter(p_MToDo.getJP_ToDo_ID());
 			updateEditorValue();
@@ -1059,9 +1061,17 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if(p_IsNewRecord)
 			{
-				i_CallerPersonalToDoPopupwindow.create(p_MToDo);
+				for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+				{
+					receiveToDoCalendarEvent.create(p_MToDo);
+				}
+
 			}else {
-				i_CallerPersonalToDoPopupwindow.update(p_MToDo);
+
+				for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+				{
+					receiveToDoCalendarEvent.update(p_MToDo);
+				}
 			}
 
 
@@ -1077,12 +1087,16 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	private boolean deleteToDo()
 	{
-		i_CallerPersonalToDoPopupwindow.delete(p_MToDo);
+
+		for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+		{
+			receiveToDoCalendarEvent.delete(p_MToDo);
+		}
+
 		p_MToDo.delete(false);
 		p_MToDo = null;
 		p_TeamMToDo = null;
 		list_ToDoes.remove(index);
-		p_RequeryOnCancel = true;
 
 		if(index >= list_ToDoes.size())
 			index--;
@@ -1160,10 +1174,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 						;
 					}
 
-					if(p_RequeryOnCancel)
-					{
-						i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type, true);
-					}
 					detach();
 		        }
 
@@ -1171,11 +1181,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			if(p_RequeryOnCancel)
-			{
-				i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(),p_JP_ToDo_Type, true);
-			}
 			detach();
+
 		}
 
 

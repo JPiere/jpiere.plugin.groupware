@@ -59,7 +59,8 @@ import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
-import jpiere.plugin.groupware.window.I_CallerToDoPopupwindow;
+import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
+import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
@@ -69,7 +70,7 @@ import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
  *  @author Hideaki Hagiwara（h.hagiwara@oss-erp.co.jp）
  *
  */
-public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_CallerToDoPopupwindow, EventListener<Event>, ValueChangeListener {
+public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_ToDoPopupwindowCaller, I_ToDoCalendarEventReceiver, EventListener<Event>, ValueChangeListener {
 
 
 	private Properties ctx = Env.getCtx();
@@ -115,11 +116,15 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		}
 	}
 
+
+
 	public JPierePersonalToDoGadget(String JP_ToDo_Type)
 	{
 		super();
 		init(JP_ToDo_Type, false);
 	}
+
+
 
 	public void init(String JP_ToDo_Type,Boolean isDashboardGadget)
 	{
@@ -150,6 +155,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		this.appendChild(footerArea);
 
 	}
+
+
 
 	private void createHeader()
 	{
@@ -187,6 +194,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(toDoListEditor ,label_ToDoType, false),1);
 		row.appendCellChild(toDoListEditor.getComponent(),1);
 	}
+
 
 
 	private void createMessage()
@@ -282,6 +290,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		hlayout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 	}
+
+
 
 	public void createContents()
 	{
@@ -450,10 +460,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		}
 	}
 
+
+
 	private String formattedDate(LocalDateTime dateTime)
 	{
 		return lang.getDateFormat().format(Timestamp.valueOf(dateTime));
 	}
+
+
 
 	@Override
 	public void valueChange(ValueChangeEvent evt)
@@ -499,6 +513,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		createContents();
 	}
 
+
+
 	@Override
 	public void onEvent(Event event) throws Exception
 	{
@@ -527,6 +543,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				}else if(BUTTON_NAME_NEW_TODO.equals(btnName)){
 
 					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
+					todoWindow.addToDoCalenderEventReceiver(this);
+					if(i_CallerPersonalToDoPopupwindow instanceof ToDoCalendar)
+					{
+						ToDoCalendar todocalendar = (ToDoCalendar)i_CallerPersonalToDoPopupwindow;
+						todoWindow.addToDoCalenderEventReceiver(todocalendar);
+					}
+
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
 				}else if(BUTTON_NAME_REFRESH.equals(btnName)){
@@ -545,6 +568,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				Object list_index = comp.getAttribute("index");
 				int index = Integer.valueOf(list_index.toString()).intValue();
 				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, index);
+				todoWindow.addToDoCalenderEventReceiver(this);
+				if(i_CallerPersonalToDoPopupwindow instanceof ToDoCalendar)
+				{
+					ToDoCalendar todocalendar = (ToDoCalendar)i_CallerPersonalToDoPopupwindow;
+					todoWindow.addToDoCalenderEventReceiver(todocalendar);
+				}
+
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 
 			}
@@ -581,24 +611,20 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		return list_ToDoes;
 	}
 
-	I_CallerToDoPopupwindow i_CallerPersonalToDoPopupwindow;
+	I_ToDoPopupwindowCaller i_CallerPersonalToDoPopupwindow;
 
-	public void setCallerPersonalToDoPopupwindow(I_CallerToDoPopupwindow callerToDoPopupwindow)
+	public void setCallerPersonalToDoPopupwindow(I_ToDoPopupwindowCaller callerToDoPopupwindow)
 	{
 		this.i_CallerPersonalToDoPopupwindow = callerToDoPopupwindow;
 	}
 
-	@Override
-	public boolean refresh(int AD_User_ID, String JP_ToDo_Type, boolean isRefreshChain)
+	private List<I_ToDoCalendarEventReceiver>  list_ToDoCalendarEventReceiver = new ArrayList<I_ToDoCalendarEventReceiver>();
+	public void addToDoCalenderEventReceiver(I_ToDoCalendarEventReceiver calendar)
 	{
-		if(p_JP_ToDo_Type.equals(JP_ToDo_Type))
-			createContents();
-
-		if(i_CallerPersonalToDoPopupwindow != null && isRefreshChain)
-			i_CallerPersonalToDoPopupwindow.refresh(AD_User_ID, JP_ToDo_Type, false);
-
-		return true;
+		list_ToDoCalendarEventReceiver.add(calendar);
 	}
+
+
 
 	@Override
 	public boolean update(MToDo todo)
@@ -614,7 +640,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
 				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
 				{
-					refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);//TODO
+					createContents();
 				}
 
 
@@ -623,7 +649,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+					createContents();
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
@@ -631,7 +657,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+					createContents();
 				}
 			}
 		}
@@ -653,7 +679,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
 				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
 				{
-					refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);//TODO
+					createContents();
 				}
 
 
@@ -662,7 +688,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+					createContents();
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
@@ -670,7 +696,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+					createContents();
 				}
 			}
 		}
@@ -684,7 +710,6 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	public boolean delete(MToDo todo)
 	{
 		int todo_AD_User_ID = todo.getAD_User_ID();
-		String todo_JP_ToDo_Type = todo.getJP_ToDo_Type();
 
 		if(p_AD_User_ID == todo_AD_User_ID)
 		{
@@ -698,7 +723,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
 				{
 					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
-					refresh(todo_AD_User_ID, todo_JP_ToDo_Type, false);//TODO
+					createContents();
 				}
 
 
@@ -708,7 +733,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
 					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
-					return refresh(todo_AD_User_ID, todo_JP_ToDo_Type, false);
+					createContents();
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
@@ -717,7 +742,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
 					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
-					return refresh(todo_AD_User_ID, todo_JP_ToDo_Type, false);
+					createContents();
 				}
 			}
 		}
@@ -742,7 +767,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	public void setAD_User_ID(int AD_User_ID)
 	{
 		p_AD_User_ID = AD_User_ID;
-		refresh(p_AD_User_ID, p_JP_ToDo_Type, false);
+		createContents();
 	}
 
 	@Override
