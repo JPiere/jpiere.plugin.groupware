@@ -49,4 +49,10 @@ public interface I_CallerToDoPopupwindow {
 
 	public boolean refresh(int AD_User_ID, String JP_ToDo_Type, boolean isRefreshChain);
 
+	public boolean update(MToDo todo);
+
+	public boolean create(MToDo todo);
+
+	public boolean delete(MToDo todo);
+
 }

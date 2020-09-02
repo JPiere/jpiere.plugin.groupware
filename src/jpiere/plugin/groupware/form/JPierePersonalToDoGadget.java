@@ -14,6 +14,7 @@
 package jpiere.plugin.groupware.form;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -322,6 +323,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		}
 
+
+		if(p_Delete_JP_ToDo_ID != 0)
+		{
+			whereClause = whereClause.append(" AND JP_ToDo_ID <> ?");
+			list_parameters.add(p_Delete_JP_ToDo_ID);
+		}
+
 		if(login_User_ID != p_AD_User_ID)
 		{
 			whereClause = whereClause.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
@@ -331,6 +339,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 
 		list_ToDoes = getToDoes(whereClause.toString(), orderClause.toString(), parameters);
+		p_Delete_JP_ToDo_ID = 0;
 
 		if(list_ToDoes.size() <= 0)
 		{
@@ -590,6 +599,132 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		return true;
 	}
+
+	@Override
+	public boolean update(MToDo todo)
+	{
+		if(p_AD_User_ID == todo.getAD_User_ID())
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
+			{
+
+				LocalDate p_date = p_LocalDateTime.toLocalDate();
+				LocalDate start = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
+				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
+				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
+				{
+					refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);//TODO
+				}
+
+
+			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
+				{
+					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+				}
+
+			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
+				{
+					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean create(MToDo todo)
+	{
+		if(p_AD_User_ID == todo.getAD_User_ID())
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
+			{
+
+				LocalDate p_date = p_LocalDateTime.toLocalDate();
+				LocalDate start = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
+				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
+				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
+				{
+					refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);//TODO
+				}
+
+
+			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
+				{
+					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+				}
+
+			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
+				{
+					return refresh(todo.getAD_User_ID(), todo.getJP_ToDo_Type(), false);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	int p_Delete_JP_ToDo_ID = 0;
+
+	@Override
+	public boolean delete(MToDo todo)
+	{
+		int todo_AD_User_ID = todo.getAD_User_ID();
+		String todo_JP_ToDo_Type = todo.getJP_ToDo_Type();
+
+		if(p_AD_User_ID == todo_AD_User_ID)
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
+			{
+
+				LocalDate p_date = p_LocalDateTime.toLocalDate();
+				LocalDate start = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
+				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
+				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
+				{
+					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
+					refresh(todo_AD_User_ID, todo_JP_ToDo_Type, false);//TODO
+				}
+
+
+			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
+				{
+					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
+					return refresh(todo_AD_User_ID, todo_JP_ToDo_Type, false);
+				}
+
+			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
+					&& MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
+				{
+					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
+					return refresh(todo_AD_User_ID, todo_JP_ToDo_Type, false);
+				}
+			}
+		}
+
+		return true;
+	}
+
 
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()

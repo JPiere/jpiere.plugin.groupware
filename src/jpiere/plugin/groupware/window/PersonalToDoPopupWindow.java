@@ -816,7 +816,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 			if(saveToDo())
 			{
-				i_CallerPersonalToDoPopupwindow.refresh(p_MToDo.getAD_User_ID(), p_JP_ToDo_Type, true);
 				this.detach();
 			}
 
@@ -1058,6 +1057,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			updateNorth();
 			updateCenter();
 
+			if(p_IsNewRecord)
+			{
+				i_CallerPersonalToDoPopupwindow.create(p_MToDo);
+			}else {
+				i_CallerPersonalToDoPopupwindow.update(p_MToDo);
+			}
+
+
 		}
 		else
 		{
@@ -1070,7 +1077,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 	private boolean deleteToDo()
 	{
-		int AD_User_ID = p_MToDo.getAD_User_ID();
+		i_CallerPersonalToDoPopupwindow.delete(p_MToDo);
 		p_MToDo.delete(false);
 		p_MToDo = null;
 		p_TeamMToDo = null;
@@ -1092,7 +1099,6 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			i_CallerPersonalToDoPopupwindow.refresh(AD_User_ID, p_JP_ToDo_Type, true);
 			this.detach();
 		}
 
