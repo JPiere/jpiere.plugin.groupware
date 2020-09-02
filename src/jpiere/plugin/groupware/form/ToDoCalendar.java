@@ -710,6 +710,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
     		ZKUpdateUtil.setVflex(tabbox, "1");
 
     		tab_p_AD_User_ID  = new Tab(MUser.get(ctx, p_AD_User_ID).getName());
+
+    		if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team.equals(p_JP_ToDo_Main_Calendar_View) && p_JP_Team_ID > 0 && m_Team != null)
+    			tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));//
+
     		tab_p_AD_User_ID.setAttribute("AD_User_ID", p_AD_User_ID);
     		tab_p_AD_User_ID.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
     		tab_p_AD_User_ID.setClosable(false);
@@ -1159,6 +1163,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			if(button_Customize_Save.isVisible())
 				button_Customize_Save.setDisabled(false);
+
+    		if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_VIEW_Team.equals(p_JP_ToDo_Main_Calendar_View) && p_JP_Team_ID > 0 && m_Team != null)
+    			tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
+    		else
+    			tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
 
 			resetSelectedTabCalendarModel();
 
