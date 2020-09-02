@@ -232,7 +232,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		updateDateLabel();
 
-		getToDoCalendarEvent();
+		getToDoCalendarEvent(true, false);
 
     }
 
@@ -931,9 +931,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
-			ts_AcquiredToDoCalendarEventBegin = null;
-			ts_AcquiredToDoCalendarEventEnd = null;
-			getToDoCalendarEvent();
+			getToDoCalendarEvent(true, true);
 
 			refreshWest(null,false);
 
@@ -948,7 +946,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			resetSelectedTabCalendarModel();
 
-		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){ //TODO
+		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
 			if(value == null)
 			{
@@ -1013,9 +1011,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		  	mainBorderLayout_Center.getFirstChild().detach();
 			mainBorderLayout_Center.appendChild(createCenterContents());
 
-			ts_AcquiredToDoCalendarEventBegin = null;
-			ts_AcquiredToDoCalendarEventEnd = null;
-			getToDoCalendarEvent();
+			getToDoCalendarEvent(false, true);
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP.equals(name)) {
 
@@ -1065,7 +1061,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			map_Calendars.get(p_AD_User_ID).setFirstDayOfWeek(refList.getName());
 
 			updateDateLabel();
-			getToDoCalendarEvent();//TODO
+			getToDoCalendarEvent(false, false);
 
 			if(button_Customize_Save.isVisible())
 				button_Customize_Save.setDisabled(false);
@@ -1203,14 +1199,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					map_Calendars.get(p_SelectedTab_AD_User_ID).previousPage();
 
 					updateDateLabel();
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(false, false);
 
 				}else if(BUTTON_NEXT.equals(btnName)){
 
 					map_Calendars.get(p_SelectedTab_AD_User_ID).nextPage();
 
 					updateDateLabel();
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(false ,false);
 
 				}else if(BUTTON_REFRESH.equals(btnName)){
 
@@ -1224,27 +1220,23 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 					}
 
-					ts_AcquiredToDoCalendarEventBegin = null;
-					ts_AcquiredToDoCalendarEventEnd = null;
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(true ,true);
 
 					refreshWest(null, false);
-
-
 
 				}else if(BUTTON_TODAY.equals(btnName)){
 
 					map_Calendars.get(p_SelectedTab_AD_User_ID).setCurrentDate(Calendar.getInstance(map_Calendars.get(p_SelectedTab_AD_User_ID).getDefaultTimeZone()).getTime());
 
 					updateDateLabel();
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(false ,false);
 
 				}else if(GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW.equals(btnName)){
 
 					p_CalendarMold = GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW;
 					setCalendarMold(1);
 					updateDateLabel();
-					getToDoCalendarEvent();//TODO 1日表示ならイベントは保持している気がするけど…。
+					getToDoCalendarEvent(false ,false);
 
 				}else if(GroupwareToDoUtil.CALENDAR_FIVEDAYS_VIEW.equals(btnName)){
 
@@ -1252,7 +1244,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					setCalendarMold(5);
 
 					updateDateLabel();
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(false ,false);
 
 				}else if(GroupwareToDoUtil.CALENDAR_SEVENDAYS_VIEW.equals(btnName)){
 
@@ -1260,7 +1252,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					setCalendarMold(7);
 
 					updateDateLabel();
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(false ,false);
 
 				}else if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(btnName)){
 
@@ -1268,7 +1260,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					setCalendarMold(0);
 
 					updateDateLabel();
-					getToDoCalendarEvent();
+					getToDoCalendarEvent(false ,false);
 
 				}else if(BUTTON_CUSTOMIZE.equals(btnName)){
 
@@ -1384,31 +1376,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					syncCalendars(map_Calendars.get(p_OldSelectedTab_AD_User_ID), map_Calendars.get(p_SelectedTab_AD_User_ID));
 					resetSelectedTabCalendarModel();
 
-				}else if(tabpanel.getFirstChild() == null) {//TODO
-
-					SimpleCalendarModel scm =null;
-					Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
-					if(calendars == null)
-					{
-						Calendars from = map_Calendars.get(p_OldSelectedTab_AD_User_ID);
-						if(from == null)
-							from = map_Calendars.get(p_AD_User_ID);
-						calendars = createSyncCalendars(from);
-						map_Calendars.put(p_SelectedTab_AD_User_ID, calendars);
-					}
-
-					CalendarModel  cm = calendars.getModel();
-					if(cm == null)
-					{
-						scm = new SimpleCalendarModel();
-					}else {
-						scm = (SimpleCalendarModel)cm;
-					}
-
-					scm.clear();
+				}else if(tabpanel.getFirstChild() == null) {
 
 					resetSelectedTabCalendarModel();
-					tabpanel.appendChild(calendars);
+					tabpanel.appendChild(map_Calendars.get(p_SelectedTab_AD_User_ID));
 
 				}else {
 
@@ -1475,7 +1446,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			p_CalendarMold = GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW;
 			setCalendarMold(1);
 			updateDateLabel();
-			getToDoCalendarEvent();
+			getToDoCalendarEvent(false ,false);
 
 		}else if (GroupwareToDoUtil.CALENDAR_EVENT_WEEK.equals(eventName)){
 
@@ -1893,6 +1864,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 
+	Timestamp ts_AcquiredToDoCalendarEventBegin = null;
+	Timestamp ts_AcquiredToDoCalendarEventEnd = null;
+
+
 	/**
 	 * Update Calendar Modle.
 	 *
@@ -1901,10 +1876,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	 * @param isTeamRequery
 	 * @param update_AD_User_ID
 	 */
-	private void getToDoCalendarEvent()//TODO
+	private void getToDoCalendarEvent(boolean userRefresh, boolean teamRefresh)
 	{
 
-		if(ts_AcquiredToDoCalendarEventBegin == null || ts_AcquiredToDoCalendarEventEnd == null)
+		if((ts_AcquiredToDoCalendarEventBegin == null && ts_AcquiredToDoCalendarEventEnd == null)
+															|| (userRefresh && teamRefresh)	)
 		{
 			ts_AcquiredToDoCalendarEventBegin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
 			ts_AcquiredToDoCalendarEventEnd = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
@@ -1918,63 +1894,73 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			return;
 
 
-		}else {
+		}
+
+		if(userRefresh)
+			queryToDoCalendarEvents_User();
+
+		if(teamRefresh)
+			queryToDoCalendarEvents_Team();
 
 
-			Timestamp calendar_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-			Timestamp calendar_End =  new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
-			Timestamp temp_Begin = ts_AcquiredToDoCalendarEventBegin;
-			Timestamp temp_End = ts_AcquiredToDoCalendarEventEnd;
+		Timestamp calendar_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
+		Timestamp calendar_End =  new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+		Timestamp temp_Begin = ts_AcquiredToDoCalendarEventBegin;
+		Timestamp temp_End = ts_AcquiredToDoCalendarEventEnd;
 
-			if(calendar_Begin.compareTo(ts_AcquiredToDoCalendarEventBegin) < 0) // calendar_Begin < now
+		if(calendar_Begin.compareTo(ts_AcquiredToDoCalendarEventBegin) < 0) // calendar_Begin < AcquiredRenge_Begin
+		{
+			ts_AcquiredToDoCalendarEventBegin = calendar_Begin;
+
+			if(ts_AcquiredToDoCalendarEventEnd.compareTo(calendar_End) > 0) //calendar_Begin < AcquiredRenge_Begin &&  calender_End < AcquiredRenge_End
 			{
-				ts_AcquiredToDoCalendarEventBegin = calendar_Begin;
+				ts_AcquiredToDoCalendarEventEnd = temp_Begin;
 
-				if(ts_AcquiredToDoCalendarEventEnd.compareTo(calendar_End) > 0) //calendar_Begin < now  > calender_End
+				queryToDoCalendarEvents_User();
+				if(p_JP_Team_ID > 0)
+					queryToDoCalendarEvents_Team();
+
+				ts_AcquiredToDoCalendarEventEnd = temp_End;
+
+			}else { // calendar_Begin < AcquiredRenge_Begin &&  AcquiredRenge_End <= calender_End
+
+				//All Refresh
+				ts_AcquiredToDoCalendarEventEnd = calendar_End;
+				map_AcquiredCalendarEvent_User.clear();
+				queryToDoCalendarEvents_User();
+				if(p_JP_Team_ID > 0)
 				{
-					ts_AcquiredToDoCalendarEventEnd = temp_Begin;
-					queryToDoCalendarEvents_User();
-					if(p_JP_Team_ID > 0)
-						queryToDoCalendarEvents_Team();
-					resetSelectedTabCalendarModel();
-					ts_AcquiredToDoCalendarEventEnd = temp_End;
-
-				}else { // calendar_Begin <  now < calender_End
-
-					ts_AcquiredToDoCalendarEventEnd = calendar_End;
-					map_AcquiredCalendarEvent_User.clear();
-					queryToDoCalendarEvents_User();
-					if(p_JP_Team_ID > 0)
-						queryToDoCalendarEvents_Team();
-
-					resetSelectedTabCalendarModel();
+					map_AcquiredCalendarEvent_Team.clear();
+					queryToDoCalendarEvents_Team();
 				}
 
-			}else { //  calendar_Begin >= now
-
-				if(ts_AcquiredToDoCalendarEventEnd.compareTo(calendar_End) >= 0) // calender_End  <  now
-				{
-					;// Noting to do;
-
-				}else { // calender_End  >=  End
-
-					ts_AcquiredToDoCalendarEventBegin = temp_End;
-					ts_AcquiredToDoCalendarEventEnd = calendar_End;
-					queryToDoCalendarEvents_User();
-					if(p_JP_Team_ID > 0)
-						queryToDoCalendarEvents_Team();
-					resetSelectedTabCalendarModel();
-					ts_AcquiredToDoCalendarEventBegin = temp_Begin;
-				}
 			}
 
+		}else { // calendar_Begin >= AcquiredRenge_Begin
+
+			if(ts_AcquiredToDoCalendarEventEnd.compareTo(calendar_End) >= 0) // AcquiredRenge_Begin <= calendar_Begin &&  calendar_End <= ts_AcquiredToDoCalendarEventEnd
+			{
+				;// Noting to do;
+
+			}else { // AcquiredRenge_Begin <= calendar_Beginn &&  ts_AcquiredToDoCalendarEventEnd < calendar_End
+
+				ts_AcquiredToDoCalendarEventBegin = temp_End;
+				ts_AcquiredToDoCalendarEventEnd = calendar_End;
+				queryToDoCalendarEvents_User();
+				if(p_JP_Team_ID > 0)
+					queryToDoCalendarEvents_Team();
+
+				ts_AcquiredToDoCalendarEventBegin = temp_Begin;
+			}
 		}
+
+		resetSelectedTabCalendarModel();
 
 	}
 
 
 
-	private void resetSelectedTabCalendarModel()//TODO
+	private void resetSelectedTabCalendarModel()
 	{
 		//Reset Update Calenders Model
 		SimpleCalendarModel scm =null;
@@ -2128,13 +2114,45 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}
 
-		return false;
+		if(isDisplayedCalendarsRange(event))
+			return false;
+		else
+			return true;
+
 	}
 
 
+	private boolean isDisplayedCalendarsRange(ToDoCalendarEvent event)
+	{
+		Calendars calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
+		Timestamp calendar_Begin = new Timestamp(calendars.getBeginDate().getTime());
+		Timestamp calendar_End = new Timestamp(calendars.getEndDate().getTime());
 
-	Timestamp ts_AcquiredToDoCalendarEventBegin = null;
-	Timestamp ts_AcquiredToDoCalendarEventEnd = null;
+		if(event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
+		{
+			if(event.getToDo().getJP_ToDo_ScheduledStartTime().compareTo(calendar_End) <= 0
+					&& event.getToDo().getJP_ToDo_ScheduledEndTime().compareTo(calendar_Begin) >= 0)
+			{
+				return true;
+			}else {
+				return false;
+			}
+
+
+		}else if(event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
+
+			if(event.getToDo().getJP_ToDo_ScheduledEndTime().compareTo(calendar_Begin) >= 0
+					&& event.getToDo().getJP_ToDo_ScheduledEndTime().compareTo(calendar_End) <= 0)
+			{
+				return true;
+			}else {
+				return false;
+			}
+
+		}
+
+		return false;
+	}
 
 	/**
 	 * Get Main User's Calendar Event.
