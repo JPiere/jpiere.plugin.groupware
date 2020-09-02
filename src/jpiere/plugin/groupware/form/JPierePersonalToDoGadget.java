@@ -59,8 +59,8 @@ import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
-import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
 import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
+import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
 import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
 
 
@@ -307,19 +307,21 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type))
 		{
-			whereClause = new StringBuilder(" AD_User_ID = ? AND JP_ToDo_Type = ? AND IsActive='Y' AND JP_ToDo_Status <> ?");
+			whereClause = new StringBuilder(" AD_Client_ID =? AND AD_User_ID = ? AND JP_ToDo_Type = ? AND IsActive='Y' AND JP_ToDo_Status <> ?");
 			orderClause = new StringBuilder("JP_ToDo_ScheduledEndTime");
+			list_parameters.add(Env.getAD_Client_ID(ctx));
 			list_parameters.add(p_AD_User_ID);
 			list_parameters.add(p_JP_ToDo_Type);
 			list_parameters.add(MToDo.JP_TODO_STATUS_Completed);
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
-			whereClause = new StringBuilder(" AD_User_ID = ? AND JP_ToDo_Type = ? AND IsActive='Y' AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ?");
+			whereClause = new StringBuilder(" AD_Client_ID =? AND AD_User_ID = ? AND JP_ToDo_Type = ? AND IsActive='Y' AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ?");
 			orderClause = new StringBuilder("JP_ToDo_ScheduledStartTime");
 
 			LocalDateTime toDayMin = LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.MIN);
 			LocalDateTime toDayMax = LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.MAX);
+			list_parameters.add(Env.getAD_Client_ID(ctx));
 			list_parameters.add(p_AD_User_ID);
 			list_parameters.add(p_JP_ToDo_Type);
 			list_parameters.add(Timestamp.valueOf(toDayMax));
@@ -327,9 +329,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		}else {
 
-			whereClause = new StringBuilder(" AD_User_ID = ? ");
+			whereClause = new StringBuilder(" AD_Client_ID =? AND AD_User_ID = ? ");
 			orderClause = new StringBuilder("JP_ToDo_ScheduledEndTime");
-			list_parameters.add(0);
+			list_parameters.add(Env.getAD_Client_ID(ctx));
+			list_parameters.add(p_AD_User_ID);
 
 		}
 
