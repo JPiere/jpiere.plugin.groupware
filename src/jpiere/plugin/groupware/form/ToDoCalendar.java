@@ -1519,18 +1519,19 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					p_OldSelectedTab_AD_User_ID = next_AD_User_ID;
 					p_SelectedTab_AD_User_ID = next_AD_User_ID;
 
-					updateCalendarModel(false, false, 0);
+					resetSelectedTabCalendarModel();
+
 					if(tabpanel.getFirstChild() == null)
 					{
 						Calendars  calendars = map_Calendars.get(p_SelectedTab_AD_User_ID);
 						tabpanel.appendChild(calendars);
 					}else {
-						syncCalendars(deleteCalendars==null? map_Calendars.get(p_AD_User_ID):deleteCalendars, map_Calendars.get(p_SelectedTab_AD_User_ID));
+						syncCalendars(deleteCalendars == null? map_Calendars.get(p_AD_User_ID) : deleteCalendars, map_Calendars.get(p_SelectedTab_AD_User_ID));
 					}
 
 				}else if(p_AD_User_ID == p_SelectedTab_AD_User_ID){
 
-					updateCalendarModel(false,false, 0);
+					resetSelectedTabCalendarModel();
 
 				}
 
@@ -1601,15 +1602,13 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					//TODO エラー処理
 				}
 
+
+				updateCalendarEvent(oldEvent, newEvent);
+
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
-				{
-					updateCalendarEvent(oldEvent, newEvent);
 					refreshWest(todo.getJP_ToDo_Type(), false);
 
-				}else {
 
-					updateCalendarModel(false, false, p_SelectedTab_AD_User_ID);
-				}
 
 			}
 
