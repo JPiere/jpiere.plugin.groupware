@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.adempiere.util.Callback;
+import org.adempiere.webui.AdempiereWebUI;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -67,6 +68,7 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
 import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.North;
+import org.zkoss.zul.Popup;
 import org.zkoss.zul.South;
 
 import jpiere.plugin.groupware.model.MToDo;
@@ -140,6 +142,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Button leftBtn = null;
 	private Button rightBtn = null;
 	private Button deleteBtn = null;
+
+	/** Process PopupWindow Components **/
+	private Popup popup = null;
 
 	//*** Constants ***//
 	private final static String BUTTON_NAME_ZOOM = "ZOOM";
@@ -921,7 +926,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 						}
 					}
 
-					;
+					createProcessPopupWindow();
 
 					return;
 
@@ -1156,6 +1161,40 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		return true;
 	}
+
+	private void createProcessPopupWindow()
+	{
+		Grid grid = null;
+		if(popup == null)
+		{
+			popup = new Popup();
+			popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
+			grid = GridFactory.newGridLayout();
+			ZKUpdateUtil.setVflex(grid, "min");
+			ZKUpdateUtil.setHflex(grid, "min");
+			popup.appendChild(grid);
+
+		}else {
+
+			grid =(Grid)popup.getFirstChild();
+			grid.detach();
+			grid = GridFactory.newGridLayout();
+			ZKUpdateUtil.setVflex(grid, "min");
+			ZKUpdateUtil.setHflex(grid, "min");
+			popup.appendChild(grid);
+		}
+
+		Rows rows = grid.newRows();
+		Row row = rows.newRow();
+
+		row.appendCellChild(new Label("実装中!!"));
+
+		popup.setPage(processBtn.getPage());
+		popup.open(processBtn, "after_start");
+
+		return ;
+	}
+
 
 	@Override
 	public void valueChange(ValueChangeEvent evt)
