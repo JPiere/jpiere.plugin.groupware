@@ -2662,7 +2662,42 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			newEvent = new ToDoCalendarEvent(todo);
 			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).put(todo.getJP_ToDo_ID(), newEvent);
+			{
+				HashMap<Integer,ToDoCalendarEvent> map_userEvent =  map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID());
+				if(map_userEvent == null)
+				{
+					if(p_JP_Team_ID == 0 && m_Team == null)
+					{
+						;//Noting to do -> Don't display calendar
+
+					}else {
+
+						MTeamMember[] member = m_Team.getTeamMember();
+						boolean isMember = false;
+						for(int i = 0; i < member.length; i++)
+						{
+							if(member[i].getAD_User_ID() == todo.getAD_User_ID())
+							{
+								isMember = true;
+								break;
+							}
+						}
+
+						if(isMember)
+						{
+							map_userEvent = new HashMap<Integer,ToDoCalendarEvent>();
+							map_userEvent.put(todo.getJP_ToDo_ID(), newEvent);
+							map_AcquiredCalendarEvent_Team.put(todo.getAD_User_ID(), map_userEvent);
+						}else {
+							return true;
+						}
+					}
+
+				}else {
+					map_userEvent.put(todo.getJP_ToDo_ID(), newEvent);
+
+				}
+			}
 		}
 
 		createCalendarEvent(newEvent);
