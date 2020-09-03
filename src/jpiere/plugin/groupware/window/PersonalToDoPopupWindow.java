@@ -73,6 +73,7 @@ import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
+
 /**
  * JPIERE-0473 Personal ToDo Popup Window
  *
@@ -116,6 +117,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		list_ToDoCalendarEventReceiver.add(calendar);
 	}
 
+
 	private  List<MToDo>  list_ToDoes = null;
 	private int index = 0;
 
@@ -134,6 +136,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Button zoomBtn = null;
 	private Button undoBtn = null;
 	private Button saveBtn = null;
+	private Button processBtn = null;
 	private Button leftBtn = null;
 	private Button rightBtn = null;
 	private Button deleteBtn = null;
@@ -142,10 +145,15 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private final static String BUTTON_NAME_ZOOM = "ZOOM";
 	private final static String BUTTON_NAME_UNDO = "REDO";
 	private final static String BUTTON_NAME_SAVE = "SAVE";
+	private final static String BUTTON_NAME_PROCESS = "PROCESS";
 	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
 	private final static String BUTTON_NAME_DELETE = "DELETE";
 
+
+	/**
+	 * Constructor
+	 */
 	public PersonalToDoPopupWindow(I_ToDoPopupwindowCaller caller, int index)
 	{
 		super();
@@ -567,6 +575,18 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			saveBtn.setEnabled(false);
 		hlyaout.appendChild(saveBtn);
 
+
+		//Process Button
+		if(processBtn == null)
+		{
+			processBtn = new Button();
+			processBtn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
+			processBtn.setClass("btn-small");
+			processBtn.setName(BUTTON_NAME_PROCESS);
+			processBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		hlyaout.appendChild(processBtn);
+
 		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
@@ -814,6 +834,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		return center;
 	}
 
+
+
 	public void onEvent(Event event) throws Exception
 	{
 		Component comp = event.getTarget();
@@ -888,6 +910,21 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				}else if(BUTTON_NAME_SAVE.equals(btnName)){
 
 					saveToDo();
+
+				}else if(BUTTON_NAME_PROCESS.equals(btnName)){//ToDo
+
+					if(p_IsDirty)
+					{
+						if(!saveToDo())
+						{
+							return ;
+						}
+					}
+
+					;
+
+					return;
+
 
 				}else if(BUTTON_NAME_DELETE.equals(btnName)){
 
@@ -1085,6 +1122,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		return true;
 	}
 
+
 	private boolean deleteToDo()
 	{
 
@@ -1187,6 +1225,5 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 
 	}
-
 
 }
