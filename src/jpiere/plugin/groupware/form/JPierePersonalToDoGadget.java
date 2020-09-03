@@ -103,6 +103,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	private final static String BUTTON_NAME_REFRESH = "REFRESH";
 	private final static String BUTTON_NAME_CALENDER = "CALENDER";
 
+
+	/**
+	 * Constructor for using as Dashboard Gadget
+	 */
 	public JPierePersonalToDoGadget()
 	{
 		super();
@@ -117,7 +121,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
+	/**
+	 * Constructor for not using as Dashboard Gadget
+	 */
 	public JPierePersonalToDoGadget(String JP_ToDo_Type)
 	{
 		super();
@@ -125,7 +131,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
+	/**
+	 * Initialization Personal ToDo Gadget
+	 *
+	 *
+	 * @param JP_ToDo_Type
+	 * @param isDashboardGadget
+	 */
 	public void init(String JP_ToDo_Type,Boolean isDashboardGadget)
 	{
 		this.isDashboardGadget = isDashboardGadget;
@@ -157,7 +169,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
+	/**
+	 * Create Header for using as Dashboard Gadget
+	 *
+	 */
 	private void createHeader()
 	{
 		if(!isDashboardGadget)
@@ -196,7 +211,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
+	/**
+	 * Create Message
+	 *
+	 */
 	private void createMessage()
 	{
 		if(messageArea.getFirstChild() != null)
@@ -292,7 +310,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
+	/**
+	 * Create Contents as ToDo Area
+	 *
+	 */
 	public void createContents()
 	{
 
@@ -386,6 +407,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
+
+	/**
+	 *
+	 * Create ToDo Title
+	 *
+	 * @param toDo
+	 * @param btn
+	 */
 	private void createTitle(MToDo toDo, ToolBarButton btn)
 	{
 		if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
@@ -423,21 +452,26 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 			if(p_FormattedLocalDateTime.equals(formattedscheduledStartTime) && p_FormattedLocalDateTime.equals(formattedscheduledEndTime))
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/" + "InfoSchedule16.png"));
+				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
 				LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
 				LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
+				boolean isAllDay = false;
+				if(endTime.compareTo(LocalTime.MIN) == 0)
+				{
+					isAllDay = true;
+				}
 
 				if(toDo.getJP_ToDo_Team_ID() == 0)
 				{
-					btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString() + " " + toDo.getName());
+					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " ) + (isAllDay ? "" : endTime.toString()) + " " + toDo.getName());
 				}else {
-					btn.setLabel(p_FormattedLocalDateTime + " " + startTime.toString() + " - " + endTime.toString()
+					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " )  + (isAllDay ? "" : endTime.toString())
 						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
 				}
 
 			}else {
 
-				btn.setImage(ThemeManager.getThemeResource("images/" + "Register16.png"));
+				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
 				if(toDo.getJP_ToDo_Team_ID() == 0)
 				{
 					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
@@ -451,7 +485,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
 
-			btn.setImage(ThemeManager.getThemeResource("images/" + "Editor16.png"));
+			btn.setImage(ThemeManager.getThemeResource("images/Editor16.png"));
 			if(toDo.getJP_ToDo_Team_ID() == 0)
 			{
 				btn.setLabel(toDo.getName());
@@ -464,7 +498,12 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
+	/**
+	 * Format Date
+	 *
+	 * @param dateTime
+	 * @return
+	 */
 	private String formattedDate(LocalDateTime dateTime)
 	{
 		return lang.getDateFormat().format(Timestamp.valueOf(dateTime));
@@ -586,6 +625,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 	}
 
+	/**
+	 * Execute SQL
+	 *
+	 * @param whereClause
+	 * @param orderClause
+	 * @param parameters
+	 * @return
+	 */
 	private List<MToDo> getToDoes(String whereClause, String orderClause, Object ...parameters)
 	{
 
@@ -602,11 +649,15 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		return p_AD_User_ID;
 	}
 
+
+
 	@Override
 	public String getDefault_JP_ToDo_Type()
 	{
 		return p_JP_ToDo_Type;
 	}
+
+
 
 	@Override
 	public List<MToDo>  getPersonalToDoList()
@@ -614,12 +665,17 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		return list_ToDoes;
 	}
 
+
+
 	I_ToDoPopupwindowCaller i_CallerPersonalToDoPopupwindow;
 
 	public void setCallerPersonalToDoPopupwindow(I_ToDoPopupwindowCaller callerToDoPopupwindow)
 	{
 		this.i_CallerPersonalToDoPopupwindow = callerToDoPopupwindow;
 	}
+
+
+
 
 	private List<I_ToDoCalendarEventReceiver>  list_ToDoCalendarEventReceiver = new ArrayList<I_ToDoCalendarEventReceiver>();
 	public void addToDoCalenderEventReceiver(I_ToDoCalendarEventReceiver calendar)
@@ -668,6 +724,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		return true;
 	}
 
+
+
 	@Override
 	public boolean create(MToDo todo)
 	{
@@ -706,6 +764,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		return true;
 	}
+
+
 
 	int p_Delete_JP_ToDo_ID = 0;
 
@@ -754,17 +814,22 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
+
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
 	}
 
+
+
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledEndTime()
 	{
 		return Timestamp.valueOf(p_LocalDateTime);
 	}
+
+
 
 	@Override
 	public void setAD_User_ID(int AD_User_ID)
@@ -773,11 +838,15 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		createContents();
 	}
 
+
+
 	@Override
 	public int getDefault_JP_ToDo_Category_ID()
 	{
 		return 0;
 	}
+
+
 
 	@Override
 	public List<MToDoTeam> getTeamToDoList()
