@@ -532,10 +532,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			return north;
 
 		Hlayout hlyaout = new Hlayout();
+		hlyaout.setStyle("margin:2px 2px 2px 2px; padding:2px 2px 2px 2px;");// border: solid 1px #dddddd;
 		north.appendChild(hlyaout);
 
-		Div div = new Div();
-		hlyaout.appendChild(div);
 
 		//Personal ToDo Zoom Button
 		if(zoomPersonalToDoBtn == null)
