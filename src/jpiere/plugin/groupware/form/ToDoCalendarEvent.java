@@ -130,9 +130,16 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 		int login_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
 		if(m_ToDo.getAD_User_ID() == login_AD_User_ID || m_ToDo.getCreatedBy() == login_AD_User_ID)
+		{
 			this.setLocked(false);
-		else
+
+		}else if(toDo.getJP_ToDo_Team_ID() > 0) {
+
 			this.setLocked(true);
+
+		}else {
+			this.setLocked(true);
+		}
 	}
 
 
