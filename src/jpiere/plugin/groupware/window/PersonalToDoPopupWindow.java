@@ -977,14 +977,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 				return;
 
-			}else if(BUTTON_KICK_PROCESS.equals(btnName)) {//TODO
+			}else if(BUTTON_KICK_PROCESS.equals(btnName)) {
 
 				int AD_Process_ID =(Integer)btn.getAttribute("AD_Process_ID");
 				ProcessInfo pi = new ProcessInfo("", AD_Process_ID, MTable.getTable_ID(MToDo.Table_Name), p_MToDo.getJP_ToDo_ID());
 				ProcessModalDialog dialog = new ProcessModalDialog(this, i_PersonalToDoPopupwindowCaller.getWindowNo(), pi, true);
 
 				dialog.setBorder("normal");
-				dialog.addEventListener("onWindowClose", this);
 
 				this.appendChild(dialog);
 
@@ -994,11 +993,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				}
 				else
 				{
-
 					showBusyMask(this);
 					LayoutUtils.openOverlappedWindow(this, dialog, "middle_center");
 					dialog.focus();
-
 				}
 
 				isKickedProcess = true;
@@ -1284,7 +1281,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		return true;
 	}
 
-	private void createProcessPopupWindow()//TODO
+	private void createProcessPopupWindow()
 	{
 		if(popup == null)
 		{
