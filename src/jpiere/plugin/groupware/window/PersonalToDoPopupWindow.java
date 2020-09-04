@@ -24,13 +24,17 @@ import java.util.logging.Level;
 
 import org.adempiere.util.Callback;
 import org.adempiere.webui.AdempiereWebUI;
+import org.adempiere.webui.ClientInfo;
+import org.adempiere.webui.LayoutUtils;
 import org.adempiere.webui.apps.AEnv;
+import org.adempiere.webui.apps.ProcessModalDialog;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.ConfirmPanel;
 import org.adempiere.webui.component.Grid;
 import org.adempiere.webui.component.GridFactory;
 import org.adempiere.webui.component.Label;
+import org.adempiere.webui.component.Mask;
 import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.component.Window;
@@ -41,6 +45,7 @@ import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
+import org.adempiere.webui.event.DialogEvents;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
 import org.adempiere.webui.theme.ThemeManager;
@@ -49,19 +54,25 @@ import org.adempiere.webui.window.FDialog;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MPInstance;
+import org.compiere.model.MProcess;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
+import org.compiere.model.Query;
+import org.compiere.process.ProcessInfo;
 import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.compiere.util.Util;
+import org.zkoss.zk.au.out.AuScript;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlBasedComponent;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
@@ -153,10 +164,13 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private final static String BUTTON_NAME_UNDO = "REDO";
 	private final static String BUTTON_NAME_SAVE = "SAVE";
 	private final static String BUTTON_NAME_PROCESS = "PROCESS";
+	private final static String BUTTON_KICK_PROCESS = "KICK_PROCESS";
+
 	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
 	private final static String BUTTON_NAME_DELETE = "DELETE";
 
+	private boolean isKickedProcess = false;
 
 	/**
 	 * Constructor
@@ -164,7 +178,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	public PersonalToDoPopupWindow(I_ToDoPopupwindowCaller caller, int index)
 	{
 		super();
+
 		this.i_PersonalToDoPopupwindowCaller = caller;
+
 		this.list_ToDoes =caller.getPersonalToDoList();
 		this.index = index;
 		ctx = Env.getCtx();
@@ -887,100 +903,173 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		{
 			this.detach();
 
-		}else{
+		}else if(comp instanceof Button) {
 
-			if(comp instanceof Button)
+			Button btn = (Button) comp;
+			String btnName = btn.getName();
+			if(BUTTON_NAME_PREVIOUS_TODO.equals(btnName))
 			{
-				Button btn = (Button) comp;
-				String btnName = btn.getName();
-				if(BUTTON_NAME_PREVIOUS_TODO.equals(btnName))
-				{
-					if(p_IsDirty)
-						saveToDo();
-
-					index--;
-					if(index >= 0 )
-					{
-						p_IsDirty = false;
-						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
-						updateWindowTitle();
-						updateEditorValue();
-						updateEditorStatus();
-						updateNorth();
-						updateCenter();
-
-					}else {
-						index = 0;
-						updateNorth();
-					}
-
-				}else if(BUTTON_NAME_NEXT_TODO.equals(btnName)){
-
-					if(p_IsDirty)
-						saveToDo();
-
-					index++;
-					if(index < list_ToDoes.size())
-					{
-						p_IsDirty = false;
-						updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
-						updateWindowTitle();
-						updateEditorValue();
-						updateEditorStatus();
-						updateNorth();
-						updateCenter();
-
-					}else {
-						index = list_ToDoes.size()-1;
-						updateNorth();
-					}
-
-				}else if(BUTTON_NAME_ZOOM_PERSONALTODO.equals(btnName)){
-
-					AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_JP_ToDo_ID);
-					this.detach();
-
-				}else if(BUTTON_NAME_ZOOM_TEAMTODO.equals(btnName)){
-
-					AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), p_TeamMToDo.getJP_ToDo_Team_ID());
-					this.detach();
-
-				}else if(BUTTON_NAME_SAVE.equals(btnName)){
-
+				if(p_IsDirty)
 					saveToDo();
 
-				}else if(BUTTON_NAME_PROCESS.equals(btnName)){//ToDo
-
-					if(p_IsDirty)
-					{
-						if(!saveToDo())
-						{
-							return ;
-						}
-					}
-
-					createProcessPopupWindow();
-
-					return;
-
-
-				}else if(BUTTON_NAME_DELETE.equals(btnName)){
-
-					deleteToDo();
-
-				}else if(BUTTON_NAME_UNDO.equals(btnName)) {
-
+				index--;
+				if(index >= 0 )
+				{
 					p_IsDirty = false;
-					//updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
-					//updateWindowTitle();
+					updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+					updateWindowTitle();
 					updateEditorValue();
-					//updateEditorStatus();
+					updateEditorStatus();
 					updateNorth();
 					updateCenter();
+
+				}else {
+					index = 0;
+					updateNorth();
 				}
 
+			}else if(BUTTON_NAME_NEXT_TODO.equals(btnName)){
+
+				if(p_IsDirty)
+					saveToDo();
+
+				index++;
+				if(index < list_ToDoes.size())
+				{
+					p_IsDirty = false;
+					updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+					updateWindowTitle();
+					updateEditorValue();
+					updateEditorStatus();
+					updateNorth();
+					updateCenter();
+
+				}else {
+					index = list_ToDoes.size()-1;
+					updateNorth();
+				}
+
+			}else if(BUTTON_NAME_ZOOM_PERSONALTODO.equals(btnName)){
+
+				AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_JP_ToDo_ID);
+				this.detach();
+
+			}else if(BUTTON_NAME_ZOOM_TEAMTODO.equals(btnName)){
+
+				AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), p_TeamMToDo.getJP_ToDo_Team_ID());
+				this.detach();
+
+			}else if(BUTTON_NAME_SAVE.equals(btnName)){
+
+				saveToDo();
+
+			}else if(BUTTON_NAME_PROCESS.equals(btnName)){
+
+				if(p_IsDirty)
+				{
+					if(!saveToDo())
+					{
+						return ;
+					}
+				}
+
+				createProcessPopupWindow();
+
+				return;
+
+			}else if(BUTTON_KICK_PROCESS.equals(btnName)) {//TODO
+
+				int AD_Process_ID =(Integer)btn.getAttribute("AD_Process_ID");
+				ProcessInfo pi = new ProcessInfo("", AD_Process_ID, MTable.getTable_ID(MToDo.Table_Name), p_MToDo.getJP_ToDo_ID());
+				ProcessModalDialog dialog = new ProcessModalDialog(this, i_PersonalToDoPopupwindowCaller.getWindowNo(), pi, true);
+
+				dialog.setBorder("normal");
+				dialog.addEventListener("onWindowClose", this);
+
+				this.appendChild(dialog);
+
+				if (ClientInfo.isMobile())
+				{
+					dialog.doHighlighted();
+				}
+				else
+				{
+
+					showBusyMask(this);
+					LayoutUtils.openOverlappedWindow(this, dialog, "middle_center");
+					dialog.focus();
+
+				}
+
+				isKickedProcess = true;
+				popup.close();
+
+			}else if(BUTTON_NAME_DELETE.equals(btnName)){
+
+				deleteToDo();
+
+			}else if(BUTTON_NAME_UNDO.equals(btnName)) {
+
+				p_IsDirty = false;
+				//updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+				//updateWindowTitle();
+				updateEditorValue();
+				//updateEditorStatus();
+				updateNorth();
+				updateCenter();
 			}
+
+
 		}
+		else if (event.getTarget() instanceof ProcessModalDialog)
+    	{
+    		if (!DialogEvents.ON_WINDOW_CLOSE.equals(event.getName())){
+    			return;
+    		}
+
+    		hideBusyMask();
+    		ProcessModalDialog dialog = (ProcessModalDialog) event.getTarget();
+    		ProcessInfo pi = dialog.getProcessInfo();
+			MPInstance instance = new MPInstance(ctx, pi.getAD_PInstance_ID(), "false");
+			String msg= instance.getErrorMsg();
+			if(instance.getResult() == 0)
+				FDialog.error(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
+			else
+				FDialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
+    	}
+	}
+
+	private Mask mask = null;
+	private Div getMask()
+	{
+		if (mask == null) {
+			mask = new Mask();
+		}
+		return mask;
+	}
+
+	public void hideBusyMask()
+	{
+		if (mask != null && mask.getParent() != null) {
+			mask.detach();
+			StringBuilder script = new StringBuilder("var w=zk.Widget.$('#");
+			script.append(getUuid()).append("');if(w) w.busy=false;");
+			Clients.response(new AuScript(script.toString()));
+		}
+	}
+
+	public void showBusyMask(Window window)
+	{
+
+		appendChild(getMask());
+		StringBuilder script = new StringBuilder("var w=zk.Widget.$('#");
+		script.append(getUuid()).append("');");
+		if (window != null) {
+			script.append("var d=zk.Widget.$('#").append(window.getUuid()).append("');w.busy=d;");
+		} else {
+			script.append("w.busy=true;");
+		}
+		Clients.response(new AuScript(script.toString()));
 	}
 
 	private boolean saveToDo()
@@ -1195,32 +1284,55 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		return true;
 	}
 
-	private void createProcessPopupWindow()
+	private void createProcessPopupWindow()//TODO
 	{
-		Grid grid = null;
 		if(popup == null)
 		{
 			popup = new Popup();
 			popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
-			grid = GridFactory.newGridLayout();
+
+			String whereClause = " AD_Table_ID=? AND AD_Reference_ID = ? AND AD_Process_ID IS NOT NULL";
+			String orderClause ="";
+
+			List<MColumn> list = new Query(ctx, MColumn.Table_Name, whereClause, null)
+					.setParameters(MTable.getTable_ID(MToDo.Table_Name), DisplayType.Button)
+					.setOrderBy(orderClause)
+					.list();
+
+
+			Grid grid = GridFactory.newGridLayout();
 			ZKUpdateUtil.setVflex(grid, "min");
 			ZKUpdateUtil.setHflex(grid, "min");
 			popup.appendChild(grid);
+			Rows rows = grid.newRows();
+			Row row = null;
 
-		}else {
+			Button btn = null;
+			for(MColumn column : list)
+			{
+				MProcess process = MProcess.get(ctx, column.getAD_Process_ID());
 
-			grid =(Grid)popup.getFirstChild();
-			grid.detach();
-			grid = GridFactory.newGridLayout();
-			ZKUpdateUtil.setVflex(grid, "min");
-			ZKUpdateUtil.setHflex(grid, "min");
-			popup.appendChild(grid);
+				row = rows.newRow();
+
+				btn = new Button();
+				btn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
+				btn.setClass("btn-small");
+				btn.setName(BUTTON_KICK_PROCESS);
+				btn.setLabel(process.get_Translation("Name"));
+				btn.setAttribute("AD_Process_ID", column.getAD_Process_ID());
+				btn.addEventListener(Events.ON_CLICK, this);
+
+				ZKUpdateUtil.setHflex(btn, "true");
+				row.appendCellChild(btn);
+
+			}
+
+			if(row == null)
+			{
+				return ;
+			}
+
 		}
-
-		Rows rows = grid.newRows();
-		Row row = rows.newRow();
-
-		row.appendCellChild(new Label("実装中!!"));//TODO
 
 		popup.setPage(processBtn.getPage());
 		popup.open(processBtn, "after_start");
@@ -1284,12 +1396,28 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 						;
 					}
 
+					if(isKickedProcess)
+					{
+						for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+						{
+							receiveToDoCalendarEvent.refresh(p_MToDo);
+						}
+					}
+
 					detach();
 		        }
 
 			});//FDialog.
 
 		}else {
+
+			if(isKickedProcess)
+			{
+				for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+				{
+					receiveToDoCalendarEvent.refresh(p_MToDo);
+				}
+			}
 
 			detach();
 

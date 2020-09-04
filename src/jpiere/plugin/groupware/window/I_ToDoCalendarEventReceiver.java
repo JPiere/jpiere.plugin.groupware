@@ -33,4 +33,6 @@ public interface I_ToDoCalendarEventReceiver {
 
 	public boolean delete(MToDo todo);
 
+	public boolean refresh(MToDo todo);
+
 }

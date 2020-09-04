@@ -47,5 +47,6 @@ public interface I_ToDoPopupwindowCaller {
 
 	public String getDefault_JP_ToDo_Type();
 
+	public int getWindowNo();
 
 }

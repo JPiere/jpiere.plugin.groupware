@@ -937,7 +937,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			getToDoCalendarEvent(true, true);
 
-			refreshWest(null,false);
+			refreshWest(null);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(name)){
 
@@ -1231,7 +1231,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 					getToDoCalendarEvent(true ,true);
 
-					refreshWest(null, false);
+					refreshWest(null);
 
 				}else if(BUTTON_TODAY.equals(btnName)){
 
@@ -1575,9 +1575,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				updateCalendarEvent(oldEvent, newEvent);
 
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
-					refreshWest(todo.getJP_ToDo_Type(), false);
-
-
+					refreshWest(todo.getJP_ToDo_Type());
 
 			}
 
@@ -2732,6 +2730,24 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 
+	@Override
+	public boolean refresh(MToDo todo)
+	{
+		p_SelectedTab_AD_User_ID = p_AD_User_ID;
+		p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
+
+		if(p_JP_Team_ID > 0)
+		{
+		  	mainBorderLayout_Center.getFirstChild().detach();
+			mainBorderLayout_Center.appendChild(createCenterContents());
+
+		}
+
+		getToDoCalendarEvent(true ,true);
+
+		return true;
+	}
+
 
 	/**
 	 * Refresh West components of Borderlayout
@@ -2739,7 +2755,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	 * @param JP_ToDo_Type
 	 * @return boolean
 	 */
-	private boolean refreshWest(String JP_ToDo_Type,boolean isRefreshChain)
+	private boolean refreshWest(String JP_ToDo_Type)
 	{
 		personalToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
@@ -2817,4 +2833,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	{
 		return null;
 	}
+
+
+
+	@Override
+	public int getWindowNo()
+	{
+		return form.getWindowNo();
+	}
+
+
 }

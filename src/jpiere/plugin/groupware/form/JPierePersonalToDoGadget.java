@@ -814,6 +814,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
+	@Override
+	public boolean refresh(MToDo todo)
+	{
+		return update(todo);
+	}
+
+
 
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()
@@ -853,4 +860,13 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	{
 		return null;
 	}
+
+
+	@Override
+	public int getWindowNo()
+	{
+		return getWindowNo();
+	}
+
+
 }
