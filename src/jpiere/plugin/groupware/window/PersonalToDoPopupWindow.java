@@ -135,7 +135,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private ConfirmPanel confirmPanel;
 
 	//Buttons
-	private Button zoomBtn = null;
+	private Button zoomPersonalToDoBtn = null;
+	private Button zoomTeamToDoBtn = null;
 	private Button undoBtn = null;
 	private Button saveBtn = null;
 	private Button processBtn = null;
@@ -147,7 +148,8 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	private Popup popup = null;
 
 	//*** Constants ***//
-	private final static String BUTTON_NAME_ZOOM = "ZOOM";
+	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
+	private final static String BUTTON_NAME_ZOOM_TEAMTODO = "ZOOM_T";
 	private final static String BUTTON_NAME_UNDO = "REDO";
 	private final static String BUTTON_NAME_SAVE = "SAVE";
 	private final static String BUTTON_NAME_PROCESS = "PROCESS";
@@ -535,16 +537,37 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		Div div = new Div();
 		hlyaout.appendChild(div);
 
-		//Zoom Button
-		if(zoomBtn == null)
+		//Personal ToDo Zoom Button
+		if(zoomPersonalToDoBtn == null)
 		{
-			zoomBtn = new Button();
-			zoomBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
-			zoomBtn.setClass("btn-small");
-			zoomBtn.setName(BUTTON_NAME_ZOOM);
-			zoomBtn.addEventListener(Events.ON_CLICK, this);
+			zoomPersonalToDoBtn = new Button();
+			zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
+			zoomPersonalToDoBtn.setClass("btn-small");
+			zoomPersonalToDoBtn.setName(BUTTON_NAME_ZOOM_PERSONALTODO);
+			zoomPersonalToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));
+			zoomPersonalToDoBtn.addEventListener(Events.ON_CLICK, this);
 		}
-		hlyaout.appendChild(zoomBtn);
+		hlyaout.appendChild(zoomPersonalToDoBtn);
+
+
+		//Team ToDo Zoom Button
+		if(zoomTeamToDoBtn == null)
+		{
+			zoomTeamToDoBtn = new Button();
+			zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
+			zoomTeamToDoBtn.setClass("btn-small");
+			zoomTeamToDoBtn.setName(BUTTON_NAME_ZOOM_TEAMTODO);
+			zoomTeamToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));
+			zoomTeamToDoBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		if(p_TeamMToDo == null)
+		{
+			zoomTeamToDoBtn.setEnabled(false);
+		}else {
+			zoomTeamToDoBtn.setEnabled(true);
+		}
+		hlyaout.appendChild(zoomTeamToDoBtn);
+
 
 		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
@@ -556,6 +579,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			undoBtn.setImage(ThemeManager.getThemeResource("images/Undo16.png"));
 			undoBtn.setClass("btn-small");
 			undoBtn.setName(BUTTON_NAME_UNDO);
+			undoBtn.setTooltiptext(Msg.getMsg(ctx, "Ignore"));
 			undoBtn.addEventListener(Events.ON_CLICK, this);
 		}
 		if(p_IsDirty)
@@ -572,6 +596,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			saveBtn.setImage(ThemeManager.getThemeResource("images/Save16.png"));
 			saveBtn.setClass("btn-small");
 			saveBtn.setName(BUTTON_NAME_SAVE);
+			saveBtn.setTooltiptext(Msg.getMsg(ctx, "Save"));
 			saveBtn.addEventListener(Events.ON_CLICK, this);
 		}
 		if(p_IsDirty)
@@ -588,6 +613,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			processBtn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
 			processBtn.setClass("btn-small");
 			processBtn.setName(BUTTON_NAME_PROCESS);
+			processBtn.setTooltiptext(Msg.getMsg(ctx, "Process"));
 			processBtn.addEventListener(Events.ON_CLICK, this);
 		}
 		hlyaout.appendChild(processBtn);
@@ -602,6 +628,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 			leftBtn.setClass("btn-small");
 			leftBtn.setName(BUTTON_NAME_PREVIOUS_TODO);
+			leftBtn.setTooltiptext(Msg.getMsg(ctx, "Previous"));
 			leftBtn.addEventListener(Events.ON_CLICK, this);
 		}
 		hlyaout.appendChild(leftBtn);
@@ -617,8 +644,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			rightBtn = new Button();
 			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 			rightBtn.setClass("btn-small");
-			rightBtn.addEventListener(Events.ON_CLICK, this);
 			rightBtn.setName(BUTTON_NAME_NEXT_TODO);
+			rightBtn.setTooltiptext(Msg.getMsg(ctx, "Next"));
+			rightBtn.addEventListener(Events.ON_CLICK, this);
 		}
 		hlyaout.appendChild(rightBtn);
 		if(index == list_ToDoes.size()-1)
@@ -651,8 +679,9 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 			deleteBtn = new Button();
 			deleteBtn.setImage(ThemeManager.getThemeResource("images/Delete16.png"));
 			deleteBtn.setClass("btn-small");
-			deleteBtn.addEventListener(Events.ON_CLICK, this);
 			deleteBtn.setName(BUTTON_NAME_DELETE);
+			deleteBtn.setTooltiptext(Msg.getMsg(ctx, "Delete"));
+			deleteBtn.addEventListener(Events.ON_CLICK, this);
 		}
 		deleteBtn.setEnabled(p_IsUpdatable);
 		hlyaout.appendChild(deleteBtn);
@@ -907,9 +936,14 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 						updateNorth();
 					}
 
-				}else if(BUTTON_NAME_ZOOM.equals(btnName)){
+				}else if(BUTTON_NAME_ZOOM_PERSONALTODO.equals(btnName)){
 
 					AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_JP_ToDo_ID);
+					this.detach();
+
+				}else if(BUTTON_NAME_ZOOM_TEAMTODO.equals(btnName)){
+
+					AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), p_TeamMToDo.getJP_ToDo_Team_ID());
 					this.detach();
 
 				}else if(BUTTON_NAME_SAVE.equals(btnName)){
@@ -1187,7 +1221,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		Rows rows = grid.newRows();
 		Row row = rows.newRow();
 
-		row.appendCellChild(new Label("実装中!!"));
+		row.appendCellChild(new Label("実装中!!"));//TODO
 
 		popup.setPage(processBtn.getPage());
 		popup.open(processBtn, "after_start");
