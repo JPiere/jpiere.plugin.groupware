@@ -826,6 +826,15 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		vlayout.setDroppable("false");
 		div.appendChild(vlayout);
 
+		ZKUpdateUtil.setWidth(div, "100%");
+		ZKUpdateUtil.setHeight(div, "100%");
+		ZKUpdateUtil.setHflex(div, "1");
+		ZKUpdateUtil.setVflex(div, "1");
+
+		ZKUpdateUtil.setWidth(vlayout, "100%");
+		ZKUpdateUtil.setHeight(vlayout, "100%");
+		ZKUpdateUtil.setHflex(vlayout, "1");
+		ZKUpdateUtil.setVflex(vlayout, "1");
 
 		//Menu
 		Groupbox groupBox0 = new Groupbox();
@@ -853,6 +862,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ZKUpdateUtil.setHeight(westTabbox, "100%");
 		ZKUpdateUtil.setHflex(westTabbox, "1");
 		ZKUpdateUtil.setVflex(westTabbox, "1");
+
 
 		Tabs tabs = new Tabs();
 		westTabbox.appendChild(tabs);
