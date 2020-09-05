@@ -27,7 +27,6 @@ import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
-import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 /**
@@ -41,7 +40,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	private static final long serialVersionUID = 2289841014956779967L;
 
-	private I_ToDo m_ToDo = null ;
+	private I_ToDo i_ToDo = null ;
 
 	private static final int INITIAL_TASK_HOUR = 1;
 	private static final long JUDGMENT_Middle_TIME_HOURES = 12;
@@ -124,20 +123,20 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	public ToDoCalendarEvent(I_ToDo toDo)
 	{
 		super();
-		this.m_ToDo = toDo;
+		this.i_ToDo = toDo;
 
 		adjustTimeToZK();
 		adjustDisplayText();
 		setColor();
 
-		if(toDo instanceof MToDoTeam)
+		if(toDo.getParent_Team_ToDo_ID() > 0)
 		{
 			this.setLocked(true);
 
 		}else {
 
 			int login_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
-			if(m_ToDo.getAD_User_ID() == login_AD_User_ID || m_ToDo.getCreatedBy() == login_AD_User_ID)
+			if(toDo.getAD_User_ID() == login_AD_User_ID || i_ToDo.getCreatedBy() == login_AD_User_ID)
 				this.setLocked(false);
 			else
 				this.setLocked(true);
@@ -153,10 +152,10 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private void adjustTimeToZK()
 	{
 
-		Timestamp begin_Timestamp = m_ToDo.getJP_ToDo_ScheduledStartTime();
-		Timestamp end_Timestamp = m_ToDo.getJP_ToDo_ScheduledEndTime();
+		Timestamp begin_Timestamp = i_ToDo.getJP_ToDo_ScheduledStartTime();
+		Timestamp end_Timestamp = i_ToDo.getJP_ToDo_ScheduledEndTime();
 
-		if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
+		if(i_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 		{
 
 			/********************************************************************************************************
@@ -172,7 +171,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 			/********************************************************************************************************
 			 * Adjust End Time
 			 ********************************************************************************************************/
-			end_Timestamp = m_ToDo.getJP_ToDo_ScheduledEndTime();
+			end_Timestamp = i_ToDo.getJP_ToDo_ScheduledEndTime();
 			end_LocalDate = end_Timestamp.toLocalDateTime().toLocalDate();
 			end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
 
@@ -220,7 +219,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 
 
-		}else if(m_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
+		}else if(i_ToDo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
 
 
 			/********************************************************************************************************
@@ -237,7 +236,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			end_LocalTime = end_Timestamp.toLocalDateTime().toLocalTime();
 
-			if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
+			if(i_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 			{
 				end_LocalTime = LocalTime.MAX;
 
@@ -264,9 +263,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	 */
 	private void adjustDisplayText()
 	{
-		String userName = " [" +MUser.get(Env.getCtx(), m_ToDo.getAD_User_ID()).getName() + "] " ;
+		String userName = " [" +MUser.get(Env.getCtx(), i_ToDo.getAD_User_ID()).getName() + "] " ;
 
-		if(MToDo.JP_TODO_TYPE_Schedule.equals(m_ToDo.getJP_ToDo_Type()))
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(i_ToDo.getJP_ToDo_Type()))
 		{
 			if(isSameDate)
 			{
@@ -282,10 +281,10 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					if(begin_LocalTime == LocalTime.MIN && end_LocalTime == LocalTime.MAX)
 					{
 						//Month - Middle
-						personal_Month_Middle_Title   = m_ToDo.getName();
-						personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
-						team_Month_Middle_Title 	= m_ToDo.getName();
-						team_Month_Middle_Content 	= userName +  m_ToDo.getName() ;
+						personal_Month_Middle_Title   = i_ToDo.getName();
+						personal_Month_Middle_Content = (" ") +  i_ToDo.getName();
+						team_Month_Middle_Title 	= i_ToDo.getName();
+						team_Month_Middle_Content 	= userName +  i_ToDo.getName() ;
 
 						//Default - Middle
 						personal_Default_Middle_Title   = personal_Month_Middle_Title;
@@ -296,9 +295,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					}else {
 
 						//Month - Middle
-						personal_Month_Middle_Title = m_ToDo.getName();
-						personal_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  (" ")  +  m_ToDo.getName();
-						team_Month_Middle_Title = m_ToDo.getName();
+						personal_Month_Middle_Title = i_ToDo.getName();
+						personal_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  (" ")  +  i_ToDo.getName();
+						team_Month_Middle_Title = i_ToDo.getName();
 						team_Month_Middle_Content = begin_FormatTime + " - " + end_FormatTime +  userName + " ";
 
 
@@ -318,15 +317,15 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 					//Month - Short
 					personal_Month_Short_Title = null;
-					personal_Month_Short_Content =(" ") +  m_ToDo.getName();
+					personal_Month_Short_Content =(" ") +  i_ToDo.getName();
 					team_Month_Short_Title = null;
-					team_Month_Short_Content = userName +  m_ToDo.getName();
+					team_Month_Short_Content = userName +  i_ToDo.getName();
 
 					//Default - Short
-					personal_Default_Short_Title = m_ToDo.getName();
-					personal_Default_Short_Content = m_ToDo.getDescription();
+					personal_Default_Short_Title = i_ToDo.getName();
+					personal_Default_Short_Content = i_ToDo.getDescription();
 					team_Default_Short_Title = userName;
-					team_Default_Short_Content = m_ToDo.getName();
+					team_Default_Short_Content = i_ToDo.getName();
 
 				}
 
@@ -346,9 +345,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					{
 						//Month - Long
 						personal_Month_Long_Title = null;
-						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  (" ")   + m_ToDo.getName();
+						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  (" ")   + i_ToDo.getName();
 						team_Month_Long_Title = null;
-						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  userName + m_ToDo.getName();
+						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +  userName + i_ToDo.getName();
 
 
 						//Default - Long
@@ -361,9 +360,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 						//Month - Long
 						personal_Month_Long_Title = null;
-						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName();
+						personal_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + i_ToDo.getName();
 						team_Month_Long_Title = null;
-						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName  + m_ToDo.getName();
+						team_Month_Long_Content = begin_FromatDate + " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName  + i_ToDo.getName();
 
 
 						//Default - Long
@@ -377,8 +376,8 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				}else if(end_LocalTime == LocalTime.MAX){
 
 					//Month - Long
-					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "	+ end_FromatDate + (" ")   + m_ToDo.getName();
-					team_Month_Long_Content  = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " 	+ end_FromatDate + userName  + m_ToDo.getName();
+					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - "	+ end_FromatDate + (" ")   + i_ToDo.getName();
+					team_Month_Long_Content  = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " 	+ end_FromatDate + userName  + i_ToDo.getName();
 
 					//Default - Long
 					personal_Default_Long_Content = personal_Month_Long_Content;
@@ -388,8 +387,8 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				}else {
 
 					//Month - Long
-					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + m_ToDo.getName();
-					team_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName   + m_ToDo.getName();
+					personal_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + (" ")   + i_ToDo.getName();
+					team_Month_Long_Content = begin_FromatDate+" "+begin_LocalTime.toString().substring(0, 5)+ " - " + end_FromatDate +" "+ end_LocalTime.toString().substring(0, 5) + " " + userName   + i_ToDo.getName();
 
 					//Default - Long
 					personal_Default_Long_Content = personal_Month_Long_Content;
@@ -398,27 +397,27 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 			}
 
-		}else if(MToDo.JP_TODO_TYPE_Task.equals(m_ToDo.getJP_ToDo_Type())) {
+		}else if(MToDo.JP_TODO_TYPE_Task.equals(i_ToDo.getJP_ToDo_Type())) {
 
 
 			isLongTime = false;
 
-			if(m_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
+			if(i_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime() == LocalTime.MIN )
 			{
 				isMiddleTime = true;
 				isShortTime = false;
 
 				//Month - Middle
 				personal_Month_Middle_Title = null;
-				personal_Month_Middle_Content = (" ") +  m_ToDo.getName();
+				personal_Month_Middle_Content = (" ") +  i_ToDo.getName();
 				team_Month_Middle_Title = null;
-				team_Month_Middle_Content = userName +  m_ToDo.getName() ;
+				team_Month_Middle_Content = userName +  i_ToDo.getName() ;
 
 				//Default - Midle
 				personal_Default_Middle_Title = null;
-				personal_Default_Middle_Content = m_ToDo.getName() + " " +  m_ToDo.getDescription() ;
+				personal_Default_Middle_Content = i_ToDo.getName() + " " +  i_ToDo.getDescription() ;
 				team_Default_Middle_Title = null;
-				team_Default_Middle_Content = userName + " " + m_ToDo.getName() ;
+				team_Default_Middle_Content = userName + " " + i_ToDo.getName() ;
 
 			}else {
 
@@ -427,15 +426,15 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 				//Month - Short
 				personal_Month_Short_Title = null;
-				personal_Month_Short_Content =(" ") +  m_ToDo.getName();
+				personal_Month_Short_Content =(" ") +  i_ToDo.getName();
 				team_Month_Short_Title = null;
-				team_Month_Short_Content =userName +  m_ToDo.getName();
+				team_Month_Short_Content =userName +  i_ToDo.getName();
 
 				//Default - Short
-				personal_Default_Short_Title = m_ToDo.getName();
-				personal_Default_Short_Content = m_ToDo.getName() + " " + m_ToDo.getDescription();
+				personal_Default_Short_Title = i_ToDo.getName();
+				personal_Default_Short_Content = i_ToDo.getName() + " " + i_ToDo.getDescription();
 				team_Default_Short_Title = userName;
-				team_Default_Short_Content = userName + " " + m_ToDo.getName();
+				team_Default_Short_Content = userName + " " + i_ToDo.getName();
 			}
 
 
@@ -451,9 +450,9 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	private void setColor()
 	{
 
-		if(m_ToDo.getJP_ToDo_Category_ID() > 0)
+		if(i_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
-			 MToDoCategory category = MToDoCategory.get(Env.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
+			 MToDoCategory category = MToDoCategory.get(Env.getCtx(), i_ToDo.getJP_ToDo_Category_ID());
 
 			 //Month - Long
 			 personal_Month_Long_HeaderColor  = category.getJP_ColorPicker();
@@ -482,7 +481,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 		}
 
-		MGroupwareUser gUser = MGroupwareUser.get(Env.getCtx(), m_ToDo.getAD_User_ID());
+		MGroupwareUser gUser = MGroupwareUser.get(Env.getCtx(), i_ToDo.getAD_User_ID());
 
 		if(gUser != null)
 		{
@@ -585,7 +584,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	public I_ToDo getToDo()
 	{
-		return m_ToDo;
+		return i_ToDo;
 	}
 
 }
