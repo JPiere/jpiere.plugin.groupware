@@ -409,7 +409,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//*** JP_Team_ID ***//
 		if(!p_IsPersonalToDo)
 		{
-			validationCode = "JP_Team.AD_User_ID IS NULL OR JP_ToDo_Team.AD_User_ID=" + Env.getAD_User_ID(ctx);//Login user
+			validationCode = "JP_Team.AD_User_ID IS NULL OR JP_Team.AD_User_ID=" + Env.getAD_User_ID(ctx);//Login user
 			MLookup lookup_JP_Team_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MToDoTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 			lookup_JP_Team_ID.getLookupInfo().ValidationCode = validationCode;
 			WSearchEditor editor_JP_Team_ID = new WSearchEditor(lookup_JP_Team_ID, Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID), null, false, !p_IsUpdatable, true);

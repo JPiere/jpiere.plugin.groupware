@@ -174,10 +174,16 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 
 	/** West Components **/
-	JPierePersonalToDoGadget personalToDoGadget_Schedule = null;
-	JPierePersonalToDoGadget personalToDoGadget_Task = null;
-	JPierePersonalToDoGadget personalToDoGadget_Memo = null;
 
+	private Tabbox westTabbox;
+
+	ToDoGadget personalToDoGadget_Schedule = null;
+	ToDoGadget personalToDoGadget_Task = null;
+	ToDoGadget personalToDoGadget_Memo = null;
+
+	ToDoGadget teamToDoGadget_Schedule = null;
+	ToDoGadget teamToDoGadget_Task = null;
+	ToDoGadget teamToDoGadget_Memo = null;
 
 	/** Customize PopupWindow Components **/
 	private Popup popup = null;
@@ -813,7 +819,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
      *
      * @return Div
      */
-    private Div createWestContents()
+    private Div createWestContents()//TODO
     {
     	Div div = new Div();
 		Vlayout vlayout = new Vlayout();
@@ -837,13 +843,37 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		groupBox0.appendChild(toDoMenu);
 
 
+		/**********************************************************
+		 *  Personal ToDo Gadget
+		 **********************************************************/
+   		westTabbox = new Tabbox();
+   		westTabbox.setParent(vlayout);
+
+		ZKUpdateUtil.setWidth(westTabbox, "100%");
+		ZKUpdateUtil.setHeight(westTabbox, "100%");
+		ZKUpdateUtil.setHflex(westTabbox, "1");
+		ZKUpdateUtil.setVflex(westTabbox, "1");
+
+		Tabs tabs = new Tabs();
+		westTabbox.appendChild(tabs);
+		Tabpanels tabpanels = new Tabpanels();
+		westTabbox.appendChild(tabpanels);
+
+		Tab personalToDoTab  = new Tab(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID));
+		tabs.appendChild(personalToDoTab);
+		personalToDoTab.setClosable(false);
+
+		Tabpanel personalToDoTabpanel = new Tabpanel();
+		tabpanels.appendChild(personalToDoTabpanel);
+
+
 		//Schedule
 		Groupbox groupBox1 = new Groupbox();
 		groupBox1.setOpen(true);
 		groupBox1.setDraggable("false");
 		groupBox1.setMold("3d");
 		groupBox1.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox1);
+		personalToDoTabpanel.appendChild(groupBox1);
 
 		MColumn colmn = MColumn.get(ctx, MToDo.Table_Name,MToDo.COLUMNNAME_JP_ToDo_Type);
 		String scheduleName = MRefList.getListName(ctx, colmn.getAD_Reference_Value_ID(), "S");
@@ -852,8 +882,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		caption1.setIconSclass("z-icon-caret-down");
 		groupBox1.appendChild(caption1);
 
-		personalToDoGadget_Schedule = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Schedule);
-		personalToDoGadget_Schedule.setCallerPersonalToDoPopupwindow(this);
+		personalToDoGadget_Schedule = new ToDoGadget(MToDo.JP_TODO_TYPE_Schedule, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+		personalToDoGadget_Schedule.setToDoPopupwindowCaller(this);
 		personalToDoGadget_Schedule.addToDoCalenderEventReceiver(this);
 		groupBox1.appendChild(personalToDoGadget_Schedule);
 
@@ -864,14 +894,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		groupBox2.setDraggable("false");
 		groupBox2.setMold("3d");
 		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox2);
+		personalToDoTabpanel.appendChild(groupBox2);
 
 		Caption caption2 = new Caption(Msg.getMsg(ctx, "JP_UnfinishedTasks"));//Unfinished Tasks
 		caption2.setIconSclass("z-icon-caret-down");
 		groupBox2.appendChild(caption2);
 
-		personalToDoGadget_Task = new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Task);
-		personalToDoGadget_Task.setCallerPersonalToDoPopupwindow(this);
+		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Task, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+		personalToDoGadget_Task.setToDoPopupwindowCaller(this);
 		personalToDoGadget_Task.addToDoCalenderEventReceiver(this);
 		groupBox2.appendChild(personalToDoGadget_Task);
 
@@ -882,17 +912,85 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		groupBox3.setDraggable("false");
 		groupBox3.setMold("3d");
 		groupBox3.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox3);
+		personalToDoTabpanel.appendChild(groupBox3);
 
 		Caption caption3 = new Caption(Msg.getMsg(ctx, "JP_UnfinishedMemo"));//Unfinished Memo
 		caption3.setIconSclass("z-icon-caret-down");
 		groupBox3.appendChild(caption3);
 
-		personalToDoGadget_Memo= new JPierePersonalToDoGadget(MToDo.JP_TODO_TYPE_Memo);
-		personalToDoGadget_Memo.setCallerPersonalToDoPopupwindow(this);
+		personalToDoGadget_Memo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+		personalToDoGadget_Memo.setToDoPopupwindowCaller(this);
 		personalToDoGadget_Memo.addToDoCalenderEventReceiver(this);
 
 		groupBox3.appendChild(personalToDoGadget_Memo);
+
+
+
+		/**********************************************************
+		 *  Team ToDo Gadget
+		 **********************************************************/
+
+		Tab teamToDoTab  = new Tab(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_ToDo_Team_ID));
+		tabs.appendChild(teamToDoTab);
+		teamToDoTab.setClosable(false);
+
+		Tabpanel teamToDoTabpanel = new Tabpanel();
+		tabpanels.appendChild(teamToDoTabpanel);
+
+
+		//Schedule
+		Groupbox groupBox4 = new Groupbox();
+		groupBox4.setOpen(true);
+		groupBox4.setDraggable("false");
+		groupBox4.setMold("3d");
+		groupBox4.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		teamToDoTabpanel.appendChild(groupBox4);
+
+		Caption caption4 = new Caption(scheduleName);
+		caption4.setIconSclass("z-icon-caret-down");
+		groupBox4.appendChild(caption4);
+
+		teamToDoGadget_Schedule = new ToDoGadget(MToDo.JP_TODO_TYPE_Schedule, MGroupwareUser.JP_TODO_CALENDAR_TeamToDo);
+		teamToDoGadget_Schedule.setToDoPopupwindowCaller(this);
+		teamToDoGadget_Schedule.addToDoCalenderEventReceiver(this);
+		groupBox4.appendChild(teamToDoGadget_Schedule);
+
+
+		//Unfinished Tasks
+		Groupbox groupBox5 = new Groupbox();
+		groupBox5.setOpen(true);
+		groupBox5.setDraggable("false");
+		groupBox5.setMold("3d");
+		groupBox5.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		teamToDoTabpanel.appendChild(groupBox5);
+
+		Caption caption5 = new Caption(Msg.getMsg(ctx, "JP_UnfinishedTasks"));//Unfinished Tasks
+		caption5.setIconSclass("z-icon-caret-down");
+		groupBox5.appendChild(caption5);
+
+		teamToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Task, MGroupwareUser.JP_TODO_CALENDAR_TeamToDo);
+		teamToDoGadget_Task.setToDoPopupwindowCaller(this);
+		teamToDoGadget_Task.addToDoCalenderEventReceiver(this);
+		groupBox5.appendChild(teamToDoGadget_Task);
+
+
+		//Unfinished Memo
+		Groupbox groupBox6 = new Groupbox();
+		groupBox6.setOpen(true);
+		groupBox6.setDraggable("false");
+		groupBox6.setMold("3d");
+		groupBox6.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+		teamToDoTabpanel.appendChild(groupBox6);
+
+		Caption caption6 = new Caption(Msg.getMsg(ctx, "JP_UnfinishedMemo"));//Unfinished Memo
+		caption6.setIconSclass("z-icon-caret-down");
+		groupBox6.appendChild(caption6);
+
+		teamToDoGadget_Memo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_TeamToDo);
+		teamToDoGadget_Memo.setToDoPopupwindowCaller(this);
+		teamToDoGadget_Memo.addToDoCalenderEventReceiver(this);
+
+		groupBox6.appendChild(teamToDoGadget_Memo);
 
     	return div;
 
@@ -1265,6 +1363,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
+					todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Schedule);
+					todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Task);
+					todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Memo);
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
 				}else if(BUTTON_PREVIOUS.equals(btnName))
@@ -1290,7 +1391,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					{
 					  	mainBorderLayout_Center.getFirstChild().detach();
 						mainBorderLayout_Center.appendChild(createCenterContents());
-
 					}
 
 					getToDoCalendarEvent(true ,true);
@@ -1485,6 +1585,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
 				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
 				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
+				todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Schedule);
+				todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Task);
+				todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Memo);
 
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 			}
@@ -1511,6 +1614,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
+					todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Schedule);
+					todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Task);
+					todoWindow.addToDoCalenderEventReceiver(teamToDoGadget_Memo);
 
 					SessionManager.getAppDesktop().showWindow(todoWindow);
 
@@ -2916,6 +3022,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		personalToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
 		personalToDoGadget_Memo.setAD_User_ID(p_AD_User_ID);
+
+		teamToDoGadget_Schedule.setAD_User_ID(p_AD_User_ID);
+		teamToDoGadget_Task.setAD_User_ID(p_AD_User_ID);
+		teamToDoGadget_Memo.setAD_User_ID(p_AD_User_ID);
+
 		return true;
 	}
 

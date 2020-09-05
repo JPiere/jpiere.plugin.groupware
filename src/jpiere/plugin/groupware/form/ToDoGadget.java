@@ -58,6 +58,7 @@ import org.zkoss.zul.Hlayout;
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
 import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
@@ -70,19 +71,19 @@ import jpiere.plugin.groupware.window.ToDoPopupWindow;
  *  @author Hideaki Hagiwara（h.hagiwara@oss-erp.co.jp）
  *
  */
-public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_ToDoPopupwindowCaller, I_ToDoCalendarEventReceiver, EventListener<Event>, ValueChangeListener {
+public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_ToDoPopupwindowCaller, I_ToDoCalendarEventReceiver, EventListener<Event>, ValueChangeListener {
 
 
 	private Properties ctx = Env.getCtx();
+	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
 	private int p_AD_User_ID = 0;
 	private int login_User_ID = 0;
 
 	private String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Task;
+
 	private LocalDateTime p_LocalDateTime =null;
 	private String p_FormattedLocalDateTime = null;
-
-	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
 	private Timestamp today = null;
 
@@ -109,16 +110,16 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	/**
 	 * Constructor for using as Dashboard Gadget
 	 */
-	public JPierePersonalToDoGadget()
+	public ToDoGadget()
 	{
 		super();
 		MGroupwareUser gUser = MGroupwareUser.get(ctx, Env.getAD_User_ID(ctx));
 		if(gUser != null && !Util.isEmpty(gUser.getJP_ToDo_Type()))
 		{
-			init(gUser.getJP_ToDo_Type(), true);
+			init(gUser.getJP_ToDo_Type(), gUser.getJP_ToDo_Calendar(),  true);
 		}else {
 
-			init(MToDo.JP_TODO_TYPE_Task, true);
+			init(MToDo.JP_TODO_TYPE_Task, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo, true);
 		}
 	}
 
@@ -126,10 +127,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	/**
 	 * Constructor for not using as Dashboard Gadget
 	 */
-	public JPierePersonalToDoGadget(String JP_ToDo_Type)
+	public ToDoGadget(String JP_ToDo_Type, String JP_ToDo_Calendar)
 	{
 		super();
-		init(JP_ToDo_Type, false);
+		init(JP_ToDo_Type, JP_ToDo_Calendar, false);
 	}
 
 
@@ -140,9 +141,10 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	 * @param JP_ToDo_Type
 	 * @param isDashboardGadget
 	 */
-	public void init(String JP_ToDo_Type,Boolean isDashboardGadget)
+	public void init(String JP_ToDo_Type, String JP_ToDo_Calendar, Boolean isDashboardGadget)
 	{
 		this.isDashboardGadget = isDashboardGadget;
+		this.p_JP_ToDo_Calendar = JP_ToDo_Calendar;
 
 		setSclass("views-box");
 
@@ -588,9 +590,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 					ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, -1);
 					todoWindow.addToDoCalenderEventReceiver(this);
-					if(i_CallerPersonalToDoPopupwindow instanceof ToDoCalendar)
+					if(i_ToDoPopupwindowCaller instanceof ToDoCalendar)
 					{
-						ToDoCalendar todocalendar = (ToDoCalendar)i_CallerPersonalToDoPopupwindow;
+						ToDoCalendar todocalendar = (ToDoCalendar)i_ToDoPopupwindowCaller;
 						todoWindow.addToDoCalenderEventReceiver(todocalendar);
 					}
 
@@ -613,9 +615,9 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				int index = Integer.valueOf(list_index.toString()).intValue();
 				ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, index);
 				todoWindow.addToDoCalenderEventReceiver(this);
-				if(i_CallerPersonalToDoPopupwindow instanceof ToDoCalendar)
+				if(i_ToDoPopupwindowCaller instanceof ToDoCalendar)
 				{
-					ToDoCalendar todocalendar = (ToDoCalendar)i_CallerPersonalToDoPopupwindow;
+					ToDoCalendar todocalendar = (ToDoCalendar)i_ToDoPopupwindowCaller;
 					todoWindow.addToDoCalenderEventReceiver(todocalendar);
 				}
 
@@ -638,21 +640,40 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	private List<I_ToDo> getToDoes(String whereClause, String orderClause, Object ...parameters)
 	{
 
-		List<MToDo> m_list = new Query(ctx, MToDo.Table_Name, whereClause.toString(), null)
-										.setParameters(parameters)
-										.setOrderBy(orderClause)
-										.list();
-
-
-		List<I_ToDo> i_list = new ArrayList<I_ToDo>();
-		for(MToDo todo : m_list)
+		if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
 		{
-			i_list.add(todo);
+			List<MToDo> m_list = new Query(ctx, MToDo.Table_Name, whereClause.toString(), null)
+											.setParameters(parameters)
+											.setOrderBy(orderClause)
+											.list();
+
+			List<I_ToDo> i_list = new ArrayList<I_ToDo>();
+			for(MToDo todo : m_list)
+			{
+				i_list.add(todo);
+			}
+
+			return i_list;
+
+		}else {
+
+			List<MToDoTeam> m_list = new Query(ctx, MToDoTeam.Table_Name, whereClause.toString(), null)
+					.setParameters(parameters)
+					.setOrderBy(orderClause)
+					.list();
+
+			List<I_ToDo> i_list = new ArrayList<I_ToDo>();
+			for(MToDoTeam todo : m_list)
+			{
+				i_list.add(todo);
+			}
+
+			return i_list;
+
 		}
-
-
-		return i_list;
 	}
+
+
 
 	@Override
 	public int getDefault_AD__User_ID()
@@ -678,11 +699,11 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 
-	I_ToDoPopupwindowCaller i_CallerPersonalToDoPopupwindow;
+	I_ToDoPopupwindowCaller i_ToDoPopupwindowCaller;
 
-	public void setCallerPersonalToDoPopupwindow(I_ToDoPopupwindowCaller callerToDoPopupwindow)
+	public void setToDoPopupwindowCaller(I_ToDoPopupwindowCaller todoPopupwindowcaller)
 	{
-		this.i_CallerPersonalToDoPopupwindow = callerToDoPopupwindow;
+		this.i_ToDoPopupwindowCaller = todoPopupwindowcaller;
 	}
 
 
@@ -868,7 +889,12 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	@Override
 	public int getWindowNo()
 	{
-		return getWindowNo();
+		if(i_ToDoPopupwindowCaller != null)
+		{
+			return i_ToDoPopupwindowCaller.getWindowNo();
+		}
+
+		return 0;
 	}
 
 

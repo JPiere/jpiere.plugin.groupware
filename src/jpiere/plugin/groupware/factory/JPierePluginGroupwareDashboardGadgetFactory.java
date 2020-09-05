@@ -18,7 +18,7 @@ import org.adempiere.webui.factory.IDashboardGadgetFactory;
 import org.zkoss.zk.ui.Component;
 
 import jpiere.plugin.groupware.form.GroupwareMenuGadgetFlat;
-import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
+import jpiere.plugin.groupware.form.ToDoGadget;
 
 
 /**
@@ -30,13 +30,14 @@ import jpiere.plugin.groupware.form.JPierePersonalToDoGadget;
 public class JPierePluginGroupwareDashboardGadgetFactory implements IDashboardGadgetFactory {
 
 	@Override
-	public Component getGadget(String uri, Component parent) {
+	public Component getGadget(String uri, Component parent)
+	{
 
 		if (uri != null && uri.startsWith("JP_Groupware"))
 		{
-			if(uri.equals("JP_Groupware=PersonalToDoGadget"))
+			if(uri.equals("JP_Groupware=ToDoGadget"))
 			{
-				return new JPierePersonalToDoGadget();
+				return new ToDoGadget();
 			}else if(uri.equals("JP_Groupware=GroupwareMenuGadget")) {
 				return new GroupwareMenuGadgetFlat();
 			}
