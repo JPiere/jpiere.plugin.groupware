@@ -96,7 +96,7 @@ import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
 import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
-import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;;
+import jpiere.plugin.groupware.window.ToDoPopupWindow;;
 
 /**
  *
@@ -1260,7 +1260,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					p_CalendarsEventBeginDate = null;
 					p_CalendarsEventEndDate =  null;
 
-					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
+					ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, -1);
 					todoWindow.addToDoCalenderEventReceiver(this);
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
 					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
@@ -1480,7 +1480,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				p_CalendarsEventBeginDate = new Timestamp(calendarsEvent.getBeginDate().getTime());
 				p_CalendarsEventEndDate = new Timestamp(calendarsEvent.getEndDate().getTime());
 
-				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
+				ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, -1);
 				todoWindow.addToDoCalenderEventReceiver(this);
 				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
 				todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
@@ -1500,26 +1500,20 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				{
 					ToDoCalendarEvent ce = (ToDoCalendarEvent) calendarEvent;
 
-					if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
-					{
-						list_ToDoes = new ArrayList<I_ToDo>();
-						list_ToDoes.add(ce.getToDo());
+					list_ToDoes = new ArrayList<I_ToDo>();
+					list_ToDoes.add(ce.getToDo());
 
-						p_CalendarsEventBeginDate = ce.getToDo().getJP_ToDo_ScheduledStartTime();
-						p_CalendarsEventEndDate = ce.getToDo().getJP_ToDo_ScheduledEndTime();
+					p_CalendarsEventBeginDate = ce.getToDo().getJP_ToDo_ScheduledStartTime();
+					p_CalendarsEventEndDate = ce.getToDo().getJP_ToDo_ScheduledEndTime();
 
-						PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, 0);
-						todoWindow.addToDoCalenderEventReceiver(this);
-						todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
-						todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
-						todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
+					ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, 0);
+					todoWindow.addToDoCalenderEventReceiver(this);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Schedule);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Task);
+					todoWindow.addToDoCalenderEventReceiver(personalToDoGadget_Memo);
 
-						SessionManager.getAppDesktop().showWindow(todoWindow);
-					}else {
+					SessionManager.getAppDesktop().showWindow(todoWindow);
 
-						AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), ce.getToDo().get_ID());//TODO
-
-					}
 				}
 			}
 
@@ -2721,7 +2715,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	 * Get Personal ToDo List (Implement of I_ToDoPopupwindowCaller)
 	 */
 	@Override
-	public List<I_ToDo> getPersonalToDoList()
+	public List<I_ToDo> getToDoList()
 	{
 		return list_ToDoes;
 	}
@@ -2778,29 +2772,29 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 	@Override
-	public boolean update(MToDo todo)
+	public boolean update(I_ToDo todo)
 	{
 		ToDoCalendarEvent oldEvent = null;
 		ToDoCalendarEvent newEvent = null;
 		if(todo.getAD_User_ID() == p_AD_User_ID)
 		{
-			oldEvent = map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).get(todo.getJP_ToDo_ID());
+			oldEvent = map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).get(todo.get_ID());
 			if(oldEvent != null)
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).remove(todo.getJP_ToDo_ID());
+				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).remove(todo.get_ID());
 
 			newEvent = new ToDoCalendarEvent(todo);
 			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.getJP_ToDo_ID(), newEvent);
+				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
 
 		}else {
 
-			oldEvent = map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).get(todo.getJP_ToDo_ID());
+			oldEvent = map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).get(todo.get_ID());
 			if(oldEvent != null)
-				map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).remove(todo.getJP_ToDo_ID());
+				map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).remove(todo.get_ID());
 
 			newEvent = new ToDoCalendarEvent(todo);
 			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).put(todo.getJP_ToDo_ID(), newEvent);
+				map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
 		}
 
 		updateCalendarEvent(oldEvent, newEvent);
@@ -2809,14 +2803,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 	@Override
-	public boolean create(MToDo todo)
+	public boolean create(I_ToDo todo)
 	{
 		ToDoCalendarEvent newEvent = null;
 		if(todo.getAD_User_ID() == p_AD_User_ID)
 		{
 			newEvent = new ToDoCalendarEvent(todo);
 			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.getJP_ToDo_ID(), newEvent);
+				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
 
 		}else {
 
@@ -2846,7 +2840,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 						if(isMember)
 						{
 							map_userEvent = new HashMap<Integer,ToDoCalendarEvent>();
-							map_userEvent.put(todo.getJP_ToDo_ID(), newEvent);
+							map_userEvent.put(todo.get_ID(), newEvent);
 							map_AcquiredCalendarEvent_Team.put(todo.getAD_User_ID(), map_userEvent);
 						}else {
 							return true;
@@ -2854,7 +2848,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					}
 
 				}else {
-					map_userEvent.put(todo.getJP_ToDo_ID(), newEvent);
+					map_userEvent.put(todo.get_ID(), newEvent);
 
 				}
 			}
@@ -2866,22 +2860,22 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	}
 
 	@Override
-	public boolean delete(MToDo deleteToDo)
+	public boolean delete(I_ToDo deleteToDo)
 	{
 
 		ToDoCalendarEvent deleteEvent = null;
 		if(deleteToDo.getAD_User_ID() == p_AD_User_ID)
 		{
-			deleteEvent = map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).get(deleteToDo.getJP_ToDo_ID());
+			deleteEvent = map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
 			if(deleteEvent != null)
-				map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.getJP_ToDo_ID());
+				map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
 
 
 		}else {
 
-			deleteEvent = map_AcquiredCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).get(deleteToDo.getJP_ToDo_ID());
+			deleteEvent = map_AcquiredCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
 			if(deleteEvent != null)
-				map_AcquiredCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.getJP_ToDo_ID());
+				map_AcquiredCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
 
 		}
 
@@ -2893,7 +2887,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 
 	@Override
-	public boolean refresh(MToDo todo)
+	public boolean refresh(I_ToDo todo)
 	{
 		p_SelectedTab_AD_User_ID = p_AD_User_ID;
 		p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
@@ -2991,17 +2985,17 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 
 	@Override
-	public List<MToDoTeam> getTeamToDoList()
+	public int getWindowNo()
 	{
-		return null;
+		return form.getWindowNo();
 	}
 
 
 
 	@Override
-	public int getWindowNo()
+	public String getJP_ToDo_Calendar()
 	{
-		return form.getWindowNo();
+		return p_JP_ToDo_Calendar;
 	}
 
 

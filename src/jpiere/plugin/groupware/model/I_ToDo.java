@@ -13,6 +13,7 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
@@ -29,6 +30,8 @@ public interface I_ToDo
 
 	/**JP_ToDo_ID or JP_ToDo_Team_ID**/
 	public int get_ID();
+
+	public Object get_Value(String columnName);
 
 
 	/**JP_ToDo_ID**/
@@ -47,38 +50,42 @@ public interface I_ToDo
 
 
 	/** AD_Org_ID **/
-	//public void setAD_Org_ID (int AD_Org_ID);
+	public void setAD_Org_ID (int AD_Org_ID);
 	//public int getAD_Org_ID();
 
 
 	/** AD_User_ID **/
-	//public void setAD_User_ID (int AD_User_ID);
+	public void setAD_User_ID (int AD_User_ID);
 	public int getAD_User_ID();
 
 
 	/** JP_ToDo_Type **/
-	//public void setJP_ToDo_Type (String JP_ToDo_Type);
+	public void setJP_ToDo_Type (String JP_ToDo_Type);
 	public String getJP_ToDo_Type();
 
 
 	/** JP_ToDo_Category_ID **/
-	//public void setJP_ToDo_Category_ID (int JP_ToDo_Category_ID);
+	public void setJP_ToDo_Category_ID (int JP_ToDo_Category_ID);
 	public int getJP_ToDo_Category_ID();
 
 
+	/** Team **/
+	public void setJP_Team_ID (int JP_Team_ID);
+	public int getJP_Team_ID();
+
 	/** Name **/
-	//public void setName (String Name);
+	public void setName (String Name);
 	public String getName();
 
 
 	/** Description **/
-	//public void setDescription (String Description);
+	public void setDescription (String Description);
 	public String getDescription();
 
 
 	/** Comments **/
-	//public void setComments (String Comments);
-	//public String getComments();
+	public void setComments (String Comments);
+	public String getComments();
 
 	/** IsActive **/
 	//public void setIsActive (boolean IsActive);
@@ -86,13 +93,13 @@ public interface I_ToDo
 
 
 	/** IsOpenToDo **/
-	//public void setIsOpenToDoJP (boolean IsOpenToDoJP);
-	//public boolean isOpenToDoJP();
+	public void setIsOpenToDoJP (boolean IsOpenToDoJP);
+	public boolean isOpenToDoJP();
 
 
 	/** Processed **/
 	//public void setProcessed (boolean Processed);
-	//public boolean isProcessed();
+	public boolean isProcessed();
 
 
 	/** JP_ToDo_ScheduledStartTime **/
@@ -105,28 +112,32 @@ public interface I_ToDo
 	public Timestamp getJP_ToDo_ScheduledEndTime();
 
 	/** JP_ToDo_Status **/
-	//public void setJP_ToDo_Status (String JP_ToDo_Status);
+	public void setJP_ToDo_Status (String JP_ToDo_Status);
 	public String getJP_ToDo_Status();
 
 
 
 
 	/** JP_Statistics_YesNo **/
-	//public void setJP_Statistics_YesNo (String JP_Statistics_YesNo);
-	//public String getJP_Statistics_YesNo();
+	public void setJP_Statistics_YesNo (String JP_Statistics_YesNo);
+	public String getJP_Statistics_YesNo();
 
 	/** JP_Statistics_Choice **/
-	//public void setJP_Statistics_Choice (String JP_Statistics_Choice);
-	//public String getJP_Statistics_Choice();
+	public void setJP_Statistics_Choice (String JP_Statistics_Choice);
+	public String getJP_Statistics_Choice();
 
 	/** JP_Statistics_DateAndTime **/
-	//public void setJP_Statistics_DateAndTime (Timestamp JP_Statistics_DateAndTime);
-	//public Timestamp getJP_Statistics_DateAndTime();
+	public void setJP_Statistics_DateAndTime (Timestamp JP_Statistics_DateAndTime);
+	public Timestamp getJP_Statistics_DateAndTime();
 
 	/** JP_Statistics_Number **/
-	//public void setJP_Statistics_Number (BigDecimal JP_Statistics_Number);
-	//public BigDecimal getJP_Statistics_Number();
+	public void setJP_Statistics_Number (BigDecimal JP_Statistics_Number);
+	public BigDecimal getJP_Statistics_Number();
 
+
+	/** Mandatory Statistics Info */
+	public void setJP_Mandatory_Statistics_Info (String JP_Mandatory_Statistics_Info);
+	public String getJP_Mandatory_Statistics_Info();
 
 
 	/** CreatedBy **/
@@ -156,6 +167,14 @@ public interface I_ToDo
 	//public int getC_ProjectTask_ID();
 
 
+
+
+	public String beforeSavePreCheck(boolean newRecord);
+
 	public boolean save();
+
+	public String beforeDeletePreCheck();
+
+	public boolean delete(boolean force);
 
 }

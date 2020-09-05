@@ -13,7 +13,7 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
-import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.I_ToDo;
 
 /**
  * JPIERE-0470 Personal ToDo Popup Window
@@ -27,12 +27,12 @@ import jpiere.plugin.groupware.model.MToDo;
  */
 public interface I_ToDoCalendarEventReceiver {
 
-	public boolean update(MToDo todo);
+	public boolean update(I_ToDo todo);
 
-	public boolean create(MToDo todo);
+	public boolean create(I_ToDo todo);
 
-	public boolean delete(MToDo todo);
+	public boolean delete(I_ToDo todo);
 
-	public boolean refresh(MToDo todo);
+	public boolean refresh(I_ToDo todo);
 
 }

@@ -13,6 +13,7 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.model;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -368,6 +369,76 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 	public int getParent_Team_ToDo_ID()
 	{
 		return 0;
+	}
+
+
+	@Override
+	public void setComments(String Comments)
+	{
+		return;
+	}
+
+
+	@Override
+	public void setJP_Statistics_YesNo(String JP_Statistics_YesNo)
+	{
+		return;
+	}
+
+
+	@Override
+	public void setJP_Statistics_Choice(String JP_Statistics_Choice)
+	{
+		return;
+	}
+
+
+	@Override
+	public void setJP_Statistics_DateAndTime(Timestamp JP_Statistics_DateAndTime)
+	{
+		return;
+	}
+
+
+	@Override
+	public void setJP_Statistics_Number(BigDecimal JP_Statistics_Number)
+	{
+		return;
+	}
+
+
+	@Override
+	public String getJP_Statistics_YesNo()
+	{
+		return null;
+	}
+
+
+	@Override
+	public String getJP_Statistics_Choice()
+	{
+		return null;
+	}
+
+
+	@Override
+	public Timestamp getJP_Statistics_DateAndTime()
+	{
+		return null;
+	}
+
+
+	@Override
+	public BigDecimal getJP_Statistics_Number()
+	{
+		return null;
+	}
+
+
+	@Override
+	public String getComments()
+	{
+		return null;
 	}
 
 }

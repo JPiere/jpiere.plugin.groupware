@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import jpiere.plugin.groupware.model.I_ToDo;
-import jpiere.plugin.groupware.model.MToDoTeam;
 
 /**
  * JPIERE-0470 Personal ToDo Popup Window
@@ -31,10 +30,7 @@ import jpiere.plugin.groupware.model.MToDoTeam;
 public interface I_ToDoPopupwindowCaller {
 
 
-	public List<I_ToDo> getPersonalToDoList();
-
-	public List<MToDoTeam> getTeamToDoList();
-
+	public List<I_ToDo> getToDoList();
 
 
 	public Timestamp getDefault_JP_ToDo_ScheduledStartTime();
@@ -47,6 +43,9 @@ public interface I_ToDoPopupwindowCaller {
 
 	public String getDefault_JP_ToDo_Type();
 
+
 	public int getWindowNo();
+
+	public String getJP_ToDo_Calendar();
 
 }

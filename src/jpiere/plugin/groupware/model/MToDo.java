@@ -328,4 +328,32 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 	}
 
 
+	@Override
+	public void setJP_Mandatory_Statistics_Info(String JP_Mandatory_Statistics_Info)
+	{
+		return ;
+	}
+
+
+	@Override
+	public String getJP_Mandatory_Statistics_Info()
+	{
+		return null;
+	}
+
+
+	@Override
+	public void setJP_Team_ID(int JP_Team_ID)
+	{
+		return ;
+	}
+
+
+	@Override
+	public int getJP_Team_ID()
+	{
+		return 0;
+	}
+
+
 }

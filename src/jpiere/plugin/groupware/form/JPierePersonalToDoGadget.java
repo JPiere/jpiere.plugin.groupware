@@ -58,11 +58,10 @@ import org.zkoss.zul.Hlayout;
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
-import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
 import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
-import jpiere.plugin.groupware.window.PersonalToDoPopupWindow;
+import jpiere.plugin.groupware.window.ToDoPopupWindow;
 
 
 /**
@@ -82,6 +81,8 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	private String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Task;
 	private LocalDateTime p_LocalDateTime =null;
 	private String p_FormattedLocalDateTime = null;
+
+	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
 	private Timestamp today = null;
 
@@ -585,7 +586,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				}else if(BUTTON_NAME_NEW_TODO.equals(btnName)){
 
-					PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, -1);
+					ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, -1);
 					todoWindow.addToDoCalenderEventReceiver(this);
 					if(i_CallerPersonalToDoPopupwindow instanceof ToDoCalendar)
 					{
@@ -610,7 +611,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				Object list_index = comp.getAttribute("index");
 				int index = Integer.valueOf(list_index.toString()).intValue();
-				PersonalToDoPopupWindow todoWindow = new PersonalToDoPopupWindow(this, index);
+				ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, index);
 				todoWindow.addToDoCalenderEventReceiver(this);
 				if(i_CallerPersonalToDoPopupwindow instanceof ToDoCalendar)
 				{
@@ -670,7 +671,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 	@Override
-	public List<I_ToDo>  getPersonalToDoList()
+	public List<I_ToDo>  getToDoList()
 	{
 		return list_ToDoes;
 	}
@@ -696,7 +697,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 	@Override
-	public boolean update(MToDo todo)
+	public boolean update(I_ToDo todo)
 	{
 		if(p_AD_User_ID == todo.getAD_User_ID())
 		{
@@ -737,7 +738,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 	@Override
-	public boolean create(MToDo todo)
+	public boolean create(I_ToDo todo)
 	{
 		if(p_AD_User_ID == todo.getAD_User_ID())
 		{
@@ -780,7 +781,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	int p_Delete_JP_ToDo_ID = 0;
 
 	@Override
-	public boolean delete(MToDo todo)
+	public boolean delete(I_ToDo todo)
 	{
 		int todo_AD_User_ID = todo.getAD_User_ID();
 
@@ -795,7 +796,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
 				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
 				{
-					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
+					p_Delete_JP_ToDo_ID = todo.get_ID();
 					createContents();
 				}
 
@@ -805,7 +806,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
+					p_Delete_JP_ToDo_ID = todo.get_ID();
 					createContents();
 				}
 
@@ -814,7 +815,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					p_Delete_JP_ToDo_ID = todo.getJP_ToDo_ID();
+					p_Delete_JP_ToDo_ID = todo.get_ID();
 					createContents();
 				}
 			}
@@ -825,7 +826,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 	@Override
-	public boolean refresh(MToDo todo)
+	public boolean refresh(I_ToDo todo)
 	{
 		return update(todo);
 	}
@@ -864,18 +865,17 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	}
 
 
-
-	@Override
-	public List<MToDoTeam> getTeamToDoList()
-	{
-		return null;
-	}
-
-
 	@Override
 	public int getWindowNo()
 	{
 		return getWindowNo();
+	}
+
+
+	@Override
+	public String getJP_ToDo_Calendar()
+	{
+		return p_JP_ToDo_Calendar;
 	}
 
 
