@@ -35,7 +35,7 @@ import org.compiere.util.Util;
  * @author h.hagiwara
  *
  */
-public class MToDoTeam extends X_JP_ToDo_Team {
+public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 
 	public MToDoTeam(Properties ctx, int JP_ToDo_Team_ID, String trxName)
 	{
@@ -361,6 +361,13 @@ public class MToDoTeam extends X_JP_ToDo_Team {
 
 		return m_ToDoes;
 
+	}
+
+
+	@Override
+	public int getParent_Team_ToDo_ID()
+	{
+		return 0;
 	}
 
 }

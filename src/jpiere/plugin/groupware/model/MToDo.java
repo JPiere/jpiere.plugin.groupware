@@ -32,7 +32,7 @@ import org.compiere.util.Util;
  * @author h.hagiwara
  *
  */
-public class MToDo extends X_JP_ToDo {
+public class MToDo extends X_JP_ToDo implements I_ToDo {
 
 	public MToDo(Properties ctx, int JP_ToDo_Team_ID, String trxName)
 	{
@@ -319,5 +319,13 @@ public class MToDo extends X_JP_ToDo {
 		return m_ToDoReminders;
 
 	}
+
+
+	@Override
+	public int getParent_Team_ToDo_ID()
+	{
+		return getJP_ToDo_Team_ID();
+	}
+
 
 }

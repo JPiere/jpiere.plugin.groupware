@@ -55,6 +55,7 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Hlayout;
 
+import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
@@ -88,7 +89,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 	private WDateEditor editor_Date = null;
 
-	private List<MToDo>  list_ToDoes = null;
+	private List<I_ToDo>  list_ToDoes = null;
 
 	private boolean isDashboardGadget = false;
 
@@ -392,14 +393,14 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 		Rows gridRows = grid.newRows();
 		int counter = 0;
-		for (MToDo toDo : list_ToDoes)
+		for (I_ToDo toDo : list_ToDoes)
 		{
 			Row row = gridRows.newRow();
 			ToolBarButton btn = new ToolBarButton(toDo.getName());
 			btn.setSclass("link");
 			createTitle(toDo, btn);
 			btn.addEventListener(Events.ON_CLICK, this);
-			btn.setId(String.valueOf(toDo.getJP_ToDo_ID()));
+			btn.setId(String.valueOf(toDo.get_ID()));
 			btn.setAttribute("index", counter);
 			counter++;
 			row.appendChild(btn);
@@ -415,7 +416,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	 * @param toDo
 	 * @param btn
 	 */
-	private void createTitle(MToDo toDo, ToolBarButton btn)
+	private void createTitle(I_ToDo toDo, ToolBarButton btn)
 	{
 		if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 		{
@@ -434,7 +435,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 			}
 
-			if(toDo.getJP_ToDo_Team_ID() == 0)
+			if(toDo.getParent_Team_ToDo_ID() == 0)
 			{
 				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
 			}else {
@@ -461,7 +462,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 					isAllDay = true;
 				}
 
-				if(toDo.getJP_ToDo_Team_ID() == 0)
+				if(toDo.getParent_Team_ToDo_ID() == 0)
 				{
 					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " ) + (isAllDay ? "" : endTime.toString()) + " " + toDo.getName());
 				}else {
@@ -472,7 +473,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 			}else {
 
 				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
-				if(toDo.getJP_ToDo_Team_ID() == 0)
+				if(toDo.getParent_Team_ToDo_ID() == 0)
 				{
 					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
 				}else {
@@ -486,7 +487,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
 
 			btn.setImage(ThemeManager.getThemeResource("images/Editor16.png"));
-			if(toDo.getJP_ToDo_Team_ID() == 0)
+			if(toDo.getParent_Team_ToDo_ID() == 0)
 			{
 				btn.setLabel(toDo.getName());
 			}else {
@@ -633,14 +634,23 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 	 * @param parameters
 	 * @return
 	 */
-	private List<MToDo> getToDoes(String whereClause, String orderClause, Object ...parameters)
+	private List<I_ToDo> getToDoes(String whereClause, String orderClause, Object ...parameters)
 	{
 
-		List<MToDo> list = new Query(ctx, MToDo.Table_Name, whereClause.toString(), null)
+		List<MToDo> m_list = new Query(ctx, MToDo.Table_Name, whereClause.toString(), null)
 										.setParameters(parameters)
 										.setOrderBy(orderClause)
 										.list();
-		return list;
+
+
+		List<I_ToDo> i_list = new ArrayList<I_ToDo>();
+		for(MToDo todo : m_list)
+		{
+			i_list.add(todo);
+		}
+
+
+		return i_list;
 	}
 
 	@Override
@@ -660,7 +670,7 @@ public class JPierePersonalToDoGadget extends DashboardPanel implements I_ToDoCa
 
 
 	@Override
-	public List<MToDo>  getPersonalToDoList()
+	public List<I_ToDo>  getPersonalToDoList()
 	{
 		return list_ToDoes;
 	}

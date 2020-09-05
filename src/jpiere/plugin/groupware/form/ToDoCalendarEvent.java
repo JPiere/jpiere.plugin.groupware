@@ -23,9 +23,11 @@ import org.compiere.model.MUser;
 import org.compiere.util.Env;
 import org.zkoss.calendar.impl.SimpleCalendarEvent;
 
+import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
+import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 /**
@@ -39,7 +41,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	private static final long serialVersionUID = 2289841014956779967L;
 
-	private MToDo m_ToDo = null ;
+	private I_ToDo m_ToDo = null ;
 
 	private static final int INITIAL_TASK_HOUR = 1;
 	private static final long JUDGMENT_Middle_TIME_HOURES = 12;
@@ -119,7 +121,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	public String team_Default_Short_ContentColor = null;
 
 
-	public ToDoCalendarEvent(MToDo toDo)
+	public ToDoCalendarEvent(I_ToDo toDo)
 	{
 		super();
 		this.m_ToDo = toDo;
@@ -128,18 +130,20 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 		adjustDisplayText();
 		setColor();
 
-		int login_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
-		if(m_ToDo.getAD_User_ID() == login_AD_User_ID || m_ToDo.getCreatedBy() == login_AD_User_ID)
+		if(toDo instanceof MToDoTeam)
 		{
-			this.setLocked(false);
-
-		}else if(toDo.getJP_ToDo_Team_ID() > 0) {
-
 			this.setLocked(true);
 
 		}else {
-			this.setLocked(true);
+
+			int login_AD_User_ID = Env.getAD_User_ID(Env.getCtx());
+			if(m_ToDo.getAD_User_ID() == login_AD_User_ID || m_ToDo.getCreatedBy() == login_AD_User_ID)
+				this.setLocked(false);
+			else
+				this.setLocked(true);
+
 		}
+
 	}
 
 
@@ -449,7 +453,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 		if(m_ToDo.getJP_ToDo_Category_ID() > 0)
 		{
-			 MToDoCategory category = MToDoCategory.get(m_ToDo.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
+			 MToDoCategory category = MToDoCategory.get(Env.getCtx(), m_ToDo.getJP_ToDo_Category_ID());
 
 			 //Month - Long
 			 personal_Month_Long_HeaderColor  = category.getJP_ColorPicker();
@@ -478,7 +482,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 		}
 
-		MGroupwareUser gUser = MGroupwareUser.get(m_ToDo.getCtx(), m_ToDo.getAD_User_ID());
+		MGroupwareUser gUser = MGroupwareUser.get(Env.getCtx(), m_ToDo.getAD_User_ID());
 
 		if(gUser != null)
 		{
@@ -579,7 +583,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 
 	}
 
-	public MToDo getToDo()
+	public I_ToDo getToDo()
 	{
 		return m_ToDo;
 	}

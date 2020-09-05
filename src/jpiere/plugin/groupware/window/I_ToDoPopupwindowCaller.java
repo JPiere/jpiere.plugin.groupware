@@ -16,7 +16,7 @@ package jpiere.plugin.groupware.window;
 import java.sql.Timestamp;
 import java.util.List;
 
-import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 
 /**
@@ -31,7 +31,7 @@ import jpiere.plugin.groupware.model.MToDoTeam;
 public interface I_ToDoPopupwindowCaller {
 
 
-	public List<MToDo> getPersonalToDoList();
+	public List<I_ToDo> getPersonalToDoList();
 
 	public List<MToDoTeam> getTeamToDoList();
 

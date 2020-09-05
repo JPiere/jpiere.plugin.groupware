@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200827L;
+	private static final long serialVersionUID = 20200905L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -46,12 +46,14 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 			setIsDisplayTaskJP (false);
 // N
 			setJP_GroupwareUser_ID (0);
+			setJP_ToDo_Calendar (null);
+// P
 			setJP_ToDo_Calendar_BeginTime (0);
 // 0
 			setJP_ToDo_Calendar_EndTime (0);
 // 24
-			setJP_ToDo_Main_Calendar_View (null);
-// P
+			setJP_ToDo_Main_Calendar (null);
+// T
         } */
     }
 
@@ -423,6 +425,25 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 		return ii.intValue();
 	}
 
+	/** Personal ToDo = P */
+	public static final String JP_TODO_CALENDAR_PersonalToDo = "P";
+	/** Team ToDo = T */
+	public static final String JP_TODO_CALENDAR_TeamToDo = "T";
+	/** Set ToDo Calendar.
+		@param JP_ToDo_Calendar ToDo Calendar	  */
+	public void setJP_ToDo_Calendar (String JP_ToDo_Calendar)
+	{
+
+		set_Value (COLUMNNAME_JP_ToDo_Calendar, JP_ToDo_Calendar);
+	}
+
+	/** Get ToDo Calendar.
+		@return ToDo Calendar	  */
+	public String getJP_ToDo_Calendar () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ToDo_Calendar);
+	}
+
 	/** Set ToDo Calendar Begin Time.
 		@param JP_ToDo_Calendar_BeginTime ToDo Calendar Begin Time	  */
 	public void setJP_ToDo_Calendar_BeginTime (int JP_ToDo_Calendar_BeginTime)
@@ -482,23 +503,23 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 		return ii.intValue();
 	}
 
-	/** Team = T */
-	public static final String JP_TODO_MAIN_CALENDAR_VIEW_Team = "T";
-	/** Personal = P */
-	public static final String JP_TODO_MAIN_CALENDAR_VIEW_Personal = "P";
-	/** Set ToDo Main Calendar View.
-		@param JP_ToDo_Main_Calendar_View ToDo Main Calendar View	  */
-	public void setJP_ToDo_Main_Calendar_View (String JP_ToDo_Main_Calendar_View)
+	/** Include Team member's ToDo = T */
+	public static final String JP_TODO_MAIN_CALENDAR_IncludeTeamMemberSToDo = "T";
+	/** User 's ToDo Only = U */
+	public static final String JP_TODO_MAIN_CALENDAR_UserSToDoOnly = "U";
+	/** Set Main Calendar's ToDo .
+		@param JP_ToDo_Main_Calendar Main Calendar's ToDo 	  */
+	public void setJP_ToDo_Main_Calendar (String JP_ToDo_Main_Calendar)
 	{
 
-		set_Value (COLUMNNAME_JP_ToDo_Main_Calendar_View, JP_ToDo_Main_Calendar_View);
+		set_Value (COLUMNNAME_JP_ToDo_Main_Calendar, JP_ToDo_Main_Calendar);
 	}
 
-	/** Get ToDo Main Calendar View.
-		@return ToDo Main Calendar View	  */
-	public String getJP_ToDo_Main_Calendar_View () 
+	/** Get Main Calendar's ToDo .
+		@return Main Calendar's ToDo 	  */
+	public String getJP_ToDo_Main_Calendar () 
 	{
-		return (String)get_Value(COLUMNNAME_JP_ToDo_Main_Calendar_View);
+		return (String)get_Value(COLUMNNAME_JP_ToDo_Main_Calendar);
 	}
 
 	/** Completed = CO */

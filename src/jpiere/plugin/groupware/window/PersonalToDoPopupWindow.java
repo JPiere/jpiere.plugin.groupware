@@ -82,6 +82,7 @@ import org.zkoss.zul.North;
 import org.zkoss.zul.Popup;
 import org.zkoss.zul.South;
 
+import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
@@ -131,7 +132,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 	}
 
 
-	private  List<MToDo>  list_ToDoes = null;
+	private  List<I_ToDo>  list_ToDoes = null;
 	private int index = 0;
 
 
@@ -209,7 +210,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 
 		}else {
 
-			p_JP_ToDo_ID = list_ToDoes.get(index).getJP_ToDo_ID();
+			p_JP_ToDo_ID = list_ToDoes.get(index).get_ID();
 			p_IsNewRecord = false;
 		}
 
@@ -916,7 +917,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				if(index >= 0 )
 				{
 					p_IsDirty = false;
-					updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+					updateControlParameter(list_ToDoes.get(index).get_ID());
 					updateWindowTitle();
 					updateEditorValue();
 					updateEditorStatus();
@@ -937,7 +938,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 				if(index < list_ToDoes.size())
 				{
 					p_IsDirty = false;
-					updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+					updateControlParameter(list_ToDoes.get(index).get_ID());
 					updateWindowTitle();
 					updateEditorValue();
 					updateEditorStatus();
@@ -1266,7 +1267,7 @@ public class PersonalToDoPopupWindow extends Window implements EventListener<Eve
 		if(index >= 0 && list_ToDoes.size() > 0)
 		{
 			p_IsDirty = false;
-			updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+			updateControlParameter(list_ToDoes.get(index).get_ID());
 			updateWindowTitle();
 			updateEditorValue();
 			updateEditorStatus();
