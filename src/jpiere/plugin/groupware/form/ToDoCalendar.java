@@ -267,12 +267,13 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		calendars.invalidate();
 
-		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_CREATE, this);
-		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_EDIT, this);
-		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_UPDATE,this);
-//		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER, this);
-		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_DAY,this);
-//		calendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
+		calendars.addEventListener(CalendarsEvent.ON_EVENT_CREATE, this);
+		calendars.addEventListener(CalendarsEvent.ON_EVENT_EDIT, this);
+		calendars.addEventListener(CalendarsEvent.ON_EVENT_UPDATE,this);
+		calendars.addEventListener("onMouseOver", this);
+		calendars.addEventListener(CalendarsEvent.ON_DAY_CLICK,this);
+		//calendars.addEventListener(CalendarsEvent.ON_WEEK_CLICK, this);
+		calendars.addEventListener(CalendarsEvent.ON_EVENT_TOOLTIP, this);
 
 
 		if(m_GroupwareUser == null)
@@ -1587,7 +1588,29 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			}
 
-		}else if (GroupwareToDoUtil.CALENDAR_EVENT_CREATE.equals(eventName)) {
+		}else if (CalendarsEvent.ON_EVENT_TOOLTIP.equals(eventName)) {
+
+
+			String uuid = null;
+			if(comp instanceof Calendars)
+			{
+				Calendars cal = (Calendars)comp;
+				if (event instanceof CalendarsEvent)
+				{
+					CalendarsEvent cse = (CalendarsEvent)event;
+					CalendarEvent ce = cse.getCalendarEvent();
+
+					uuid = cal.getCalendarEventId(ce);
+
+					Component ee = cal.getFirstChild().getFellow(uuid);
+
+					 //Notification.show();//TODO
+					//throw new WrongValueException(ee, "aaaaaaaaaaa");
+				}
+
+			}
+
+		}else if (CalendarsEvent.ON_EVENT_CREATE.equals(eventName)) {
 
 			if (event instanceof CalendarsEvent)
 			{
@@ -1609,7 +1632,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 			}
 
-		}else if (GroupwareToDoUtil.CALENDAR_EVENT_EDIT.equals(eventName)) {
+		}else if (CalendarsEvent.ON_EVENT_EDIT.equals(eventName)) {
 
 			if (event instanceof CalendarsEvent)
 			{
@@ -1640,9 +1663,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				}
 			}
 
-		}else if (GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER.equals(eventName)){
+		//}else if ("onMouseOver".equals(eventName)){
 
-		}else if (GroupwareToDoUtil.CALENDAR_EVENT_DAY.equals(eventName)){
+			;//Not Use
+
+		}else if (CalendarsEvent.ON_DAY_CLICK.equals(eventName)){
 
 			Calendars cal = (Calendars)comp;
 			Date date =  (Date)event.getData();
@@ -1653,7 +1678,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			updateDateLabel();
 			getToDoCalendarEvent(false ,false);
 
-		}else if (GroupwareToDoUtil.CALENDAR_EVENT_WEEK.equals(eventName)){
+		}else if (CalendarsEvent.ON_WEEK_CLICK.equals(eventName)){
 
 			//I don't know this Event
 
@@ -1702,7 +1727,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			}//if(comp instanceof Tab)
 
-		}else if(eventName.equals("onEventUpdate")){
+		}else if(CalendarsEvent.ON_EVENT_UPDATE.equals(eventName)){
 
 			if(event instanceof CalendarsEvent)	//Drag & Drop
 			{
@@ -1810,12 +1835,13 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	{
 		Calendars syncToCalendars = new Calendars();
 
-		syncToCalendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_CREATE, this);
-		syncToCalendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_EDIT, this);
-		syncToCalendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_UPDATE,this);
-//		to.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_MOUSE_OVER, this);
-		syncToCalendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_DAY,this);
-//		to.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
+		syncToCalendars.addEventListener(CalendarsEvent.ON_EVENT_CREATE, this);
+		syncToCalendars.addEventListener(CalendarsEvent.ON_EVENT_EDIT, this);
+		syncToCalendars.addEventListener(CalendarsEvent.ON_EVENT_UPDATE,this);
+		//syncToCalendars.addEventListener("onMouseOver", this);
+		syncToCalendars.addEventListener(CalendarsEvent.ON_DAY_CLICK,this);
+		//syncToCalendars.addEventListener(GroupwareToDoUtil.CALENDAR_EVENT_WEEK, this);
+		syncToCalendars.addEventListener(CalendarsEvent.ON_EVENT_TOOLTIP, this);
 
 		return syncCalendars(syncFromCalendars, syncToCalendars);
 

@@ -37,12 +37,6 @@ public class GroupwareToDoUtil {
 	public final static String JP_REPETITION_INTERVAL_EVERYYEARS = "Y";
 
 	//Calendar Event
-	public final static String CALENDAR_EVENT_CREATE = "onEventCreate";
-	public final static String CALENDAR_EVENT_EDIT = "onEventEdit";
-	public final static String CALENDAR_EVENT_UPDATE = "onEventUpdate";
-
-	public final static String CALENDAR_EVENT_MOUSE_OVER = "onMouseOver";
-
 	public final static String CALENDAR_EVENT_DAY = "onDayClick";
 	public final static String CALENDAR_EVENT_WEEK = "onWeekClick";
 	public final static String CALENDAR_EVENT_MONTH = "onMonthkClick";
