@@ -142,7 +142,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 
-	private String p_JP_FristDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
+	private String p_JP_FirstDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 	private String p_JP_ToDo_Main_Calendar = MGroupwareUser.JP_TODO_MAIN_CALENDAR_IncludeTeamMemberSToDo;
 	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
@@ -292,7 +292,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
 					int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
 					MRefList refList =MRefList.get(ctx, AD_Reference_Value_ID, fdow,null);
-					p_JP_FristDayOfWeek = refList.getValue();
+					p_JP_FirstDayOfWeek = refList.getValue();
 					calendars.setFirstDayOfWeek(refList.getName());
 				}
 
@@ -654,7 +654,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		//First day ot week
 		MLookup lookup_FirstDayOfWeek = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek),  DisplayType.List);
 		editor_JP_FirstDayOfWeek = new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek, false, false, true, lookup_FirstDayOfWeek);
-		editor_JP_FirstDayOfWeek.setValue(p_JP_FristDayOfWeek);
+		editor_JP_FirstDayOfWeek.setValue(p_JP_FirstDayOfWeek);
 		editor_JP_FirstDayOfWeek.addValueChangeListener(this);
 		label_JP_FirstDayOfWeek = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek));
 
@@ -819,7 +819,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
      *
      * @return Div
      */
-    private Div createWestContents()//TODO
+    private Div createWestContents()
     {
     	Div div = new Div();
 		Vlayout vlayout = new Vlayout();
@@ -1172,32 +1172,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			resetSelectedTabCalendarModel();
 
-		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar.equals(name)) {//TODO
-
-			if(value == null)
-			{
-				WTableDirEditor comp = (WTableDirEditor)evt.getSource();
-				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar);//
-				throw new WrongValueException(comp.getComponent(), msg);
-			}
-
-			p_JP_ToDo_Calendar = value.toString();
-			editor_JP_ToDo_Calendar.setValue(value);
-			editor_JP_ToDo_Calendar_For_Custom.setValue(value);
-
-			p_SelectedTab_AD_User_ID = p_AD_User_ID;
-			p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
-
-			if(p_JP_Team_ID > 0)
-			{
-			  	mainBorderLayout_Center.getFirstChild().detach();
-				mainBorderLayout_Center.appendChild(createCenterContents());
-			}
-
-			getToDoCalendarEvent(true ,true);
-
-			if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
-				button_Customize_Save.setDisabled(false);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
@@ -1218,7 +1192,13 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek.equals(name)){
 
-			p_JP_FristDayOfWeek = value.toString();
+			if(value == null)
+			{
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
+				throw new WrongValueException(editor_JP_FirstDayOfWeek.getComponent(), msg);
+			}
+
+			p_JP_FirstDayOfWeek = value.toString();
 
 			int AD_Column_ID = MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
 			int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
@@ -1343,7 +1323,35 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			if(button_Customize_Save.isVisible())
 				button_Customize_Save.setDisabled(false);
 
+
+		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar.equals(name)) {
+
+			if(value == null)
+			{
+				WTableDirEditor comp = (WTableDirEditor)evt.getSource();
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar);//
+				throw new WrongValueException(comp.getComponent(), msg);
+			}
+
+			p_JP_ToDo_Calendar = value.toString();
+			editor_JP_ToDo_Calendar.setValue(value);
+			editor_JP_ToDo_Calendar_For_Custom.setValue(value);
+
+			p_SelectedTab_AD_User_ID = p_AD_User_ID;
+			p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
+
+			if(p_JP_Team_ID > 0)
+			{
+			  	mainBorderLayout_Center.getFirstChild().detach();
+				mainBorderLayout_Center.appendChild(createCenterContents());
+			}
+
+			getToDoCalendarEvent(true ,true);
+
+			if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
+				button_Customize_Save.setDisabled(false);
 		}
+
 	}
 
 
@@ -1455,7 +1463,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					{
 						if(editor_JP_FirstDayOfWeek.isVisible())
 						{
-							m_GroupwareUser.setJP_FirstDayOfWeek(p_JP_FristDayOfWeek);
+							editor_JP_FirstDayOfWeek.getValue();//Null Check
+							m_GroupwareUser.setJP_FirstDayOfWeek(p_JP_FirstDayOfWeek);
 						}
 
 						if(editor_IsDisplaySchedule_For_Custom.isVisible())
@@ -1480,16 +1489,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 						if(editor_JP_ToDo_Main_Calendar.isVisible())
 						{
-							Object JP_ToDo_Main_Calendar = editor_JP_ToDo_Main_Calendar.getValue();
-							if(JP_ToDo_Main_Calendar != null)
-								m_GroupwareUser.setJP_ToDo_Main_Calendar(JP_ToDo_Main_Calendar.toString());
+							editor_JP_ToDo_Main_Calendar.getValue();//Null Check
+							m_GroupwareUser.setJP_ToDo_Main_Calendar(p_JP_ToDo_Main_Calendar);
 						}
 
 						if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
 						{
-							Object JP_ToDo_Calendar = editor_JP_ToDo_Calendar_For_Custom.getValue();
-							if(JP_ToDo_Calendar != null)
-								m_GroupwareUser.setJP_ToDo_Calendar(JP_ToDo_Calendar.toString());
+							editor_JP_ToDo_Calendar_For_Custom.getValue();//Null Check
+							m_GroupwareUser.setJP_ToDo_Calendar(p_JP_ToDo_Calendar);
 						}
 
 						try
