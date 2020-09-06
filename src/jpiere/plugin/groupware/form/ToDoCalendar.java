@@ -1599,13 +1599,20 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				{
 					CalendarsEvent cse = (CalendarsEvent)event;
 					CalendarEvent ce = cse.getCalendarEvent();
+					ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)ce;
+					String name =todoEvent.getToDo().getName();
 
-					uuid = cal.getCalendarEventId(ce);
 
-					Component ee = cal.getFirstChild().getFellow(uuid);
+					Popup pop = new Popup();
+					pop.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");//TODO
 
-					 //Notification.show();//TODO
-					//throw new WrongValueException(ee, "aaaaaaaaaaa");
+					Vlayout aa = new Vlayout();
+					pop.appendChild(aa);
+					aa.appendChild(new Label(name));
+
+					pop.setPage(cal.getPage());
+					pop.open(cse.getX(),cse.getY());
+
 				}
 
 			}
