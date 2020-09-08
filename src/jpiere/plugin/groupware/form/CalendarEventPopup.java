@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.adempiere.webui.AdempiereWebUI;
+import org.adempiere.webui.apps.AEnv;
+import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Grid;
 import org.adempiere.webui.component.GridFactory;
 import org.adempiere.webui.component.Label;
@@ -17,23 +18,31 @@ import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
+import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MTable;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlBasedComponent;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Div;
+import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Popup;
 import org.zkoss.zul.Vlayout;
 
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoTeam;
+import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
-public class CalendarEventPopup extends Popup {
+public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 	private Properties ctx = Env.getCtx();
 
@@ -44,9 +53,12 @@ public class CalendarEventPopup extends Popup {
 	private Map<String, Label> map_Label = new HashMap<String, Label>();
 	private Map<String, WEditor> map_Editor = new HashMap<String, WEditor>();
 
+	//Buttons
+	private Button zoomPersonalToDoBtn = null;
+	private Button zoomTeamToDoBtn = null;
+
 	public CalendarEventPopup()
 	{
-		this.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 		createLabelMap();
 		createEditorMap();
 		createPopup();
@@ -55,7 +67,6 @@ public class CalendarEventPopup extends Popup {
 	public CalendarEventPopup(boolean visible)
 	{
 		super(visible);
-		this.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 		createLabelMap();
 		createEditorMap();
 		createPopup();
@@ -211,51 +222,72 @@ public class CalendarEventPopup extends Popup {
 
 	private void createPopup()
 	{
-		this.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
+		//this.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 
-		Vlayout centerContent = new Vlayout();
-		//Div centerContent = new Div();
-		this.appendChild(centerContent);
+		Vlayout popupContent = new Vlayout();
+		this.appendChild(popupContent);
 		ZKUpdateUtil.setVflex(this, "min");
 		ZKUpdateUtil.setHflex(this, "min");
+
+		Hlayout hlyaout = new Hlayout();
+		popupContent.appendChild(hlyaout);
+
+		//Personal ToDo Zoom Button
+		zoomPersonalToDoBtn = new Button();
+		zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
+		zoomPersonalToDoBtn.setClass("btn-small");
+		zoomPersonalToDoBtn.setName("ZOOM_PERSONALTODO");
+		zoomPersonalToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));
+		zoomPersonalToDoBtn.addEventListener(Events.ON_CLICK, this);
+		hlyaout.appendChild(zoomPersonalToDoBtn);
+
+		//Team ToDo Zoom Button
+		zoomTeamToDoBtn = new Button();
+		zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
+		zoomTeamToDoBtn.setClass("btn-small");
+		zoomTeamToDoBtn.setName("ZOOM_TEAMTODO");
+		zoomTeamToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));
+		zoomTeamToDoBtn.addEventListener(Events.ON_CLICK, this);
+		hlyaout.appendChild(zoomTeamToDoBtn);
+
 
 
 		Grid grid = GridFactory.newGridLayout();
 		ZKUpdateUtil.setVflex(grid, "min");
 		ZKUpdateUtil.setHflex(grid, "min");
-		centerContent.appendChild(grid);
+		popupContent.appendChild(grid);
 
 		Rows rows = grid.newRows();
 
 		//*** AD_User_ID ***//
 		Row row = rows.newRow();
 		rows.appendChild(row);
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_User_ID), true),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_User_ID), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).getComponent(),4);
 
 
 		//*** JP_ToDo_Type ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Type), true),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Type), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).getComponent(),4);
 
 
 		//*** JP_ToDo_Category_ID ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID), false),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID), false),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).getComponent(),4);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).showMenu();
 
 
 		//*** Name ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Name), true),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Name), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Name).getComponent(),4);
 
 
 		//*** Description ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), false),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), false),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Description).getComponent(),4);
 
 
@@ -263,32 +295,32 @@ public class CalendarEventPopup extends Popup {
 		if(p_IsPersonalToDo)
 		{
 			row = rows.newRow();
-			row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Comments), false),2);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Comments), false),2);
 			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Comments).getComponent(),4);
 		}
 
 		if(!p_IsPersonalToDo)
 		{
 			row = rows.newRow();
-			row.appendCellChild(createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID), false),2);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID), false),2);
 			row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).getComponent(),4);
 		}
 
 		//*** JP_ToDo_ScheduledStartTime ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).getComponent(),4);
 
 
 		//*** JP_ToDo_ScheduledEndTime ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).getComponent(),4);
 
 
 		//*** JP_ToDo_Status ***//
 		row = rows.newRow();
-		row.appendCellChild(createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Status), true),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Status), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).getComponent(),2);
 
 
@@ -404,31 +436,49 @@ public class CalendarEventPopup extends Popup {
 	}
 
 
-
-	private Div createLabelDiv(Label label, boolean isMandatory )
-	{
-		label.setMandatory(isMandatory);
-		Div div = new Div();
-		div.setSclass("form-label");
-		div.appendChild(label);
-		if(isMandatory)
-			div.appendChild(label.getDecorator());
-
-		return div;
-	}
-
-
-
+	I_ToDo p_I_ToDo_ID = null;
 
 	public void setToDoCalendarEvent(ToDoCalendarEvent event)
 	{
 		this.setStyle("border: 2px solid " + event.getHeaderColor() + ";");
 
-		I_ToDo todo = event.getToDo();
+		p_I_ToDo_ID = event.getToDo();
 
-		map_Editor.get("AD_User_ID").setValue(todo.getAD_User_ID());
-		map_Editor.get("Name").setValue(todo.getName());
-		map_Editor.get("Description").setValue(todo.getDescription());
+		map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_I_ToDo_ID.getAD_User_ID());
+		map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_I_ToDo_ID.getName());
+		map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_I_ToDo_ID.getDescription());
+
+	}
+
+	@Override
+	public void onEvent(Event event) throws Exception
+	{
+		Component comp = event.getTarget();
+
+		if(comp instanceof Button)
+		{
+
+			Button btn = (Button) comp;
+			String btnName = btn.getName();
+
+			if("ZOOM_PERSONALTODO".equals(btnName))
+			{
+
+				AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_I_ToDo_ID.get_ID());
+				this.detach();
+
+			}else if("ZOOM_TEAMTODO".equals(btnName)){
+
+				if(p_IsPersonalToDo)
+					AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), p_I_ToDo_ID.getParent_Team_ToDo_ID());
+				else
+					AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), p_I_ToDo_ID.get_ID());
+				this.detach();
+
+			}
+
+		}
+
 
 	}
 

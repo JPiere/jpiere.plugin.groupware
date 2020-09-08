@@ -115,6 +115,18 @@ public class GroupwareToDoUtil {
 		return div;
 	}
 
+	static public Div createLabelDiv(Label label, boolean isMandatory )
+	{
+		label.setMandatory(isMandatory);
+		Div div = new Div();
+		div.setSclass("form-label");
+		div.appendChild(label);
+		if(isMandatory)
+			div.appendChild(label.getDecorator());
+
+		return div;
+	}
+
 	static public Div createEditorDiv(WEditor editor, boolean isPositionAdjust )
 	{
 		Div div = new Div();
