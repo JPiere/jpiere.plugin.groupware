@@ -46,8 +46,6 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 	private Properties ctx = Env.getCtx();
 
-	private boolean p_IsPersonalToDo = false;
-
 	/*** Web Components ***/
 	// WEditors & Labels
 	private Map<String, Label> map_Label = new HashMap<String, Label>();
@@ -56,6 +54,10 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 	//Buttons
 	private Button zoomPersonalToDoBtn = null;
 	private Button zoomTeamToDoBtn = null;
+
+
+	private final static String ZOOM_PERSONALTODO = "ZOOM_P";
+	private final static String ZOOM_TEAMTODO = "ZOOM_T";
 
 	public CalendarEventPopup()
 	{
@@ -85,18 +87,15 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Status, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status)) );
 		map_Label.put(MToDo.COLUMNNAME_IsOpenToDoJP, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP)) );
 
-		if(p_IsPersonalToDo)
-		{
-			map_Label.put(MToDo.COLUMNNAME_Comments, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Comments)) );
-			map_Label.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo)));
-			map_Label.put(MToDo.COLUMNNAME_JP_Statistics_Choice, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice)));
-			map_Label.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime)));
-			map_Label.put(MToDo.COLUMNNAME_JP_Statistics_Number, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number)));
+		map_Label.put(MToDo.COLUMNNAME_Comments, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Comments)) );
+		map_Label.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo)));
+		map_Label.put(MToDo.COLUMNNAME_JP_Statistics_Choice, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice)));
+		map_Label.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime)));
+		map_Label.put(MToDo.COLUMNNAME_JP_Statistics_Number, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number)));
 
-		}else {
-			map_Label.put(MToDoTeam.COLUMNNAME_JP_Team_ID, new Label(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID)) );
-			map_Label.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, new Label(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info)) );
-		}
+		map_Label.put(MToDoTeam.COLUMNNAME_JP_Team_ID, new Label(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID)) );
+		map_Label.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, new Label(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info)) );
+
 	}
 
 	private void createEditorMap()
@@ -117,48 +116,39 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 
 		//*** JP_ToDo_Category_ID ***//
-		String validationCode = null;
 		MLookup lookup_JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
-		lookup_JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
 		WSearchEditor editor_JP_ToDo_Category_ID = new WSearchEditor(lookup_JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, false, true, true);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Category_ID.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, editor_JP_ToDo_Category_ID);
 
 
 		//*** JP_Team_ID ***//
-		if(!p_IsPersonalToDo)
-		{
-			validationCode = "JP_Team.AD_User_ID IS NULL OR JP_Team.AD_User_ID=" + Env.getAD_User_ID(ctx);//Login user
-			MLookup lookup_JP_Team_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MToDoTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
-			lookup_JP_Team_ID.getLookupInfo().ValidationCode = validationCode;
-			WSearchEditor editor_JP_Team_ID = new WSearchEditor(lookup_JP_Team_ID, Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID), null, false, true, true);
-			ZKUpdateUtil.setHflex(editor_JP_Team_ID.getComponent(), "true");
-			map_Editor.put(MToDoTeam.COLUMNNAME_JP_Team_ID, editor_JP_Team_ID);
-		}
+		MLookup lookup_JP_Team_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MToDoTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
+		WSearchEditor editor_JP_Team_ID = new WSearchEditor(lookup_JP_Team_ID, Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID), null, false, true, true);
+		ZKUpdateUtil.setHflex(editor_JP_Team_ID.getComponent(), "true");
+		map_Editor.put(MToDoTeam.COLUMNNAME_JP_Team_ID, editor_JP_Team_ID);
 
 
 		//*** Name ***//
 		WStringEditor editor_Name = new WStringEditor(MToDo.COLUMNNAME_Name, true, true, true, 30, 30, "", null);
 		ZKUpdateUtil.setHflex(editor_Name.getComponent(), "true");
-		editor_Name.getComponent().setRows(p_IsPersonalToDo == true ? 2 : 3);
+		editor_Name.getComponent().setRows(2);
 		map_Editor.put(MToDo.COLUMNNAME_Name, editor_Name);
 
 
 		//*** Description ***//
 		WStringEditor editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, true, true, 30, 30, "", null);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
-		editor_Description.getComponent().setRows(p_IsPersonalToDo == true ? 3 : 5);
+		editor_Description.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Description, editor_Description);
 
 
 		//*** Comments ***//
-		if(p_IsPersonalToDo)
-		{
-			WStringEditor editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, true, true, 30, 30, "", null);
-			ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
-			editor_Comments.getComponent().setRows(3);
-			map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
-		}
+		WStringEditor editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, true, true, 30, 30, "", null);
+		ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
+		editor_Comments.getComponent().setRows(3);
+		map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
+
 
 		//*** JP_ToDo_ScheduledStartTime ***//
 		WDatetimeEditor editor_JP_ToDo_ScheduledStartTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, true, true, null);
@@ -178,45 +168,44 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Status, editor_JP_ToDo_Status);
 
+
 		//*** IsOpenToDoJP ***//
 		WYesNoEditor editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_IsOpenToDoJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, true, true);
 		map_Editor.put(MToDo.COLUMNNAME_IsOpenToDoJP, editor_IsOpenToDoJP);
 
 
-		//*** Statistics Info ***/
-		if(p_IsPersonalToDo)
-		{
-			//*** JP_Statistics_YesNo  ***//
-			MLookup lookup_JP_Statistics_YesNo = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_YesNo),  DisplayType.List);
-			WTableDirEditor editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo), null, false, true, true);
-			ZKUpdateUtil.setHflex(editor_JP_Statistics_YesNo.getComponent(), "true");
-			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, editor_JP_Statistics_YesNo);
+		//Statistics Info
 
-			//*** JP_Statistics_Choice ***//
-			MLookup lookup_JP_Statistics_Choice = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_Choice),  DisplayType.List);
-			WTableDirEditor editor_JP_Statistics_Choice = new WTableDirEditor(lookup_JP_Statistics_Choice, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice), null, false, true, true);
-			ZKUpdateUtil.setHflex(editor_JP_Statistics_Choice.getComponent(), "true");
-			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Choice, editor_JP_Statistics_Choice);
+		//*** JP_Statistics_YesNo  ***//
+		MLookup lookup_JP_Statistics_YesNo = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_YesNo),  DisplayType.List);
+		WTableDirEditor editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo), null, false, true, true);
+		ZKUpdateUtil.setHflex(editor_JP_Statistics_YesNo.getComponent(), "true");
+		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, editor_JP_Statistics_YesNo);
 
-			//*** JP_Statistics_DateAndTime ***//
-			WDatetimeEditor editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime), null, false, true, true);
-			ZKUpdateUtil.setHflex((HtmlBasedComponent)editor_JP_Statistics_DateAndTime.getComponent(), "true");
-			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, editor_JP_Statistics_DateAndTime);
+		//*** JP_Statistics_Choice ***//
+		MLookup lookup_JP_Statistics_Choice = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_Choice),  DisplayType.List);
+		WTableDirEditor editor_JP_Statistics_Choice = new WTableDirEditor(lookup_JP_Statistics_Choice, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice), null, false, true, true);
+		ZKUpdateUtil.setHflex(editor_JP_Statistics_Choice.getComponent(), "true");
+		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Choice, editor_JP_Statistics_Choice);
 
-			//*** JP_Statistics_Number ***//
-			WNumberEditor editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, true, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
-			ZKUpdateUtil.setHflex(editor_JP_Statistics_Number.getComponent(), "true");
-			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
+		//*** JP_Statistics_DateAndTime ***//
+		WDatetimeEditor editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime), null, false, true, true);
+		ZKUpdateUtil.setHflex((HtmlBasedComponent)editor_JP_Statistics_DateAndTime.getComponent(), "true");
+		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, editor_JP_Statistics_DateAndTime);
 
-		}else {
+		//*** JP_Statistics_Number ***//
+		WNumberEditor editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, true, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
+		ZKUpdateUtil.setHflex(editor_JP_Statistics_Number.getComponent(), "true");
+		map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
 
-			//*** JP_Mandatory_Statistics_Info ***//
-			MLookup lookup_JP_Mandatory_Statistics_Info = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name,  MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info),  DisplayType.List);
-			WTableDirEditor editor_JP_Mandatory_Statistics_Info= new WTableDirEditor(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, true, true, true, lookup_JP_Mandatory_Statistics_Info);
-			ZKUpdateUtil.setHflex(editor_JP_Mandatory_Statistics_Info.getComponent(), "true");
-			map_Editor.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, editor_JP_Mandatory_Statistics_Info);
 
-		}
+		//*** JP_Mandatory_Statistics_Info ***//
+		MLookup lookup_JP_Mandatory_Statistics_Info = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name,  MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info),  DisplayType.List);
+		WTableDirEditor editor_JP_Mandatory_Statistics_Info= new WTableDirEditor(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, true, true, true, lookup_JP_Mandatory_Statistics_Info);
+		ZKUpdateUtil.setHflex(editor_JP_Mandatory_Statistics_Info.getComponent(), "true");
+		map_Editor.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, editor_JP_Mandatory_Statistics_Info);
+
+
 	}
 
 
@@ -236,7 +225,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		zoomPersonalToDoBtn = new Button();
 		zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
 		zoomPersonalToDoBtn.setClass("btn-small");
-		zoomPersonalToDoBtn.setName("ZOOM_PERSONALTODO");
+		zoomPersonalToDoBtn.setName(ZOOM_PERSONALTODO);
 		zoomPersonalToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));
 		zoomPersonalToDoBtn.addEventListener(Events.ON_CLICK, this);
 		hlyaout.appendChild(zoomPersonalToDoBtn);
@@ -245,11 +234,10 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		zoomTeamToDoBtn = new Button();
 		zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
 		zoomTeamToDoBtn.setClass("btn-small");
-		zoomTeamToDoBtn.setName("ZOOM_TEAMTODO");
+		zoomTeamToDoBtn.setName(ZOOM_TEAMTODO);
 		zoomTeamToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));
 		zoomTeamToDoBtn.addEventListener(Events.ON_CLICK, this);
 		hlyaout.appendChild(zoomTeamToDoBtn);
-
 
 
 		Grid grid = GridFactory.newGridLayout();
@@ -292,19 +280,15 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 
 		//*** Comments ***//
-		if(p_IsPersonalToDo)
-		{
-			row = rows.newRow();
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Comments), false),2);
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Comments).getComponent(),4);
-		}
+		row = rows.newRow();
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Comments), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Comments).getComponent(),4);
 
-		if(!p_IsPersonalToDo)
-		{
-			row = rows.newRow();
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID), false),2);
-			row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).getComponent(),4);
-		}
+
+		row = rows.newRow();
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID), false),2);
+		row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).getComponent(),4);
+
 
 		//*** JP_ToDo_ScheduledStartTime ***//
 		row = rows.newRow();
@@ -436,17 +420,25 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 	}
 
 
-	I_ToDo p_I_ToDo_ID = null;
+	private I_ToDo p_I_ToDo_ID = null;
+	private boolean p_IsPersonalToDo = false;
 
 	public void setToDoCalendarEvent(ToDoCalendarEvent event)
 	{
-		this.setStyle("border: 2px solid " + event.getHeaderColor() + ";");
+		this.setStyle("border: 2px solid " + (event.getHeaderColor() == null ? GroupwareToDoUtil.DEFAULT_COLOR1 : event.getHeaderColor()) + ";");
 
 		p_I_ToDo_ID = event.getToDo();
 
 		map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_I_ToDo_ID.getAD_User_ID());
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_I_ToDo_ID.getJP_ToDo_Type());
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_I_ToDo_ID.getJP_ToDo_Category_ID());
 		map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_I_ToDo_ID.getName());
 		map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_I_ToDo_ID.getDescription());
+		map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(p_I_ToDo_ID.getJP_Team_ID());
+		map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_I_ToDo_ID.getJP_ToDo_ScheduledStartTime());
+		map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_I_ToDo_ID.getJP_ToDo_ScheduledEndTime());
+		map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_Status).setValue(p_I_ToDo_ID.getJP_ToDo_Status());
+		map_Editor.get(MToDoTeam.COLUMNNAME_IsOpenToDoJP).setValue(p_I_ToDo_ID.isOpenToDoJP());
 
 	}
 
@@ -461,13 +453,13 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 			Button btn = (Button) comp;
 			String btnName = btn.getName();
 
-			if("ZOOM_PERSONALTODO".equals(btnName))
+			if(ZOOM_PERSONALTODO.equals(btnName))
 			{
 
 				AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_I_ToDo_ID.get_ID());
 				this.detach();
 
-			}else if("ZOOM_TEAMTODO".equals(btnName)){
+			}else if(ZOOM_TEAMTODO.equals(btnName)){
 
 				if(p_IsPersonalToDo)
 					AEnv.zoom(MTable.getTable_ID(MToDoTeam.Table_Name), p_I_ToDo_ID.getParent_Team_ToDo_ID());

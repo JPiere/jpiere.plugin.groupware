@@ -47,6 +47,9 @@ public class GroupwareToDoUtil {
 	public final static String CALENDAR_SEVENDAYS_VIEW = "SEVEN";
 	public final static String CALENDAR_MONTH_VIEW = "MONTH";
 
+	public final static String DEFAULT_COLOR1 = "#7EAAC6";
+	public final static String DEFAULT_COLOR2 = "#ACD5EE";
+
 
 	//CSS
 	public static final String STYLE_ZOOMABLE_LABEL = "cursor: pointer; text-decoration: underline;";
