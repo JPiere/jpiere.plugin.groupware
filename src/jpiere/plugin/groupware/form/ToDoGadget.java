@@ -100,6 +100,9 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	private Div contentsArea = new Div();
 	private Div footerArea = new Div();
 
+	//Popup
+	private CalendarEventPopup popup_CalendarEvent = new CalendarEventPopup();
+
 	private final static String BUTTON_NAME_PREVIOUS_DAY = "PREVIOUSDAY";
 	private final static String BUTTON_NAME_NEXT_DAY = "NEXTDAY";
 	private final static String BUTTON_NAME_NEW_TODO = "NEW";
@@ -403,7 +406,8 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			btn.setSclass("link");
 			createTitle(toDo, btn);
 			btn.addEventListener(Events.ON_CLICK, this);
-			btn.setId(String.valueOf(toDo.get_ID()));
+			btn.addEventListener(Events.ON_MOUSE_OVER, this);
+			//btn.setId(String.valueOf(toDo.get_ID()));
 			btn.setAttribute("index", counter);
 			counter++;
 			row.appendChild(btn);
@@ -566,7 +570,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	{
 		Component comp = event.getTarget();
 		String eventName = event.getName();
-		if(eventName.equals(Events.ON_CLICK))
+		if(Events.ON_CLICK.equals(eventName))
 		{
 			if(comp instanceof Button)
 			{
@@ -624,6 +628,15 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 				SessionManager.getAppDesktop().showWindow(todoWindow);
 
 			}
+
+		}else if(Events.ON_MOUSE_OVER.equals(eventName)) {
+
+			Object list_index = comp.getAttribute("index");
+			int index = Integer.valueOf(list_index.toString()).intValue();
+
+			popup_CalendarEvent.setToDoCalendarEvent(list_ToDoes.get(index), null);
+			popup_CalendarEvent.setPage(this.getPage());
+			popup_CalendarEvent.open(comp);
 
 		}
 
