@@ -53,10 +53,12 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 	private Map<String, WEditor> map_Editor = new HashMap<String, WEditor>();
 
 	//Buttons
+	private Button detachPopupBtn = null;
 	private Button zoomPersonalToDoBtn = null;
 	private Button zoomTeamToDoBtn = null;
 
 
+	private final static String DETACH_POPUP = "DETACH";
 	private final static String ZOOM_PERSONALTODO = "ZOOM_P";
 	private final static String ZOOM_TEAMTODO = "ZOOM_T";
 
@@ -210,6 +212,14 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 	private void createButton()
 	{
+		//Delete popup
+		detachPopupBtn = new Button();
+		detachPopupBtn.setImage(ThemeManager.getThemeResource("images/X8.png"));
+		detachPopupBtn.setClass("btn-small");
+		detachPopupBtn.setName(DETACH_POPUP);
+		detachPopupBtn.addEventListener(Events.ON_CLICK, this);
+
+
 		//Personal ToDo Zoom Button
 		zoomPersonalToDoBtn = new Button();
 		zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
@@ -232,7 +242,16 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 	private void createPopup(ToDoCalendarEvent event)
 	{
 		if(this.getFirstChild() != null)
+		{
 			this.getFirstChild().detach();
+		}else {
+
+			ZKUpdateUtil.setVflex(this, "min");
+			//ZKUpdateUtil.setHflex(this, "min");
+			ZKUpdateUtil.setWindowWidthX(this, 350);
+			//ZKUpdateUtil.setWindowHeightX(this, 600);
+
+		}
 
 		this.setStyle("border: 2px solid " + (event.getHeaderColor() == null ? GroupwareToDoUtil.DEFAULT_COLOR1 : event.getHeaderColor()) + ";");
 
@@ -247,8 +266,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		ZKUpdateUtil.setHflex(hlyaout, "100%");
 		popupContent.appendChild(hlyaout);
 
-		hlyaout.appendChild(zoomPersonalToDoBtn);
-		hlyaout.appendChild(zoomTeamToDoBtn);
+		hlyaout.appendChild(detachPopupBtn);
 
 		String header = null;
 		if(p_IsPersonalToDo)
@@ -275,9 +293,17 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		}
 
 		Label label_header = new Label(header);
-		label_header.setStyle("color:#ffffff; white-space: nowrap;");
+		label_header.setStyle("color:#ffffff; white-space: nowrap; ");//white-space: nowrap;text-overflow: ellipsis;
 		hlyaout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_header,true));
 
+
+		hlyaout = new Hlayout();
+		popupContent.appendChild(hlyaout);
+
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
+		hlyaout.appendChild(zoomPersonalToDoBtn);
+		hlyaout.appendChild(zoomTeamToDoBtn);
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		Grid grid = GridFactory.newGridLayout();
 		ZKUpdateUtil.setVflex(grid, "min");
@@ -554,7 +580,12 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 			Button btn = (Button) comp;
 			String btnName = btn.getName();
 
-			if(ZOOM_PERSONALTODO.equals(btnName))
+			if(DETACH_POPUP.equals(btnName))
+			{
+
+				this.detach();
+
+			}else if(ZOOM_PERSONALTODO.equals(btnName))
 			{
 
 				AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), p_I_ToDo.get_ID());
