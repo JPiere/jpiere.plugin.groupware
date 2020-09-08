@@ -185,8 +185,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	ToDoGadget teamToDoGadget_Task = null;
 	ToDoGadget teamToDoGadget_Memo = null;
 
-	/** Customize PopupWindow Components **/
-	private Popup popup = null;
+
+	//Popup
+	private CalendarEventPopup popup_CalendarEvent = new CalendarEventPopup();
+	private Popup popup_Customize = null;
 
 	private WTableDirEditor editor_JP_FirstDayOfWeek ;
 	private WNumberEditor   editor_JP_ToDo_Calendar_BeginTime ;
@@ -216,6 +218,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 	/** Interface **/
 	private List<I_ToDo> list_ToDoes = null;
+
+
+
 
 
 	//Statics
@@ -1588,10 +1593,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			}
 
-		}else if (CalendarsEvent.ON_EVENT_TOOLTIP.equals(eventName)) {
+		}else if (CalendarsEvent.ON_EVENT_TOOLTIP.equals(eventName)) {//TODO
 
-
-			String uuid = null;
 			if(comp instanceof Calendars)
 			{
 				Calendars cal = (Calendars)comp;
@@ -1600,18 +1603,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					CalendarsEvent cse = (CalendarsEvent)event;
 					CalendarEvent ce = cse.getCalendarEvent();
 					ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)ce;
-					String name =todoEvent.getToDo().getName();
 
+					popup_CalendarEvent.setToDoCalendarEvent(todoEvent);
 
-					Popup pop = new Popup();
-					pop.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");//TODO
-
-					Vlayout aa = new Vlayout();
-					pop.appendChild(aa);
-					aa.appendChild(new Label(name));
-
-					pop.setPage(cal.getPage());
-					pop.open(cse.getX(),cse.getY());
+					popup_CalendarEvent.setPage(cal.getPage());
+					popup_CalendarEvent.open(cse.getX(),cse.getY());
 
 				}
 
@@ -1902,24 +1898,24 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private void createCustomizePopupWindow()
 	{
 		Grid grid = null;
-		if(popup == null)
+		if(popup_Customize == null)
 		{
-			popup = new Popup();
-			popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
+			popup_Customize = new Popup();
+			popup_Customize.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 			grid = GridFactory.newGridLayout();
 			ZKUpdateUtil.setVflex(grid, "min");
 			ZKUpdateUtil.setHflex(grid, "min");
-			popup.appendChild(grid);
+			popup_Customize.appendChild(grid);
 
 			button_Customize_Save.setDisabled(true);
 
 		}else {
-			grid =(Grid)popup.getFirstChild();
+			grid =(Grid)popup_Customize.getFirstChild();
 			grid.detach();
 			grid = GridFactory.newGridLayout();
 			ZKUpdateUtil.setVflex(grid, "min");
 			ZKUpdateUtil.setHflex(grid, "min");
-			popup.appendChild(grid);
+			popup_Customize.appendChild(grid);
 		}
 
 		Rows rows = grid.newRows();
@@ -1969,8 +1965,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			row.appendCellChild(button_Customize_Save,2);
 		}
 
-		popup.setPage(button_Customize.getPage());
-		popup.open(button_Customize, "after_start");
+		popup_Customize.setPage(button_Customize.getPage());
+		popup_Customize.open(button_Customize, "after_start");
 
 	}
 
