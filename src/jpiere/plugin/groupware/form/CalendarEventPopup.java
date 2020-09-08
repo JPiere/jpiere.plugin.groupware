@@ -28,6 +28,7 @@ import org.compiere.model.MUser;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.HtmlBasedComponent;
 import org.zkoss.zk.ui.event.Event;
@@ -40,6 +41,7 @@ import org.zkoss.zul.Vlayout;
 
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoCategory;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
@@ -253,7 +255,36 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		}
 
-		this.setStyle("border: 2px solid " + (event.getHeaderColor() == null ? GroupwareToDoUtil.DEFAULT_COLOR1 : event.getHeaderColor()) + ";");
+		String popupColor = null;
+		if(event == null)
+		{
+			if(p_I_ToDo.getJP_ToDo_Category_ID() == 0)
+			{
+				popupColor = GroupwareToDoUtil.DEFAULT_COLOR1;
+
+			}else {
+
+				MToDoCategory todoCategory = MToDoCategory.get(ctx, p_I_ToDo.getJP_ToDo_Category_ID());
+				if(Util.isEmpty(todoCategory.getJP_ColorPicker()))
+				{
+					popupColor = GroupwareToDoUtil.DEFAULT_COLOR1;
+				}else {
+					popupColor = todoCategory.getJP_ColorPicker();
+				}
+
+			}
+
+		}else {
+
+			if(event.getHeaderColor() == null)
+			{
+				popupColor = GroupwareToDoUtil.DEFAULT_COLOR1;
+			}else {
+				popupColor = event.getHeaderColor() ;
+			}
+		}
+
+		this.setStyle("border: 2px solid " + popupColor + ";");
 
 		Vlayout popupContent = new Vlayout();
 		this.appendChild(popupContent);
@@ -261,7 +292,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		ZKUpdateUtil.setHflex(popupContent, "min");
 
 		Hlayout hlyaout = new Hlayout();
-		hlyaout.setStyle("padding:2px 2px 2px 2px; background-color:" + (event.getHeaderColor() == null ? GroupwareToDoUtil.DEFAULT_COLOR1 : event.getHeaderColor()) + ";");
+		hlyaout.setStyle("padding:2px 2px 2px 2px; background-color:" + popupColor + ";");
 		ZKUpdateUtil.setVflex(hlyaout, "100%");
 		ZKUpdateUtil.setHflex(hlyaout, "100%");
 		popupContent.appendChild(hlyaout);
@@ -495,9 +526,13 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 	private boolean p_IsPersonalToDo = true;
 	private String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Schedule;
 
-	public void setToDoCalendarEvent(ToDoCalendarEvent event)
+
+	public void setToDoCalendarEvent(I_ToDo i_ToDo, ToDoCalendarEvent event)
 	{
-		p_I_ToDo = event.getToDo();
+		if(i_ToDo == null)
+			return ;
+
+		p_I_ToDo = i_ToDo;
 		if(p_I_ToDo instanceof MToDo)
 		{
 			p_IsPersonalToDo = true;

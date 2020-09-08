@@ -1604,7 +1604,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					CalendarEvent ce = cse.getCalendarEvent();
 					ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)ce;
 
-					popup_CalendarEvent.setToDoCalendarEvent(todoEvent);
+					popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
 
 					popup_CalendarEvent.setPage(cal.getPage());
 					popup_CalendarEvent.open(cse.getX(),cse.getY());
