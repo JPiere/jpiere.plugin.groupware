@@ -243,6 +243,8 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		Hlayout hlyaout = new Hlayout();
 		hlyaout.setStyle("padding:2px 2px 2px 2px; background-color:" + (event.getHeaderColor() == null ? GroupwareToDoUtil.DEFAULT_COLOR1 : event.getHeaderColor()) + ";");
+		ZKUpdateUtil.setVflex(hlyaout, "100%");
+		ZKUpdateUtil.setHflex(hlyaout, "100%");
 		popupContent.appendChild(hlyaout);
 
 		hlyaout.appendChild(zoomPersonalToDoBtn);
@@ -273,7 +275,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		}
 
 		Label label_header = new Label(header);
-		label_header.setStyle("color:#ffffff");
+		label_header.setStyle("color:#ffffff; white-space: nowrap;");
 		hlyaout.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_header,true));
 
 
