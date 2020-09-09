@@ -360,7 +360,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		row = rows.newRow();
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID), false),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).getComponent(),4);
-		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).showMenu();
+		//map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).showMenu();
 
 
 		//*** Name ***//
@@ -560,7 +560,10 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_I_ToDo.getAD_User_ID());
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_I_ToDo.getJP_ToDo_Type());
-		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_I_ToDo.getJP_ToDo_Category_ID());
+		if(p_I_ToDo.getJP_ToDo_Category_ID() > 0)
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_I_ToDo.getJP_ToDo_Category_ID());
+		else
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(null);
 		map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_I_ToDo.getName());
 		map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_I_ToDo.getDescription());
 
@@ -582,7 +585,11 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 			map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setVisible(true);
 			map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setVisible(true);
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(p_I_ToDo.getJP_Team_ID());
+			if(p_I_ToDo.getJP_Team_ID() > 0)
+				map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(p_I_ToDo.getJP_Team_ID());
+			else
+				map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(null);
+
 		}
 
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
