@@ -1593,25 +1593,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			}
 
-		}else if (CalendarsEvent.ON_EVENT_TOOLTIP.equals(eventName)) {//TODO
+		}else if (CalendarsEvent.ON_EVENT_TOOLTIP.equals(eventName)) {
 
-			if(comp instanceof Calendars)
+
+			if (event instanceof CalendarsEvent)
 			{
-				Calendars cal = (Calendars)comp;
-				if (event instanceof CalendarsEvent)
-				{
-					CalendarsEvent cse = (CalendarsEvent)event;
-					CalendarEvent ce = cse.getCalendarEvent();
-					ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)ce;
-
-					popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
-
-					popup_CalendarEvent.setPage(cse.getPage());
-					popup_CalendarEvent.open(cse.getX()+10, cse.getY()+10);
-
-				}
-
+				CalendarsEvent cse = (CalendarsEvent)event;
+				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)cse.getCalendarEvent();
+				popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
+				popup_CalendarEvent.setPage(cse.getPage());
+				popup_CalendarEvent.open(cse.getX()+10, cse.getY()+10);
 			}
+
 
 		}else if (CalendarsEvent.ON_EVENT_CREATE.equals(eventName)) {
 
