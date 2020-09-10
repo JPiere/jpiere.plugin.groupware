@@ -636,7 +636,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 			popup_CalendarEvent.setToDoCalendarEvent(list_ToDoes.get(index), null);
 			popup_CalendarEvent.setPage(this.getPage());
-			popup_CalendarEvent.open(comp);
+			popup_CalendarEvent.open(comp,"end_before");
 
 		}
 
