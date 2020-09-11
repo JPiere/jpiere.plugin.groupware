@@ -616,7 +616,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		vlayout.appendChild(groupBox);
 
 
-		Caption caption= new Caption("ユーザーXXXX");
+		Caption caption= new Caption(MUser.get(ctx, p_AD_User_ID).getName());
 		caption.setIconSclass("z-icon-caret-down");
 		groupBox.appendChild(caption);
 
@@ -628,7 +628,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
     	for(int i =0 ; i< 5; i++)
     	{
-			HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(p_LocalDate.plusDays(i));
+    		LocalDate localDate = p_LocalDate.plusDays(i);
+			HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
 			Grid grid = createGrid(map_ToDo);
 			//*********************1
 
@@ -638,7 +639,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			day1.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
 			Div day1_header = new Div();
-			Label label = new Label("2020/09/14");
+			Label label = new Label(localDate.toString());
 			label.setStyle("text-align: center; color:#ffffff ");
 			day1_header.appendChild(label);
 			day1_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
@@ -1508,12 +1509,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		ArrayList<Object> list_parameters  = new ArrayList<Object>();
 		Object[] parameters = null;
 
-
-		if(ts_AcquiredToDoCalendarEventBegin == null)
-			ts_AcquiredToDoCalendarEventBegin = new Timestamp(0);
-
-		if(ts_AcquiredToDoCalendarEventEnd == null)
-			ts_AcquiredToDoCalendarEventEnd = new Timestamp(0);
 
 		LocalDateTime toDayMin = LocalDateTime.of(localDate, LocalTime.MIN);
 		LocalDateTime toDayMax = LocalDateTime.of(localDate, LocalTime.MAX);
