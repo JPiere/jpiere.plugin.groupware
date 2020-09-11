@@ -45,6 +45,14 @@ import jpiere.plugin.groupware.model.MToDoCategory;
 import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
+
+/**
+*
+* JPIERE-0476: ToDo Calendar Event Popup
+*
+* h.hagiwara
+*
+*/
 public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 	private Properties ctx = Env.getCtx();
