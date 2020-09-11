@@ -15,6 +15,7 @@
 package jpiere.plugin.groupware.form;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
@@ -33,6 +35,7 @@ import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.component.Tabbox;
 import org.adempiere.webui.component.Tabpanel;
+import org.adempiere.webui.component.ToolBarButton;
 import org.adempiere.webui.editor.WEditor;
 import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.editor.WSearchEditor;
@@ -112,8 +115,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 	/** ToDo Controler **/
 
-	//HashMap<AD_User_ID, HashMap<JP_ToDo_ID, CalendarEvent>>
-	private HashMap<Integer,HashMap<Integer,ToDoCalendarEvent>> map_AcquiredCalendarEvent_User = new HashMap<Integer,HashMap<Integer,ToDoCalendarEvent>>();
+	//ashMap<AD_User_ID, HashMap<LocalDate, HashMap<Integer, CalendarEvent>>
+	private HashMap<Integer, HashMap<LocalDate,HashMap<Integer,ToDoCalendarEvent>>> map_AcquiredCalendarEvent_User = new HashMap<Integer, HashMap<LocalDate, HashMap<Integer,ToDoCalendarEvent>>>();
 	private HashMap<Integer,HashMap<Integer,ToDoCalendarEvent>> map_AcquiredCalendarEvent_Team = new HashMap<Integer,HashMap<Integer,ToDoCalendarEvent>>();
 
 
@@ -226,6 +229,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	public final static String CSS_DEFAULT_TAB_STYLE ="border-top: 4px solid #ACD5EE;";
 
 
+
+	LocalDateTime p_LocalDateTime =  null;
+
+	LocalDate p_LocalDate =  null;
+
+
 	/**
 	 * Constructor
 	 */
@@ -235,6 +244,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		p_login_User_ID = p_AD_User_ID;
 		p_SelectedTab_AD_User_ID = p_AD_User_ID;
 		p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
+
+		p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
+
+		p_LocalDate = p_LocalDateTime.toLocalDate();
 
 		initZk();
 
@@ -553,6 +566,24 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
      */
     private Div createCenterContents()
     {
+
+    	LocalDate to_LocalDate = null;
+    	for(int i = 0; i < 6; i++)
+    	{
+    		if(i == 0)
+    		{
+    			queryToDoCalendarEvents_User(p_LocalDate);
+    		}else {
+
+    			to_LocalDate = p_LocalDate.plusDays(i);
+
+    			queryToDoCalendarEvents_User(to_LocalDate);
+    		}
+
+    	}
+
+
+
        	Div div = new Div();
     		Vlayout vlayout = new Vlayout();
     		vlayout.setDroppable("false");
@@ -571,145 +602,316 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     		vlayout.setStyle("overflow-y:scroll;");
 
 
-    	for(int i =0; i <10; i++)
+    	HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>>  map_LocalDate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+
+
+
+		//Unfinished Tasks
+		Groupbox groupBox = new Groupbox();
+		groupBox.setOpen(true);
+		groupBox.setDraggable("false");
+		groupBox.setMold("3d");
+		groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+
+		vlayout.appendChild(groupBox);
+
+
+		Caption caption= new Caption("ユーザーXXXX");
+		caption.setIconSclass("z-icon-caret-down");
+		groupBox.appendChild(caption);
+
+		//大枠
+		Hlayout waku = new Hlayout();
+		waku.setDroppable("false");
+		groupBox.appendChild(waku);
+		waku.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+
+    	for(int i =0 ; i< 5; i++)
     	{
-    		//Unfinished Tasks
-    		Groupbox groupBox2 = new Groupbox();
-    		groupBox2.setOpen(true);
-    		groupBox2.setDraggable("false");
-    		groupBox2.setMold("3d");
-    		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+			HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(p_LocalDate.plusDays(i));
+			Grid grid = createGrid(map_ToDo);
+			//*********************1
 
-    		vlayout.appendChild(groupBox2);
+			Vlayout day1 = new Vlayout();
+			waku.appendChild(day1);
+			ZKUpdateUtil.setHflex(day1, "1");
+			day1.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
+			Div day1_header = new Div();
+			Label label = new Label("2020/09/14");
+			label.setStyle("text-align: center; color:#ffffff ");
+			day1_header.appendChild(label);
+			day1_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+			day1.appendChild(day1_header);
 
-    		Caption caption2 = new Caption("ユーザーXXXX");
-    		caption2.setIconSclass("z-icon-caret-down");
-    		groupBox2.appendChild(caption2);
-
-    		//大枠
-    		Hlayout hlayout = new Hlayout();
-    		hlayout.setDroppable("false");
-    		groupBox2.appendChild(hlayout);
-    		hlayout.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-
-
-    		//*********************1
-
-    		Vlayout day1 = new Vlayout();
-    		hlayout.appendChild(day1);
-    		ZKUpdateUtil.setHflex(day1, "1");
-    		day1.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-
-    		Div day1_header = new Div();
-    		Label label = new Label("2020/09/14");
-    		label.setStyle("text-align: center; color:#ffffff ");
-    		day1_header.appendChild(label);
-    		day1_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
-    		day1.appendChild(day1_header);
-
-    		Div day1_Content = new Div();
-    		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
-    		personalToDoGadget_Task.setToDoPopupwindowCaller(this);
-    		personalToDoGadget_Task.addToDoCalenderEventReceiver(this);
-    		day1_Content.appendChild(personalToDoGadget_Task);
-    		day1.appendChild(day1_Content);
-
-
-    		//*********************2
-    		Vlayout day2 = new Vlayout();
-    		hlayout.appendChild(day2);
-    		ZKUpdateUtil.setHflex(day2, "1");
-    		day2.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-
-    		Div day2_header = new Div();
-    		Label label2 = new Label("2020/09/15");
-    		label2.setStyle("text-align: center; color:#ffffff ");
-    		day2_header.appendChild(label2);
-    		day2_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
-    		day2.appendChild(day2_header);
-
-    		Div day2_Content = new Div();
-    		personalToDoGadget_Memo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
-    		personalToDoGadget_Memo.setToDoPopupwindowCaller(this);
-    		personalToDoGadget_Memo.addToDoCalenderEventReceiver(this);
-    		day2_Content.appendChild(personalToDoGadget_Memo);
-    		day2.appendChild(day2_Content);
-
-
-    		//*********************3
-    		Vlayout day3 = new Vlayout();
-    		hlayout.appendChild(day3);
-    		ZKUpdateUtil.setHflex(day3, "1");
-    		day3.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-
-
-    		Div day3_header = new Div();
-    		Label label3 = new Label("2020/09/16");
-    		label3.setStyle("text-align: center; color:#ffffff ");
-    		day3_header.appendChild(label3);
-    		day3_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
-    		day3.appendChild(day3_header);
-
-
-    		Div day3_Content = new Div();
-    		ToDoGadget day3_todo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
-    		day3_todo.setToDoPopupwindowCaller(this);
-    		day3_todo.addToDoCalenderEventReceiver(this);
-    		day3_Content.appendChild(day3_todo);
-    		day3.appendChild(day3_Content);
-
-
-    		//*********************4
-    		Vlayout day4 = new Vlayout();
-    		hlayout.appendChild(day4);
-    		ZKUpdateUtil.setHflex(day4, "1");
-    		day4.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-
-
-    		Div day4_header = new Div();
-    		Label label4 = new Label("2020/09/17");
-    		label4.setStyle("text-align: center; color:#ffffff ");
-    		day4_header.appendChild(label4);
-    		day4_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
-    		day4.appendChild(day4_header);
-
-
-    		Div day4_Content = new Div();
-    		ToDoGadget day4_todo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
-    		day4_todo.setToDoPopupwindowCaller(this);
-    		day4_todo.addToDoCalenderEventReceiver(this);
-    		day4_Content.appendChild(day4_todo);
-    		day4.appendChild(day4_Content);
-
-
-    		//*********************5
-    		Vlayout day5 = new Vlayout();
-    		hlayout.appendChild(day5);
-    		ZKUpdateUtil.setHflex(day5, "1");
-    		day5.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-
-
-    		Div day5_header = new Div();
-    		Label label5 = new Label("2020/09/18");
-    		label5.setStyle("text-align: center; color:#ffffff ");
-    		day5_header.appendChild(label5);
-    		day5_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
-    		day5.appendChild(day5_header);
-
-
-    		Div day5_Content = new Div();
-    		ToDoGadget day5_todo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
-    		day5_todo.setToDoPopupwindowCaller(this);
-    		day5_todo.addToDoCalenderEventReceiver(this);
-    		day5_Content.appendChild(day5_todo);
-    		day5.appendChild(day5_Content);
-
-
+			Div day1_Content = new Div();
+		//		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+		//		personalToDoGadget_Task.setToDoPopupwindowCaller(this);
+		//		personalToDoGadget_Task.addToDoCalenderEventReceiver(this);
+			day1_Content.appendChild(grid);
+			day1.appendChild(day1_Content);
     	}
+
+//    	for(int i =0; i <10; i++)
+//    	{
+//    		//Unfinished Tasks
+//    		Groupbox groupBox2 = new Groupbox();
+//    		groupBox2.setOpen(true);
+//    		groupBox2.setDraggable("false");
+//    		groupBox2.setMold("3d");
+//    		groupBox2.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+//
+//    		vlayout.appendChild(groupBox2);
+//
+//
+//    		Caption caption2 = new Caption("ユーザーXXXX");
+//    		caption2.setIconSclass("z-icon-caret-down");
+//    		groupBox2.appendChild(caption2);
+//
+//    		//大枠
+//    		Hlayout hlayout = new Hlayout();
+//    		hlayout.setDroppable("false");
+//    		groupBox2.appendChild(hlayout);
+//    		hlayout.setStyle("padding:4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+//
+//
+//    		//*********************1
+//
+//    		Vlayout day1 = new Vlayout();
+//    		hlayout.appendChild(day1);
+//    		ZKUpdateUtil.setHflex(day1, "1");
+//    		day1.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+//
+//    		Div day1_header = new Div();
+//    		Label label = new Label("2020/09/14");
+//    		label.setStyle("text-align: center; color:#ffffff ");
+//    		day1_header.appendChild(label);
+//    		day1_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+//    		day1.appendChild(day1_header);
+//
+//    		Div day1_Content = new Div();
+//    		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+//    		personalToDoGadget_Task.setToDoPopupwindowCaller(this);
+//    		personalToDoGadget_Task.addToDoCalenderEventReceiver(this);
+//    		day1_Content.appendChild(personalToDoGadget_Task);
+//    		day1.appendChild(day1_Content);
+//
+//
+//    		//*********************2
+//    		Vlayout day2 = new Vlayout();
+//    		hlayout.appendChild(day2);
+//    		ZKUpdateUtil.setHflex(day2, "1");
+//    		day2.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+//
+//    		Div day2_header = new Div();
+//    		Label label2 = new Label("2020/09/15");
+//    		label2.setStyle("text-align: center; color:#ffffff ");
+//    		day2_header.appendChild(label2);
+//    		day2_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+//    		day2.appendChild(day2_header);
+//
+//    		Div day2_Content = new Div();
+//    		personalToDoGadget_Memo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+//    		personalToDoGadget_Memo.setToDoPopupwindowCaller(this);
+//    		personalToDoGadget_Memo.addToDoCalenderEventReceiver(this);
+//    		day2_Content.appendChild(personalToDoGadget_Memo);
+//    		day2.appendChild(day2_Content);
+//
+//
+//    		//*********************3
+//    		Vlayout day3 = new Vlayout();
+//    		hlayout.appendChild(day3);
+//    		ZKUpdateUtil.setHflex(day3, "1");
+//    		day3.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+//
+//
+//    		Div day3_header = new Div();
+//    		Label label3 = new Label("2020/09/16");
+//    		label3.setStyle("text-align: center; color:#ffffff ");
+//    		day3_header.appendChild(label3);
+//    		day3_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+//    		day3.appendChild(day3_header);
+//
+//
+//    		Div day3_Content = new Div();
+//    		ToDoGadget day3_todo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+//    		day3_todo.setToDoPopupwindowCaller(this);
+//    		day3_todo.addToDoCalenderEventReceiver(this);
+//    		day3_Content.appendChild(day3_todo);
+//    		day3.appendChild(day3_Content);
+//
+//
+//    		//*********************4
+//    		Vlayout day4 = new Vlayout();
+//    		hlayout.appendChild(day4);
+//    		ZKUpdateUtil.setHflex(day4, "1");
+//    		day4.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+//
+//
+//    		Div day4_header = new Div();
+//    		Label label4 = new Label("2020/09/17");
+//    		label4.setStyle("text-align: center; color:#ffffff ");
+//    		day4_header.appendChild(label4);
+//    		day4_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+//    		day4.appendChild(day4_header);
+//
+//
+//    		Div day4_Content = new Div();
+//    		ToDoGadget day4_todo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+//    		day4_todo.setToDoPopupwindowCaller(this);
+//    		day4_todo.addToDoCalenderEventReceiver(this);
+//    		day4_Content.appendChild(day4_todo);
+//    		day4.appendChild(day4_Content);
+//
+//
+//    		//*********************5
+//    		Vlayout day5 = new Vlayout();
+//    		hlayout.appendChild(day5);
+//    		ZKUpdateUtil.setHflex(day5, "1");
+//    		day5.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+//
+//
+//    		Div day5_header = new Div();
+//    		Label label5 = new Label("2020/09/18");
+//    		label5.setStyle("text-align: center; color:#ffffff ");
+//    		day5_header.appendChild(label5);
+//    		day5_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+//    		day5.appendChild(day5_header);
+//
+//
+//    		Div day5_Content = new Div();
+//    		ToDoGadget day5_todo= new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
+//    		day5_todo.setToDoPopupwindowCaller(this);
+//    		day5_todo.addToDoCalenderEventReceiver(this);
+//    		day5_Content.appendChild(day5_todo);
+//    		day5.appendChild(day5_Content);
+//
+//
+//    	}
         	return div;
 
     }
+
+    private Grid createGrid(HashMap<Integer, ToDoCalendarEvent>  map_ToDo )
+    {
+		Grid grid = GridFactory.newGridLayout();
+		grid.setMold("paging");
+		grid.setPageSize(10);
+		grid.setPagingPosition("top");
+
+		Rows gridRows = grid.newRows();
+		int counter = 0;
+
+
+		Set<Integer> keySet = map_ToDo.keySet();
+		ToDoCalendarEvent toDoCalEvent = null;
+		for (Integer JP_ToDo_ID : keySet)
+		{
+			toDoCalEvent = map_ToDo.get(JP_ToDo_ID);
+
+//			if(isSkip(toDoCalEvent))
+//				continue;
+
+			Row row = gridRows.newRow();
+			ToolBarButton btn = new ToolBarButton(toDoCalEvent.getToDo().getName());
+			btn.setSclass("link");
+			createTitle(toDoCalEvent.getToDo(), btn);
+			btn.addEventListener(Events.ON_CLICK, this);
+			btn.addEventListener(Events.ON_MOUSE_OVER, this);
+			//btn.setId(String.valueOf(toDo.get_ID()));
+			btn.setAttribute("index", counter);
+			counter++;
+			row.appendChild(btn);
+		}
+
+    	return grid;
+    }
+
+    String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Schedule;
+
+	private void createTitle(I_ToDo toDo, ToolBarButton btn)
+	{
+		btn.setLabel(toDo.getName());
+
+//		if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
+//		{
+//			Timestamp scheduledEndDay = Timestamp.valueOf(LocalDateTime.of(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate(), LocalTime.MIN));
+//			if(today.compareTo(scheduledEndDay) < 0)
+//			{
+//				btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+//
+//			}else if(today.compareTo(scheduledEndDay) == 0){
+//
+//				btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
+//
+//			}else if(today.compareTo(scheduledEndDay) > 0) {
+//
+//				btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
+//
+//			}
+//
+//			if(toDo.getParent_Team_ToDo_ID() == 0)
+//			{
+//				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
+//			}else {
+//				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime())
+//						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+//			}
+//
+//		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
+//
+//			Timestamp scheduledStartTime = toDo.getJP_ToDo_ScheduledStartTime();
+//			Timestamp scheduledEndTime  = toDo.getJP_ToDo_ScheduledEndTime();
+//
+//			String formattedscheduledStartTime = formattedDate(scheduledStartTime.toLocalDateTime()) ;
+//			String formattedscheduledEndTime = formattedDate(scheduledEndTime.toLocalDateTime()) ;
+//
+//			if(p_FormattedLocalDateTime.equals(formattedscheduledStartTime) && p_FormattedLocalDateTime.equals(formattedscheduledEndTime))
+//			{
+//				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
+//				LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
+//				LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
+//				boolean isAllDay = false;
+//				if(endTime.compareTo(LocalTime.MIN) == 0)
+//				{
+//					isAllDay = true;
+//				}
+//
+//				if(toDo.getParent_Team_ToDo_ID() == 0)
+//				{
+//					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " ) + (isAllDay ? "" : endTime.toString()) + " " + toDo.getName());
+//				}else {
+//					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " )  + (isAllDay ? "" : endTime.toString())
+//						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+//				}
+//
+//			}else {
+//
+//				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
+//				if(toDo.getParent_Team_ToDo_ID() == 0)
+//				{
+//					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
+//				}else {
+//					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime
+//						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+//				}
+//
+//
+//			}
+//
+//		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
+//
+//			btn.setImage(ThemeManager.getThemeResource("images/Editor16.png"));
+//			if(toDo.getParent_Team_ToDo_ID() == 0)
+//			{
+//				btn.setLabel(toDo.getName());
+//			}else {
+//				btn.setLabel(" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+//			}
+//
+//
+//		}
+	}
 
 
 
@@ -1087,7 +1289,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					{
 						if(p_AD_User_ID == todo.getAD_User_ID())
 						{
-							events = map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+//							events = map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
 						}else {
 							events = map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID());
 						}
@@ -1105,7 +1307,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					{
 						if(p_AD_User_ID == todo.getAD_User_ID())
 						{
-							events = map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+//							events = map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
 						}else {
 							events = map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID());
 						}
@@ -1296,7 +1498,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	/**
 	 * Get Main User's Calendar Event.
 	 */
-    private void queryToDoCalendarEvents_User()
+    private void queryToDoCalendarEvents_User(LocalDate localDate) //TODO
     {
 
 		StringBuilder whereClauseFinal = null;
@@ -1313,8 +1515,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		if(ts_AcquiredToDoCalendarEventEnd == null)
 			ts_AcquiredToDoCalendarEventEnd = new Timestamp(0);
 
-		LocalDateTime toDayMin = LocalDateTime.of(ts_AcquiredToDoCalendarEventBegin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
-		LocalDateTime toDayMax = LocalDateTime.of(ts_AcquiredToDoCalendarEventEnd.toLocalDateTime().toLocalDate(), LocalTime.MAX);
+		LocalDateTime toDayMin = LocalDateTime.of(localDate, LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(localDate, LocalTime.MAX);
 
 
 		/**
@@ -1402,18 +1604,26 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				return ;
 			}
 
+			HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+			if(map_Localdate == null)
+			{
+				map_Localdate = new HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> ();
+				map_AcquiredCalendarEvent_User.put(p_AD_User_ID, map_Localdate);
+			}
+
+
 			HashMap<Integer,ToDoCalendarEvent> eventMap = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDo todo :list_ToDoes)
 			{
 				event = new ToDoCalendarEvent(todo);
-				eventMap = map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+				eventMap = map_Localdate.get(localDate);
 				if(eventMap == null)
 				{
 					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
 					eventMap.put(todo.get_ID(), event);
-					map_AcquiredCalendarEvent_User.put(p_AD_User_ID, eventMap);
+					map_Localdate.put(localDate, eventMap);
 				}else {
 					eventMap.put(todo.get_ID(), event);
 				}
@@ -1434,18 +1644,25 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				return ;
 			}
 
+			HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+			if(map_Localdate == null)
+			{
+				map_Localdate = new HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> ();
+				map_AcquiredCalendarEvent_User.put(p_AD_User_ID, map_Localdate);
+			}
+
 			HashMap<Integer,ToDoCalendarEvent> eventMap = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDoTeam todo :list_ToDoes)
 			{
 				event = new ToDoCalendarEvent(todo);
-				eventMap = map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+				eventMap = map_Localdate.get(localDate);
 				if(eventMap == null)
 				{
 					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
 					eventMap.put(todo.get_ID(), event);
-					map_AcquiredCalendarEvent_User.put(p_AD_User_ID, eventMap);
+					map_Localdate.put(localDate, eventMap);
 				}else {
 					eventMap.put(todo.get_ID(), event);
 				}
@@ -1706,13 +1923,13 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		ToDoCalendarEvent newEvent = null;
 		if(todo.getAD_User_ID() == p_AD_User_ID)
 		{
-			oldEvent = map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).get(todo.get_ID());
-			if(oldEvent != null)
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).remove(todo.get_ID());
+//			oldEvent = map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).get(todo.get_ID());
+//			if(oldEvent != null)
+//				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).remove(todo.get_ID());
 
 			newEvent = new ToDoCalendarEvent(todo);
-			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+//			if(isAcquiredToDoCalendarEventRange(newEvent))
+//				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
 
 		}else {
 
@@ -1737,8 +1954,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		if(todo.getAD_User_ID() == p_AD_User_ID)
 		{
 			newEvent = new ToDoCalendarEvent(todo);
-			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+//			if(isAcquiredToDoCalendarEventRange(newEvent))
+//				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
 
 		}else {
 
@@ -1794,9 +2011,9 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		ToDoCalendarEvent deleteEvent = null;
 		if(deleteToDo.getAD_User_ID() == p_AD_User_ID)
 		{
-			deleteEvent = map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
-			if(deleteEvent != null)
-				map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
+//			deleteEvent = map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
+//			if(deleteEvent != null)
+//				map_AcquiredCalendarEvent_User.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
 
 
 		}else {
