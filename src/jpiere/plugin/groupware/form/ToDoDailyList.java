@@ -788,12 +788,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 				if(time.compareTo(LocalTime.MIN) == 0)
 				{
-					btn.setLabel(" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+					btn.setLabel(team + toDo.getName());
 
 				}else {
 
-					btn.setLabel(time.toString()
-							+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+					btn.setLabel(time.toString() + team +toDo.getName());
 				}
 			}
 
@@ -813,7 +812,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 
-			if(p_JP_Team_ID > 0)
+			if(toDo.getParent_Team_ToDo_ID() > 0)
 			{
 				isTeamToDo = true;
 			}
