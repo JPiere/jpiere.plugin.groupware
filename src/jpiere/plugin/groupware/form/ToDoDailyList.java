@@ -128,6 +128,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 
+	private int p_Days = 7;
+
 	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
 	private String p_CalendarMold = null;
@@ -466,7 +468,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     		map_AcquiredCalendarEvent_User.clear();
 
     	LocalDate localDate = null;
-    	for(int i = 0; i < 6; i++)
+    	for(int i = 0; i < p_Days; i++)
     	{
     		localDate = p_LocalDateTime.toLocalDate().plusDays(i);
    			queryToDoCalendarEvents_User(localDate);
@@ -506,7 +508,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		hlayout.setDroppable("false");
 		groupBox.appendChild(hlayout);
 
-    	for(int i =0 ; i< 5; i++)
+    	for(int i =0 ; i < p_Days; i++)
     	{
     		LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(i);
     		if(map_LocalDate == null)
@@ -554,7 +556,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     		map_AcquiredCalendarEvent_Team.clear();
 
     	LocalDate localDate = null;
-    	for(int i = 0; i < 6; i++)
+    	for(int i = 0; i < p_Days; i++)
     	{
     		localDate = p_LocalDateTime.toLocalDate().plusDays(i);
    			queryToDoCalendarEvents_Team(localDate);
@@ -603,7 +605,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			hlayout.setDroppable("false");
 			groupBox.appendChild(hlayout);
 
-	    	for(int i =0 ; i< 5; i++)
+	    	for(int i =0 ; i < p_Days; i++)
 	    	{
 	    		LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(i);
 	    		if(map_LocalDate == null)
@@ -1027,6 +1029,26 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			}
 			if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
 				button_Customize_Save.setDisabled(false);
+
+		}else if("JP_ToDoScheduledDate".equals(name)) {
+
+			if(value == null)
+			{
+				WDateEditor comp = (WDateEditor)evt.getSource();
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar);//TODO : エレメントの変更
+				throw new WrongValueException(comp.getComponent(), msg);
+			}
+
+			if(value instanceof Timestamp)
+			{
+
+				Timestamp ts = (Timestamp)value;
+				p_LocalDateTime = ts.toLocalDateTime();
+				refreshAll(true);
+
+			}
+
+
 		}
 
 	}
