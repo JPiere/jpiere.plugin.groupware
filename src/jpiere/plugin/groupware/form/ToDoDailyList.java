@@ -1296,8 +1296,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				list_ToDoes = null;
 
 				CalendarsEvent calendarsEvent = (CalendarsEvent) event;
-				p_CalendarsEventBeginDate = new Timestamp(calendarsEvent.getBeginDate().getTime());
-				p_CalendarsEventEndDate = new Timestamp(calendarsEvent.getEndDate().getTime());
 
 				ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, -1);
 				todoWindow.addToDoCalenderEventReceiver(this);
@@ -1318,9 +1316,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 					list_ToDoes = new ArrayList<I_ToDo>();
 					list_ToDoes.add(ce.getToDo());
-
-					p_CalendarsEventBeginDate = ce.getToDo().getJP_ToDo_ScheduledStartTime();
-					p_CalendarsEventEndDate = ce.getToDo().getJP_ToDo_ScheduledEndTime();
 
 					ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, 0);
 					todoWindow.addToDoCalenderEventReceiver(this);
