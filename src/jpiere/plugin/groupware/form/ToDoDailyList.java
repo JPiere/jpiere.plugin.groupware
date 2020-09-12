@@ -509,24 +509,23 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox);
 
-		Caption caption= new Caption(MUser.get(ctx, p_AD_User_ID).getName());
-		caption.setIconSclass("z-icon-caret-down");
-		groupBox.appendChild(caption);
-
 		MGroupwareUser user = MGroupwareUser.get(ctx, p_AD_User_ID);
 		if(user == null)
 		{
-			caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+			groupBox.setStyle("border-top: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
 		}else {
 
 			if(Util.isEmpty(user.getJP_ColorPicker()))
 			{
-				caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+				groupBox.setStyle("border: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
 			}else {
-				caption.setStyle("border-bottom: solid 4px "+ user.getJP_ColorPicker() +";");
+				groupBox.setStyle("border: solid 1px "+ user.getJP_ColorPicker() +";");
 			}
 		}
 
+		Caption caption= new Caption(MUser.get(ctx, p_AD_User_ID).getName());
+		caption.setIconSclass("z-icon-caret-down");
+		groupBox.appendChild(caption);
 
 		Hlayout hlayout = new Hlayout();
 		hlayout.setDroppable("false");
@@ -638,26 +637,25 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			groupBox.setDraggable("false");
 			groupBox.setMold("3d");
 			groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-
 			vlayout.appendChild(groupBox);
 
-			caption= new Caption(MUser.get(ctx, member[i].getAD_User_ID()).getName());//TODO
-			caption.setIconSclass("z-icon-caret-down");
-			groupBox.appendChild(caption);
 			MGroupwareUser user = MGroupwareUser.get(ctx, member[i].getAD_User_ID());
 			if(user == null)
 			{
-				caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+				groupBox.setStyle("border: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
 			}else {
 
 				if(Util.isEmpty(user.getJP_ColorPicker()))
 				{
-					caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+					groupBox.setStyle("border: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
 				}else {
-					caption.setStyle("border-bottom: solid 4px "+ user.getJP_ColorPicker() +";");
+					groupBox.setStyle("border: solid 1px "+ user.getJP_ColorPicker() +";");
 				}
 			}
 
+			caption= new Caption(MUser.get(ctx, member[i].getAD_User_ID()).getName());//TODO
+			caption.setIconSclass("z-icon-caret-down");
+			groupBox.appendChild(caption);
 
 			hlayout = new Hlayout();
 			hlayout.setDroppable("false");
@@ -729,8 +727,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     }
 
 
-
-
     private Grid createGrid(ArrayList<ToDoCalendarEvent>  map_ToDo, LocalDate localDate)
     {
     	if(map_ToDo == null)
@@ -742,13 +738,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		Grid grid = GridFactory.newGridLayout();
 		grid.setMold("paging");
 		grid.setPageSize(10);
-		grid.setPagingPosition("top");
+		grid.setPagingPosition("bottom");
 
 		Rows gridRows = grid.newRows();
 
 		for (ToDoCalendarEvent toDoCalEvent : map_ToDo)
 		{
-
 			if(isSkip(toDoCalEvent))
 				continue;
 
