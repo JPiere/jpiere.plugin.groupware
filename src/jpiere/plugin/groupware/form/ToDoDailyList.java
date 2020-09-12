@@ -112,8 +112,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	/** ToDo Controler **/
 
 	//HashMap<AD_User_ID, HashMap<LocalDate, HashMap<Integer, CalendarEvent>>
-	private HashMap<Integer, HashMap<LocalDate,HashMap<Integer,ToDoCalendarEvent>>> map_AcquiredCalendarEvent_User = new HashMap<Integer, HashMap<LocalDate, HashMap<Integer,ToDoCalendarEvent>>>();
-	private HashMap<Integer, HashMap<LocalDate,HashMap<Integer,ToDoCalendarEvent>>> map_AcquiredCalendarEvent_Team = new HashMap<Integer, HashMap<LocalDate, HashMap<Integer,ToDoCalendarEvent>>>();
+	private HashMap<Integer, HashMap<LocalDate,ArrayList<ToDoCalendarEvent>>> map_AcquiredCalendarEvent_User = new HashMap<Integer, HashMap<LocalDate, ArrayList<ToDoCalendarEvent>>>();
+	private HashMap<Integer, HashMap<LocalDate,ArrayList<ToDoCalendarEvent>>> map_AcquiredCalendarEvent_Team = new HashMap<Integer, HashMap<LocalDate, ArrayList<ToDoCalendarEvent>>>();
 
 
 	/** Parameters **/
@@ -486,7 +486,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		vlayout.setDroppable("false");
 		div.appendChild(vlayout);
 
-    	HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>>  map_LocalDate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+    	HashMap<LocalDate, ArrayList<ToDoCalendarEvent>>  map_LocalDate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
 
 		//Unfinished Tasks
 		Groupbox groupBox = new Groupbox();
@@ -509,7 +509,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     	for(int i =0 ; i< 5; i++)
     	{
     		LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(i);
-			HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
+    		if(map_LocalDate == null)
+    			continue;
+
+    		ArrayList<ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
 			Grid grid = createGrid(map_ToDo, localDate);
 
 			Vlayout day = new Vlayout();
@@ -572,7 +575,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		div.appendChild(vlayout);
 
 
-		HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>>  map_LocalDate =  null;
+		HashMap<LocalDate, ArrayList<ToDoCalendarEvent>>  map_LocalDate =  null;
 		Groupbox groupBox = null;
 		Caption caption = null;
 		Hlayout hlayout = null;
@@ -603,7 +606,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	    	for(int i =0 ; i< 5; i++)
 	    	{
 	    		LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(i);
-				HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
+	    		if(map_LocalDate == null)
+	    			continue;
+
+	    		ArrayList<ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
 				Grid grid = createGrid(map_ToDo, localDate);
 
 				Vlayout day = new Vlayout();
@@ -643,13 +649,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 
-    private Grid createGrid(HashMap<Integer, ToDoCalendarEvent>  map_ToDo, LocalDate localDate)
+    private Grid createGrid(ArrayList<ToDoCalendarEvent>  map_ToDo, LocalDate localDate)
     {
     	if(map_ToDo == null)
     		return null;
 
-		Set<Integer> keySet = map_ToDo.keySet();
-		if(keySet == null)
+		if(map_ToDo == null || map_ToDo.size() == 0)
 			return null;
 
 		Grid grid = GridFactory.newGridLayout();
@@ -659,10 +664,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 		Rows gridRows = grid.newRows();
 
-		ToDoCalendarEvent toDoCalEvent = null;
-		for (Integer JP_ToDo_ID : keySet)
+		for (ToDoCalendarEvent toDoCalEvent : map_ToDo)
 		{
-			toDoCalEvent = map_ToDo.get(JP_ToDo_ID);
 
 			if(isSkip(toDoCalEvent))
 				continue;
@@ -1475,10 +1478,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	 */
     private void queryToDoCalendarEvents_User(LocalDate localDate) //TODO
     {
-
-		StringBuilder whereClauseFinal = null;
 		StringBuilder whereClause = null;
-		StringBuilder whereClauseTask = null;
 		StringBuilder orderClause = null;
 		ArrayList<Object> list_parameters  = new ArrayList<Object>();
 		Object[] parameters = null;
@@ -1519,44 +1519,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			list_parameters.add(p_login_User_ID);
 		}
 
-//		/**
-//		 *  SQL of Get Task
-//		 **/
-//		//AD_Client_ID
-//		whereClauseTask = new StringBuilder(" AD_Client_ID=? ");
-//		list_parameters.add(Env.getAD_Client_ID(ctx));
-//
-//		//AD_User_ID
-//		whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
-//		list_parameters.add(p_AD_User_ID);
-//
-//		//JP_ToDo_ScheduledStartTime
-//		whereClauseTask =  whereClauseTask.append(" AND JP_ToDo_ScheduledEndTime < ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");
-//		list_parameters.add(Timestamp.valueOf(toDayMax));
-//		list_parameters.add(Timestamp.valueOf(toDayMin));
-//
-//		//JP_TODO_TYPE_Schedule
-//		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
-//		list_parameters.add(MToDo.JP_TODO_TYPE_Task);
-//
-//		//Authorization Check
-//		if(p_login_User_ID == p_AD_User_ID)
-//		{
-//			//Noting to do;
-//
-//		}else {
-//			whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-//			list_parameters.add(p_login_User_ID);
-//		}
-
 
 		/**
 		 * Execution SQL
 		 */
-
-		//whereClauseFinal = new StringBuilder("(").append( whereClause.append(") OR (").append(whereClauseTask).append(")") );
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
-		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime");
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime, JP_ToDo_Type");
 
 		if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))//Search Personal ToDo
 		{
@@ -1573,15 +1541,15 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				return ;
 			}
 
-			HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+			HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
 			if(map_Localdate == null)
 			{
-				map_Localdate = new HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> ();
+				map_Localdate = new HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> ();
 				map_AcquiredCalendarEvent_User.put(p_AD_User_ID, map_Localdate);
 			}
 
 
-			HashMap<Integer,ToDoCalendarEvent> eventMap = null;
+			ArrayList<ToDoCalendarEvent> eventMap = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDo todo :list_ToDoes)
@@ -1590,11 +1558,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				eventMap = map_Localdate.get(localDate);
 				if(eventMap == null)
 				{
-					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-					eventMap.put(todo.get_ID(), event);
+					eventMap = new ArrayList<ToDoCalendarEvent>();
+					eventMap.add(event);
 					map_Localdate.put(localDate, eventMap);
 				}else {
-					eventMap.put(todo.get_ID(), event);
+					eventMap.add(event);
 				}
 
 			}//for
@@ -1613,14 +1581,14 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				return ;
 			}
 
-			HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
+			HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_User.get(p_AD_User_ID);
 			if(map_Localdate == null)
 			{
-				map_Localdate = new HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> ();
+				map_Localdate = new HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> ();
 				map_AcquiredCalendarEvent_User.put(p_AD_User_ID, map_Localdate);
 			}
 
-			HashMap<Integer,ToDoCalendarEvent> eventMap = null;
+			ArrayList<ToDoCalendarEvent> eventMap = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDoTeam todo :list_ToDoes)
@@ -1629,11 +1597,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				eventMap = map_Localdate.get(localDate);
 				if(eventMap == null)
 				{
-					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-					eventMap.put(todo.get_ID(), event);
+					eventMap = new ArrayList<ToDoCalendarEvent>();
+					eventMap.add(event);
 					map_Localdate.put(localDate, eventMap);
 				}else {
-					eventMap.put(todo.get_ID(), event);
+					eventMap.add(event);
 				}
 
 			}//for
@@ -1649,10 +1617,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	 */
     private void queryToDoCalendarEvents_Team(LocalDate localDate)
     {
-
-		StringBuilder whereClauseFinal = null;
 		StringBuilder whereClause = null;
-		StringBuilder whereClauseTask = null;
 		StringBuilder orderClause = null;
 		ArrayList<Object> list_parameters  = new ArrayList<Object>();
 		Object[] parameters = null;
@@ -1684,36 +1649,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		list_parameters.add(p_login_User_ID);
 
 
-		/**
-		 *  SQL of Get Task
-		 **/
-//		//AD_Client_ID
-//		whereClauseTask = new StringBuilder(" AD_Client_ID=? ");
-//		list_parameters.add(Env.getAD_Client_ID(ctx));
-//
-//		//AD_User_ID
-//		whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
-//
-//		//JP_ToDo_ScheduledStartTime
-//		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_ScheduledEndTime < ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
-//		list_parameters.add(Timestamp.valueOf(toDayMax));
-//		list_parameters.add(Timestamp.valueOf(toDayMin));
-//
-//		//JP_TODO_TYPE_Schedule
-//		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
-//		list_parameters.add(MToDo.JP_TODO_TYPE_Task);
-//
-//		//Authorization Check
-//		whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-//		list_parameters.add(p_login_User_ID);
-
 
 		/**
 		 * Execution SQL
 		 */
-		//whereClauseFinal = new StringBuilder("(").append( whereClause.append(") OR (").append(whereClauseTask).append(")") );
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
-		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime");
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime, JP_ToDo_Type");
 
 		if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))//Search Personal ToDo
 		{
@@ -1727,8 +1668,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				return ;
 			}
 
-			HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> map_Localdate = null;
-			HashMap<Integer,ToDoCalendarEvent> eventMap = null;
+			HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> map_Localdate = null;
+			ArrayList<ToDoCalendarEvent> eventMap = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDo todo :list_ToDoes)
@@ -1736,7 +1677,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				map_Localdate =  map_AcquiredCalendarEvent_Team.get(todo.getAD_User_ID());
 				if(map_Localdate == null)
 				{
-					map_Localdate = new HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> ();
+					map_Localdate = new HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> ();
 					map_AcquiredCalendarEvent_Team.put(todo.getAD_User_ID(), map_Localdate);
 				}
 
@@ -1744,11 +1685,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				eventMap = map_Localdate.get(localDate);
 				if(eventMap == null)
 				{
-					eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-					eventMap.put(todo.get_ID(), event);
+					eventMap = new ArrayList<ToDoCalendarEvent>();
+					eventMap.add(event);
 					map_Localdate.put(localDate, eventMap);
 				}else {
-					eventMap.put(todo.get_ID(), event);
+					eventMap.add(event);
 				}
 
 			}
@@ -1768,14 +1709,14 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			MTeamMember[] member = m_Team.getTeamMember();
 			for(int i = 0; i < member.length ; i++)
 			{
-				HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_Team.get(member[i].getAD_User_ID());
+				HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> map_Localdate =  map_AcquiredCalendarEvent_Team.get(member[i].getAD_User_ID());
 				if(map_Localdate == null)
 				{
-					map_Localdate = new HashMap<LocalDate, HashMap<Integer, ToDoCalendarEvent>> ();
+					map_Localdate = new HashMap<LocalDate, ArrayList<ToDoCalendarEvent>> ();
 					map_AcquiredCalendarEvent_Team.put(member[i].getAD_User_ID(), map_Localdate);
 				}
 
-				HashMap<Integer,ToDoCalendarEvent> eventMap = null;
+				ArrayList<ToDoCalendarEvent> eventMap = null;
 				ToDoCalendarEvent event = null;
 
 				for(MToDoTeam todo :list_ToDoes)
@@ -1784,11 +1725,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					eventMap = map_Localdate.get(localDate);
 					if(eventMap == null)
 					{
-						eventMap = new HashMap<Integer, ToDoCalendarEvent>();
-						eventMap.put(todo.get_ID(), event);
+						eventMap = new ArrayList<ToDoCalendarEvent>();
+						eventMap.add(event);
 						map_Localdate.put(localDate, eventMap);
 					}else {
-						eventMap.put(todo.get_ID(), event);
+						eventMap.add(event);
 					}
 
 				}//for
