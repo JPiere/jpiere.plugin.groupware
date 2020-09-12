@@ -781,11 +781,21 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			}else if(today.compareTo(scheduledEndDay) == 0){
 
-				btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
+				if(MToDo.JP_TODO_STATUS_Completed.equals(toDo.getJP_ToDo_Status()))
+				{
+					btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+				}else {
+					btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
+				}
 
 			}else if(today.compareTo(scheduledEndDay) > 0) {
 
-				btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
+				if(MToDo.JP_TODO_STATUS_Completed.equals(toDo.getJP_ToDo_Status()))
+				{
+					btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+				}else {
+					btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
+				}
 
 			}
 
@@ -1242,6 +1252,19 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					displayToDoList(false);
 
 				}
+
+			}else if(comp instanceof ToolBarButton){
+
+				Object obj_ToDoCalendarEvent = comp.getAttribute("ToDo");
+				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)obj_ToDoCalendarEvent;
+
+				list_ToDoes = new ArrayList<I_ToDo>();
+				list_ToDoes.add(todoEvent.getToDo());
+
+				ToDoPopupWindow todoWindow = new ToDoPopupWindow(this, 0);
+				todoWindow.addToDoCalenderEventReceiver(this);
+
+				SessionManager.getAppDesktop().showWindow(todoWindow);
 
 			}else if(comp instanceof Label){
 
