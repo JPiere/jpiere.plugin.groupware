@@ -432,7 +432,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 		leftBtn = new Button();
 		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
-		leftBtn.setClass("btn-small");
+		//leftBtn.setClass("btn-small");
 		leftBtn.setName(BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(leftBtn);
@@ -442,20 +442,21 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		editor_Date.addValueChangeListener(this);
 		row.appendChild(editor_Date.getComponent());
 
-		rightBtn = new Button();
-		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
-		rightBtn.setClass("btn-small");
-		rightBtn.addEventListener(Events.ON_CLICK, this);
-		rightBtn.setName(BUTTON_NEXT);
-		row.appendChild(rightBtn);
-
-		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
-
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, "から", true));//TODO 多言語化
 
 		editor_Number = new WNumberEditor("Days",true, false,true, DisplayType.Integer, "Title");
 		editor_Number.setValue(p_Days);
 		editor_Number.addValueChangeListener(this);
+		ZKUpdateUtil.setWidth(editor_Number.getComponent(), "50px");
 		row.appendChild(editor_Number.getComponent());
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, "日間", true));//TODO 多言語化
+
+		rightBtn = new Button();
+		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+		//rightBtn.setClass("btn-small");
+		rightBtn.addEventListener(Events.ON_CLICK, this);
+		rightBtn.setName(BUTTON_NEXT);
+		row.appendChild(rightBtn);
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
@@ -497,12 +498,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		groupBox.setDraggable("false");
 		groupBox.setMold("3d");
 		groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-
 		vlayout.appendChild(groupBox);
-
 
 		Caption caption= new Caption(MUser.get(ctx, p_AD_User_ID).getName());
 		caption.setIconSclass("z-icon-caret-down");
+		//caption.setStyle("background-color:#000000");
 		groupBox.appendChild(caption);
 
 		Hlayout hlayout = new Hlayout();
@@ -559,9 +559,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
     private void queryTeamDailyToDo()
     {
-//    	if(map_AcquiredCalendarEvent_Team != null)
-//    		map_AcquiredCalendarEvent_Team.clear();
-
     	LocalDate localDate = null;
     	for(int i = 0; i < p_Days; i++)
     	{
@@ -654,70 +651,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 		}
-
-
-//    	Set<LocalDate> keySet =map_AcquiredCalendarEvent_Team.keySet();
-//		for (LocalDate keyDay : keySet)
-//		{
-//			map_UserOneDayEvent =  map_AcquiredCalendarEvent_Team.get(keyDay);
-//
-//			//Unfinished Tasks
-//			groupBox = new Groupbox();
-//			groupBox.setOpen(true);
-//			groupBox.setDraggable("false");
-//			groupBox.setMold("3d");
-//			groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-//
-//			vlayout.appendChild(groupBox);
-//
-//
-//			caption= new Caption(MUser.get(ctx, 1000000).getName());//TODO
-//			caption.setIconSclass("z-icon-caret-down");
-//			groupBox.appendChild(caption);
-//
-//			hlayout = new Hlayout();
-//			hlayout.setDroppable("false");
-//			groupBox.appendChild(hlayout);
-//
-//	    	for(int i =0 ; i < p_Days; i++)
-//	    	{
-//	    		LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(i);
-//	    		if(map_UserOneDayEvent == null)
-//	    			continue;
-//
-//	    		ArrayList<ToDoCalendarEvent>  map_ToDo =  map_UserOneDayEvent.get(localDate);
-//				Grid grid = createGrid(map_ToDo, localDate);
-//
-//				Vlayout day = new Vlayout();
-//				hlayout.appendChild(day);
-//				ZKUpdateUtil.setHflex(day, "1");
-//				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
-//
-//				Div day_header = new Div();
-//				Label label = new Label(formattedDate(localDate));
-//				label.setStyle("text-align: center; color:#ffffff ");
-//				day_header.appendChild(label);
-//				day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
-//				day.appendChild(day_header);
-//
-//				Div day_Content = new Div();
-//				day_Content.setClass("views-box");
-//
-//			//		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
-//			//		personalToDoGadget_Task.setToDoPopupwindowCaller(this);
-//			//		personalToDoGadget_Task.addToDoCalenderEventReceiver(this);
-//
-//				if(grid == null)
-//				{
-//					day_Content.appendChild(new Label("データはありません"));
-//				}else {
-//					day_Content.appendChild(grid);
-//				}
-//				day.appendChild(day_Content);
-//	    	}
-//
-//
-//		}
 
     	return div;
     }
@@ -1134,7 +1067,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				}else {
 
 					WNumberEditor comp = (WNumberEditor)evt.getSource();
-					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + "日数は1～7までを指定できます。";//TODO : エレメントの変更
+					String msg = "日数は1～7までを指定できます。";//TODO : エレメントの変更
 					throw new WrongValueException(comp.getComponent(), msg);
 				}
 
