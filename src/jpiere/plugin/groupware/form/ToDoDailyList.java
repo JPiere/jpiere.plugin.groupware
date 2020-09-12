@@ -1078,7 +1078,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			refreshAll(false);
 
-		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar.equals(name)) {//TODO
+		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar.equals(name)) {
 
 			if(value == null)
 			{
@@ -1089,16 +1089,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			p_JP_ToDo_Calendar = value.toString();
 			editor_JP_ToDo_Calendar.setValue(value);
-			editor_JP_ToDo_Calendar_For_Custom.setValue(value);
 
-
-			if(p_JP_Team_ID > 0)
-			{
-			  	mainBorderLayout_Center.getFirstChild().detach();
-				mainBorderLayout_Center.appendChild(displayUserDailyToDo());
-			}
-			if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
-				button_Customize_Save.setDisabled(false);
+			refreshAll(true);
 
 		}else if("JP_ToDoScheduledDate".equals(name)) {
 
