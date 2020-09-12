@@ -511,39 +511,71 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 		Caption caption= new Caption(MUser.get(ctx, p_AD_User_ID).getName());
 		caption.setIconSclass("z-icon-caret-down");
-		//caption.setStyle("background-color:#000000");
 		groupBox.appendChild(caption);
+
+		MGroupwareUser user = MGroupwareUser.get(ctx, p_AD_User_ID);
+		if(user == null)
+		{
+			caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+		}else {
+
+			if(Util.isEmpty(user.getJP_ColorPicker()))
+			{
+				caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+			}else {
+				caption.setStyle("border-bottom: solid 4px "+ user.getJP_ColorPicker() +";");
+			}
+		}
+
 
 		Hlayout hlayout = new Hlayout();
 		hlayout.setDroppable("false");
 		groupBox.appendChild(hlayout);
 
 		HashMap<Integer, ArrayList<ToDoCalendarEvent>>  map_OneDayUserEvent = null;
+		LocalDate localDate = null;
+		Grid grid = null;
+		Vlayout day = null;
+		Label day_label = null;
+		Div day_header = null;
+		Div day_Content = null;
     	for(int i =0 ; i < p_Days; i++)
     	{
-    		LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(i);
+    		localDate = p_LocalDateTime.toLocalDate().plusDays(i);
     		map_OneDayUserEvent =  map_AcquiredCalendarEvent_User.get(localDate);
 
-    		Grid grid = null;
+    		grid = null;
     		if(map_OneDayUserEvent != null)
     		{
 	    		ArrayList<ToDoCalendarEvent>  list_OneDayUserEvent =  map_OneDayUserEvent.get(p_AD_User_ID);
 				grid = createGrid(list_OneDayUserEvent, localDate);
     		}
 
-			Vlayout day = new Vlayout();
+			day = new Vlayout();
 			hlayout.appendChild(day);
 			ZKUpdateUtil.setHflex(day, "1");
 			day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
-			Div day_header = new Div();
-			Label label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
-			label.setStyle("text-align: center; color:#ffffff ");
-			day_header.appendChild(label);
-			day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+			day_header = new Div();
+			day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
+			day_label.setStyle("text-align: center; color:#ffffff ");
+			day_header.appendChild(day_label);
 			day.appendChild(day_header);
+			if(user == null)
+			{
+				day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+			}else {
 
-			Div day_Content = new Div();
+				if(Util.isEmpty(user.getJP_ColorPicker()))
+				{
+					day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+				}else {
+					day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ user.getJP_ColorPicker() +";");
+				}
+			}
+
+
+			day_Content = new Div();
 			day_Content.setClass("views-box");
 
 			//		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
@@ -591,7 +623,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		div.appendChild(vlayout);
 
 
-		HashMap<Integer, ArrayList<ToDoCalendarEvent>>  map_OneDayTeamEvent =  null;
 		Groupbox groupBox = null;
 		Caption caption = null;
 		Hlayout hlayout = null;
@@ -613,15 +644,36 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			caption= new Caption(MUser.get(ctx, member[i].getAD_User_ID()).getName());//TODO
 			caption.setIconSclass("z-icon-caret-down");
 			groupBox.appendChild(caption);
+			MGroupwareUser user = MGroupwareUser.get(ctx, member[i].getAD_User_ID());
+			if(user == null)
+			{
+				caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+			}else {
+
+				if(Util.isEmpty(user.getJP_ColorPicker()))
+				{
+					caption.setStyle("border-bottom: solid 4px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+				}else {
+					caption.setStyle("border-bottom: solid 4px "+ user.getJP_ColorPicker() +";");
+				}
+			}
+
 
 			hlayout = new Hlayout();
 			hlayout.setDroppable("false");
 			groupBox.appendChild(hlayout);
 
+			HashMap<Integer, ArrayList<ToDoCalendarEvent>>  map_OneDayTeamEvent =  null;
+			LocalDate localDate = null;
 			Grid grid = null;
+			Vlayout day = null;
+			Div day_header = null;
+			Label day_label = null;
+			Div day_Content = null;
 			for(int j =0 ; j < p_Days; j++)
 	    	{
-				LocalDate localDate = p_LocalDateTime.toLocalDate().plusDays(j);
+				grid = null;
+				localDate = p_LocalDateTime.toLocalDate().plusDays(j);
 				map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
 	    		if(map_OneDayTeamEvent != null)
 	    		{
@@ -629,19 +681,31 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					grid = createGrid(list_OneDayUserToDo, localDate);
 	    		}
 
-				Vlayout day = new Vlayout();
+				day = new Vlayout();
 				hlayout.appendChild(day);
 				ZKUpdateUtil.setHflex(day, "1");
 				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
-				Div day_header = new Div();
-				Label label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
-				label.setStyle("text-align: center; color:#ffffff ");
-				day_header.appendChild(label);
-				day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
+				day_header = new Div();
+				day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
+				day_label.setStyle("text-align: center; color:#ffffff ");
+				day_header.appendChild(day_label);
 				day.appendChild(day_header);
+				if(user == null)
+				{
+					day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+				}else {
 
-				Div day_Content = new Div();
+					if(Util.isEmpty(user.getJP_ColorPicker()))
+					{
+						day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
+					}else {
+						day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ user.getJP_ColorPicker() +";");
+					}
+				}
+
+
+				day_Content = new Div();
 				day_Content.setClass("views-box");
 
 			//		personalToDoGadget_Task = new ToDoGadget(MToDo.JP_TODO_TYPE_Memo, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo);
@@ -1751,34 +1815,61 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				return ;
 			}
 
-			MTeamMember[] member = m_Team.getTeamMember();
-			for(int i = 0; i < member.length ; i++)
+			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
+			ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
+			ToDoCalendarEvent event = null;
+
+			for(MToDoTeam todo :list_ToDoes)
 			{
-				HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+				map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
 				if(map_OneDayTeamEvent == null)
 				{
 					map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
 					map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
 				}
 
-				ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
-				ToDoCalendarEvent event = null;
-
-				for(MToDoTeam todo :list_ToDoes)
+				event = new ToDoCalendarEvent(todo);
+				list_OneDayUserEvent = map_OneDayTeamEvent.get(todo.getAD_User_ID());
+				if(list_OneDayUserEvent == null)
 				{
-					event = new ToDoCalendarEvent(todo);
-					list_OneDayUserEvent = map_OneDayTeamEvent.get(todo.getAD_User_ID());
-					if(list_OneDayUserEvent == null)
-					{
-						list_OneDayUserEvent = new ArrayList<ToDoCalendarEvent>();
-						list_OneDayUserEvent.add(event);
-						map_OneDayTeamEvent.put(todo.getAD_User_ID(), list_OneDayUserEvent);
-					}else {
-						list_OneDayUserEvent.add(event);
-					}
+					list_OneDayUserEvent = new ArrayList<ToDoCalendarEvent>();
+					list_OneDayUserEvent.add(event);
+					map_OneDayTeamEvent.put(todo.getAD_User_ID(), list_OneDayUserEvent);
+				}else {
+					list_OneDayUserEvent.add(event);
+				}
 
-				}//for
 			}
+
+
+//			MTeamMember[] member = m_Team.getTeamMember();//TODO
+//			for(int i = 0; i < member.length ; i++)
+//			{
+//				HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+//				if(map_OneDayTeamEvent == null)
+//				{
+//					map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
+//					map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
+//				}
+//
+//				ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
+//				ToDoCalendarEvent event = null;
+//
+//				for(MToDoTeam todo :list_ToDoes)
+//				{
+//					event = new ToDoCalendarEvent(todo);
+//					list_OneDayUserEvent = map_OneDayTeamEvent.get(todo.getAD_User_ID());
+//					if(list_OneDayUserEvent == null)
+//					{
+//						list_OneDayUserEvent = new ArrayList<ToDoCalendarEvent>();
+//						list_OneDayUserEvent.add(event);
+//						map_OneDayTeamEvent.put(todo.getAD_User_ID(), list_OneDayUserEvent);
+//					}else {
+//						list_OneDayUserEvent.add(event);
+//					}
+//
+//				}//for
+//			}
 
 
 		}
@@ -2017,69 +2108,16 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	}
 
 
-
-	private Timestamp p_CalendarsEventBeginDate = null;
-
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()
 	{
-		Timestamp timestamp = null;
-		if(p_CalendarsEventBeginDate == null)
-		{
-			timestamp = new Timestamp(0);
-			LocalDateTime ldt = timestamp.toLocalDateTime();
-
-			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.MIN));
-
-
-		}else {
-
-			timestamp = p_CalendarsEventBeginDate;
-
-			return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), timestamp.toLocalDateTime().toLocalTime()));
-		}
-
-
+		return Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 	}
-
-	private Timestamp p_CalendarsEventEndDate = null;
 
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledEndTime()
 	{
-		Timestamp timestamp = null;
-		if(p_CalendarsEventEndDate == null)
-		{
-			timestamp = new Timestamp(0);
-			LocalDateTime ldt = timestamp.toLocalDateTime();
-
-			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.MIN));
-
-		}else {
-
-			timestamp =  p_CalendarsEventEndDate;
-
-			if(GroupwareToDoUtil.CALENDAR_MONTH_VIEW.equals(p_CalendarMold))
-			{
-				timestamp = p_CalendarsEventBeginDate;
-
-			}else if(GroupwareToDoUtil.CALENDAR_SEVENDAYS_VIEW.equals(p_CalendarMold) || GroupwareToDoUtil.CALENDAR_ONEDAY_VIEW.equals(p_CalendarMold)
-																				|| GroupwareToDoUtil.CALENDAR_FIVEDAYS_VIEW.equals(p_CalendarMold) ) {
-
-				LocalTime start = p_CalendarsEventBeginDate.toLocalDateTime().toLocalTime();
-				LocalTime end = p_CalendarsEventEndDate.toLocalDateTime().toLocalTime();
-
-				if(start.compareTo(LocalTime.MIN) == 0 && end.compareTo(LocalTime.MIN) == 0)
-				{
-					timestamp = p_CalendarsEventBeginDate;
-				}
-
-			}
-
-			return Timestamp.valueOf(LocalDateTime.of(timestamp.toLocalDateTime().toLocalDate(), timestamp.toLocalDateTime().toLocalTime()));
-		}
-
-
+		return Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 	}
 
 
