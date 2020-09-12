@@ -1218,8 +1218,16 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		{
 			Object obj_ToDoCalendarEvent = comp.getAttribute("ToDo");
 			ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)obj_ToDoCalendarEvent;
+			if(p_JP_Team_ID == 0)
+			{
+				popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), null);
+			}else {
 
-			popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), null);
+				todoEvent.setHeaderColor(todoEvent.team_Default_Long_HeaderColor);
+				todoEvent.setContentColor(todoEvent.team_Default_Long_ContentColor);
+
+				popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
+			}
 			popup_CalendarEvent.setPage(form.getPage());
 			popup_CalendarEvent.open(comp,"end_before");
 
