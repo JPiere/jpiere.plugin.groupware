@@ -82,6 +82,14 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 
 		setAD_Org_ID(0);
 
+		//*** Check ToDo Type ***//
+		if(Util.isEmpty(getJP_ToDo_Type()))
+		{
+			Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Type)};
+			return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+		}
+
+		//*** Check ToDo Category ***//
 		if(getJP_ToDo_Category_ID() != 0 && (newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Category_ID)))
 		{
 			if(MToDoCategory.get(getCtx(), getJP_ToDo_Category_ID()).getAD_User_ID() != 0)
@@ -91,16 +99,47 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 			}
 		}
 
-		if(getJP_ToDo_ScheduledStartTime() != null
-				&& getJP_ToDo_ScheduledEndTime() != null)
+		//*** Check Schedule Time ***//
+		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime) || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime))
 		{
-			if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
+			if(MToDo.JP_TODO_TYPE_Task.equals(getJP_ToDo_Type()))
 			{
-				return Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") ;
-			}
+				if(getJP_ToDo_ScheduledEndTime() == null)
+				{
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
+					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
 
+				setJP_ToDo_ScheduledStartTime(getJP_ToDo_ScheduledEndTime());
+
+			}if(MToDo.JP_TODO_TYPE_Schedule.equals(getJP_ToDo_Type())) {
+
+
+				if(getJP_ToDo_ScheduledStartTime() == null)
+				{
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)};
+					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
+
+				if(getJP_ToDo_ScheduledEndTime() == null)
+				{
+					Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)};
+					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
+				}
+
+				if(getJP_ToDo_ScheduledStartTime().after(getJP_ToDo_ScheduledEndTime()))
+				{
+					return Msg.getElement(getCtx(), "JP_ToDo_ScheduledStartTime") + " > " +  Msg.getElement(getCtx(), "JP_ToDo_ScheduledEndTime") ;
+				}
+
+			}if(MToDo.JP_TODO_TYPE_Memo.equals(getJP_ToDo_Type())) {
+
+				setJP_ToDo_ScheduledStartTime(null);
+				setJP_ToDo_ScheduledEndTime(null);
+			}
 		}
 
+		//*** Check ToDo Status***//
 		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
 		{
 

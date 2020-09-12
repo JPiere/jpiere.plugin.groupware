@@ -107,7 +107,7 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 					return Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);
 				}
 
-				setJP_ToDo_ScheduledStartTime(null);
+				setJP_ToDo_ScheduledStartTime(getJP_ToDo_ScheduledEndTime());
 
 			}if(MToDo.JP_TODO_TYPE_Schedule.equals(getJP_ToDo_Type())) {
 
