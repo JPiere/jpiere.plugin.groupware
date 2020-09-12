@@ -35,6 +35,7 @@ import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.component.ToolBarButton;
 import org.adempiere.webui.editor.WDateEditor;
 import org.adempiere.webui.editor.WEditor;
+import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
@@ -127,7 +128,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 
-	private int p_Days = 7;
+	private int p_Days = 5;
 
 	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
@@ -144,6 +145,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private WYesNoEditor  editor_IsDisplayTask ;
 	private WTableDirEditor editor_JP_ToDo_Calendar ;
 	private WDateEditor editor_Date = null;
+	private WNumberEditor editor_Number = null;
 
 	private MLookup lookup_JP_ToDo_Category_ID;
 	private MLookup lookup_JP_ToDo_Calendar;
@@ -448,6 +450,13 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		row.appendChild(rightBtn);
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
+
+
+		editor_Number = new WNumberEditor("Days",true, false,true, DisplayType.Integer, "Title");
+		editor_Number.setValue(p_Days);
+		editor_Number.addValueChangeListener(this);
+		row.appendChild(editor_Number.getComponent());
+
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
@@ -1091,7 +1100,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			if(value == null)
 			{
 				WDateEditor comp = (WDateEditor)evt.getSource();
-				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar);//TODO : エレメントの変更
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + "日付は必須です。";//TODO
 				throw new WrongValueException(comp.getComponent(), msg);
 			}
 
@@ -1104,6 +1113,34 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			}
 
+
+		}else if("Days".equals(name)) {
+
+			if(value == null)
+			{
+				WNumberEditor comp = (WNumberEditor)evt.getSource();
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + "日数は必須です。";//TODO : エレメントの変更
+				throw new WrongValueException(comp.getComponent(), msg);
+			}
+
+			if(value instanceof Integer)
+			{
+
+				p_Days = ((Integer) value).intValue();
+				if(0 < p_Days && p_Days < 8)
+				{
+					;//Noting to Do
+
+				}else {
+
+					WNumberEditor comp = (WNumberEditor)evt.getSource();
+					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + "日数は1～7までを指定できます。";//TODO : エレメントの変更
+					throw new WrongValueException(comp.getComponent(), msg);
+				}
+
+				displayToDoList(false);
+
+			}
 
 		}
 
