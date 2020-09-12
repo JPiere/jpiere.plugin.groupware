@@ -15,6 +15,7 @@
 package jpiere.plugin.groupware.form;
 
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -115,6 +116,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>> map_AcquiredCalendarEvent_User = new HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>>();
 	private HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>> map_AcquiredCalendarEvent_Team = new HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>>();
 
+	private HashMap<LocalDate, String> map_DayOfWeek = new HashMap<LocalDate, String> ();
 
 	/** Parameters **/
 	private int p_login_User_ID = 0;
@@ -468,11 +470,18 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
     private void queryUserDailyToDo()
     {
-
     	LocalDate localDate = null;
+    	String dayOfWeek = null;
     	for(int i = 0; i < p_Days; i++)
     	{
     		localDate = p_LocalDateTime.toLocalDate().plusDays(i);
+    		dayOfWeek = map_DayOfWeek.get(localDate);
+    		if(dayOfWeek == null)
+    		{
+    			DayOfWeek aaaa = localDate.getDayOfWeek();
+    			map_DayOfWeek.put(localDate, aaaa.toString());
+    		}
+
     		if(map_AcquiredCalendarEvent_User.get(localDate) == null)
     			queryToDoCalendarEvents_User(localDate);
     	}
@@ -528,7 +537,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
 			Div day_header = new Div();
-			Label label = new Label(formattedDate(localDate));
+			Label label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
 			label.setStyle("text-align: center; color:#ffffff ");
 			day_header.appendChild(label);
 			day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
@@ -626,7 +635,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
 				Div day_header = new Div();
-				Label label = new Label(formattedDate(localDate));
+				Label label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
 				label.setStyle("text-align: center; color:#ffffff ");
 				day_header.appendChild(label);
 				day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
