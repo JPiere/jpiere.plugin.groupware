@@ -548,7 +548,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
 			Div day_header = new Div();
-			Label label = new Label(localDate.toString());
+			Label label = new Label(formattedDate(localDate));
 			label.setStyle("text-align: center; color:#ffffff ");
 			day_header.appendChild(label);
 			day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
@@ -563,7 +563,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			if(grid == null)
 			{
-				day_Content.appendChild(new Label("データはありません"));
+				day_Content.appendChild(new Label("データはありません"));//TODO
 			}else {
 				day_Content.appendChild(grid);
 			}
@@ -608,7 +608,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
 
 				Div day_header = new Div();
-				Label label = new Label(localDate.toString());
+				Label label = new Label(formattedDate(localDate));
 				label.setStyle("text-align: center; color:#ffffff ");
 				day_header.appendChild(label);
 				day_header.setStyle("padding:4px 2px 4px 4px; background-color:#003894;");
@@ -637,7 +637,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
     }
 
-    private Grid createGrid(HashMap<Integer, ToDoCalendarEvent>  map_ToDo )
+    private Grid createGrid(HashMap<Integer, ToDoCalendarEvent>  map_ToDo)
     {
     	if(map_ToDo == null)
     		return null;
@@ -652,8 +652,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		grid.setPagingPosition("top");
 
 		Rows gridRows = grid.newRows();
-		int counter = 0;
-
 
 		ToDoCalendarEvent toDoCalEvent = null;
 		for (Integer JP_ToDo_ID : keySet)
@@ -669,9 +667,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			createTitle(toDoCalEvent.getToDo(), btn);
 			btn.addEventListener(Events.ON_CLICK, this);
 			btn.addEventListener(Events.ON_MOUSE_OVER, this);
-			//btn.setId(String.valueOf(toDo.get_ID()));
-			btn.setAttribute("index", counter);
-			counter++;
+			btn.setAttribute("ToDo", toDoCalEvent);
 			row.appendChild(btn);
 		}
 
@@ -781,6 +777,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private String formattedDate(LocalDateTime dateTime)
 	{
 		return lang.getDateFormat().format(Timestamp.valueOf(dateTime));
+	}
+
+	private String formattedDate(LocalDate date)
+	{
+		return lang.getDateFormat().format(Timestamp.valueOf(LocalDateTime.of(date, LocalTime.MIN) ));
 	}
 
 
@@ -975,8 +976,18 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	{
 		Component comp = event.getTarget();
 		String eventName = event.getName();
-		if(eventName.equals(Events.ON_CLICK))
+
+		if(Events.ON_MOUSE_OVER.equals(eventName))
 		{
+			Object obj_ToDoCalendarEvent = comp.getAttribute("ToDo");
+			ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)obj_ToDoCalendarEvent;
+
+			popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), null);
+			popup_CalendarEvent.setPage(form.getPage());
+			popup_CalendarEvent.open(comp,"end_before");
+
+		}else  if(eventName.equals(Events.ON_CLICK)) {
+
 			if(comp instanceof Button)
 			{
 				Button btn = (Button) comp;
