@@ -533,7 +533,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     	{
     		LocalDate localDate = p_LocalDate.plusDays(i);
 			HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
-			Grid grid = createGrid(map_ToDo);
+			Grid grid = createGrid(map_ToDo, localDate);
 
 			Vlayout day = new Vlayout();
 			waku.appendChild(day);
@@ -626,7 +626,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	    	{
 	    		LocalDate localDate = p_LocalDate.plusDays(i);
 				HashMap<Integer, ToDoCalendarEvent>  map_ToDo =  map_LocalDate.get(localDate);
-				Grid grid = createGrid(map_ToDo);
+				Grid grid = createGrid(map_ToDo, localDate);
 
 				Vlayout day = new Vlayout();
 				waku.appendChild(day);
@@ -665,7 +665,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 
-    private Grid createGrid(HashMap<Integer, ToDoCalendarEvent>  map_ToDo)
+    private Grid createGrid(HashMap<Integer, ToDoCalendarEvent>  map_ToDo, LocalDate localDate)
     {
     	if(map_ToDo == null)
     		return null;
@@ -692,7 +692,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			Row row = gridRows.newRow();
 			ToolBarButton btn = new ToolBarButton(toDoCalEvent.getToDo().getName());
 			btn.setSclass("link");
-			createTitle(toDoCalEvent.getToDo(), btn);
+			createTitle(toDoCalEvent.getToDo(), btn, localDate);
 			btn.addEventListener(Events.ON_CLICK, this);
 			btn.addEventListener(Events.ON_MOUSE_OVER, this);
 			btn.setAttribute("ToDo", toDoCalEvent);
@@ -702,17 +702,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     	return grid;
     }
 
-    String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Schedule;
 
-    private Timestamp today = null;
-    private String p_FormattedLocalDateTime = null;
+    private Timestamp today = Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
+    private String team = "["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] ";
 
-	private void createTitle(I_ToDo toDo, ToolBarButton btn)
+	private void createTitle(I_ToDo toDo, ToolBarButton btn,  LocalDate localDate)
 	{
-		btn.setLabel(toDo.getName());
-
-		p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
-		today = Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 
 		if(MToDo.JP_TODO_TYPE_Task.equals(toDo.getJP_ToDo_Type()))
 		{
@@ -731,67 +726,131 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			}
 
+			LocalTime time = toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime();
 			if(toDo.getParent_Team_ToDo_ID() == 0)
 			{
-				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + toDo.getName());
+				if(time.compareTo(LocalTime.MIN) == 0)
+				{
+					btn.setLabel(toDo.getName());
+				}else {
+					btn.setLabel(time.toString() + " " + toDo.getName());
+				}
+
 			}else {
-				btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime())
-						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+
+				if(time.compareTo(LocalTime.MIN) == 0)
+				{
+					btn.setLabel(" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+
+				}else {
+
+					btn.setLabel(time.toString()
+							+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
+				}
 			}
 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(toDo.getJP_ToDo_Type())) {
 
 			Timestamp scheduledStartTime = toDo.getJP_ToDo_ScheduledStartTime();
+			LocalDate startDate = scheduledStartTime.toLocalDateTime().toLocalDate();
+			LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
+
 			Timestamp scheduledEndTime  = toDo.getJP_ToDo_ScheduledEndTime();
+			LocalDate endDate = scheduledEndTime.toLocalDateTime().toLocalDate();
+			LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
 
-			String formattedscheduledStartTime = formattedDate(scheduledStartTime.toLocalDateTime()) ;
-			String formattedscheduledEndTime = formattedDate(scheduledEndTime.toLocalDateTime()) ;
+			boolean isTeamToDo = false;
+			boolean isOneDaySchedule = false;
+			boolean isAllDaySchedule = false;
 
-			if(p_FormattedLocalDateTime.equals(formattedscheduledStartTime) && p_FormattedLocalDateTime.equals(formattedscheduledEndTime))
+
+
+			if(p_JP_Team_ID > 0)
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
-				LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
-				LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
-				boolean isAllDay = false;
-				if(endTime.compareTo(LocalTime.MIN) == 0)
+				isTeamToDo = true;
+			}
+
+			if(startDate.compareTo(endDate) == 0 )
+			{
+				isOneDaySchedule = true;
+			}
+
+
+			if(startTime.compareTo(LocalTime.MIN) == 0 && endTime.compareTo(LocalTime.MIN) == 0)
+			{
+				isAllDaySchedule = true;
+
+			}else if(startTime.compareTo(LocalTime.MIN) == 0 && endTime.compareTo(LocalTime.MIN) != 0){
+
+				if(localDate.compareTo(endDate) == 0)
 				{
-					isAllDay = true;
+					isAllDaySchedule = false;
+				}else {
+					isAllDaySchedule = true;
 				}
 
-				if(toDo.getParent_Team_ToDo_ID() == 0)
+			}else if(startTime.compareTo(LocalTime.MIN) != 0 && endTime.compareTo(LocalTime.MIN) == 0){
+
+				if(localDate.compareTo(startDate) == 0)
 				{
-					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " ) + (isAllDay ? "" : endTime.toString()) + " " + toDo.getName());
+					isAllDaySchedule = false;
 				}else {
-					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " )  + (isAllDay ? "" : endTime.toString())
-						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+					isAllDaySchedule = true;
+				}
+
+			}else if(startTime.compareTo(LocalTime.MIN) != 0 && endTime.compareTo(LocalTime.MIN) != 0){
+
+
+				if(localDate.compareTo(startDate) == 0)
+				{
+					isAllDaySchedule = false;
+				}else if(localDate.compareTo(endDate) == 0){
+					isAllDaySchedule = false;
+				}else {
+					isAllDaySchedule = true;
+				}
+
+			}
+
+			if(isOneDaySchedule)
+			{
+				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
+
+				if(isAllDaySchedule)
+				{
+					btn.setLabel((isTeamToDo ? team : "") + toDo.getName());
+
+				}else {
+
+					btn.setLabel(startTime.toString() + " - " +endTime.toString() + " " + (isTeamToDo ? team : "") + toDo.getName());
+
 				}
 
 			}else {
 
 				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
-				if(toDo.getParent_Team_ToDo_ID() == 0)
+
+				if(isAllDaySchedule)
 				{
-					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
+					btn.setLabel((isTeamToDo ? team : "") +toDo.getName());
+
 				}else {
-					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime
-						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+
+					if(localDate.compareTo(startDate) == 0)
+					{
+						btn.setLabel(startTime.toString() + " - 24:00 " + (isTeamToDo ? team : "") +toDo.getName());
+
+					}else if(localDate.compareTo(endDate) == 0) {
+
+						btn.setLabel(LocalTime.MIN.toString() + " - "  + endTime.toString() + " " + (isTeamToDo ? team : "") +toDo.getName());
+					}
+
 				}
 
-
 			}
-
-		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
-
-			btn.setImage(ThemeManager.getThemeResource("images/Editor16.png"));
-			if(toDo.getParent_Team_ToDo_ID() == 0)
-			{
-				btn.setLabel(toDo.getName());
-			}else {
-				btn.setLabel(" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName());
-			}
-
 
 		}
+
 	}
 
 
