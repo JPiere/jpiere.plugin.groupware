@@ -2396,10 +2396,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	 */
     private void queryToDoCalendarEvents_User()
     {
-
-		StringBuilder whereClauseFinal = null;
-		StringBuilder whereClauseSchedule = null;
-		StringBuilder whereClauseTask = null;
+		StringBuilder whereClause = null;
 		StringBuilder orderClause = null;
 		ArrayList<Object> list_parameters  = new ArrayList<Object>();
 		Object[] parameters = null;
@@ -2415,25 +2412,21 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		LocalDateTime toDayMax = LocalDateTime.of(ts_AcquiredToDoCalendarEventEnd.toLocalDateTime().toLocalDate(), LocalTime.MAX);
 
 
-		/**
-		 *  SQL of Get Schedule
-		 **/
 		//AD_Client_ID
-		whereClauseSchedule = new StringBuilder(" AD_Client_ID=? ");
+		whereClause = new StringBuilder(" AD_Client_ID=? ");
 		list_parameters.add(Env.getAD_Client_ID(ctx));
 
 		//AD_User_ID
-		whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID = ? ");
+		whereClause = whereClause.append(" AND AD_User_ID = ? ");
 		list_parameters.add(p_AD_User_ID);
 
 		//JP_ToDo_ScheduledStartTime
-		whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
+		whereClause = whereClause.append(" AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
 		list_parameters.add(Timestamp.valueOf(toDayMax));
 		list_parameters.add(Timestamp.valueOf(toDayMin));
 
 		//JP_TODO_TYPE_Schedule
-		whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
-		list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
+		whereClause = whereClause.append(" AND JP_ToDo_Type IN ('S','T') ");
 
 		//Authorization Check
 		if(p_login_User_ID == p_AD_User_ID)
@@ -2442,58 +2435,22 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}else {
 
-			whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-			list_parameters.add(p_login_User_ID);
-		}
-
-		/**
-		 *  SQL of Get Task
-		 **/
-		//AD_Client_ID
-		whereClauseTask = new StringBuilder(" AD_Client_ID=? ");
-		list_parameters.add(Env.getAD_Client_ID(ctx));
-
-		//AD_User_ID
-		whereClauseTask = whereClauseTask.append(" AND AD_User_ID = ? ");
-		list_parameters.add(p_AD_User_ID);
-
-		//JP_ToDo_ScheduledStartTime
-		whereClauseTask =  whereClauseTask.append(" AND JP_ToDo_ScheduledEndTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");
-		list_parameters.add(Timestamp.valueOf(toDayMax));
-		list_parameters.add(Timestamp.valueOf(toDayMin));
-
-		//JP_TODO_TYPE_Schedule
-		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
-		list_parameters.add(MToDo.JP_TODO_TYPE_Task);
-
-		//Authorization Check
-		if(p_login_User_ID == p_AD_User_ID)
-		{
-			//Noting to do;
-
-		}else {
-			whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+			whereClause = whereClause.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
 			list_parameters.add(p_login_User_ID);
 		}
 
 
-		/**
-		 * Execution SQL
-		 */
-
-		whereClauseFinal = new StringBuilder("(").append( whereClauseSchedule.append(") OR (").append(whereClauseTask).append(")") );
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
-		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime");
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime, JP_ToDo_Type");
 
 		if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))//Search Personal ToDo
 		{
 
 
-			List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClauseFinal.toString(), null)
+			List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClause.toString(), null)
 												.setParameters(parameters)
 												.setOrderBy(orderClause.toString())
 												.list();
-
 
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
@@ -2521,7 +2478,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		}else {//Search Team ToDo
 
 
-			List<MToDoTeam> list_ToDoes = new Query(Env.getCtx(), MToDoTeam.Table_Name, whereClauseFinal.toString(), null)
+			List<MToDoTeam> list_ToDoes = new Query(Env.getCtx(), MToDoTeam.Table_Name, whereClause.toString(), null)
 												.setParameters(parameters)
 												.setOrderBy(orderClause.toString())
 												.list();
@@ -2568,9 +2525,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
     		return ;
     	}
 
-		StringBuilder whereClauseFinal = null;
-		StringBuilder whereClauseSchedule = null;
-		StringBuilder whereClauseTask = null;
+		StringBuilder whereClause = null;
 		StringBuilder orderClause = null;
 		ArrayList<Object> list_parameters  = new ArrayList<Object>();
 		Object[] parameters = null;
@@ -2578,64 +2533,32 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		LocalDateTime toDayMin = LocalDateTime.of(ts_AcquiredToDoCalendarEventBegin.toLocalDateTime().toLocalDate(), LocalTime.MIN);
 		LocalDateTime toDayMax = LocalDateTime.of(ts_AcquiredToDoCalendarEventEnd.toLocalDateTime().toLocalDate(), LocalTime.MAX);
 
-		/**
-		 *  SQL of Get Schedule
-		 **/
+
 		//AD_Client_ID
-		whereClauseSchedule = new StringBuilder(" AD_Client_ID=? ");
+		whereClause = new StringBuilder(" AD_Client_ID=? ");
 		list_parameters.add(Env.getAD_Client_ID(ctx));
 
 		//AD_User_ID
-		whereClauseSchedule = whereClauseSchedule.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
+		whereClause = whereClause.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
 
 		//JP_ToDo_ScheduledStartTime
-		whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");
+		whereClause = whereClause.append(" AND JP_ToDo_ScheduledStartTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");
 		list_parameters.add(Timestamp.valueOf(toDayMax));
 		list_parameters.add(Timestamp.valueOf(toDayMin));
 
 		//JP_TODO_TYPE_Schedule
-		whereClauseSchedule = whereClauseSchedule.append(" AND JP_ToDo_Type = ? ");
-		list_parameters.add(MToDo.JP_TODO_TYPE_Schedule);
+		whereClause = whereClause.append(" AND JP_ToDo_Type IN ('S','T') ");
 
 		//Authorization Check
-		whereClauseSchedule = whereClauseSchedule.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
+		whereClause = whereClause.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
 		list_parameters.add(p_login_User_ID);
 
-
-		/**
-		 *  SQL of Get Task
-		 **/
-		//AD_Client_ID
-		whereClauseTask = new StringBuilder(" AD_Client_ID=? ");
-		list_parameters.add(Env.getAD_Client_ID(ctx));
-
-		//AD_User_ID
-		whereClauseTask = whereClauseTask.append(" AND AD_User_ID IN (").append(createInUserClause(list_parameters)).append(")");
-
-		//JP_ToDo_ScheduledStartTime
-		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_ScheduledEndTime <= ? AND JP_ToDo_ScheduledEndTime >= ? AND IsActive='Y' ");//1 - 2
-		list_parameters.add(Timestamp.valueOf(toDayMax));
-		list_parameters.add(Timestamp.valueOf(toDayMin));
-
-		//JP_TODO_TYPE_Schedule
-		whereClauseTask = whereClauseTask.append(" AND JP_ToDo_Type = ? ");
-		list_parameters.add(MToDo.JP_TODO_TYPE_Task);
-
-		//Authorization Check
-		whereClauseTask = whereClauseTask.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
-		list_parameters.add(p_login_User_ID);
-
-
-		/**
-		 * Execution SQL
-		 */
-		whereClauseFinal = new StringBuilder("(").append( whereClauseSchedule.append(") OR (").append(whereClauseTask).append(")") );
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
-		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime");
+		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime, JP_ToDo_Type");
 
 		if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))//Search Personal ToDo
 		{
-			List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClauseFinal.toString(), null)
+			List<MToDo> list_ToDoes = new Query(Env.getCtx(), MToDo.Table_Name, whereClause.toString(), null)
 											.setParameters(parameters)
 											.setOrderBy(orderClause.toString())
 											.list();
@@ -2665,7 +2588,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}else { //Search Team ToDo
 
-			List<MToDoTeam> list_ToDoes = new Query(Env.getCtx(), MToDoTeam.Table_Name, whereClauseFinal.toString(), null)
+			List<MToDoTeam> list_ToDoes = new Query(Env.getCtx(), MToDoTeam.Table_Name, whereClause.toString(), null)
 					.setParameters(parameters)
 					.setOrderBy(orderClause.toString())
 					.list();
