@@ -495,33 +495,55 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
      */
     private Div displayUserDailyToDo()
     {
+    	//Get Color
+		MGroupwareUser user = MGroupwareUser.get(ctx, p_AD_User_ID);
+		String color1 = null;
+		String color2 = null;
+		if(user == null)
+		{
+			color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
+			color2 = GroupwareToDoUtil.DEFAULT_COLOR2;
+
+		}else {
+
+			if(!Util.isEmpty(user.getJP_ColorPicker()) && !Util.isEmpty(user.getJP_ColorPicker2()))
+			{
+				color1 = user.getJP_ColorPicker() ;
+				color2 = user.getJP_ColorPicker2() ;
+
+			}else if(!Util.isEmpty(user.getJP_ColorPicker()) && Util.isEmpty(user.getJP_ColorPicker2())){
+
+				color1 = user.getJP_ColorPicker() ;
+				color2 = GroupwareToDoUtil.DEFAULT_COLOR2;
+
+			}else if(Util.isEmpty(user.getJP_ColorPicker()) && !Util.isEmpty(user.getJP_ColorPicker2())){
+
+				color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
+				color2 = user.getJP_ColorPicker2() ;
+
+			}else {
+
+				color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
+				color2 = GroupwareToDoUtil.DEFAULT_COLOR2;
+
+			}
+		}
+		color2 = "#dddddd";
+
        	Div div = new Div();
 		Vlayout vlayout = new Vlayout();
 		vlayout.setDroppable("false");
 		div.appendChild(vlayout);
 
-
 		//Unfinished Tasks
 		Groupbox groupBox = new Groupbox();
 		groupBox.setOpen(true);
+		groupBox.setStyle("border: solid 1px "+ color1 +";");
 		groupBox.setDraggable("false");
 		groupBox.setMold("3d");
 		groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 		vlayout.appendChild(groupBox);
 
-		MGroupwareUser user = MGroupwareUser.get(ctx, p_AD_User_ID);
-		if(user == null)
-		{
-			groupBox.setStyle("border-top: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-		}else {
-
-			if(Util.isEmpty(user.getJP_ColorPicker()))
-			{
-				groupBox.setStyle("border: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-			}else {
-				groupBox.setStyle("border: solid 1px "+ user.getJP_ColorPicker() +";");
-			}
-		}
 
 		Caption caption= new Caption(MUser.get(ctx, p_AD_User_ID).getName());
 		caption.setIconSclass("z-icon-caret-down");
@@ -553,25 +575,15 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			day = new Vlayout();
 			hlayout.appendChild(day);
 			ZKUpdateUtil.setHflex(day, "1");
-			day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+			day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 1px "+ color2 +";"); //#dddddd;
 
-			day_header = new Div();
 			day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
 			day_label.setStyle("text-align: center; color:#ffffff ");
-			day_header.appendChild(day_label);
-			day.appendChild(day_header);
-			if(user == null)
-			{
-				day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-			}else {
 
-				if(Util.isEmpty(user.getJP_ColorPicker()))
-				{
-					day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-				}else {
-					day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ user.getJP_ColorPicker() +";");
-				}
-			}
+			day_header = new Div();
+			day_header.appendChild(day_label);
+			day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ color1 +";");
+			day.appendChild(day_header);
 
 
 			day_Content = new Div();
@@ -615,12 +627,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     		return null;
     	}
 
-
     	Div div = new Div();
 		Vlayout vlayout = new Vlayout();
 		vlayout.setDroppable("false");
 		div.appendChild(vlayout);
-
 
 		Groupbox groupBox = null;
 		Caption caption = null;
@@ -632,26 +642,48 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			if(p_AD_User_ID == member[i].getAD_User_ID())
 				continue;
 
+	    	//Get Color
+			MGroupwareUser user = MGroupwareUser.get(ctx, member[i].getAD_User_ID());
+			String color1 = null;
+			String color2 = null;
+			if(user == null)
+			{
+				color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
+				color2 = GroupwareToDoUtil.DEFAULT_COLOR2;
+
+			}else {
+
+				if(!Util.isEmpty(user.getJP_ColorPicker()) && !Util.isEmpty(user.getJP_ColorPicker2()))
+				{
+					color1 = user.getJP_ColorPicker() ;
+					color2 = user.getJP_ColorPicker2() ;
+
+				}else if(!Util.isEmpty(user.getJP_ColorPicker()) && Util.isEmpty(user.getJP_ColorPicker2())){
+
+					color1 = user.getJP_ColorPicker() ;
+					color2 = GroupwareToDoUtil.DEFAULT_COLOR2;
+
+				}else if(Util.isEmpty(user.getJP_ColorPicker()) && !Util.isEmpty(user.getJP_ColorPicker2())){
+
+					color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
+					color2 = user.getJP_ColorPicker2() ;
+
+				}else {
+
+					color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
+					color2 = GroupwareToDoUtil.DEFAULT_COLOR2;
+
+				}
+			}
+			color2 = "#dddddd";
+
 			groupBox = new Groupbox();
 			groupBox.setOpen(true);
+			groupBox.setStyle("border: solid 2px "+ color1 +";");
 			groupBox.setDraggable("false");
 			groupBox.setMold("3d");
 			groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 			vlayout.appendChild(groupBox);
-
-			MGroupwareUser user = MGroupwareUser.get(ctx, member[i].getAD_User_ID());
-			if(user == null)
-			{
-				groupBox.setStyle("border: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-			}else {
-
-				if(Util.isEmpty(user.getJP_ColorPicker()))
-				{
-					groupBox.setStyle("border: solid 1px "+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-				}else {
-					groupBox.setStyle("border: solid 1px "+ user.getJP_ColorPicker() +";");
-				}
-			}
 
 			caption= new Caption(MUser.get(ctx, member[i].getAD_User_ID()).getName());//TODO
 			caption.setIconSclass("z-icon-caret-down");
@@ -682,26 +714,15 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				day = new Vlayout();
 				hlayout.appendChild(day);
 				ZKUpdateUtil.setHflex(day, "1");
-				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
+				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px "+ color2 +";");//#dddddd;
 
-				day_header = new Div();
 				day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
 				day_label.setStyle("text-align: center; color:#ffffff ");
+
+				day_header = new Div();
+				day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ color1 +";");
 				day_header.appendChild(day_label);
 				day.appendChild(day_header);
-				if(user == null)
-				{
-					day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-				}else {
-
-					if(Util.isEmpty(user.getJP_ColorPicker()))
-					{
-						day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ GroupwareToDoUtil.DEFAULT_COLOR1 +";");
-					}else {
-						day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ user.getJP_ColorPicker() +";");
-					}
-				}
-
 
 				day_Content = new Div();
 				day_Content.setClass("views-box");
