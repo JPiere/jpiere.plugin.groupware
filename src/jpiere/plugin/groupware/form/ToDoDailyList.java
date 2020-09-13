@@ -15,7 +15,6 @@
 package jpiere.plugin.groupware.form;
 
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -51,6 +50,7 @@ import org.adempiere.webui.window.FDialog;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MRefList;
 import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
@@ -463,8 +463,16 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
     }
 
+    private int weekdays_Reference_ID = 0;
+
     private void queryUserDailyToDo()
     {
+    	if(weekdays_Reference_ID == 0)
+    	{
+			MColumn column = MColumn.get(ctx, MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_FirstDayOfWeek);
+			weekdays_Reference_ID = column.getAD_Reference_Value_ID();
+    	}
+
     	LocalDate localDate = null;
     	String dayOfWeek = null;
     	for(int i = 0; i < p_Days; i++)
@@ -473,8 +481,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     		dayOfWeek = map_DayOfWeek.get(localDate);
     		if(dayOfWeek == null)
     		{
-    			DayOfWeek aaaa = localDate.getDayOfWeek();
-    			map_DayOfWeek.put(localDate, aaaa.toString());
+    			map_DayOfWeek.put(localDate, MRefList.getListName(ctx, weekdays_Reference_ID, String.valueOf(localDate.getDayOfWeek().getValue())));
     		}
 
     		if(map_AcquiredCalendarEvent_User.get(localDate) == null)
