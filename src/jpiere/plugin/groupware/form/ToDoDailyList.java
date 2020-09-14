@@ -1845,18 +1845,18 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					center_UserToDo.detach();
 
 				center_UserToDo = displayUserDailyToDo();
-				if(center_UserToDo != null)
-					center.appendChild(center_UserToDo);
+				if(center_UserToDo != null && center_TeamToDo != null)
+					center.insertBefore(center_UserToDo, center_TeamToDo);
 
+			}else {
+
+				if(center_TeamToDo != null)
+					center_TeamToDo.detach();
+
+				center_TeamToDo = displayTeamDailyToDo();
+				if(center_TeamToDo != null)
+					center.appendChild(center_TeamToDo);
 			}
-
-			if(center_TeamToDo != null)
-				center_TeamToDo.detach();
-
-			center_TeamToDo = displayTeamDailyToDo();
-			if(center_TeamToDo != null)
-				center.appendChild(center_TeamToDo);
-
 		}
 
 		return true;
