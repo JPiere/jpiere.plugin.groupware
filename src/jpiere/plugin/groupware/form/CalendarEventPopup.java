@@ -257,9 +257,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		}else {
 
 			ZKUpdateUtil.setVflex(this, "min");
-			//ZKUpdateUtil.setHflex(this, "min");
-			ZKUpdateUtil.setWindowWidthX(this, 350);
-			//ZKUpdateUtil.setWindowHeightX(this, 600);
+			ZKUpdateUtil.setHflex(this, "min");
 
 		}
 
