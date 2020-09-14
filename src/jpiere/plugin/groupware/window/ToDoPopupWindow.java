@@ -1396,7 +1396,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	private boolean deleteToDo()
 	{
-
+		//Delete Receiver before p_iToDo.delete() method, because p_iToDo become null after p_iToDo.delete() method;
 		for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
 		{
 			receiveToDoCalendarEvent.delete(p_iToDo);

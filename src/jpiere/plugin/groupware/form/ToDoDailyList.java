@@ -1749,7 +1749,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public String getDefault_JP_ToDo_Type()
 	{
-		if(list_ToDoes == null)
+		if(list_ToDoes == null || list_ToDoes.size() == 0)
 		{
 			if(p_IsDisplaySchedule && !p_IsDisplayTask)
 			{
@@ -1766,6 +1766,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			}
 
 			return MToDo.JP_TODO_TYPE_Schedule;
+
 		}else {
 
 			return list_ToDoes.get(0).getJP_ToDo_Type();
@@ -1774,7 +1775,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	}
 
 	@Override
-	public boolean update(I_ToDo todo)
+	public boolean update(I_ToDo todo)//TODO
 	{
 		displayToDoList(true);
 
@@ -1792,8 +1793,71 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public boolean delete(I_ToDo deleteToDo)
 	{
+		int AD_User_ID = deleteToDo.getAD_User_ID();
+		LocalDate start_LocalDate = deleteToDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
+		LocalDate end_LocalDate = deleteToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
 
-		displayToDoList(true);
+		HashMap<Integer, ArrayList<ToDoCalendarEvent>>  oneday_UsersEventMap = null;
+		ArrayList<ToDoCalendarEvent> oneday_UserEventList = null;
+
+		while(start_LocalDate.compareTo(end_LocalDate) <= 0)
+		{
+			if(p_AD_User_ID == AD_User_ID)
+			{
+				oneday_UsersEventMap = map_AcquiredCalendarEvent_User.get(start_LocalDate);
+			}else {
+				oneday_UsersEventMap = map_AcquiredCalendarEvent_Team.get(start_LocalDate);
+			}
+
+
+			if(oneday_UsersEventMap == null)
+				continue;
+
+			oneday_UserEventList = oneday_UsersEventMap.get(AD_User_ID);
+			for(int j = 0; j < oneday_UserEventList.size(); j++ )
+			{
+				if(oneday_UserEventList.get(j).getToDo().get_ID() ==deleteToDo.get_ID())
+				{
+					oneday_UserEventList.remove(j);
+					break;
+				}
+
+			}
+
+			start_LocalDate = start_LocalDate.plusDays(1);
+		}
+
+
+		if(p_JP_Team_ID == 0)
+		{
+			if(center_UserToDo != null)
+				center_UserToDo.detach();
+
+			center_UserToDo = displayUserDailyToDo();
+			if(center_UserToDo != null)
+				center.appendChild(center_UserToDo);
+
+		}else {
+
+			if(p_AD_User_ID == AD_User_ID)
+			{
+				if(center_UserToDo != null)
+					center_UserToDo.detach();
+
+				center_UserToDo = displayUserDailyToDo();
+				if(center_UserToDo != null)
+					center.appendChild(center_UserToDo);
+
+			}
+
+			if(center_TeamToDo != null)
+				center_TeamToDo.detach();
+
+			center_TeamToDo = displayTeamDailyToDo();
+			if(center_TeamToDo != null)
+				center.appendChild(center_TeamToDo);
+
+		}
 
 		return true;
 	}
