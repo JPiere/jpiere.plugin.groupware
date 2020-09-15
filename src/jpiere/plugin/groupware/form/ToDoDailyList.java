@@ -593,7 +593,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			if(grid == null)
 			{
-				day_Content.appendChild(new Label("データはありません"));//TODO
+				day_Content.appendChild(new Label(Msg.getMsg(ctx, "not.found")));
 			}else {
 				day_Content.appendChild(grid);
 			}
@@ -681,7 +681,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			groupBox.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
 			vlayout.appendChild(groupBox);
 
-			caption= new Caption(MUser.get(ctx, member[i].getAD_User_ID()).getName());//TODO
+			caption= new Caption(MUser.get(ctx, member[i].getAD_User_ID()).getName());
 			caption.setIconSclass("z-icon-caret-down");
 			groupBox.appendChild(caption);
 
@@ -725,7 +725,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 				if(grid == null)
 				{
-					day_Content.appendChild(new Label("データはありません"));//TODO
+					day_Content.appendChild(new Label(Msg.getMsg(ctx, "not.found")));
 				}else {
 					day_Content.appendChild(grid);
 				}
@@ -754,20 +754,37 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		grid.setPagingPosition("bottom");
 
 		Rows gridRows = grid.newRows();
-
+		Row row = null;
+		ToolBarButton btn = null;
+		int count = 0;
+		int skipCount = 0;
 		for (ToDoCalendarEvent toDoCalEvent : map_ToDo)
 		{
+			count++;
 			if(isSkip(toDoCalEvent))
-				continue;
+			{
+				skipCount++;
+				if(count == map_ToDo.size())//last
+				{
+					if(count == skipCount)
+					{
+						return null;
+					}
 
-			Row row = gridRows.newRow();
-			ToolBarButton btn = new ToolBarButton(toDoCalEvent.getToDo().getName());
+				}
+				continue;
+			}
+
+			row = gridRows.newRow();
+			btn = new ToolBarButton(toDoCalEvent.getToDo().getName());
 			btn.setSclass("link");
 			createTitle(toDoCalEvent.getToDo(), btn, localDate);
 			btn.addEventListener(Events.ON_CLICK, this);
 			btn.addEventListener(Events.ON_MOUSE_OVER, this);
 			btn.setAttribute("ToDo", toDoCalEvent);
 			row.appendChild(btn);
+
+
 		}
 
     	return grid;
@@ -1112,7 +1129,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			if(value == null)
 			{
 				WDateEditor comp = (WDateEditor)evt.getSource();
-				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + "日付は必須です。";//TODO
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory");
 				throw new WrongValueException(comp.getComponent(), msg);
 			}
 
@@ -1131,7 +1148,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			if(value == null)
 			{
 				WNumberEditor comp = (WNumberEditor)evt.getSource();
-				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + "日数は必須です。";//TODO : エレメントの変更
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory");
 				throw new WrongValueException(comp.getComponent(), msg);
 			}
 
@@ -1497,9 +1514,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				map_AcquiredCalendarEvent_User.put(localDate, map_OneDayUserEvent);
 			}
 
+			map_OneDayUserEvent.clear();
+
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
-				map_OneDayUserEvent.clear();
 				return ;
 			}
 
@@ -1536,9 +1554,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				map_AcquiredCalendarEvent_User.put(localDate, map_OneDayUserEvent);
 			}
 
+			map_OneDayUserEvent.clear();
+
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
-				map_OneDayUserEvent.clear();
 				return ;
 			}
 
@@ -1626,9 +1645,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
 			}
 
+			map_OneDayTeamEvent.clear();
+
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
-				map_OneDayTeamEvent.clear();
 				return ;
 			}
 
@@ -1666,9 +1686,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
 			}
 
+			map_OneDayTeamEvent.clear();
+
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
-				map_OneDayTeamEvent.clear();
 				return ;
 			}
 
