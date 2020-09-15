@@ -439,14 +439,14 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		editor_Date.addValueChangeListener(this);
 		row.appendChild(editor_Date.getComponent());
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, "から", true));//TODO 多言語化
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, " - ", true));
 
 		editor_Number = new WNumberEditor("Days",true, false,true, DisplayType.Integer, "Title");
 		editor_Number.setValue(p_Days);
 		editor_Number.addValueChangeListener(this);
 		ZKUpdateUtil.setWidth(editor_Number.getComponent(), "50px");
 		row.appendChild(editor_Number.getComponent());
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, "日間", true));//TODO 多言語化
+		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, Msg.getMsg(ctx, "JP_Days"), true));
 
 		rightBtn = new Button();
 		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
@@ -1163,7 +1163,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				}else {
 
 					WNumberEditor comp = (WNumberEditor)evt.getSource();
-					String msg = "日数は1～7までを指定できます。";//TODO : エレメントの変更
+					String msg = "1 ～ 7";
 					throw new WrongValueException(comp.getComponent(), msg);
 				}
 
