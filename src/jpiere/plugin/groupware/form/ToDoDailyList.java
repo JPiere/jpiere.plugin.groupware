@@ -1490,12 +1490,6 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 												.setOrderBy(orderClause.toString())
 												.list();
 
-
-			if(list_ToDoes == null || list_ToDoes.size() == 0)
-			{
-				return ;
-			}
-
 			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayUserEvent =  map_AcquiredCalendarEvent_User.get(localDate);
 			if(map_OneDayUserEvent == null)
 			{
@@ -1503,6 +1497,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				map_AcquiredCalendarEvent_User.put(localDate, map_OneDayUserEvent);
 			}
 
+			if(list_ToDoes == null || list_ToDoes.size() == 0)
+			{
+				map_OneDayUserEvent.clear();
+				return ;
+			}
 
 			ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
 			ToDoCalendarEvent event = null;
@@ -1530,17 +1529,17 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 												.setOrderBy(orderClause.toString())
 												.list();
 
-
-			if(list_ToDoes == null || list_ToDoes.size() == 0)
-			{
-				return ;
-			}
-
 			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayUserEvent =  map_AcquiredCalendarEvent_User.get(localDate);
 			if(map_OneDayUserEvent == null)
 			{
 				map_OneDayUserEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
 				map_AcquiredCalendarEvent_User.put(localDate, map_OneDayUserEvent);
+			}
+
+			if(list_ToDoes == null || list_ToDoes.size() == 0)
+			{
+				map_OneDayUserEvent.clear();
+				return ;
 			}
 
 			ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
@@ -1618,24 +1617,26 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 											.setOrderBy(orderClause.toString())
 											.list();
 
+
+			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
+			map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+			if(map_OneDayTeamEvent == null)
+			{
+				map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
+				map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
+			}
+
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
+				map_OneDayTeamEvent.clear();
 				return ;
 			}
 
-			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
 			ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDo todo :list_ToDoes)
 			{
-				map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
-				if(map_OneDayTeamEvent == null)
-				{
-					map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
-					map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
-				}
-
 				event = new ToDoCalendarEvent(todo);
 				list_OneDayUserEvent = map_OneDayTeamEvent.get(todo.getAD_User_ID());
 				if(list_OneDayUserEvent == null)
@@ -1656,24 +1657,26 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					.setOrderBy(orderClause.toString())
 					.list();
 
+
+			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
+			map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+			if(map_OneDayTeamEvent == null)
+			{
+				map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
+				map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
+			}
+
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
+				map_OneDayTeamEvent.clear();
 				return ;
 			}
 
-			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
 			ArrayList<ToDoCalendarEvent> list_OneDayUserEvent = null;
 			ToDoCalendarEvent event = null;
 
 			for(MToDoTeam todo :list_ToDoes)
 			{
-				map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
-				if(map_OneDayTeamEvent == null)
-				{
-					map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
-					map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
-				}
-
 				event = new ToDoCalendarEvent(todo);
 				list_OneDayUserEvent = map_OneDayTeamEvent.get(todo.getAD_User_ID());
 				if(list_OneDayUserEvent == null)
@@ -1804,7 +1807,95 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public boolean create(I_ToDo todo)
 	{
-		refreshToDoList(true);
+		int AD_User_ID = todo.getAD_User_ID();
+		LocalDate start_LocalDate = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
+		LocalDate end_LocalDate = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
+
+		HashMap<Integer, ArrayList<ToDoCalendarEvent>>  oneday_UsersEventMap = null;
+		boolean isRender = false;
+
+		if(p_AD_User_ID == AD_User_ID)
+		{
+
+			while(start_LocalDate.compareTo(end_LocalDate) <= 0)
+			{
+				oneday_UsersEventMap = map_AcquiredCalendarEvent_User.get(start_LocalDate);
+				if(oneday_UsersEventMap == null)
+				{
+					start_LocalDate = start_LocalDate.plusDays(1);
+					continue;
+				}
+
+				queryToDoCalendarEvents_User(start_LocalDate);
+				start_LocalDate = start_LocalDate.plusDays(1);
+				isRender = true;
+			}
+
+			if(isRender)
+			{
+				if(center_UserToDo != null)
+					center_UserToDo.detach();
+
+				center_UserToDo = renderDailyToDoList_User();
+				if(center_UserToDo != null)
+				{
+					if(p_JP_Team_ID == 0)
+					{
+						center.appendChild(center_UserToDo);
+
+					}else {
+
+						if(center_TeamToDo != null)
+						{
+							center.insertBefore(center_UserToDo, center_TeamToDo);
+						}else {
+							center.appendChild(center_UserToDo);
+						}
+					}
+				}
+			}
+
+
+		}else {
+
+			MTeamMember[] member = m_Team.getTeamMember();
+			boolean isMember = false;
+			for(int i = 0; i < member.length; i++)
+			{
+				if(member[i].getAD_User_ID() == AD_User_ID)
+				{
+					isMember = true;
+					break;
+				}
+			}
+
+			if(isMember)
+			{
+				while(start_LocalDate.compareTo(end_LocalDate) <= 0)
+				{
+					oneday_UsersEventMap = map_AcquiredCalendarEvent_Team.get(start_LocalDate);
+					if(oneday_UsersEventMap == null)
+					{
+						start_LocalDate = start_LocalDate.plusDays(1);
+						continue;
+					}
+
+					queryToDoCalendarEvents_Team(start_LocalDate);
+					start_LocalDate = start_LocalDate.plusDays(1);
+					isRender = true;
+				}
+
+				if(isRender)
+				{
+					if(center_TeamToDo != null)
+						center_TeamToDo.detach();
+
+					center_TeamToDo = renderDailyToDoList_Team();
+					if(center_TeamToDo != null)
+						center.appendChild(center_TeamToDo);
+				}
+			}
+		}
 
 		return true;
 	}
@@ -1830,7 +1921,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 			if(oneday_UsersEventMap == null)
+			{
+				start_LocalDate = start_LocalDate.plusDays(1);
 				continue;
+			}
 
 			oneday_UserEventList = oneday_UsersEventMap.get(AD_User_ID);
 			for(int j = 0; j < oneday_UserEventList.size(); j++ )
