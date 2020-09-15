@@ -246,8 +246,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		mainBorderLayout_Center = new Center();
 		mainBorderLayout.appendChild(mainBorderLayout_Center);
 
-		queryUserDailyToDo();
-		center_UserToDo = displayUserDailyToDo();
+		queryDailyToDo_User();
+		center_UserToDo = renderDailyToDoList_User();
 		//center_TeamToDo = createTeamDailyToDo();
 
 		center = new Vlayout();
@@ -465,7 +465,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
     private int weekdays_Reference_ID = 0;
 
-    private void queryUserDailyToDo()
+    private void queryDailyToDo_User()
     {
     	if(weekdays_Reference_ID == 0)
     	{
@@ -495,7 +495,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
      *
      * @return Div
      */
-    private Div displayUserDailyToDo()
+    private Div renderDailyToDoList_User()
     {
     	//Get Color
 		MGroupwareUser user = MGroupwareUser.get(ctx, p_AD_User_ID);
@@ -605,7 +605,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     }
 
 
-    private void queryTeamDailyToDo()
+    private void queryDailyToDo_Team()
     {
     	LocalDate localDate = null;
     	for(int i = 0; i < p_Days; i++)
@@ -616,7 +616,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     	}
     }
 
-    private Div displayTeamDailyToDo()
+    private Div renderDailyToDoList_Team()
     {
     	if(p_JP_Team_ID == 0)
     	{
@@ -1002,7 +1002,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			}
 
-			displayToDoList(true);
+			refreshToDoList(true);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Category_ID.equals(name)){
 
@@ -1013,7 +1013,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				p_JP_ToDo_Category_ID = Integer.parseInt(value.toString());
 			}
 
-			displayToDoList(false);
+			refreshToDoList(false);
 
 		}else if(MTeam.COLUMNNAME_JP_Team_ID.equals(name)){
 
@@ -1059,7 +1059,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				}
 
 
-				displayToDoList_Team(true);
+				refreshToDoList_Team(true);
 
 			}
 
@@ -1068,13 +1068,13 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			p_IsDisplaySchedule = (boolean)value;
 			editor_IsDisplaySchedule.setValue(value);
-			displayToDoList(false);
+			refreshToDoList(false);
 
 		}else if(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP.equals(name)) {
 
 			p_IsDisplayTask = (boolean)value;
 			editor_IsDisplayTask.setValue(value);
-			displayToDoList(false);
+			refreshToDoList(false);
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
@@ -1091,7 +1091,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				}
 			}
 
-			displayToDoList(false);
+			refreshToDoList(false);
 
 		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar.equals(name)) {
 
@@ -1105,7 +1105,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			p_JP_ToDo_Calendar = value.toString();
 			editor_JP_ToDo_Calendar.setValue(value);
 
-			displayToDoList(true);
+			refreshToDoList(true);
 
 		}else if("JP_ToDoScheduledDate".equals(name)) {
 
@@ -1121,7 +1121,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 				Timestamp ts = (Timestamp)value;
 				p_LocalDateTime = ts.toLocalDateTime();
-				displayToDoList(false);
+				refreshToDoList(false);
 
 			}
 
@@ -1150,7 +1150,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 					throw new WrongValueException(comp.getComponent(), msg);
 				}
 
-				displayToDoList(false);
+				refreshToDoList(false);
 
 			}
 
@@ -1159,42 +1159,61 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	}
 
 
-	private void displayToDoList(boolean isRefresh)
+	private void refreshToDoList(boolean isAllRefresh)
 	{
-		if(center_UserToDo != null)
-			center_UserToDo.detach();
+		refreshToDoList_User(isAllRefresh);
+		refreshToDoList_Team(isAllRefresh);
+	}
 
-		if(center_TeamToDo != null)
-			center_TeamToDo.detach();
-
-		if(isRefresh)
+	private void refreshToDoList_User(boolean isAllRefresh)
+	{
+		if(isAllRefresh)
 		{
 	    	if(map_AcquiredCalendarEvent_User != null)
 	    		map_AcquiredCalendarEvent_User.clear();
 		}
 
-		queryUserDailyToDo();
+		queryDailyToDo_User();
 
-		center_UserToDo = displayUserDailyToDo();
 		if(center_UserToDo != null)
-			center.appendChild(center_UserToDo);
+			center_UserToDo.detach();
 
-		displayToDoList_Team(isRefresh);
+		center_UserToDo = renderDailyToDoList_User();
+		if(center_UserToDo != null)
+		{
+			if(p_JP_Team_ID == 0)
+			{
+				center.appendChild(center_UserToDo);
+
+			}else {
+
+				if(center_TeamToDo != null)
+				{
+					center.insertBefore(center_UserToDo, center_TeamToDo);
+				}else {
+					center.appendChild(center_UserToDo);
+				}
+			}
+		}
+
 	}
 
-	private void displayToDoList_Team(boolean isRefresh)
+	private void refreshToDoList_Team(boolean isAllRefresh)
 	{
 		if(p_JP_Team_ID > 0)
 		{
-			if(isRefresh)
+			if(isAllRefresh)
 			{
 		    	if(map_AcquiredCalendarEvent_Team != null)
 		    		map_AcquiredCalendarEvent_Team.clear();
 			}
 
-			queryTeamDailyToDo();
+			queryDailyToDo_Team();
 
-			center_TeamToDo = displayTeamDailyToDo();
+			if(center_TeamToDo != null)
+				center_TeamToDo.detach();
+
+			center_TeamToDo = renderDailyToDoList_Team();
 			if(center_TeamToDo != null)
 				center.appendChild(center_TeamToDo);
 		}
@@ -1241,19 +1260,19 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 				}else if(BUTTON_REFRESH.equals(btnName)){
 
-					displayToDoList(true);
+					refreshToDoList(true);
 
 				}else if(BUTTON_PREVIOUS.equals(btnName)) {
 
 					p_LocalDateTime = p_LocalDateTime.minusDays(1);
 					editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
-					displayToDoList(false);
+					refreshToDoList(false);
 
 				}else if(BUTTON_NEXT.equals(btnName)) {
 
 					p_LocalDateTime = p_LocalDateTime.plusDays(1);
 					editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
-					displayToDoList(false);
+					refreshToDoList(false);
 
 				}
 
@@ -1777,7 +1796,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public boolean update(I_ToDo todo)//TODO
 	{
-		displayToDoList(true);
+		refreshToDoList(true);
 
 		return true;
 	}
@@ -1785,7 +1804,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public boolean create(I_ToDo todo)
 	{
-		displayToDoList(true);
+		refreshToDoList(true);
 
 		return true;
 	}
@@ -1833,7 +1852,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			if(center_UserToDo != null)
 				center_UserToDo.detach();
 
-			center_UserToDo = displayUserDailyToDo();
+			center_UserToDo = renderDailyToDoList_User();
 			if(center_UserToDo != null)
 				center.appendChild(center_UserToDo);
 
@@ -1844,7 +1863,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				if(center_UserToDo != null)
 					center_UserToDo.detach();
 
-				center_UserToDo = displayUserDailyToDo();
+				center_UserToDo = renderDailyToDoList_User();
 				if(center_UserToDo != null && center_TeamToDo != null)
 					center.insertBefore(center_UserToDo, center_TeamToDo);
 
@@ -1853,7 +1872,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				if(center_TeamToDo != null)
 					center_TeamToDo.detach();
 
-				center_TeamToDo = displayTeamDailyToDo();
+				center_TeamToDo = renderDailyToDoList_Team();
 				if(center_TeamToDo != null)
 					center.appendChild(center_TeamToDo);
 			}
@@ -1866,9 +1885,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public boolean refresh(I_ToDo todo)
 	{
-
-		displayToDoList(true);
-
+		refreshToDoList(true);
 		return true;
 	}
 
