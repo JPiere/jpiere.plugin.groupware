@@ -1797,9 +1797,31 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	}
 
 	@Override
-	public boolean update(I_ToDo todo)//TODO
+	public boolean update(I_ToDo todo)
 	{
-		refreshToDoList(true);
+		int AD_User_ID = todo.getAD_User_ID();
+
+		if(p_AD_User_ID == AD_User_ID)
+		{
+			refreshToDoList_User(true);
+		}else {
+
+			MTeamMember[] member = m_Team.getTeamMember();
+			boolean isMember = false;
+			for(int i = 0; i < member.length; i++)
+			{
+				if(member[i].getAD_User_ID() == AD_User_ID)
+				{
+					isMember = true;
+					break;
+				}
+			}
+
+			if(isMember)
+			{
+				refreshToDoList_Team(true);
+			}
+		}
 
 		return true;
 	}
