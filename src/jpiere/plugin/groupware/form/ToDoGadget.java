@@ -381,10 +381,16 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		}
 
 
-		if(p_Delete_JP_ToDo_ID != 0)
+		if(p_Delete_ToDo_ID != 0)
 		{
-			whereClause = whereClause.append(" AND JP_ToDo_ID <> ?");
-			list_parameters.add(p_Delete_JP_ToDo_ID);
+			if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+			{
+				whereClause = whereClause.append(" AND JP_ToDo_ID <> ?");
+			}else {
+				whereClause = whereClause.append(" AND JP_ToDo_Team_ID <> ?");
+			}
+
+			list_parameters.add(p_Delete_ToDo_ID);
 		}
 
 		if(login_User_ID != p_AD_User_ID)
@@ -396,7 +402,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 
 		list_ToDoes = getToDoes(whereClause.toString(), orderClause.toString(), parameters);
-		p_Delete_JP_ToDo_ID = 0;
+		p_Delete_ToDo_ID = 0;
 
 		if(list_ToDoes.size() <= 0)
 		{
@@ -818,15 +824,13 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type())
 					&& MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 			{
-
-				LocalDate p_date = p_LocalDateTime.toLocalDate();
-				LocalDate start = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
-				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
-				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
+				LocalDate start = p_LocalDateTime.toLocalDate();
+				LocalDate end = start.plusDays(p_Days);
+				if(start.compareTo(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate()) <= 0
+						& end.compareTo(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate()) >= 0)
 				{
 					createContents();
 				}
-
 
 			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
 					&& MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
@@ -859,15 +863,13 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type())
 					&& MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 			{
-
-				LocalDate p_date = p_LocalDateTime.toLocalDate();
-				LocalDate start = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
-				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
-				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
+				LocalDate start = p_LocalDateTime.toLocalDate();
+				LocalDate end = start.plusDays(p_Days);
+				if(start.compareTo(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate()) <= 0
+						& end.compareTo(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate()) >= 0)
 				{
 					createContents();
 				}
-
 
 			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
 					&& MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
@@ -892,7 +894,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 
 
-	int p_Delete_JP_ToDo_ID = 0;
+	int p_Delete_ToDo_ID = 0;
 
 	@Override
 	public boolean delete(I_ToDo todo)
@@ -904,24 +906,51 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type())
 					&& MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 			{
-
-				LocalDate p_date = p_LocalDateTime.toLocalDate();
-				LocalDate start = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
-				LocalDate end = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
-				if(start.compareTo(p_date) <= 0 & end.compareTo(p_date) >= 0)
+				LocalDate start = p_LocalDateTime.toLocalDate();
+				LocalDate end = start.plusDays(p_Days);
+				if(start.compareTo(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate()) <= 0
+						& end.compareTo(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate()) >= 0)
 				{
-					p_Delete_JP_ToDo_ID = todo.get_ID();
-					createContents();
-				}
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							p_Delete_ToDo_ID = todo.get_ID();
+							createContents();
+						}
 
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							p_Delete_ToDo_ID = todo.get_ID();
+							createContents();
+						}
+					}
+
+				}
 
 			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
 					&& MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type)) {
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					p_Delete_JP_ToDo_ID = todo.get_ID();
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							p_Delete_ToDo_ID = todo.get_ID();
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							p_Delete_ToDo_ID = todo.get_ID();
+							createContents();
+						}
+					}
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
@@ -929,8 +958,22 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					p_Delete_JP_ToDo_ID = todo.get_ID();
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							p_Delete_ToDo_ID = todo.get_ID();
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							p_Delete_ToDo_ID = todo.get_ID();
+							createContents();
+						}
+					}
 				}
 			}
 		}
