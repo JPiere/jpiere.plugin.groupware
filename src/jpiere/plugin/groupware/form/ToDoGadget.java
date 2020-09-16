@@ -30,6 +30,7 @@ import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.component.ToolBarButton;
 import org.adempiere.webui.dashboard.DashboardPanel;
 import org.adempiere.webui.editor.WDateEditor;
+import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
@@ -49,6 +50,7 @@ import org.compiere.util.Language;
 import org.compiere.util.Msg;
 import org.compiere.util.Util;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
@@ -90,6 +92,11 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	private Language lang = Env.getLanguage(Env.getCtx());
 
 	private WDateEditor editor_Date = null;
+	private final static String EDITOR_DATE = "DATE";
+
+	private WNumberEditor editor_Days = null;
+	private int p_Days = 5;
+	private final static String EDITOR_DAYS = "DAYS";
 
 	private List<I_ToDo>  list_ToDoes = null;
 
@@ -158,9 +165,13 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
 		p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
 
-		editor_Date = new WDateEditor("JP_ToDoScheduledDate", false, false, true, "");
+		editor_Date = new WDateEditor(EDITOR_DATE, false, false, true, "");
 		editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
 		editor_Date.addValueChangeListener(this);
+
+		editor_Days = new WNumberEditor(EDITOR_DAYS,true, false,true, DisplayType.Integer, "");
+		editor_Days.setValue(p_Days);
+		editor_Days.addValueChangeListener(this);
 
 		today = Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 
@@ -261,6 +272,12 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
 			hlayout.appendChild(editor_Date.getComponent());
 
+			hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, " - ", true));
+
+			ZKUpdateUtil.setWidth(editor_Days.getComponent(), "50px");
+			hlayout.appendChild(editor_Days.getComponent());
+			hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, Msg.getMsg(ctx, "JP_Days"), true));
+
 			Button rightBtn = new Button();
 			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 			rightBtn.setClass("btn-small");
@@ -348,7 +365,8 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			orderClause = new StringBuilder("JP_ToDo_ScheduledStartTime");
 
 			LocalDateTime toDayMin = LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.MIN);
-			LocalDateTime toDayMax = LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.MAX);
+			LocalDateTime toDayMax = LocalDateTime.of(p_LocalDateTime.toLocalDate().plusDays(p_Days), LocalTime.MAX);
+
 			list_parameters.add(Env.getAD_Client_ID(ctx));
 			list_parameters.add(p_AD_User_ID);
 			list_parameters.add(p_JP_ToDo_Type);
@@ -543,7 +561,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			else
 				p_JP_ToDo_Type = null;
 
-		}else if("JP_ToDoScheduledDate".equals(name)) {
+		}else if(EDITOR_DATE.equals(name)) {
 
 			if(value == null)
 			{
@@ -557,7 +575,35 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			}
 
 			p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
+
+		}else if(EDITOR_DAYS.equals(name)) {
+
+			if(value == null)
+			{
+				WNumberEditor comp = (WNumberEditor)evt.getSource();
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory");
+				throw new WrongValueException(comp.getComponent(), msg);
+			}
+
+			if(value instanceof Integer)
+			{
+
+				p_Days = ((Integer) value).intValue();
+				if(0 < p_Days && p_Days < 8)
+				{
+					;//Noting to Do
+
+				}else {
+
+					WNumberEditor comp = (WNumberEditor)evt.getSource();
+					String msg = "1 ～ 7";
+					throw new WrongValueException(comp.getComponent(), msg);
+				}
+
+			}
+
 		}
+
 
 		createMessage();
 		createContents();

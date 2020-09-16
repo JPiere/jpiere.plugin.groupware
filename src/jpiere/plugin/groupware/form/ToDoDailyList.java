@@ -128,7 +128,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 
-	private int p_Days = 5;
+
 
 	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 
@@ -144,7 +144,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	private WYesNoEditor  editor_IsDisplayTask ;
 	private WTableDirEditor editor_JP_ToDo_Calendar ;
 	private WDateEditor editor_Date = null;
-	private WNumberEditor editor_Number = null;
+	private final static String EDITOR_DATE = "DATE";
+
+	private WNumberEditor editor_Days = null;
+	private final static String EDITOR_DAYS = "DAYS";
+	private int p_Days = 5;
 
 	private MLookup lookup_JP_ToDo_Category_ID;
 	private MLookup lookup_JP_ToDo_Calendar;
@@ -434,18 +438,18 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		leftBtn.addEventListener(Events.ON_CLICK, this);
 		row.appendChild(leftBtn);
 
-		editor_Date = new WDateEditor("JP_ToDoScheduledDate", false, false, true, "");
+		editor_Date = new WDateEditor(EDITOR_DATE, false, false, true, "");
 		editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
 		editor_Date.addValueChangeListener(this);
 		row.appendChild(editor_Date.getComponent());
 
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, " - ", true));
 
-		editor_Number = new WNumberEditor("Days",true, false,true, DisplayType.Integer, "Title");
-		editor_Number.setValue(p_Days);
-		editor_Number.addValueChangeListener(this);
-		ZKUpdateUtil.setWidth(editor_Number.getComponent(), "50px");
-		row.appendChild(editor_Number.getComponent());
+		editor_Days = new WNumberEditor(EDITOR_DAYS,true, false,true, DisplayType.Integer, "");
+		editor_Days.setValue(p_Days);
+		editor_Days.addValueChangeListener(this);
+		ZKUpdateUtil.setWidth(editor_Days.getComponent(), "50px");
+		row.appendChild(editor_Days.getComponent());
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, Msg.getMsg(ctx, "JP_Days"), true));
 
 		rightBtn = new Button();
@@ -1124,7 +1128,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			refreshToDoList(true);
 
-		}else if("JP_ToDoScheduledDate".equals(name)) {
+		}else if(EDITOR_DATE.equals(name)) {
 
 			if(value == null)
 			{
@@ -1143,7 +1147,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			}
 
 
-		}else if("Days".equals(name)) {
+		}else if(EDITOR_DAYS.equals(name)) {
 
 			if(value == null)
 			{
