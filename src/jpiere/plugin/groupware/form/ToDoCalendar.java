@@ -748,10 +748,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
     		ZKUpdateUtil.setHflex(tabbox, "1");
     		ZKUpdateUtil.setVflex(tabbox, "1");
 
-    		tab_p_AD_User_ID  = new Tab(MUser.get(ctx, p_AD_User_ID).getName());
+    		tab_p_AD_User_ID  = new Tab(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()));
 
     		if(MGroupwareUser.JP_TODO_MAIN_CALENDAR_IncludeTeamMemberSToDo.equals(p_JP_ToDo_Main_Calendar) && p_JP_Team_ID > 0 && m_Team != null)
-    			tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));//
+    			tab_p_AD_User_ID.setLabel(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()) + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));//
 
     		tab_p_AD_User_ID.setAttribute("AD_User_ID", p_AD_User_ID);
     		tab_p_AD_User_ID.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
@@ -790,7 +790,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	    	{
 	    		if(p_AD_User_ID != menbers[i].getAD_User_ID())
 	    		{
-	    			tab = new Tab(MUser.get(ctx, menbers[i].getAD_User_ID()).getName());
+	    			tab = new Tab(GroupwareToDoUtil.trimName(MUser.get(ctx, menbers[i].getAD_User_ID()).getName()));
 
 	    			MGroupwareUser gUser = MGroupwareUser.get(ctx, menbers[i].getAD_User_ID());
 	    			if(gUser == null || gUser.getJP_ColorPicker() == null)
@@ -1097,7 +1097,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			{
 				p_JP_Team_ID = 0;
 				m_Team = null;
-				tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
+				tab_p_AD_User_ID.setLabel(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()));
 
 			}else {
 
@@ -1111,7 +1111,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				{
 					p_JP_Team_ID = 0;
 					m_Team = null;
-					tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
+					tab_p_AD_User_ID.setLabel(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()));
 					editor_JP_Team_ID.setValue(0);
 
 					//There are no users on the team, or there are no users on the team except the selected user.
@@ -1125,7 +1125,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				{
 					p_JP_Team_ID = 0;
 					m_Team = null;
-					tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName());
+					tab_p_AD_User_ID.setLabel(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()));
 					editor_JP_Team_ID.setValue(0);
 
 					//The number of users belonging to the selected team has exceeded the maximum number of users that can be displayed on the calendar.
@@ -1134,7 +1134,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					return ;
 				}
 
-				tab_p_AD_User_ID.setLabel(MUser.get(ctx, p_AD_User_ID).getName() + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
+				tab_p_AD_User_ID.setLabel(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()) + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));
 
 			}
 

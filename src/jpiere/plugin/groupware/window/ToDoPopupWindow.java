@@ -590,26 +590,27 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		}else {
 
+			String name = GroupwareToDoUtil.trimName(MUser.getNameOfUser(p_iToDo.getCreatedBy()));
 			if(p_IsPersonalToDo)
 			{
 				if(p_iToDo.getParent_Team_ToDo_ID() == 0)
 				{
 					setTitle("[" + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID) + "] "
 							+ Msg.getElement(Env.getCtx(),MToDo.COLUMNNAME_CreatedBy)
-							+ ":" + MUser.getNameOfUser(p_iToDo.getCreatedBy()));
+							+ ":" + name);
 
 				}else {
 
 					setTitle("[" + Msg.getElement(ctx,MToDo.COLUMNNAME_JP_ToDo_Team_ID) + "] "
 							+ Msg.getElement(Env.getCtx(),MToDo.COLUMNNAME_CreatedBy)
-							+ ":" + MUser.getNameOfUser(p_iToDo.getCreatedBy()));
+							+ ":" + name);
 				}
 
 			}else {
 
 				setTitle("[" + Msg.getElement(ctx,MToDo.COLUMNNAME_JP_ToDo_Team_ID) + "] "
 						+ Msg.getElement(Env.getCtx(),MToDo.COLUMNNAME_CreatedBy)
-						+ ":" + MUser.getNameOfUser(p_iToDo.getCreatedBy()));
+						+ ":" + name);
 
 			}
 

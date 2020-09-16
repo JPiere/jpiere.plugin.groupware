@@ -50,6 +50,23 @@ public class GroupwareToDoUtil {
 	public final static String DEFAULT_COLOR1 = "#7EAAC6";
 	public final static String DEFAULT_COLOR2 = "#ACD5EE";
 
+	private static final int MAX_TITLE_LENGTH = 20;
+
+	public static String trimName(String name)
+	{
+		if (name == null)
+			return null;
+		if (name.length() <= MAX_TITLE_LENGTH)
+		{
+			return name;
+		}
+		else
+		{
+			name = name.substring(0, MAX_TITLE_LENGTH-3) + "...";
+			return name;
+		}
+	}
+
 
 	//CSS
 	public static final String STYLE_ZOOMABLE_LABEL = "cursor: pointer; text-decoration: underline;";

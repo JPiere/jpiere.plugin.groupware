@@ -306,26 +306,27 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		hlyaout.appendChild(detachPopupBtn);
 
 		String header = null;
+		String name = GroupwareToDoUtil.trimName(MUser.getNameOfUser(p_I_ToDo.getCreatedBy()));
 		if(p_IsPersonalToDo)
 		{
 			if(p_I_ToDo.getParent_Team_ToDo_ID() == 0)
 			{
 				header = "[" + Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ID) + "] "
 						+ Msg.getElement(Env.getCtx(),MToDo.COLUMNNAME_CreatedBy)
-						+ ":" + MUser.getNameOfUser(p_I_ToDo.getCreatedBy());
+						+ ":" + name;
 
 			}else {
 
 				header = "[" + Msg.getElement(ctx,MToDo.COLUMNNAME_JP_ToDo_Team_ID) + "] "
 						+ Msg.getElement(Env.getCtx(),MToDo.COLUMNNAME_CreatedBy)
-						+ ":" + MUser.getNameOfUser(p_I_ToDo.getCreatedBy());
+						+ ":" + name;
 			}
 
 		}else {
 
 			header = "[" + Msg.getElement(ctx,MToDo.COLUMNNAME_JP_ToDo_Team_ID) + "] "
 					+ Msg.getElement(Env.getCtx(),MToDo.COLUMNNAME_CreatedBy)
-					+ ":" + MUser.getNameOfUser(p_I_ToDo.getCreatedBy());
+					+ ":" + name;
 
 		}
 
