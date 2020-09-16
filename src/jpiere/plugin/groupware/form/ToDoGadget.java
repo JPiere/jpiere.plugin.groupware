@@ -85,7 +85,6 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	private String p_JP_ToDo_Type = MToDo.JP_TODO_TYPE_Task;
 
 	private LocalDateTime p_LocalDateTime =null;
-	private String p_FormattedLocalDateTime = null;
 
 	private Timestamp today = null;
 
@@ -163,7 +162,6 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		login_User_ID = p_AD_User_ID;
 
 		p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
-		p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
 
 		editor_Date = new WDateEditor(EDITOR_DATE, false, false, true, "");
 		editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
@@ -614,8 +612,6 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 			}
 
-			p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
-
 		}else if(EDITOR_DAYS.equals(name)) {
 
 			if(value == null)
@@ -629,14 +625,14 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			{
 
 				p_Days = ((Integer) value).intValue();
-				if(0 < p_Days && p_Days < 8)
+				if(0 < p_Days && p_Days < 32)
 				{
 					;//Noting to Do
 
 				}else {
 
 					WNumberEditor comp = (WNumberEditor)evt.getSource();
-					String msg = "1 ～ 7";
+					String msg = "1 ～ 31";
 					throw new WrongValueException(comp.getComponent(), msg);
 				}
 
@@ -665,14 +661,12 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 				if(BUTTON_NAME_PREVIOUS_DAY.equals(btnName))
 				{
 					p_LocalDateTime = p_LocalDateTime.minusDays(1);
-					p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
 					createMessage();
 					createContents();
 
 				}else if(BUTTON_NAME_NEXT_DAY.equals(btnName)){
 
 					p_LocalDateTime = p_LocalDateTime.plusDays(1);
-					p_FormattedLocalDateTime = formattedDate(p_LocalDateTime) ;
 					createMessage();
 					createContents();
 
