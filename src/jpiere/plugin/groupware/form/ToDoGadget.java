@@ -201,7 +201,18 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 
 		/**User Search Field**/
+		//JP_ToDo_Calendar
+		MLookup  lookup_JP_ToDo_Calendar = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar),  DisplayType.List);
+		WTableDirEditor editor_JP_ToDo_Calendar= new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar, true, false, true, lookup_JP_ToDo_Calendar);
+		editor_JP_ToDo_Calendar.setValue(p_JP_ToDo_Calendar);
+		editor_JP_ToDo_Calendar.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_JP_ToDo_Calendar.getComponent(), "true");
+		Label label_JP_ToDo_Calendar = new Label(Msg.getElement(ctx, MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar));
 
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar, label_JP_ToDo_Calendar, false),1);
+		row.appendCellChild(editor_JP_ToDo_Calendar.getComponent(),1);
+
+		row = gridRows.newRow();
 
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor userSearchEditor = new WSearchEditor("AD_User_ID", true, false, true, lookupUser);
@@ -644,6 +655,16 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 			}
 
+		}else if(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar.equals(name)) {
+
+			if(value == null)
+			{
+				WTableDirEditor comp = (WTableDirEditor)evt.getSource();
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar);//
+				throw new WrongValueException(comp.getComponent(), msg);
+			}
+
+			p_JP_ToDo_Calendar = value.toString();
 		}
 
 
