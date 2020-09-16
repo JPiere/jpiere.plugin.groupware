@@ -829,7 +829,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 				if(start.compareTo(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate()) <= 0
 						& end.compareTo(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate()) >= 0)
 				{
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+					}
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
@@ -837,7 +850,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+					}
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
@@ -845,7 +871,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+					}
 				}
 			}
 		}
@@ -868,7 +907,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 				if(start.compareTo(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate()) <= 0
 						& end.compareTo(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate()) >= 0)
 				{
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+					}
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type())
@@ -876,7 +928,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+					}
 				}
 
 			}else if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type())
@@ -884,7 +949,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 				if(!MToDo.JP_TODO_STATUS_Completed.equals(todo.getJP_ToDo_Status()))
 				{
-					createContents();
+					if(todo instanceof MToDo)
+					{
+						if(MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+
+					}else {
+
+						if(MGroupwareUser.JP_TODO_CALENDAR_TeamToDo.equals(p_JP_ToDo_Calendar))
+						{
+							createContents();
+						}
+					}
 				}
 			}
 		}
