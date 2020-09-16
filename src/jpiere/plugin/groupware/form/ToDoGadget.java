@@ -434,6 +434,8 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 
 
+	private String team = "["+ Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] ";
+
 	/**
 	 *
 	 * Create ToDo Title
@@ -471,41 +473,79 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
 			Timestamp scheduledStartTime = toDo.getJP_ToDo_ScheduledStartTime();
+			LocalDate startDate = scheduledStartTime.toLocalDateTime().toLocalDate();
+			LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
+
 			Timestamp scheduledEndTime  = toDo.getJP_ToDo_ScheduledEndTime();
+			LocalDate endDate = scheduledEndTime.toLocalDateTime().toLocalDate();
+			LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
 
-			String formattedscheduledStartTime = formattedDate(scheduledStartTime.toLocalDateTime()) ;
-			String formattedscheduledEndTime = formattedDate(scheduledEndTime.toLocalDateTime()) ;
+			boolean isTeamToDo = false;
+			boolean isOneDaySchedule = false;
+			boolean isAllDaySchedule = false;
 
-			if(p_FormattedLocalDateTime.equals(formattedscheduledStartTime) && p_FormattedLocalDateTime.equals(formattedscheduledEndTime))
+
+			if(toDo.getParent_Team_ToDo_ID() > 0)
+			{
+				isTeamToDo = true;
+			}
+
+			if(startDate.compareTo(endDate) == 0 )
+			{
+				isOneDaySchedule = true;
+			}
+
+
+			if(startTime.compareTo(LocalTime.MIN) == 0 && endTime.compareTo(LocalTime.MIN) == 0)
+			{
+				isAllDaySchedule = true;
+			}else {
+				isAllDaySchedule = false;
+			}
+
+			if(isOneDaySchedule)
 			{
 				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
-				LocalTime startTime = scheduledStartTime.toLocalDateTime().toLocalTime();
-				LocalTime endTime = scheduledEndTime.toLocalDateTime().toLocalTime();
-				boolean isAllDay = false;
-				if(endTime.compareTo(LocalTime.MIN) == 0)
-				{
-					isAllDay = true;
-				}
 
-				if(toDo.getParent_Team_ToDo_ID() == 0)
+				if(isAllDaySchedule)
 				{
-					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " ) + (isAllDay ? "" : endTime.toString()) + " " + toDo.getName());
+					btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime()) +" "+ (isTeamToDo ? team : "") + toDo.getName());
+
 				}else {
-					btn.setLabel(p_FormattedLocalDateTime + " " + (isAllDay ? "" :startTime.toString()) + (isAllDay ? "" : " - " )  + (isAllDay ? "" : endTime.toString())
-						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
+
+					btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime()) + " " + startTime.toString() + " - " +endTime.toString() + " " + (isTeamToDo ? team : "") + toDo.getName());
+
 				}
 
 			}else {
 
 				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
-				if(toDo.getParent_Team_ToDo_ID() == 0)
-				{
-					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime + " " + toDo.getName());
-				}else {
-					btn.setLabel(formattedscheduledStartTime + " - " + formattedscheduledEndTime
-						+" ["+ Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Team_ID) +"] "+toDo.getName()) ;
-				}
 
+				if(isAllDaySchedule)
+				{
+					btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime()) +" - "
+									+formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) +" " + (isTeamToDo ? team : "") +toDo.getName());
+
+				}else {
+
+					if(startTime.compareTo(LocalTime.MIN) == 0)
+					{
+						btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime()) + " - " +
+								formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) +" " + endTime.toString()  + " " + (isTeamToDo ? team : "") +toDo.getName());
+
+					}else if(endTime.compareTo(LocalTime.MIN) == 0) {
+
+						btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime()) +" " + startTime.toString() + " - " +
+								formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " "  + (isTeamToDo ? team : "") +toDo.getName());
+
+					}else {
+
+						btn.setLabel(formattedDate(toDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime()) + " "  + startTime.toString() + " - " +
+								formattedDate(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime()) + " " + endTime.toString() + " " +  (isTeamToDo ? team : "") +toDo.getName());
+
+					}
+
+				}
 
 			}
 
