@@ -1850,6 +1850,9 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	@Override
 	public boolean create(I_ToDo todo)
 	{
+		if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type()))
+			return true;
+
 		int AD_User_ID = todo.getAD_User_ID();
 		LocalDate start_LocalDate = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalDate();
 		LocalDate end_LocalDate = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate();
