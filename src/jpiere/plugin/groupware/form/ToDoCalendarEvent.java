@@ -263,7 +263,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 	 */
 	private void adjustDisplayText()
 	{
-		String userName = " [" +MUser.get(Env.getCtx(), i_ToDo.getAD_User_ID()).getName() + "] " ;
+		String userName = " [" + GroupwareToDoUtil.trimName(MUser.get(Env.getCtx(), i_ToDo.getAD_User_ID()).getName()) + "] " ;
 
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(i_ToDo.getJP_ToDo_Type()))
 		{
