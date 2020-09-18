@@ -887,6 +887,22 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		/********************************************************************************************
 		 * Statistics Info
 		 ********************************************************************************************/
+		if(p_IsPersonalToDo && p_I_ToDo_ID == 0)
+		{
+			return center;
+
+		}else if(p_IsPersonalToDo && p_iToDo.getParent_Team_ToDo_ID() == 0) {
+
+			return center;
+
+		}else if(p_IsPersonalToDo && p_iToDo.getParent_Team_ToDo_ID() != 0) {
+
+			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(p_ParentTeamToDo.getJP_Mandatory_Statistics_Info()))
+			{
+				return center;
+			}
+		}
+
 
 		row = rows.newRow();
 		Groupbox statisticsInfo_GroupBox = new Groupbox();
@@ -894,32 +910,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		row.appendCellChild(statisticsInfo_GroupBox,6);
 
 		String caption = Msg.getMsg(Env.getCtx(),"JP_StatisticsInfo");
-		if(p_IsPersonalToDo && p_ParentTeamToDo != null)
-		{
-			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(p_ParentTeamToDo.getJP_Mandatory_Statistics_Info()))
-			{
-
-			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(p_ParentTeamToDo.getJP_Mandatory_Statistics_Info())) {
-
-				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getValue() + "]";
-
-			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(p_ParentTeamToDo.getJP_Mandatory_Statistics_Info())) {
-
-				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getValue() + "]";
-
-			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(p_ParentTeamToDo.getJP_Mandatory_Statistics_Info())) {
-
-				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getValue() + "]";
-
-			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(p_ParentTeamToDo.getJP_Mandatory_Statistics_Info())) {
-
-				caption = caption + " [" + Msg.getElement(ctx, "IsMandatory") + ":" + map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number).getValue() + "]";
-
-			}else {
-				;
-			}
-		}
-
 		statisticsInfo_GroupBox.appendChild(new Caption(caption));
 		Grid statisticsInfo_Grid  = GridFactory.newGridLayout();
 		statisticsInfo_Grid.setStyle("background-color: #E9F0FF");
@@ -937,47 +927,36 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 
 			//*** JP_Statistics_YesNo  ***//
-			row = statisticsInfo_rows.newRow();
-			if(p_haveParentTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(JP_Mandatory_Statistics_Info))
+			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(JP_Mandatory_Statistics_Info))
 			{
+				row = statisticsInfo_rows.newRow();
 				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), true),2);
-			}else {
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), false),2);
+				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getComponent(),4);
 			}
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getComponent(),4);
-
 
 			//*** JP_Statistics_Choice ***//
-			row = statisticsInfo_rows.newRow();
-			if(p_haveParentTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(JP_Mandatory_Statistics_Info))
+			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(JP_Mandatory_Statistics_Info))
 			{
+				row = statisticsInfo_rows.newRow();
 				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), true),2);
-			}else{
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), false),2);
+				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getComponent(),4);
 			}
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getComponent(),4);
-
 
 			//*** JP_Statistics_DateAndTime ***//
-			row = statisticsInfo_rows.newRow();
-			if(p_haveParentTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(JP_Mandatory_Statistics_Info))
+			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(JP_Mandatory_Statistics_Info))
 			{
+				row = statisticsInfo_rows.newRow();
 				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), true),2);
-			}else {
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), false),2);
+				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getComponent(),4);
 			}
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getComponent(),4);
-
 
 			//*** JP_Statistics_Number ***//
-			row = statisticsInfo_rows.newRow();
-			if(p_haveParentTeamToDo && MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(JP_Mandatory_Statistics_Info))
+			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(JP_Mandatory_Statistics_Info))
 			{
+				row = statisticsInfo_rows.newRow();
 				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), true),2);
-			}else {
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), false),2);
+				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).getComponent(),4);
 			}
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).getComponent(),4);
 
 		}else {
 
