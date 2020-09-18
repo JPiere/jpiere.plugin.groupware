@@ -1414,7 +1414,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(index >= 0 && list_ToDoes.size() > 0)
 		{
 			p_IsDirty = false;
-			updateControlParameter(list_ToDoes.get(index).get_ID());
+			p_iToDo = list_ToDoes.get(index);
+			p_I_ToDo_ID = p_iToDo.get_ID();
+			updateControlParameter(p_I_ToDo_ID);
 			updateWindowTitle();
 			updateEditorValue();
 			updateEditorStatus();
