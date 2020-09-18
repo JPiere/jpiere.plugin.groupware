@@ -15,6 +15,9 @@ package jpiere.plugin.groupware.window;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +41,14 @@ import org.adempiere.webui.component.Mask;
 import org.adempiere.webui.component.Row;
 import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.component.Window;
+import org.adempiere.webui.editor.WDateEditor;
 import org.adempiere.webui.editor.WDatetimeEditor;
 import org.adempiere.webui.editor.WEditor;
 import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
+import org.adempiere.webui.editor.WTimeEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.DialogEvents;
 import org.adempiere.webui.event.ValueChangeEvent;
@@ -81,6 +86,7 @@ import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Popup;
 import org.zkoss.zul.South;
+import org.zkoss.zul.Timebox;
 
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
@@ -445,17 +451,34 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
 		}
 
+		//TODO
+		//*** JP_ToDo_ScheduledStartDate ***//
+		WDateEditor editor_JP_ToDo_ScheduledStartDate = new WDateEditor("JP_ToDo_ScheduledStartDate", false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
+		editor_JP_ToDo_ScheduledStartDate.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartDate.getComponent(), "true");
+		map_Editor.put("JP_ToDo_ScheduledStartDate", editor_JP_ToDo_ScheduledStartDate);
+
 		//*** JP_ToDo_ScheduledStartTime ***//
-		WDatetimeEditor editor_JP_ToDo_ScheduledStartTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
+		WTimeEditor editor_JP_ToDo_ScheduledStartTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
 		editor_JP_ToDo_ScheduledStartTime.addValueChangeListener(this);
-		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartTime.getComponent(), "true");
+		ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledStartTime.getComponent(), "80px");
+		Timebox startTimebox = editor_JP_ToDo_ScheduledStartTime.getComponent();
+		startTimebox.setFormat("HH:mm");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, editor_JP_ToDo_ScheduledStartTime);
 
+		//TODO
+		//*** JP_ToDo_ScheduledEndDate ***//
+		WDateEditor editor_JP_ToDo_ScheduledEndDate = new WDateEditor("JP_ToDo_ScheduledEndDate", false, p_haveParentTeamToDo? true :!p_IsUpdatable, true, null);
+		editor_JP_ToDo_ScheduledEndDate.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndDate.getComponent(), "true");
+		map_Editor.put("JP_ToDo_ScheduledEndDate", editor_JP_ToDo_ScheduledEndDate);
 
 		//*** JP_ToDo_ScheduledEndTime ***//
-		WDatetimeEditor editor_JP_ToDo_ScheduledEndTime = new WDatetimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, p_haveParentTeamToDo? true :!p_IsUpdatable, true, null);
+		WTimeEditor editor_JP_ToDo_ScheduledEndTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, p_haveParentTeamToDo? true :!p_IsUpdatable, true, null);
 		editor_JP_ToDo_ScheduledEndTime.addValueChangeListener(this);
-		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndTime.getComponent(), "true");
+		ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledEndTime.getComponent(), "80px");
+		Timebox endTimebox = editor_JP_ToDo_ScheduledEndTime.getComponent();
+		endTimebox.setFormat("HH:mm");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, editor_JP_ToDo_ScheduledEndTime);
 
 
@@ -546,7 +569,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_JP_ToDo_Type);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_JP_ToDo_Category_ID);
+			map_Editor.get("JP_ToDo_ScheduledStartDate").setValue(p_InitialScheduledStartTime);//TODO
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_InitialScheduledStartTime);
+			map_Editor.get("JP_ToDo_ScheduledEndDate").setValue(p_InitialScheduledEndTime);//TODO
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_InitialScheduledEndTime);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(MToDo.JP_TODO_STATUS_NotYetStarted);
 			map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setValue("Y");
@@ -558,7 +583,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_iToDo.getJP_ToDo_Category_ID());
 			map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_iToDo.getName());
 			map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_iToDo.getDescription());
+			map_Editor.get("JP_ToDo_ScheduledStartDate").setValue(p_iToDo.getJP_ToDo_ScheduledStartTime());//TODO
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_iToDo.getJP_ToDo_ScheduledStartTime());
+			map_Editor.get("JP_ToDo_ScheduledEndDate").setValue(p_iToDo.getJP_ToDo_ScheduledEndTime());//TODO
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_iToDo.getJP_ToDo_ScheduledEndTime());
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(p_iToDo.getJP_ToDo_Status());
 			map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setValue(p_iToDo.isOpenToDoJP());
@@ -861,7 +888,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		{
 			row = rows.newRow();
 			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true),2);
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).getComponent(),4);
+			row.appendCellChild(map_Editor.get("JP_ToDo_ScheduledStartDate").getComponent(),2);//TODO
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).getComponent(),2);
 		}
 
 		//*** JP_ToDo_ScheduledEndTime ***//
@@ -869,7 +897,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		{
 			row = rows.newRow();
 			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true),2);
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).getComponent(),4);
+			row.appendCellChild(map_Editor.get("JP_ToDo_ScheduledEndDate").getComponent(),2);//TODO
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).getComponent(),2);
 		}
 
 		//*** JP_ToDo_Status ***//
@@ -1252,6 +1281,22 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 		}
 
+		//Check JP_ToDo_ScheduledStartDate
+		editor = map_Editor.get("JP_ToDo_ScheduledStartDate");//TODO
+		LocalDate date = null;
+		LocalTime time =null;
+		if(editor.getValue() == null)
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
+			{
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);//TODO
+				throw new WrongValueException(editor.getComponent(), msg);
+			}
+
+		}else {
+			date = ((Timestamp)editor.getValue()).toLocalDateTime().toLocalDate();
+		}
+
 		//Check JP_ToDo_ScheduledStartTime
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
 		if(editor.getValue() == null)
@@ -1263,7 +1308,23 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 
 		}else {
-			p_iToDo.setJP_ToDo_ScheduledStartTime((Timestamp)editor.getValue());
+
+			time = ((Timestamp)editor.getValue()).toLocalDateTime().toLocalTime();
+			p_iToDo.setJP_ToDo_ScheduledStartTime(Timestamp.valueOf(LocalDateTime.of(date, time)));
+		}
+
+		//Check JP_ToDo_ScheduledEndDate
+		editor = map_Editor.get("JP_ToDo_ScheduledEndDate");//TODO
+		if(editor.getValue() == null)
+		{
+			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
+			{
+				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);//TODO
+				throw new WrongValueException(editor.getComponent(), msg);
+			}
+
+		}else {
+			date = ((Timestamp)editor.getValue()).toLocalDateTime().toLocalDate();
 		}
 
 		//Check JP_ToDo_ScheduledEndTime
@@ -1277,7 +1338,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 
 		}else {
-			p_iToDo.setJP_ToDo_ScheduledEndTime((Timestamp)editor.getValue());
+
+			time = ((Timestamp)editor.getValue()).toLocalDateTime().toLocalTime();
+			p_iToDo.setJP_ToDo_ScheduledEndTime(Timestamp.valueOf(LocalDateTime.of(date, time)));
 		}
 
 
