@@ -2878,7 +2878,15 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		{
 			newEvent = new ToDoCalendarEvent(todo);
 			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+			{
+				HashMap<Integer, ToDoCalendarEvent> map_userEvent = map_AcquiredCalendarEvent_User.get(todo.getAD_User_ID());
+				if(map_userEvent == null)
+				{
+					map_userEvent = new HashMap<Integer, ToDoCalendarEvent>();
+				}
+				map_userEvent.put(todo.get_ID(), newEvent);
+				map_AcquiredCalendarEvent_User.put(todo.getAD_User_ID(), map_userEvent);
+			}
 
 		}else {
 
