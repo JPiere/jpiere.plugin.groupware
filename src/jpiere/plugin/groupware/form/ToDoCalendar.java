@@ -302,8 +302,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					calendars.setFirstDayOfWeek(refList.getName());
 				}
 
-				p_JP_ToDo_Main_Calendar = m_GroupwareUser.getJP_ToDo_Main_Calendar();
-				p_JP_ToDo_Calendar = m_GroupwareUser.getJP_ToDo_Calendar();
+				if(!Util.isEmpty(m_GroupwareUser.getJP_ToDo_Main_Calendar()))
+					p_JP_ToDo_Main_Calendar = m_GroupwareUser.getJP_ToDo_Main_Calendar();
+				if(!Util.isEmpty(m_GroupwareUser.getJP_ToDo_Calendar()))
+					p_JP_ToDo_Calendar = m_GroupwareUser.getJP_ToDo_Calendar();
 
 			}
 		}
