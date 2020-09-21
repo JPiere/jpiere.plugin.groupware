@@ -1092,7 +1092,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledStartTime()
 	{
-		return Timestamp.valueOf(p_LocalDateTime);
+		return Timestamp.valueOf(LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.NOON));
 	}
 
 
@@ -1100,7 +1100,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	@Override
 	public Timestamp getDefault_JP_ToDo_ScheduledEndTime()
 	{
-		return Timestamp.valueOf(p_LocalDateTime);
+		return Timestamp.valueOf(LocalDateTime.of(p_LocalDateTime.toLocalDate(), LocalTime.NOON));
 	}
 
 

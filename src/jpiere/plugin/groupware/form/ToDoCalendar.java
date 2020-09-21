@@ -3013,7 +3013,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			timestamp = new Timestamp(map_Calendars.get(p_AD_User_ID).getCurrentDate().getTime());
 			LocalDateTime ldt = timestamp.toLocalDateTime();
 
-			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.MIN));
+			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.NOON));
 
 
 		}else {
@@ -3037,7 +3037,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			timestamp = new Timestamp(map_Calendars.get(p_AD_User_ID).getCurrentDate().getTime());
 			LocalDateTime ldt = timestamp.toLocalDateTime();
 
-			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.MIN));
+			return Timestamp.valueOf(LocalDateTime.of(ldt.toLocalDate(), LocalTime.NOON));
 
 		}else {
 

@@ -34,7 +34,7 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200813L;
+	private static final long serialVersionUID = 20200921L;
 
     /** Standard Constructor */
     public X_JP_ToDo (Properties ctx, int JP_ToDo_ID, String trxName)
@@ -43,8 +43,12 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
       /** if (JP_ToDo_ID == 0)
         {
 			setAD_User_ID (0);
+			setIsEndDateAllDayJP (false);
+// N
 			setIsOpenToDoJP (true);
 // Y
+			setIsStartDateAllDayJP (false);
+// N
 			setJP_Processing1 (null);
 // N
 			setJP_ToDo_ID (0);
@@ -258,6 +262,27 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
+	/** Set All Day.
+		@param IsEndDateAllDayJP All Day	  */
+	public void setIsEndDateAllDayJP (boolean IsEndDateAllDayJP)
+	{
+		set_Value (COLUMNNAME_IsEndDateAllDayJP, Boolean.valueOf(IsEndDateAllDayJP));
+	}
+
+	/** Get All Day.
+		@return All Day	  */
+	public boolean isEndDateAllDayJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsEndDateAllDayJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
 	/** Set Open ToDo.
 		@param IsOpenToDoJP Open ToDo	  */
 	public void setIsOpenToDoJP (boolean IsOpenToDoJP)
@@ -270,6 +295,27 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 	public boolean isOpenToDoJP () 
 	{
 		Object oo = get_Value(COLUMNNAME_IsOpenToDoJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set All Day.
+		@param IsStartDateAllDayJP All Day	  */
+	public void setIsStartDateAllDayJP (boolean IsStartDateAllDayJP)
+	{
+		set_Value (COLUMNNAME_IsStartDateAllDayJP, Boolean.valueOf(IsStartDateAllDayJP));
+	}
+
+	/** Get All Day.
+		@return All Day	  */
+	public boolean isStartDateAllDayJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsStartDateAllDayJP);
 		if (oo != null) 
 		{
 			 if (oo instanceof Boolean) 
@@ -454,6 +500,20 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 		return ii.intValue();
 	}
 
+	/** Set Scheduled End Date.
+		@param JP_ToDo_ScheduledEndDate Scheduled End Date	  */
+	public void setJP_ToDo_ScheduledEndDate (Timestamp JP_ToDo_ScheduledEndDate)
+	{
+		set_Value (COLUMNNAME_JP_ToDo_ScheduledEndDate, JP_ToDo_ScheduledEndDate);
+	}
+
+	/** Get Scheduled End Date.
+		@return Scheduled End Date	  */
+	public Timestamp getJP_ToDo_ScheduledEndDate () 
+	{
+		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_ScheduledEndDate);
+	}
+
 	/** Set Scheduled End Time.
 		@param JP_ToDo_ScheduledEndTime Scheduled End Time	  */
 	public void setJP_ToDo_ScheduledEndTime (Timestamp JP_ToDo_ScheduledEndTime)
@@ -466,6 +526,20 @@ public class X_JP_ToDo extends PO implements I_JP_ToDo, I_Persistent
 	public Timestamp getJP_ToDo_ScheduledEndTime () 
 	{
 		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_ScheduledEndTime);
+	}
+
+	/** Set Scheduled Start Date.
+		@param JP_ToDo_ScheduledStartDate Scheduled Start Date	  */
+	public void setJP_ToDo_ScheduledStartDate (Timestamp JP_ToDo_ScheduledStartDate)
+	{
+		set_Value (COLUMNNAME_JP_ToDo_ScheduledStartDate, JP_ToDo_ScheduledStartDate);
+	}
+
+	/** Get Scheduled Start Date.
+		@return Scheduled Start Date	  */
+	public Timestamp getJP_ToDo_ScheduledStartDate () 
+	{
+		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_ScheduledStartDate);
 	}
 
 	/** Set Scheduled Start Time.

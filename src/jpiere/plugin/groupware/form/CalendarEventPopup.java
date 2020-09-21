@@ -18,6 +18,7 @@ import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
+import org.adempiere.webui.editor.WTimeEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
@@ -38,6 +39,7 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.Popup;
+import org.zkoss.zul.Timebox;
 import org.zkoss.zul.Vlayout;
 
 import jpiere.plugin.groupware.model.I_ToDo;
@@ -95,7 +97,9 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_Name, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Name)) );
 		map_Label.put(MToDo.COLUMNNAME_Description, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Description)) );
+		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)) );
+		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Status, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status)) );
 		map_Label.put(MToDo.COLUMNNAME_IsOpenToDoJP, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP)) );
@@ -162,27 +166,40 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		editor_Comments.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
 
-		//TODO
+
 		//*** JP_ToDo_ScheduledStartDate ***//
-		WDateEditor editor_JP_ToDo_ScheduledStartDate = new WDateEditor("JP_ToDo_ScheduledStartDate", false, true, false, null);
+		WDateEditor editor_JP_ToDo_ScheduledStartDate = new WDateEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, false, true, false, null);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartDate.getComponent(), "true");
 		map_Editor.put("JP_ToDo_ScheduledStartDate", editor_JP_ToDo_ScheduledStartDate);
 
+		//*** IsStarDateAllDayJP ***//
+		WYesNoEditor editor_IsStartDateAllDayJP = new WYesNoEditor(MToDo.COLUMNNAME_IsStartDateAllDayJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsStartDateAllDayJP), null, true, true, false);
+		map_Editor.put(MToDo.COLUMNNAME_IsStartDateAllDayJP, editor_IsStartDateAllDayJP);
+
 		//*** JP_ToDo_ScheduledStartTime ***//
-		WStringEditor editor_JP_ToDo_ScheduledStartTime = new WStringEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, true, false, 60,60 ,"",null);
+		WTimeEditor editor_JP_ToDo_ScheduledStartTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false,true, false, null);
 		ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledStartTime.getComponent(), "60px");
+		Timebox startTimebox = editor_JP_ToDo_ScheduledStartTime.getComponent();
+		startTimebox.setFormat("HH:mm");
+		startTimebox.setButtonVisible(false);
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, editor_JP_ToDo_ScheduledStartTime);
 
 
-		//TODO
 		//*** JP_ToDo_ScheduledEndDate ***//
-		WDateEditor editor_JP_ToDo_ScheduledEndDate = new WDateEditor("JP_ToDo_ScheduledEndDate", false, true, false, null);
+		WDateEditor editor_JP_ToDo_ScheduledEndDate = new WDateEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, false, true, false, null);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndDate.getComponent(), "true");
 		map_Editor.put("JP_ToDo_ScheduledEndDate", editor_JP_ToDo_ScheduledEndDate);
 
+		//*** IsEndDateAllDayJP ***//
+		WYesNoEditor editor_IsEndDateAllDayJP = new WYesNoEditor(MToDo.COLUMNNAME_IsEndDateAllDayJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsEndDateAllDayJP), null, true, true, false);
+		map_Editor.put(MToDo.COLUMNNAME_IsEndDateAllDayJP, editor_IsEndDateAllDayJP);
+
 		//*** JP_ToDo_ScheduledEndTime ***//
-		WStringEditor editor_JP_ToDo_ScheduledEndTime = new WStringEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, true, false, 60,60 ,"",null);
+		WTimeEditor editor_JP_ToDo_ScheduledEndTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, true , false, null);
 		ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledEndTime.getComponent(), "60px");
+		Timebox endTimebox = editor_JP_ToDo_ScheduledEndTime.getComponent();
+		endTimebox.setFormat("HH:mm");
+		endTimebox.setButtonVisible(false);
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, editor_JP_ToDo_ScheduledEndTime);
 
 
@@ -408,22 +425,41 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 			row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).getComponent(),4);
 		}
 
+		//*** JP_ToDo_ScheduledStartDate & Time ***//
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 		{
-			//*** JP_ToDo_ScheduledStartTime ***//
 			row = rows.newRow();
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true),2);
-			row.appendCellChild(map_Editor.get("JP_ToDo_ScheduledStartDate").getComponent(),2);//TODO
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).getComponent(),2);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate), true),2);
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).getComponent(),2);
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).getComponent(),2);
+			if(p_I_ToDo.isStartDateAllDayJP())
+			{
+				;//Noting to do
+			}else {
+				row = rows.newRow();
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime), true),2);
+				Timebox comp = (Timebox)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).getComponent();
+				row.appendCellChild(comp,2);
+			}
+
 		}
 
+		//*** JP_ToDo_ScheduledEndDate & Time ***//
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type) )
 		{
-			//*** JP_ToDo_ScheduledEndTime ***//
 			row = rows.newRow();
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true),2);
-			row.appendCellChild(map_Editor.get("JP_ToDo_ScheduledEndDate").getComponent(),2);//TODO
-			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).getComponent(),2);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate), true),2);
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).getComponent(),2);
+			row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_IsEndDateAllDayJP).getComponent(),2);
+			if(p_I_ToDo.isEndDateAllDayJP())
+			{
+				;//Noting to do
+			}else {
+				row = rows.newRow();
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime), true),2);
+				Timebox comp = (Timebox)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).getComponent();
+				row.appendCellChild(comp,2);
+			}
 		}
 
 		//*** JP_ToDo_Status ***//
@@ -612,45 +648,77 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		}
 
-		//TODO
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 		{
-			map_Label.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(true);
-			map_Editor.get("JP_ToDo_ScheduledStartDate").setVisible(true);
-			map_Editor.get("JP_ToDo_ScheduledStartDate").setValue(p_I_ToDo.getJP_ToDo_ScheduledStartTime());
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(true);
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_I_ToDo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalTime().toString());
+			map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setVisible(true);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setVisible(true);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(p_I_ToDo.getJP_ToDo_ScheduledStartTime());
+
+			map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).setVisible(true);
+			map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).setValue(p_I_ToDo.isStartDateAllDayJP());
+
+			if(p_I_ToDo.isStartDateAllDayJP())
+			{
+				map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(false);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(false);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(null);
+			}else {
+				map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(true);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(true);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_I_ToDo.getJP_ToDo_ScheduledStartTime());
+			}
+
 
 		}else {
 
-			map_Label.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(false);
-			map_Editor.get("JP_ToDo_ScheduledStartDate").setVisible(false);
-			map_Editor.get("JP_ToDo_ScheduledStartDate").setValue(null);
+			map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setVisible(false);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setVisible(false);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(null);
+
+			map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).setVisible(false);
+
+			map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(false);
 			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setVisible(false);
 			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(null);
 
 		}
 
-		//TODO
+
 		if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type) )
 		{
-			map_Label.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(true);
-			map_Editor.get("JP_ToDo_ScheduledEndDate").setVisible(true);
-			map_Editor.get("JP_ToDo_ScheduledEndDate").setValue(p_I_ToDo.getJP_ToDo_ScheduledEndTime());
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(true);
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_I_ToDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime().toString());
+			map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setVisible(true);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setVisible(true);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setValue(p_I_ToDo.getJP_ToDo_ScheduledEndTime());
+
+			map_Editor.get(MToDo.COLUMNNAME_IsEndDateAllDayJP).setVisible(true);
+			map_Editor.get(MToDo.COLUMNNAME_IsEndDateAllDayJP).setValue(p_I_ToDo.isEndDateAllDayJP());
+
+			if(p_I_ToDo.isEndDateAllDayJP())
+			{
+				map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(false);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(false);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(null);
+			}else {
+				map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(true);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(true);
+				map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_I_ToDo.getJP_ToDo_ScheduledEndTime());
+			}
 
 		}else {
 
-			map_Label.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(false);
-			map_Editor.get("JP_ToDo_ScheduledEndDate").setVisible(false);
-			map_Editor.get("JP_ToDo_ScheduledEndDate").setValue(null);
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(false);
-			map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(null);
+			map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setVisible(false);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setVisible(false);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setValue(null);
+
+			map_Editor.get(MToDo.COLUMNNAME_IsEndDateAllDayJP).setVisible(false);
+
+			map_Label.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(false);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setVisible(false);
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(null);
 		}
 
-		map_Editor.get(MToDoTeam.COLUMNNAME_JP_ToDo_Status).setValue(p_I_ToDo.getJP_ToDo_Status());
-		map_Editor.get(MToDoTeam.COLUMNNAME_IsOpenToDoJP).setValue(p_I_ToDo.isOpenToDoJP());
+		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(p_I_ToDo.getJP_ToDo_Status());
+		map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setValue(p_I_ToDo.isOpenToDoJP());
 
 		createPopup(event);
 	}

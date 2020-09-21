@@ -33,7 +33,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200813L;
+	private static final long serialVersionUID = 20200921L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Reminder (Properties ctx, int JP_ToDo_Reminder_ID, String trxName)

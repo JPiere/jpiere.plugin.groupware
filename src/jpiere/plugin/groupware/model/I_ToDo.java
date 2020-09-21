@@ -96,16 +96,30 @@ public interface I_ToDo
 	public void setIsOpenToDoJP (boolean IsOpenToDoJP);
 	public boolean isOpenToDoJP();
 
+	/** IsStartDateAllDayJP **/
+	public void setIsStartDateAllDayJP (boolean IsStartDateAllDayJP);
+	public boolean isStartDateAllDayJP();
+
+	/** IsEndDateAllDayJP **/
+	public void setIsEndDateAllDayJP (boolean IsEndDateAllDayJP);
+	public boolean isEndDateAllDayJP();
 
 	/** Processed **/
 	//public void setProcessed (boolean Processed);
 	public boolean isProcessed();
 
+	/** JP_ToDo_ScheduledStartDate **/
+	public void setJP_ToDo_ScheduledStartDate (Timestamp JP_ToDo_ScheduledStartTime);
+	public Timestamp getJP_ToDo_ScheduledStartDate();
 
 	/** JP_ToDo_ScheduledStartTime **/
 	public void setJP_ToDo_ScheduledStartTime (Timestamp JP_ToDo_ScheduledStartTime);
 	public Timestamp getJP_ToDo_ScheduledStartTime();
 
+
+	/** JP_ToDo_ScheduledEndDate **/
+	public void setJP_ToDo_ScheduledEndDate (Timestamp JP_ToDo_ScheduledEndTime);
+	public Timestamp getJP_ToDo_ScheduledEndDate();
 
 	/** JP_ToDo_ScheduledEndTime **/
 	public void setJP_ToDo_ScheduledEndTime (Timestamp JP_ToDo_ScheduledEndTime);

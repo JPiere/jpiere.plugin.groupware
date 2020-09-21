@@ -194,6 +194,15 @@ public interface I_JP_ToDo
 	  */
 	public boolean isActive();
 
+    /** Column name IsEndDateAllDayJP */
+    public static final String COLUMNNAME_IsEndDateAllDayJP = "IsEndDateAllDayJP";
+
+	/** Set All Day	  */
+	public void setIsEndDateAllDayJP (boolean IsEndDateAllDayJP);
+
+	/** Get All Day	  */
+	public boolean isEndDateAllDayJP();
+
     /** Column name IsOpenToDoJP */
     public static final String COLUMNNAME_IsOpenToDoJP = "IsOpenToDoJP";
 
@@ -202,6 +211,15 @@ public interface I_JP_ToDo
 
 	/** Get Open ToDo	  */
 	public boolean isOpenToDoJP();
+
+    /** Column name IsStartDateAllDayJP */
+    public static final String COLUMNNAME_IsStartDateAllDayJP = "IsStartDateAllDayJP";
+
+	/** Set All Day	  */
+	public void setIsStartDateAllDayJP (boolean IsStartDateAllDayJP);
+
+	/** Get All Day	  */
+	public boolean isStartDateAllDayJP();
 
     /** Column name JP_Processing1 */
     public static final String COLUMNNAME_JP_Processing1 = "JP_Processing1";
@@ -288,6 +306,15 @@ public interface I_JP_ToDo
 
 	public I_JP_ToDo getJP_ToDo_Related() throws RuntimeException;
 
+    /** Column name JP_ToDo_ScheduledEndDate */
+    public static final String COLUMNNAME_JP_ToDo_ScheduledEndDate = "JP_ToDo_ScheduledEndDate";
+
+	/** Set Scheduled End Date	  */
+	public void setJP_ToDo_ScheduledEndDate (Timestamp JP_ToDo_ScheduledEndDate);
+
+	/** Get Scheduled End Date	  */
+	public Timestamp getJP_ToDo_ScheduledEndDate();
+
     /** Column name JP_ToDo_ScheduledEndTime */
     public static final String COLUMNNAME_JP_ToDo_ScheduledEndTime = "JP_ToDo_ScheduledEndTime";
 
@@ -296,6 +323,15 @@ public interface I_JP_ToDo
 
 	/** Get Scheduled End Time	  */
 	public Timestamp getJP_ToDo_ScheduledEndTime();
+
+    /** Column name JP_ToDo_ScheduledStartDate */
+    public static final String COLUMNNAME_JP_ToDo_ScheduledStartDate = "JP_ToDo_ScheduledStartDate";
+
+	/** Set Scheduled Start Date	  */
+	public void setJP_ToDo_ScheduledStartDate (Timestamp JP_ToDo_ScheduledStartDate);
+
+	/** Get Scheduled Start Date	  */
+	public Timestamp getJP_ToDo_ScheduledStartDate();
 
     /** Column name JP_ToDo_ScheduledStartTime */
     public static final String COLUMNNAME_JP_ToDo_ScheduledStartTime = "JP_ToDo_ScheduledStartTime";
