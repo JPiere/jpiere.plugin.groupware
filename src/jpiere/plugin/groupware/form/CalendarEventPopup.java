@@ -178,7 +178,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		//*** JP_ToDo_ScheduledStartTime ***//
 		WTimeEditor editor_JP_ToDo_ScheduledStartTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false,true, false, null);
-		ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledStartTime.getComponent(), "60px");
+		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartTime.getComponent(), "true");
 		Timebox startTimebox = editor_JP_ToDo_ScheduledStartTime.getComponent();
 		startTimebox.setFormat("HH:mm");
 		startTimebox.setButtonVisible(false);
@@ -196,7 +196,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		//*** JP_ToDo_ScheduledEndTime ***//
 		WTimeEditor editor_JP_ToDo_ScheduledEndTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, true , false, null);
-		ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledEndTime.getComponent(), "60px");
+		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndTime.getComponent(), "true");
 		Timebox endTimebox = editor_JP_ToDo_ScheduledEndTime.getComponent();
 		endTimebox.setFormat("HH:mm");
 		endTimebox.setButtonVisible(false);

@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200905L;
+	private static final long serialVersionUID = 20200922L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -45,6 +45,10 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 // Y
 			setIsDisplayTaskJP (false);
 // N
+			setJP_Add_Hours (0);
+// 5
+			setJP_Add_Mins (0);
+// 15
 			setJP_GroupwareUser_ID (0);
 			setJP_ToDo_Calendar (null);
 // P
@@ -282,6 +286,40 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 			return "Y".equals(oo);
 		}
 		return false;
+	}
+
+	/** Set Hours to Add.
+		@param JP_Add_Hours Hours to Add	  */
+	public void setJP_Add_Hours (int JP_Add_Hours)
+	{
+		set_Value (COLUMNNAME_JP_Add_Hours, Integer.valueOf(JP_Add_Hours));
+	}
+
+	/** Get Hours to Add.
+		@return Hours to Add	  */
+	public int getJP_Add_Hours () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Add_Hours);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Set Mins to Add.
+		@param JP_Add_Mins Mins to Add	  */
+	public void setJP_Add_Mins (int JP_Add_Mins)
+	{
+		set_Value (COLUMNNAME_JP_Add_Mins, Integer.valueOf(JP_Add_Mins));
+	}
+
+	/** Get Mins to Add.
+		@return Mins to Add	  */
+	public int getJP_Add_Mins () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Add_Mins);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
 	}
 
 	/** Set Color Picker.

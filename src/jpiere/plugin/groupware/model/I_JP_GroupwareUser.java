@@ -199,6 +199,24 @@ public interface I_JP_GroupwareUser
 	/** Get Display Task	  */
 	public boolean isDisplayTaskJP();
 
+    /** Column name JP_Add_Hours */
+    public static final String COLUMNNAME_JP_Add_Hours = "JP_Add_Hours";
+
+	/** Set Hours to Add	  */
+	public void setJP_Add_Hours (int JP_Add_Hours);
+
+	/** Get Hours to Add	  */
+	public int getJP_Add_Hours();
+
+    /** Column name JP_Add_Mins */
+    public static final String COLUMNNAME_JP_Add_Mins = "JP_Add_Mins";
+
+	/** Set Mins to Add	  */
+	public void setJP_Add_Mins (int JP_Add_Mins);
+
+	/** Get Mins to Add	  */
+	public int getJP_Add_Mins();
+
     /** Column name JP_ColorPicker */
     public static final String COLUMNNAME_JP_ColorPicker = "JP_ColorPicker";
 
