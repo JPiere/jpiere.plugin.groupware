@@ -597,6 +597,14 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info).setReadWrite(p_IsUpdatable);
 		}
 
+		if(addStartHoursBtn != null)
+		{
+			addStartHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
+			addStartMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
+			addEndHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
+			addEndMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
+		}
+
 	}
 
 	private void updateEditorValue()
@@ -872,6 +880,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addStartHoursBtn.setClass("btn-small");
 			addStartHoursBtn.setName(BUTTON_NAME_ADD_START_HOURS);
 			addStartHoursBtn.setLabel("+"+p_Add_Hours+Msg.getMsg(ctx, "JP_Hours"));
+			addStartHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addStartHoursBtn.addEventListener(Events.ON_CLICK, this);
 			ZKUpdateUtil.setHflex(addStartHoursBtn, "true");
 		}
@@ -882,6 +891,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addStartMinsBtn.setClass("btn-small");
 			addStartMinsBtn.setName(BUTTON_NAME_ADD_START_MINS);
 			addStartMinsBtn.setLabel("+"+p_Add_Mins+Msg.getMsg(ctx, "JP_Mins"));
+			addStartMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addStartMinsBtn.addEventListener(Events.ON_CLICK, this);
 			ZKUpdateUtil.setHflex(addStartMinsBtn, "true");
 		}
@@ -892,6 +902,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addEndHoursBtn.setClass("btn-small");
 			addEndHoursBtn.setName(BUTTON_NAME_ADD_END_HOURS);
 			addEndHoursBtn.setLabel("+"+p_Add_Hours+Msg.getMsg(ctx, "JP_Hours"));
+			addEndHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addEndHoursBtn.addEventListener(Events.ON_CLICK, this);
 			ZKUpdateUtil.setHflex(addEndHoursBtn, "true");
 		}
@@ -902,6 +913,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addEndMinsBtn.setClass("btn-small");
 			addEndMinsBtn.setName(BUTTON_NAME_ADD_END_MINS);
 			addEndMinsBtn.setLabel("+"+p_Add_Mins+Msg.getMsg(ctx, "JP_Mins"));
+			addEndMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addEndMinsBtn.addEventListener(Events.ON_CLICK, this);
 			ZKUpdateUtil.setHflex(addEndMinsBtn, "true");
 		}
