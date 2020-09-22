@@ -132,6 +132,7 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 				}
 
 				setJP_ToDo_ScheduledStartTime(Timestamp.valueOf(LocalDateTime.of(localStartDate,localStartTime)));
+				setJP_ToDo_ScheduledStartDate(getJP_ToDo_ScheduledStartTime());
 			}
 
 
@@ -163,6 +164,7 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 				}
 
 				setJP_ToDo_ScheduledEndTime(Timestamp.valueOf(LocalDateTime.of(localEndDate,localEndTime)));
+				setJP_ToDo_ScheduledEndDate(getJP_ToDo_ScheduledEndTime());
 
 				if(MToDo.JP_TODO_TYPE_Schedule.equals(getJP_ToDo_Type()))
 				{

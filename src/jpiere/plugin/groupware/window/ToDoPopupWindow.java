@@ -1270,7 +1270,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				updateNorth();
 				updateCenter();
 
-			}else if(BUTTON_NAME_ADD_START_HOURS.equals(btnName) || BUTTON_NAME_ADD_START_MINS.equals(btnName)) {
+			}else if(BUTTON_NAME_ADD_START_HOURS.equals(btnName) || BUTTON_NAME_ADD_START_MINS.equals(btnName)) {//TODO
 
 				p_IsDirty = true;
 				updateNorth();
@@ -1285,24 +1285,37 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				WTimeEditor scheduledStartTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
 				Timestamp ts_ScheduledStartTime =(Timestamp)scheduledStartTime.getValue();
-				LocalTime local_time = null;
+				LocalTime local_StartTime = null;
 				if(ts_ScheduledStartTime == null)
 				{
-					local_time = LocalTime.MIN;
+					local_StartTime = LocalTime.MIN;
 				}else {
-					local_time = ts_ScheduledStartTime.toLocalDateTime().toLocalTime();
+					local_StartTime = ts_ScheduledStartTime.toLocalDateTime().toLocalTime();
 					if(BUTTON_NAME_ADD_START_HOURS.equals(btnName))
 					{
-						local_time = local_time.plusHours(p_Add_Hours);
+						local_StartTime = local_StartTime.plusHours(p_Add_Hours);
 					}else if(BUTTON_NAME_ADD_START_MINS.equals(btnName)) {
-						local_time = local_time.plusMinutes(p_Add_Mins);
+						local_StartTime = local_StartTime.plusMinutes(p_Add_Mins);
 					}
 				}
-				ts_ScheduledStartTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledStartDate.toLocalDateTime().toLocalDate(), local_time));
+				ts_ScheduledStartTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledStartDate.toLocalDateTime().toLocalDate(), local_StartTime));
+				scheduledStartDate.setValue(ts_ScheduledStartTime);
 				scheduledStartTime.setValue(ts_ScheduledStartTime);
 				scheduledStartTime.getComponent().focus();
 
-			}else if(BUTTON_NAME_ADD_END_HOURS.equals(btnName) || BUTTON_NAME_ADD_END_MINS.equals(btnName) ) {
+				WDateEditor scheduledEndDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
+				Timestamp ts_ScheduledEndDate =(Timestamp)scheduledEndDate.getValue();
+				if(ts_ScheduledEndDate != null)
+				{
+					if(ts_ScheduledStartTime.compareTo(ts_ScheduledEndDate) >= 0 )
+					{
+						WTimeEditor scheduledEndTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
+						scheduledEndDate.setValue(ts_ScheduledStartTime);
+						scheduledEndTime.setValue(ts_ScheduledStartTime);
+					}
+				}
+
+			}else if(BUTTON_NAME_ADD_END_HOURS.equals(btnName) || BUTTON_NAME_ADD_END_MINS.equals(btnName) ) {//TODO
 
 				p_IsDirty = true;
 				updateNorth();
@@ -1317,22 +1330,45 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				WTimeEditor scheduledEndTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
 				Timestamp ts_ScheduledEndTime =(Timestamp)scheduledEndTime.getValue();
-				LocalTime local_time = null;
+				LocalTime local_EndTime = null;
 				if(ts_ScheduledEndTime == null)
 				{
-					local_time = LocalTime.MIN;
+					local_EndTime = LocalTime.MIN;
 				}else {
-					local_time = ts_ScheduledEndTime.toLocalDateTime().toLocalTime();
+					local_EndTime = ts_ScheduledEndTime.toLocalDateTime().toLocalTime();
 					if(BUTTON_NAME_ADD_END_HOURS.equals(btnName))
 					{
-						local_time = local_time.plusHours(p_Add_Hours);
+						local_EndTime = local_EndTime.plusHours(p_Add_Hours);
 					}else if(BUTTON_NAME_ADD_END_MINS.equals(btnName)) {
-						local_time = local_time.plusMinutes(p_Add_Mins);
+						local_EndTime = local_EndTime.plusMinutes(p_Add_Mins);
 					}
 				}
-				ts_ScheduledEndTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledEndDate.toLocalDateTime().toLocalDate(), local_time));
+				ts_ScheduledEndTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledEndDate.toLocalDateTime().toLocalDate(), local_EndTime));
+				scheduledEndDate.setValue(ts_ScheduledEndTime);
 				scheduledEndTime.setValue(ts_ScheduledEndTime);
 				scheduledEndTime.getComponent().focus();
+
+				if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
+				{
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(ts_ScheduledEndTime);
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(ts_ScheduledEndTime);
+
+				}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
+
+					WDateEditor scheduledStartDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate);
+					Timestamp ts_ScheduledStartDate =(Timestamp)scheduledStartDate.getValue();
+					if(ts_ScheduledStartDate != null)
+					{
+						if(ts_ScheduledStartDate.compareTo(ts_ScheduledEndTime) >= 0 )
+						{
+							WTimeEditor scheduledStartTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+							scheduledStartDate.setValue(ts_ScheduledEndTime);
+							scheduledStartTime.setValue(ts_ScheduledEndTime);
+						}
+
+					}
+
+				}
 			}
 
 
@@ -1520,7 +1556,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					time = ((Timestamp)editor.getValue()).toLocalDateTime().toLocalTime();
 					p_iToDo.setJP_ToDo_ScheduledStartTime(Timestamp.valueOf(LocalDateTime.of(date, time)));
 				}
-
+				p_iToDo.setJP_ToDo_ScheduledStartDate(p_iToDo.getJP_ToDo_ScheduledStartTime());
 			}
 		}
 
@@ -1559,6 +1595,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					time = ((Timestamp)editor.getValue()).toLocalDateTime().toLocalTime();
 					p_iToDo.setJP_ToDo_ScheduledEndTime(Timestamp.valueOf(LocalDateTime.of(date, time)));
 				}
+				p_iToDo.setJP_ToDo_ScheduledEndDate(p_iToDo.getJP_ToDo_ScheduledEndTime());
 			}
 
 			if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
@@ -1804,7 +1841,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID,editor_JP_ToDo_Category_ID);
 			updateCenter();
 
-		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate.equals(name)) {
+		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate.equals(name)) {//TODO
 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 			{
@@ -1821,7 +1858,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			updateCenter();
 
-		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate.equals(name)) {
+		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate.equals(name)) {//TODO
 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 			{
