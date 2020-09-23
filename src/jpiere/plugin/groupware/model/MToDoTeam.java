@@ -83,8 +83,6 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 			}
 		}
 
-		setAD_Org_ID(0);
-
 		//*** Check ToDo Type ***//
 		if(Util.isEmpty(getJP_ToDo_Type()))
 		{

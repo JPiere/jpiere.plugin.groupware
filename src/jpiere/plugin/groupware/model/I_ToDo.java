@@ -51,7 +51,7 @@ public interface I_ToDo
 
 	/** AD_Org_ID **/
 	public void setAD_Org_ID (int AD_Org_ID);
-	//public int getAD_Org_ID();
+	public int getAD_Org_ID();
 
 
 	/** AD_User_ID **/

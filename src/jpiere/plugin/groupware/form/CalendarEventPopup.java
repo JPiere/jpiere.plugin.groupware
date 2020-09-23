@@ -92,6 +92,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 	private void createLabelMap()
 	{
+		map_Label.put(MToDo.COLUMNNAME_AD_Org_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_Org_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_AD_User_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Type, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID)) );
@@ -117,6 +118,12 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 	private void createEditorMap()
 	{
+		//*** AD_Org_ID ***//
+		MLookup lookup_AD_Org_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_Org_ID),  DisplayType.Search);
+		WSearchEditor Editor_AD_Org_ID = new WSearchEditor(lookup_AD_Org_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_Org_ID), null, true, true, false);
+		ZKUpdateUtil.setHflex(Editor_AD_Org_ID.getComponent(), "true");
+		map_Editor.put(MToDo.COLUMNNAME_AD_Org_ID, Editor_AD_Org_ID);
+
 		//*** AD_User_ID ***//
 		MLookup lookup_AD_User_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor Editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, true, false);
@@ -378,8 +385,14 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		Rows rows = grid.newRows();
 
-		//*** AD_User_ID ***//
+		//*** AD_Org_ID ***//
 		Row row = rows.newRow();
+		rows.appendChild(row);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_Org_ID), true),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).getComponent(),4);
+
+		//*** AD_User_ID ***//
+		row = rows.newRow();
 		rows.appendChild(row);
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_User_ID), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).getComponent(),4);
@@ -614,6 +627,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		p_JP_ToDo_Type = p_I_ToDo.getJP_ToDo_Type();
 
+		map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setValue(p_I_ToDo.getAD_Org_ID());
 		map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_I_ToDo.getAD_User_ID());
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_I_ToDo.getJP_ToDo_Type());
 		if(p_I_ToDo.getJP_ToDo_Category_ID() > 0)

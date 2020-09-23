@@ -377,6 +377,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	private void createLabelMap()
 	{
+		map_Label.put(MToDo.COLUMNNAME_AD_Org_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_Org_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_AD_User_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Type, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID)) );
@@ -405,6 +406,14 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	private void createEditorMap()
 	{
+		//*** AD_Org_ID ***//
+		MLookup lookup_AD_Org_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_Org_ID),  DisplayType.Search);
+		WSearchEditor Editor_AD_Org_ID = new WSearchEditor(lookup_AD_Org_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_Org_ID), null, true, p_IsNewRecord? false : true, true);
+		Editor_AD_Org_ID.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(Editor_AD_Org_ID.getComponent(), "true");
+		map_Editor.put(MToDo.COLUMNNAME_AD_Org_ID, Editor_AD_Org_ID);
+
+
 		//*** AD_User_ID ***//
 		MLookup lookup_AD_User_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor Editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, p_IsNewRecord? false : true, true);
@@ -571,6 +580,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	private void updateEditorStatus()
 	{
+		map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_Name).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
@@ -611,6 +621,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	{
 		if(p_IsNewRecord)
 		{
+			map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setValue(0);
 			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_JP_ToDo_Type);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_JP_ToDo_Category_ID);
@@ -625,6 +636,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		}else {
 
+			map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setValue(p_iToDo.getAD_Org_ID());
 			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_iToDo.getJP_ToDo_Type());
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_iToDo.getJP_ToDo_Category_ID());
@@ -929,8 +941,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		Rows rows = grid.newRows();
 
-		//*** AD_User_ID ***//
+		//*** AD_Org_ID ***//
 		Row row = rows.newRow();
+		rows.appendChild(row);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_Org_ID), true),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).getComponent(),4);
+
+
+		//*** AD_User_ID ***//
+		row = rows.newRow();
 		rows.appendChild(row);
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_AD_User_ID), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).getComponent(),4);
@@ -1440,10 +1459,19 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 		}
 
-		p_iToDo.setAD_Org_ID(0);
+		//Check AD_Org_ID
+		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID);
+		if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
+		{
+			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_Org_ID);
+			throw new WrongValueException(editor.getComponent(), msg);
+
+		}else {
+			p_iToDo.setAD_Org_ID((Integer)editor.getValue());
+		}
 
 		//Check AD_User_ID
-		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
+		editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
 		if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
 		{
 			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_User_ID);
