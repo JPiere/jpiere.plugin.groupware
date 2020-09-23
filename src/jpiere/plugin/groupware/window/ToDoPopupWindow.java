@@ -1270,7 +1270,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				updateNorth();
 				updateCenter();
 
-			}else if(BUTTON_NAME_ADD_START_HOURS.equals(btnName) || BUTTON_NAME_ADD_START_MINS.equals(btnName)) {//TODO
+			}else if(BUTTON_NAME_ADD_START_HOURS.equals(btnName) || BUTTON_NAME_ADD_START_MINS.equals(btnName)) {
 
 				p_IsDirty = true;
 				updateNorth();
@@ -1370,7 +1370,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				}
 			}
-
 
 		}
 		else if (event.getTarget() instanceof ProcessModalDialog)
@@ -1841,15 +1840,39 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID,editor_JP_ToDo_Category_ID);
 			updateCenter();
 
-		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate.equals(name)) {//TODO
+		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate.equals(name) || MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime.equals(name)) {
 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type))
 			{
-				WEditor editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate);
-				if(value == null)
+				WDateEditor scheduledStartDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate);
+				Timestamp ts_ScheduledStartDate =(Timestamp)scheduledStartDate.getValue();
+				if(ts_ScheduledStartDate == null)
 				{
 					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate);
-					throw new WrongValueException(editor.getComponent(), msg);
+					throw new WrongValueException(scheduledStartDate.getComponent(), msg);
+				}
+
+				WTimeEditor scheduledStartTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+				Timestamp ts_ScheduledStartTime =(Timestamp)scheduledStartTime.getValue();
+				if(ts_ScheduledStartTime == null)
+				{
+					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+					throw new WrongValueException(scheduledStartDate.getComponent(), msg);
+				}
+				ts_ScheduledStartTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledStartDate.toLocalDateTime().toLocalDate(), ts_ScheduledStartTime.toLocalDateTime().toLocalTime()));
+				scheduledStartDate.setValue(ts_ScheduledStartTime);
+				scheduledStartTime.setValue(ts_ScheduledStartTime);
+
+				WDateEditor scheduledEndDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
+				Timestamp ts_ScheduledEndDate =(Timestamp)scheduledEndDate.getValue();
+				if(ts_ScheduledEndDate != null)
+				{
+					if(ts_ScheduledStartTime.compareTo(ts_ScheduledEndDate) >= 0 )
+					{
+						WTimeEditor scheduledEndTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
+						scheduledEndDate.setValue(ts_ScheduledStartTime);
+						scheduledEndTime.setValue(ts_ScheduledStartTime);
+					}
 				}
 
 			}
@@ -1858,17 +1881,50 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			updateCenter();
 
-		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate.equals(name)) {//TODO
+		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate.equals(name) || MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime.equals(name)) {//TODO
 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 			{
-				WEditor editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
-				if(value == null)
+				WDateEditor scheduledEndDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
+				Timestamp ts_ScheduledEndDate =(Timestamp)scheduledEndDate.getValue();
+				if(ts_ScheduledEndDate == null)
 				{
 					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
-					throw new WrongValueException(editor.getComponent(), msg);
+					throw new WrongValueException(scheduledEndDate.getComponent(), msg);
 				}
 
+				WTimeEditor scheduledEndTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
+				Timestamp ts_ScheduledEndTime =(Timestamp)scheduledEndTime.getValue();
+				if(ts_ScheduledEndTime == null)
+				{
+					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
+					throw new WrongValueException(scheduledEndDate.getComponent(), msg);
+				}
+				ts_ScheduledEndTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledEndDate.toLocalDateTime().toLocalDate(), ts_ScheduledEndTime.toLocalDateTime().toLocalTime()));
+				scheduledEndDate.setValue(ts_ScheduledEndTime);
+				scheduledEndTime.setValue(ts_ScheduledEndTime);
+
+				if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
+				{
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(ts_ScheduledEndTime);
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(ts_ScheduledEndTime);
+
+				}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
+
+					WDateEditor scheduledStartDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate);
+					Timestamp ts_ScheduledStartDate =(Timestamp)scheduledStartDate.getValue();
+					if(ts_ScheduledStartDate != null)
+					{
+						if(ts_ScheduledStartDate.compareTo(ts_ScheduledEndTime) >= 0 )
+						{
+							WTimeEditor scheduledStartTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+							scheduledStartDate.setValue(ts_ScheduledEndTime);
+							scheduledStartTime.setValue(ts_ScheduledEndTime);
+						}
+
+					}
+
+				}
 			}
 
 		}else if(MToDo.COLUMNNAME_IsEndDateAllDayJP.equals(name)) {
