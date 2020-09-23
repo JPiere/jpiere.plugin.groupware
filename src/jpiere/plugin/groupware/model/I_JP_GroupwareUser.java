@@ -94,6 +94,21 @@ public interface I_JP_GroupwareUser
 
 	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException;
 
+    /** Column name C_Country_ID */
+    public static final String COLUMNNAME_C_Country_ID = "C_Country_ID";
+
+	/** Set Country.
+	  * Country 
+	  */
+	public void setC_Country_ID (int C_Country_ID);
+
+	/** Get Country.
+	  * Country 
+	  */
+	public int getC_Country_ID();
+
+	public org.compiere.model.I_C_Country getC_Country() throws RuntimeException;
+
     /** Column name C_ProjectPhase_ID */
     public static final String COLUMNNAME_C_ProjectPhase_ID = "C_ProjectPhase_ID";
 
@@ -270,6 +285,26 @@ public interface I_JP_GroupwareUser
 
 	/** Get JP_GroupwareUser_UU	  */
 	public String getJP_GroupwareUser_UU();
+
+    /** Column name JP_NonBusinessDayCalendar_ID */
+    public static final String COLUMNNAME_JP_NonBusinessDayCalendar_ID = "JP_NonBusinessDayCalendar_ID";
+
+	/** Set Nonbusiness Day Calendar	  */
+	public void setJP_NonBusinessDayCalendar_ID (int JP_NonBusinessDayCalendar_ID);
+
+	/** Get Nonbusiness Day Calendar	  */
+	public int getJP_NonBusinessDayCalendar_ID();
+
+	public org.compiere.model.I_C_Calendar getJP_NonBusinessDayCalendar() throws RuntimeException;
+
+    /** Column name JP_NonBusinessDayColor */
+    public static final String COLUMNNAME_JP_NonBusinessDayColor = "JP_NonBusinessDayColor";
+
+	/** Set Nonbusiness Day Color	  */
+	public void setJP_NonBusinessDayColor (String JP_NonBusinessDayColor);
+
+	/** Get Nonbusiness Day Color	  */
+	public String getJP_NonBusinessDayColor();
 
     /** Column name JP_Team_ID */
     public static final String COLUMNNAME_JP_Team_ID = "JP_Team_ID";

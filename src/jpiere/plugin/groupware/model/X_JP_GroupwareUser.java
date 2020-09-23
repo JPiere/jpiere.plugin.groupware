@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200922L;
+	private static final long serialVersionUID = 20200923L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -140,6 +140,34 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public int getAD_User_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_AD_User_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_C_Country getC_Country() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_Country)MTable.get(getCtx(), org.compiere.model.I_C_Country.Table_Name)
+			.getPO(getC_Country_ID(), get_TrxName());	}
+
+	/** Set Country.
+		@param C_Country_ID 
+		Country 
+	  */
+	public void setC_Country_ID (int C_Country_ID)
+	{
+		if (C_Country_ID < 1) 
+			set_Value (COLUMNNAME_C_Country_ID, null);
+		else 
+			set_Value (COLUMNNAME_C_Country_ID, Integer.valueOf(C_Country_ID));
+	}
+
+	/** Get Country.
+		@return Country 
+	  */
+	public int getC_Country_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_C_Country_ID);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
@@ -436,6 +464,45 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public String getJP_GroupwareUser_UU () 
 	{
 		return (String)get_Value(COLUMNNAME_JP_GroupwareUser_UU);
+	}
+
+	public org.compiere.model.I_C_Calendar getJP_NonBusinessDayCalendar() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_Calendar)MTable.get(getCtx(), org.compiere.model.I_C_Calendar.Table_Name)
+			.getPO(getJP_NonBusinessDayCalendar_ID(), get_TrxName());	}
+
+	/** Set Nonbusiness Day Calendar.
+		@param JP_NonBusinessDayCalendar_ID Nonbusiness Day Calendar	  */
+	public void setJP_NonBusinessDayCalendar_ID (int JP_NonBusinessDayCalendar_ID)
+	{
+		if (JP_NonBusinessDayCalendar_ID < 1) 
+			set_Value (COLUMNNAME_JP_NonBusinessDayCalendar_ID, null);
+		else 
+			set_Value (COLUMNNAME_JP_NonBusinessDayCalendar_ID, Integer.valueOf(JP_NonBusinessDayCalendar_ID));
+	}
+
+	/** Get Nonbusiness Day Calendar.
+		@return Nonbusiness Day Calendar	  */
+	public int getJP_NonBusinessDayCalendar_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_NonBusinessDayCalendar_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Set Nonbusiness Day Color.
+		@param JP_NonBusinessDayColor Nonbusiness Day Color	  */
+	public void setJP_NonBusinessDayColor (String JP_NonBusinessDayColor)
+	{
+		set_Value (COLUMNNAME_JP_NonBusinessDayColor, JP_NonBusinessDayColor);
+	}
+
+	/** Get Nonbusiness Day Color.
+		@return Nonbusiness Day Color	  */
+	public String getJP_NonBusinessDayColor () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_NonBusinessDayColor);
 	}
 
 	public I_JP_Team getJP_Team() throws RuntimeException
