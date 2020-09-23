@@ -56,6 +56,7 @@ import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MRefList;
+import org.compiere.model.MRole;
 import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
@@ -149,7 +150,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private String p_CalendarMold = null;
 
 	private MGroupwareUser m_GroupwareUser = null;
-
+	private MRole m_Role = MRole.getDefault();
 
 	/** Noth Components **/
 	private WSearchEditor editor_AD_User_ID;
@@ -218,9 +219,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 	/** Interface **/
 	private List<I_ToDo> list_ToDoes = null;
-
-
-
 
 
 	//Statics
@@ -2441,6 +2439,12 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			list_parameters.add(p_login_User_ID);
 		}
 
+		//Org Access
+		String orgAccessSQL = m_Role.getOrgWhere(false);
+		if(!Util.isEmpty(orgAccessSQL))
+		{
+			whereClause = whereClause.append(" AND " + orgAccessSQL);
+		}
 
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime, JP_ToDo_Type");
@@ -2554,6 +2558,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		//Authorization Check
 		whereClause = whereClause.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
 		list_parameters.add(p_login_User_ID);
+
+
+		//Org Access
+		String orgAccessSQL = m_Role.getOrgWhere(false);
+		if(!Util.isEmpty(orgAccessSQL))
+		{
+			whereClause = whereClause.append(" AND " + orgAccessSQL);
+		}
 
 		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
 		orderClause = new StringBuilder("AD_User_ID, JP_ToDo_ScheduledStartTime, JP_ToDo_ScheduledEndTime, JP_ToDo_Type");

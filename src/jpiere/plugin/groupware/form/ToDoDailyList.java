@@ -51,6 +51,7 @@ import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MRefList;
+import org.compiere.model.MRole;
 import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
@@ -134,6 +135,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 	private MGroupwareUser m_GroupwareUser = null;
+	private MRole m_Role = MRole.getDefault();
 
 
 	/** Noth Components **/
@@ -1495,6 +1497,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			list_parameters.add(p_login_User_ID);
 		}
 
+		//Org Access
+		String orgAccessSQL = m_Role.getOrgWhere(false);
+		if(!Util.isEmpty(orgAccessSQL))
+		{
+			whereClause = whereClause.append(" AND " + orgAccessSQL);
+		}
 
 		/**
 		 * Execution SQL
@@ -1625,7 +1633,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		whereClause = whereClause.append(" AND (IsOpenToDoJP='Y' OR CreatedBy = ?)");
 		list_parameters.add(p_login_User_ID);
 
-
+		//Org Access
+		String orgAccessSQL = m_Role.getOrgWhere(false);
+		if(!Util.isEmpty(orgAccessSQL))
+		{
+			whereClause = whereClause.append(" AND " + orgAccessSQL);
+		}
 
 		/**
 		 * Execution SQL
