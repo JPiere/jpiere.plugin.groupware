@@ -1461,7 +1461,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		//Check AD_Org_ID
 		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID);
-		if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
+		if(editor.getValue() == null)
 		{
 			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_Org_ID);
 			throw new WrongValueException(editor.getComponent(), msg);
