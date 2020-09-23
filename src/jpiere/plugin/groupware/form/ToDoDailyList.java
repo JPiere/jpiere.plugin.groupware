@@ -47,6 +47,7 @@ import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.adempiere.webui.window.FDialog;
+import org.compiere.model.I_C_NonBusinessDay;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
@@ -56,6 +57,7 @@ import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
 import org.compiere.model.Query;
+import org.compiere.model.X_C_NonBusinessDay;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Language;
@@ -111,9 +113,12 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 	/** ToDo Controler **/
 
-	//HashMap<LocalDate, HashMap<AD_User_ID, HashMap<Integer, CalendarEvent>>
-	private HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>> map_AcquiredCalendarEvent_User = new HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>>();
-	private HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>> map_AcquiredCalendarEvent_Team = new HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>>();
+	//HashMap<LocalDate, HashMap<AD_User_ID, HashMap<Integer, ArrayList<NonBusinessDayCalendarEvent>>>
+	private HashMap<LocalDate,HashMap<Integer,ArrayList<NonBusinessDayCalendarEvent>>> map_NonBusinessDayCalendarEvent_User = new HashMap<LocalDate,HashMap<Integer,ArrayList<NonBusinessDayCalendarEvent>>>();
+
+	//HashMap<LocalDate, HashMap<AD_User_ID, ArrayList<ToDoCalendarEvent>>
+	private HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>> map_ToDoCalendarEvent_User = new HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>>();
+	private HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>> map_ToDoCalendarEvent_Team = new HashMap<LocalDate, HashMap<Integer, ArrayList<ToDoCalendarEvent>>>();
 
 	private HashMap<LocalDate, String> map_DayOfWeek = new HashMap<LocalDate, String> ();
 
@@ -215,6 +220,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     {
 		p_AD_User_ID = Env.getAD_User_ID(ctx);
 		p_login_User_ID = p_AD_User_ID;
+		m_GroupwareUser = MGroupwareUser.get(ctx, p_login_User_ID);
 
 		p_LocalDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
 
@@ -490,7 +496,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     			map_DayOfWeek.put(localDate, MRefList.getListName(ctx, weekdays_Reference_ID, String.valueOf(localDate.getDayOfWeek().getValue())));
     		}
 
-    		if(map_AcquiredCalendarEvent_User.get(localDate) == null)
+    		if(map_ToDoCalendarEvent_User.get(localDate) == null)
     			queryToDoCalendarEvents_User(localDate);
     	}
     }
@@ -507,6 +513,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		MGroupwareUser user = MGroupwareUser.get(ctx, p_AD_User_ID);
 		String color1 = null;
 		String color2 = null;
+		String colorNonBusinessDay = null;
 		if(user == null)
 		{
 			color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
@@ -538,6 +545,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		}
 		color2 = "#dddddd";
 
+		if(Util.isEmpty(m_GroupwareUser.getJP_NonBusinessDayColor()))
+			colorNonBusinessDay = "#ff0000";
+		else
+			colorNonBusinessDay = m_GroupwareUser.getJP_NonBusinessDayColor();
+
        	Div div = new Div();
 		Vlayout vlayout = new Vlayout();
 		vlayout.setDroppable("false");
@@ -568,10 +580,14 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		Label day_label = null;
 		Div day_header = null;
 		Div day_Content = null;
+		String nonBusinessDay = null;
+		boolean isNonBusinessDay = false;
+		HashMap<Integer, ArrayList<NonBusinessDayCalendarEvent>> map_NonBusinessDay = null;
+		ArrayList<NonBusinessDayCalendarEvent> list_NonBusinessDay = null;
     	for(int i =0 ; i < p_Days; i++)
     	{
     		localDate = p_LocalDateTime.toLocalDate().plusDays(i);
-    		map_OneDayUserEvent =  map_AcquiredCalendarEvent_User.get(localDate);
+    		map_OneDayUserEvent =  map_ToDoCalendarEvent_User.get(localDate);
 
     		grid = null;
     		if(map_OneDayUserEvent != null)
@@ -585,12 +601,30 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			ZKUpdateUtil.setHflex(day, "1");
 			day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 1px "+ color2 +";"); //#dddddd;
 
-			day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
-			day_label.setStyle("text-align: center; color:#ffffff ");
+			//TODO
+			nonBusinessDay = null;
+			isNonBusinessDay = false;
+			map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(localDate);
+			if(map_NonBusinessDay != null)
+			{
+				list_NonBusinessDay = map_NonBusinessDay.get(p_AD_User_ID);
+				if(list_NonBusinessDay != null && list_NonBusinessDay.size() > 0)
+				{
+					isNonBusinessDay = true;
+					nonBusinessDay = list_NonBusinessDay.get(0).getTitle();
+				}
+			}
 
+			if(isNonBusinessDay)
+				day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+") : " + nonBusinessDay);//TODO
+
+			else
+				day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
+
+			day_label.setStyle("text-align: center; color:#ffffff ;");
 			day_header = new Div();
 			day_header.appendChild(day_label);
-			day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ color1 +";");
+			day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ (isNonBusinessDay? colorNonBusinessDay : color1) +";");
 			day.appendChild(day_header);
 
 
@@ -617,7 +651,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
     	for(int i = 0; i < p_Days; i++)
     	{
     		localDate = p_LocalDateTime.toLocalDate().plusDays(i);
-    		if(map_AcquiredCalendarEvent_Team.get(localDate) == null)
+    		if(map_ToDoCalendarEvent_Team.get(localDate) == null)
     			queryToDoCalendarEvents_Team(localDate);
     	}
     }
@@ -648,6 +682,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			MGroupwareUser user = MGroupwareUser.get(ctx, member[i].getAD_User_ID());
 			String color1 = null;
 			String color2 = null;
+			String colorNonBusinessDay = null;
 			if(user == null)
 			{
 				color1 = GroupwareToDoUtil.DEFAULT_COLOR1;
@@ -679,6 +714,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			}
 			color2 = "#dddddd";
 
+			if(Util.isEmpty(m_GroupwareUser.getJP_NonBusinessDayColor()))
+				colorNonBusinessDay = "#ff0000";
+			else
+				colorNonBusinessDay = m_GroupwareUser.getJP_NonBusinessDayColor();
+
 			groupBox = new Groupbox();
 			groupBox.setOpen(true);
 			groupBox.setStyle("border: solid 2px "+ color1 +";");
@@ -702,11 +742,15 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			Div day_header = null;
 			Label day_label = null;
 			Div day_Content = null;
+			String nonBusinessDay = null;
+			boolean isNonBusinessDay = false;
+			HashMap<Integer, ArrayList<NonBusinessDayCalendarEvent>> map_NonBusinessDay = null;
+			ArrayList<NonBusinessDayCalendarEvent> list_NonBusinessDay = null;
 			for(int j =0 ; j < p_Days; j++)
 	    	{
 				grid = null;
 				localDate = p_LocalDateTime.toLocalDate().plusDays(j);
-				map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+				map_OneDayTeamEvent =  map_ToDoCalendarEvent_Team.get(localDate);
 	    		if(map_OneDayTeamEvent != null)
 	    		{
 		    		ArrayList<ToDoCalendarEvent>  list_OneDayUserToDo =  map_OneDayTeamEvent.get(member[i].getAD_User_ID());
@@ -718,11 +762,30 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				ZKUpdateUtil.setHflex(day, "1");
 				day.setStyle("padding:2px 2px 2px 2px; margin-bottom:4px; border: solid 2px "+ color2 +";");//#dddddd;
 
-				day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
+				//TODO
+				nonBusinessDay = null;
+				isNonBusinessDay = false;
+				map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(localDate);
+				if(map_NonBusinessDay != null)
+				{
+					list_NonBusinessDay = map_NonBusinessDay.get(p_AD_User_ID);
+					if(list_NonBusinessDay != null && list_NonBusinessDay.size() > 0)
+					{
+						isNonBusinessDay = true;
+						nonBusinessDay = list_NonBusinessDay.get(0).getTitle();
+					}
+				}
+
+				if(isNonBusinessDay)
+					day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+") : " + nonBusinessDay);
+				else
+					day_label = new Label(formattedDate(localDate) + " ("+map_DayOfWeek.get(localDate)+")");
+
+
 				day_label.setStyle("text-align: center; color:#ffffff ");
 
 				day_header = new Div();
-				day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ color1 +";");
+				day_header.setStyle("padding:4px 2px 4px 4px; background-color:"+ (isNonBusinessDay? colorNonBusinessDay : color1) +";");
 				day_header.appendChild(day_label);
 				day.appendChild(day_header);
 
@@ -1192,8 +1255,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 	{
 		if(isAllRefresh)
 		{
-	    	if(map_AcquiredCalendarEvent_User != null)
-	    		map_AcquiredCalendarEvent_User.clear();
+	    	if(map_ToDoCalendarEvent_User != null)
+	    	{
+	    		map_ToDoCalendarEvent_User.clear();
+	    		map_NonBusinessDayCalendarEvent_User.clear();
+	    	}
 		}
 
 		queryDailyToDo_User();
@@ -1227,8 +1293,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		{
 			if(isAllRefresh)
 			{
-		    	if(map_AcquiredCalendarEvent_Team != null)
-		    		map_AcquiredCalendarEvent_Team.clear();
+		    	if(map_ToDoCalendarEvent_Team != null)
+		    		map_ToDoCalendarEvent_Team.clear();
 			}
 
 			queryDailyToDo_Team();
@@ -1519,17 +1585,18 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 												.setOrderBy(orderClause.toString())
 												.list();
 
-			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayUserEvent =  map_AcquiredCalendarEvent_User.get(localDate);
+			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayUserEvent =  map_ToDoCalendarEvent_User.get(localDate);
 			if(map_OneDayUserEvent == null)
 			{
 				map_OneDayUserEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
-				map_AcquiredCalendarEvent_User.put(localDate, map_OneDayUserEvent);
+				map_ToDoCalendarEvent_User.put(localDate, map_OneDayUserEvent);
 			}
 
 			map_OneDayUserEvent.clear();
 
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
+				queryNonBusinessDayCalendarEvents_User(localDate);
 				return ;
 			}
 
@@ -1559,17 +1626,18 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 												.setOrderBy(orderClause.toString())
 												.list();
 
-			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayUserEvent =  map_AcquiredCalendarEvent_User.get(localDate);
+			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayUserEvent =  map_ToDoCalendarEvent_User.get(localDate);
 			if(map_OneDayUserEvent == null)
 			{
 				map_OneDayUserEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
-				map_AcquiredCalendarEvent_User.put(localDate, map_OneDayUserEvent);
+				map_ToDoCalendarEvent_User.put(localDate, map_OneDayUserEvent);
 			}
 
 			map_OneDayUserEvent.clear();
 
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
+				queryNonBusinessDayCalendarEvents_User(localDate);
 				return ;
 			}
 
@@ -1592,8 +1660,102 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			}//for
 		}
 
+		queryNonBusinessDayCalendarEvents_User(localDate);
+
 		return ;
     }
+
+
+	/**
+	 * Get Main User's Nonbusiness Day Calendar Event.
+	 */
+	 private void queryNonBusinessDayCalendarEvents_User(LocalDate localDate)//TODO
+	 {
+		 if(m_GroupwareUser == null)
+			 return ;
+
+		 if(m_GroupwareUser.getJP_NonBusinessDayCalendar_ID() == 0)
+			 return ;
+
+		StringBuilder whereClause = null;
+		StringBuilder orderClause = null;
+		ArrayList<Object> list_parameters  = new ArrayList<Object>();
+		Object[] parameters = null;
+
+		LocalDateTime toDayMin = LocalDateTime.of(localDate, LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(localDate, LocalTime.MAX);
+
+
+		//AD_Client_ID
+		whereClause = new StringBuilder(" AD_Client_ID=? ");
+		list_parameters.add(Env.getAD_Client_ID(ctx));
+
+		//C_Calendar_ID
+		whereClause = whereClause.append(" AND C_Calendar_ID = ? ");
+		list_parameters.add(m_GroupwareUser.getJP_NonBusinessDayCalendar_ID());
+
+		//Date1
+		whereClause = whereClause.append(" AND Date1 < ? AND Date1 >= ? AND IsActive='Y' ");
+		list_parameters.add(Timestamp.valueOf(toDayMax));
+		list_parameters.add(Timestamp.valueOf(toDayMin));
+
+		//C_Country_ID
+		if(m_GroupwareUser.getC_Country_ID() == 0)
+		{
+			whereClause = whereClause.append(" AND C_Country_ID IS NULL ");
+
+		}else {
+			whereClause = whereClause.append(" AND ( C_Country_ID IS NULL OR C_Country_ID = ? ) ");
+			list_parameters.add(m_GroupwareUser.getC_Country_ID());
+		}
+
+		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
+		orderClause = new StringBuilder("C_Country_ID DESC");
+
+
+		List<X_C_NonBusinessDay> list_NonBusinessDays = new Query(Env.getCtx(), I_C_NonBusinessDay.Table_Name, whereClause.toString(), null)
+											.setParameters(parameters)
+											.setOrderBy(orderClause.toString())
+											.list();
+
+		if(list_NonBusinessDays == null || list_NonBusinessDays.size() == 0)
+		{
+			return ;
+		}
+
+		HashMap<Integer, ArrayList<NonBusinessDayCalendarEvent>> map_OneDayNonBusinessDayEvent =  map_NonBusinessDayCalendarEvent_User.get(localDate);
+		if(map_OneDayNonBusinessDayEvent == null)
+		{
+			map_OneDayNonBusinessDayEvent = new HashMap<Integer, ArrayList<NonBusinessDayCalendarEvent>> ();
+			map_NonBusinessDayCalendarEvent_User.put(localDate, map_OneDayNonBusinessDayEvent);
+		}
+
+		map_OneDayNonBusinessDayEvent.clear();
+
+		if(list_NonBusinessDays == null || list_NonBusinessDays.size() == 0)
+		{
+			return ;
+		}
+
+		ArrayList<NonBusinessDayCalendarEvent> list_OneDayNonBusinessDayEvent = null;
+		NonBusinessDayCalendarEvent event = null;
+
+		for(X_C_NonBusinessDay todo :list_NonBusinessDays)
+		{
+			event = new NonBusinessDayCalendarEvent(todo, m_GroupwareUser);
+			list_OneDayNonBusinessDayEvent = map_OneDayNonBusinessDayEvent.get(p_AD_User_ID);
+			if(list_OneDayNonBusinessDayEvent == null)
+			{
+				list_OneDayNonBusinessDayEvent = new ArrayList<NonBusinessDayCalendarEvent>();
+				list_OneDayNonBusinessDayEvent.add(event);
+				map_OneDayNonBusinessDayEvent.put(p_AD_User_ID, list_OneDayNonBusinessDayEvent);
+			}else {
+				list_OneDayNonBusinessDayEvent.add(event);
+			}
+
+		}//for
+
+	 }
 
 
 
@@ -1655,11 +1817,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
-			map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+			map_OneDayTeamEvent =  map_ToDoCalendarEvent_Team.get(localDate);
 			if(map_OneDayTeamEvent == null)
 			{
 				map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
-				map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
+				map_ToDoCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
 			}
 
 			map_OneDayTeamEvent.clear();
@@ -1696,11 +1858,11 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 			HashMap<Integer, ArrayList<ToDoCalendarEvent>> map_OneDayTeamEvent = null;
-			map_OneDayTeamEvent =  map_AcquiredCalendarEvent_Team.get(localDate);
+			map_OneDayTeamEvent =  map_ToDoCalendarEvent_Team.get(localDate);
 			if(map_OneDayTeamEvent == null)
 			{
 				map_OneDayTeamEvent = new HashMap<Integer, ArrayList<ToDoCalendarEvent>> ();
-				map_AcquiredCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
+				map_ToDoCalendarEvent_Team.put(localDate, map_OneDayTeamEvent);
 			}
 
 			map_OneDayTeamEvent.clear();
@@ -1882,7 +2044,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			while(start_LocalDate.compareTo(end_LocalDate) <= 0)
 			{
-				oneday_UsersEventMap = map_AcquiredCalendarEvent_User.get(start_LocalDate);
+				oneday_UsersEventMap = map_ToDoCalendarEvent_User.get(start_LocalDate);
 				if(oneday_UsersEventMap == null)
 				{
 					start_LocalDate = start_LocalDate.plusDays(1);
@@ -1936,7 +2098,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			{
 				while(start_LocalDate.compareTo(end_LocalDate) <= 0)
 				{
-					oneday_UsersEventMap = map_AcquiredCalendarEvent_Team.get(start_LocalDate);
+					oneday_UsersEventMap = map_ToDoCalendarEvent_Team.get(start_LocalDate);
 					if(oneday_UsersEventMap == null)
 					{
 						start_LocalDate = start_LocalDate.plusDays(1);
@@ -1977,9 +2139,9 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		{
 			if(p_AD_User_ID == AD_User_ID)
 			{
-				oneday_UsersEventMap = map_AcquiredCalendarEvent_User.get(start_LocalDate);
+				oneday_UsersEventMap = map_ToDoCalendarEvent_User.get(start_LocalDate);
 			}else {
-				oneday_UsersEventMap = map_AcquiredCalendarEvent_Team.get(start_LocalDate);
+				oneday_UsersEventMap = map_ToDoCalendarEvent_Team.get(start_LocalDate);
 			}
 
 

@@ -2484,6 +2484,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
+				queryNonBusinessDayCalendarEvents_User();
 				return ;
 			}
 
@@ -2516,6 +2517,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			if(list_ToDoes == null || list_ToDoes.size() == 0)
 			{
+				queryNonBusinessDayCalendarEvents_User();
 				return ;
 			}
 
