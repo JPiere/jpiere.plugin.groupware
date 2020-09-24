@@ -2122,8 +2122,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		if((ts_AcquiredToDoCalendarEventBegin == null && ts_AcquiredToDoCalendarEventEnd == null)
 															|| (userRefresh && teamRefresh)	)
 		{
-			ts_AcquiredToDoCalendarEventBegin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-			ts_AcquiredToDoCalendarEventEnd = new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+			ts_AcquiredToDoCalendarEventBegin = new Timestamp(map_Calendars.get(p_SelectedTab_AD_User_ID).getBeginDate().getTime());
+			ts_AcquiredToDoCalendarEventEnd = new Timestamp(map_Calendars.get(p_SelectedTab_AD_User_ID).getEndDate().getTime());
 
 			map_ToDoCalendarEvent_User.clear();
 			map_NonBusinessDayCalendarEvent_User.clear();
@@ -2149,8 +2149,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			queryToDoCalendarEvents_Team();
 
 
-		Timestamp calendar_Begin = new Timestamp(map_Calendars.get(p_AD_User_ID).getBeginDate().getTime());
-		Timestamp calendar_End =  new Timestamp(map_Calendars.get(p_AD_User_ID).getEndDate().getTime());
+		Timestamp calendar_Begin = new Timestamp(map_Calendars.get(p_SelectedTab_AD_User_ID).getBeginDate().getTime());
+		Timestamp calendar_End =  new Timestamp(map_Calendars.get(p_SelectedTab_AD_User_ID).getEndDate().getTime());
 		Timestamp temp_Begin = ts_AcquiredToDoCalendarEventBegin;
 		Timestamp temp_End = ts_AcquiredToDoCalendarEventEnd;
 
