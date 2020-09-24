@@ -147,6 +147,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private String p_JP_ToDo_Status = null ;
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
+	private boolean p_IsDisplayNonBusinessDay = false;
 
 	private String p_JP_FirstDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 	private String p_JP_ToDo_Main_Calendar = MGroupwareUser.JP_TODO_MAIN_CALENDAR_IncludeTeamMemberSToDo;
@@ -201,6 +202,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private WNumberEditor   editor_JP_ToDo_Calendar_EndTime ;
 	private WYesNoEditor    editor_IsDisplaySchedule_For_Custom ;
 	private WYesNoEditor    editor_IsDisplayTask_For_Custom ;
+	private WYesNoEditor    editor_IsDisplayNonBusinessDay ;
 
 	private WTableDirEditor editor_JP_ToDo_Main_Calendar ;
 	private WTableDirEditor editor_JP_ToDo_Calendar_For_Custom ;
@@ -292,6 +294,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			{
 				p_IsDisplaySchedule = m_GroupwareUser.isDisplayScheduleJP();
 				p_IsDisplayTask = m_GroupwareUser.isDisplayTaskJP();
+				if(m_GroupwareUser.getJP_NonBusinessDayCalendar_ID() > 0)
+					p_IsDisplayNonBusinessDay = m_GroupwareUser.isDisplayNonBusinessDayJP();
 				calendars.setBeginTime(m_GroupwareUser.getJP_ToDo_Calendar_BeginTime());
 				calendars.setEndTime(m_GroupwareUser.getJP_ToDo_Calendar_EndTime());
 
@@ -678,6 +682,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		editor_IsDisplayTask_For_Custom = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayTaskJP), null, true, false, true);
 		editor_IsDisplayTask_For_Custom.setValue(p_IsDisplayTask);
 		editor_IsDisplayTask_For_Custom.addValueChangeListener(this);
+
+		//Display Nonbusiness Day
+		editor_IsDisplayNonBusinessDay = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayNonBusinessDayJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayNonBusinessDayJP), null, true, false, true);
+		editor_IsDisplayNonBusinessDay.setValue(p_IsDisplayNonBusinessDay);
+		editor_IsDisplayNonBusinessDay.addValueChangeListener(this);
 
 		//JP_ToDo_Calendar_BeginTime
 		editor_JP_ToDo_Calendar_BeginTime = new WNumberEditor(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar_BeginTime, false, false, true, DisplayType.Integer, "");
@@ -1183,6 +1192,14 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			resetSelectedTabCalendarModel();
 
+		}else if(MGroupwareUser.COLUMNNAME_IsDisplayNonBusinessDayJP.equals(name)) {
+
+			p_IsDisplayNonBusinessDay = (boolean)value;
+			editor_IsDisplayNonBusinessDay.setValue(value);
+			if(editor_IsDisplayNonBusinessDay.isVisible())
+				button_Customize_Save.setDisabled(false);
+
+			resetSelectedTabCalendarModel();
 
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
@@ -1483,6 +1500,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 						if(editor_IsDisplayTask_For_Custom.isVisible())
 							m_GroupwareUser.setIsDisplayTaskJP(p_IsDisplayTask);
+
+						if(editor_IsDisplayNonBusinessDay.isVisible())
+							m_GroupwareUser.setIsDisplayNonBusinessDayJP(p_IsDisplayNonBusinessDay);
 
 						if(editor_JP_ToDo_Calendar_BeginTime.isVisible())
 						{
@@ -1935,10 +1955,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			row.appendChild(new Div());
 			row.appendChild(GroupwareToDoUtil.createEditorDiv(editor_IsDisplayTask_For_Custom, true));
 
+			if(m_GroupwareUser.getJP_NonBusinessDayCalendar_ID() > 0)
+			{
+				row = rows.newRow();
+				row.appendChild(new Div());
+				row.appendChild(GroupwareToDoUtil.createEditorDiv(editor_IsDisplayNonBusinessDay, true));
+			}
+
 		}else {
 
 			editor_IsDisplaySchedule_For_Custom.setVisible(false);
 			editor_IsDisplayTask_For_Custom.setVisible(false);
+			editor_IsDisplayNonBusinessDay.setVisible(false);
 		}
 
 		row = rows.newRow();
@@ -1986,43 +2014,17 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			calendars.setMold("default");
 			calendars.setDays(days);
 
-			editor_JP_FirstDayOfWeek.setVisible(true);
-			label_JP_FirstDayOfWeek.setVisible(true);
-
-			editor_JP_ToDo_Calendar_BeginTime.setVisible(true);
-			label_JP_ToDo_Calendar_BeginTime.setVisible(true);
-
-			editor_JP_ToDo_Calendar_EndTime.setVisible(true);
-			label_JP_ToDo_Calendar_EndTime.setVisible(true);
-
 		}
 		else  if (days > 0)
 		{
 			calendars.setMold("default");
 			calendars.setDays(days);
 
-			editor_JP_FirstDayOfWeek.setVisible(false);
-			label_JP_FirstDayOfWeek.setVisible(false);
-
-			editor_JP_ToDo_Calendar_BeginTime.setVisible(true);
-			label_JP_ToDo_Calendar_BeginTime.setVisible(true);
-
-			editor_JP_ToDo_Calendar_EndTime.setVisible(true);
-			label_JP_ToDo_Calendar_EndTime.setVisible(true);
-
 		} else {
 
 			calendars.setMold("month");
 			calendars.setDays(0);
 
-			editor_JP_FirstDayOfWeek.setVisible(true);
-			label_JP_FirstDayOfWeek.setVisible(true);
-
-			editor_JP_ToDo_Calendar_BeginTime.setVisible(false);
-			label_JP_ToDo_Calendar_BeginTime.setVisible(false);
-
-			editor_JP_ToDo_Calendar_EndTime.setVisible(false);
-			label_JP_ToDo_Calendar_EndTime.setVisible(false);
 		}
 	}
 
@@ -2235,15 +2237,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		HashMap<Integer, NonBusinessDayCalendarEvent> map_NonBusinessDay = null;
 		if(p_SelectedTab_AD_User_ID == p_AD_User_ID) //Main Tab
 		{
-			map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(p_AD_User_ID);
-			if(map_NonBusinessDay != null)
+			if(p_IsDisplayNonBusinessDay)
 			{
-				Set<Integer> keySet = map_NonBusinessDay.keySet();
-				NonBusinessDayCalendarEvent toDoCalEvent = null;
-				for (Integer JP_ToDo_ID : keySet)
+				map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(p_AD_User_ID);
+				if(map_NonBusinessDay != null)
 				{
-					toDoCalEvent = map_NonBusinessDay.get(JP_ToDo_ID);
-					scm.add(toDoCalEvent);
+					Set<Integer> keySet = map_NonBusinessDay.keySet();
+					NonBusinessDayCalendarEvent toDoCalEvent = null;
+					for (Integer JP_ToDo_ID : keySet)
+					{
+						toDoCalEvent = map_NonBusinessDay.get(JP_ToDo_ID);
+						scm.add(toDoCalEvent);
+					}
 				}
 			}
 
@@ -2302,15 +2307,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}else {//Sub Tab
 
-			map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(p_AD_User_ID);
-			if(map_NonBusinessDay != null)
+			if(p_IsDisplayNonBusinessDay)
 			{
-				Set<Integer> keySet = map_NonBusinessDay.keySet();
-				NonBusinessDayCalendarEvent toDoCalEvent = null;
-				for (Integer JP_ToDo_ID : keySet)
+				map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(p_AD_User_ID);
+				if(map_NonBusinessDay != null)
 				{
-					toDoCalEvent = map_NonBusinessDay.get(JP_ToDo_ID);
-					scm.add(toDoCalEvent);
+					Set<Integer> keySet = map_NonBusinessDay.keySet();
+					NonBusinessDayCalendarEvent toDoCalEvent = null;
+					for (Integer JP_ToDo_ID : keySet)
+					{
+						toDoCalEvent = map_NonBusinessDay.get(JP_ToDo_ID);
+						scm.add(toDoCalEvent);
+					}
 				}
 			}
 

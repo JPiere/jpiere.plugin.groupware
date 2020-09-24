@@ -196,6 +196,15 @@ public interface I_JP_GroupwareUser
 	  */
 	public boolean isActive();
 
+    /** Column name IsDisplayNonBusinessDayJP */
+    public static final String COLUMNNAME_IsDisplayNonBusinessDayJP = "IsDisplayNonBusinessDayJP";
+
+	/** Set Display Nonbusiness Day	  */
+	public void setIsDisplayNonBusinessDayJP (boolean IsDisplayNonBusinessDayJP);
+
+	/** Get Display Nonbusiness Day	  */
+	public boolean isDisplayNonBusinessDayJP();
+
     /** Column name IsDisplayScheduleJP */
     public static final String COLUMNNAME_IsDisplayScheduleJP = "IsDisplayScheduleJP";
 

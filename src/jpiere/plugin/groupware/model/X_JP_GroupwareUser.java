@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200923L;
+	private static final long serialVersionUID = 20200924L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -41,6 +41,8 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 			setAD_Tree_Menu_ID (0);
 			setAD_User_ID (0);
 // null
+			setIsDisplayNonBusinessDayJP (true);
+// Y
 			setIsDisplayScheduleJP (true);
 // Y
 			setIsDisplayTaskJP (false);
@@ -272,6 +274,27 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public String getDescription () 
 	{
 		return (String)get_Value(COLUMNNAME_Description);
+	}
+
+	/** Set Display Nonbusiness Day.
+		@param IsDisplayNonBusinessDayJP Display Nonbusiness Day	  */
+	public void setIsDisplayNonBusinessDayJP (boolean IsDisplayNonBusinessDayJP)
+	{
+		set_Value (COLUMNNAME_IsDisplayNonBusinessDayJP, Boolean.valueOf(IsDisplayNonBusinessDayJP));
+	}
+
+	/** Get Display Nonbusiness Day.
+		@return Display Nonbusiness Day	  */
+	public boolean isDisplayNonBusinessDayJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsDisplayNonBusinessDayJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
 	}
 
 	/** Set Display Schedule.
