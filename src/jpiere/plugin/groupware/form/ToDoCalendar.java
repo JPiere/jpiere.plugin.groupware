@@ -1215,7 +1215,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			int AD_Reference_Value_ID = MColumn.get(ctx, AD_Column_ID).getAD_Reference_Value_ID();
 			MRefList refList =MRefList.get(ctx, AD_Reference_Value_ID, value.toString(),null);
 
-			map_Calendars.get(p_AD_User_ID).setFirstDayOfWeek(refList.getName());
+			map_Calendars.get(p_SelectedTab_AD_User_ID).setFirstDayOfWeek(refList.getName());
 
 			updateDateLabel();
 			getToDoCalendarEvent(false, false);
@@ -1262,7 +1262,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				throw new WrongValueException(editor_JP_ToDo_Calendar_BeginTime.getComponent(), msg);
 			}
 
-			map_Calendars.get(p_AD_User_ID).setBeginTime(beginTime);
+			map_Calendars.get(p_SelectedTab_AD_User_ID).setBeginTime(beginTime);
 
 			if(button_Customize_Save.isVisible())
 				button_Customize_Save.setDisabled(false);
@@ -1306,7 +1306,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				throw new WrongValueException(editor_JP_ToDo_Calendar_EndTime.getComponent(), msg);
 			}
 
-			map_Calendars.get(p_AD_User_ID).setEndTime(endTime);
+			map_Calendars.get(p_SelectedTab_AD_User_ID).setEndTime(endTime);
 			if(button_Customize_Save.isVisible())
 				button_Customize_Save.setDisabled(false);
 
