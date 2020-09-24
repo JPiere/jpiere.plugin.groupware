@@ -463,7 +463,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		WStringEditor editor_Name = new WStringEditor(MToDo.COLUMNNAME_Name, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
 		editor_Name.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Name.getComponent(), "true");
-		editor_Name.getComponent().setRows(p_IsPersonalToDo == true ? 2 : 3);
+		editor_Name.getComponent().setRows(2);
 		map_Editor.put(MToDo.COLUMNNAME_Name, editor_Name);
 
 
@@ -471,7 +471,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		WStringEditor editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
 		editor_Description.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
-		editor_Description.getComponent().setRows(p_IsPersonalToDo == true ? 3 : 5);
+		editor_Description.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Description, editor_Description);
 
 
@@ -481,7 +481,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			WStringEditor editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, !p_IsUpdatable, true, 30, 30, "", null);
 			editor_Comments.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
-			editor_Comments.getComponent().setRows(p_IsNewRecord? 2 : 3);
+			editor_Comments.getComponent().setRows(3);
 			map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
 		}
 
