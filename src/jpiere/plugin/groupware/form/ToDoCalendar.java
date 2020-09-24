@@ -1763,6 +1763,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 				{
 					Timestamp startTime = new Timestamp(calEvent.getBeginDate().getTime());
+					todo.setJP_ToDo_ScheduledStartDate(startTime);
 					todo.setJP_ToDo_ScheduledStartTime(startTime);
 
 					//Adjust
@@ -1773,6 +1774,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 						endTime = Timestamp.valueOf(LocalDateTime.of(endTime.toLocalDateTime().toLocalDate(), LocalTime.MIN));
 					}
 
+					todo.setJP_ToDo_ScheduledEndDate(endTime);
 					todo.setJP_ToDo_ScheduledEndTime(endTime);
 
 					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
@@ -1793,6 +1795,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				}else if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
 
 					todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getBeginDate().getTime()));
+					todo.setJP_ToDo_ScheduledEndDate(todo.getJP_ToDo_ScheduledEndTime());
+					todo.setJP_ToDo_ScheduledStartTime(todo.getJP_ToDo_ScheduledEndTime());
+					todo.setJP_ToDo_ScheduledStartDate(todo.getJP_ToDo_ScheduledEndTime());
 					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 					{
 						if(p_AD_User_ID == todo.getAD_User_ID())
