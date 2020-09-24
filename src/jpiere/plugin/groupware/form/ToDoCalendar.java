@@ -2302,6 +2302,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}else {//Sub Tab
 
+			map_NonBusinessDay = map_NonBusinessDayCalendarEvent_User.get(p_AD_User_ID);
+			if(map_NonBusinessDay != null)
+			{
+				Set<Integer> keySet = map_NonBusinessDay.keySet();
+				NonBusinessDayCalendarEvent toDoCalEvent = null;
+				for (Integer JP_ToDo_ID : keySet)
+				{
+					toDoCalEvent = map_NonBusinessDay.get(JP_ToDo_ID);
+					scm.add(toDoCalEvent);
+				}
+			}
+
 
 			map_CalEvents = map_ToDoCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
 			if(map_CalEvents != null)
