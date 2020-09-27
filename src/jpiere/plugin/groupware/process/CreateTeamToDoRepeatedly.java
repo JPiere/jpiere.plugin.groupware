@@ -70,7 +70,6 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 	/*** Variable ***/
 	private Timestamp v_JP_ToDo_ScheduledStartTime = null;
 	private Timestamp v_JP_ToDo_ScheduledEndTime = null;
-	private Timestamp v_JudgmentTime = null;
 	private MToDoTeam v_TeamToDo = null;
 
 	@Override
