@@ -1517,7 +1517,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		editor = map_Editor.get(MToDo.COLUMNNAME_Description);
 		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 		{
-
+			p_iToDo.setDescription(null);
 		}else {
 			p_iToDo.setDescription(editor.getValue().toString());
 		}
@@ -1528,7 +1528,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			editor = map_Editor.get(MToDo.COLUMNNAME_Comments);
 			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 			{
-
+				p_iToDo.setComments(null);
 			}else {
 				p_iToDo.setComments(editor.getValue().toString());
 			}
@@ -1541,7 +1541,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			editor = map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID);
 			if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
 			{
-
+				p_iToDo.setJP_Team_ID(0);
 			}else {
 				p_iToDo.setJP_Team_ID((Integer)editor.getValue());
 			}
