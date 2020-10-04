@@ -1403,8 +1403,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
     		ProcessInfo pi = dialog.getProcessInfo();
 			MPInstance instance = new MPInstance(ctx, pi.getAD_PInstance_ID(), "false");
 			String msg= instance.getErrorMsg();
-			if(instance.getResult() == 0)
+			if(instance.getResult() == 0 && !Util.isEmpty(msg))
 				FDialog.error(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
+			else if(instance.getResult() == 0 && Util.isEmpty(msg))
+				;
 			else
 				FDialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
     	}
