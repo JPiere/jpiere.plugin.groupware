@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.adempiere.util.Callback;
 import org.adempiere.webui.AdempiereWebUI;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
@@ -1759,12 +1761,18 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent) calEvent.getCalendarEvent();
 				I_ToDo todo = todoEvent.getToDo();
 				HashMap<Integer, ToDoCalendarEvent> events = null;
+				Timestamp old_ScheduledStartTime = todo.getJP_ToDo_ScheduledStartTime();
+				Timestamp new_ScheduledStartTime = null;
+
+				Timestamp old_ScheduledEndTime = todo.getJP_ToDo_ScheduledEndTime();
+				Timestamp new_ScheduledEndTime = null;
 
 				if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 				{
 					Timestamp startTime = new Timestamp(calEvent.getBeginDate().getTime());
 					todo.setJP_ToDo_ScheduledStartDate(startTime);
 					todo.setJP_ToDo_ScheduledStartTime(startTime);
+					new_ScheduledStartTime = startTime;
 
 					//Adjust
 					Timestamp endTime = new Timestamp(calEvent.getEndDate().getTime());
@@ -1776,6 +1784,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 					todo.setJP_ToDo_ScheduledEndDate(endTime);
 					todo.setJP_ToDo_ScheduledEndTime(endTime);
+					new_ScheduledEndTime = endTime;
 
 					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 					{
@@ -1798,6 +1807,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					todo.setJP_ToDo_ScheduledEndDate(todo.getJP_ToDo_ScheduledEndTime());
 					todo.setJP_ToDo_ScheduledStartTime(todo.getJP_ToDo_ScheduledEndTime());
 					todo.setJP_ToDo_ScheduledStartDate(todo.getJP_ToDo_ScheduledEndTime());
+					new_ScheduledStartTime = todo.getJP_ToDo_ScheduledEndTime();
+					new_ScheduledEndTime = todo.getJP_ToDo_ScheduledEndTime();;
+
 					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 					{
 						if(p_AD_User_ID == todo.getAD_User_ID())
@@ -1821,13 +1833,112 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					//TODO エラー処理
 				}
 
-
 				updateCalendarEvent(oldEvent, newEvent);
 
 				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
 					refreshWest(todo.getJP_ToDo_Type());
 
-			}
+
+				//Update Related ToDo
+				if(todo instanceof MToDo)
+				{
+					MToDo m_ToDo =	(MToDo)todo;
+					ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, old_ScheduledStartTime, true, null);
+
+					if(list.size() > 0)
+					{
+						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+						{
+								@Override
+								public void onCallback(Boolean result)
+								{
+									if(result)
+									{
+										Timestamp scheduledStartTime = null;
+										Timestamp scheduledEndTime = null;
+
+										for(MToDo todo : list)
+										{
+											if(m_ToDo.getJP_ToDo_ID() == todo.getJP_ToDo_ID())
+												continue;
+
+											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
+											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+
+											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
+											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
+											if(!todo.save())
+											{
+												//TODO エラー処理
+											}
+										}
+
+										getToDoCalendarEvent(true ,true);
+										refreshWest(null);
+									}
+								}
+						};
+						FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					}
+
+				}else if(todo instanceof MToDoTeam) {
+
+					MToDoTeam m_TeamToDo =	(MToDoTeam)todo;
+
+					ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
+					if(list.size() > 0)
+					{
+
+						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+						{
+								@Override
+								public void onCallback(Boolean result)
+								{
+									if(result)
+									{
+										Timestamp scheduledStartTime = null;
+										Timestamp scheduledEndTime = null;
+
+										for(MToDoTeam todo : list)
+										{
+											if(m_TeamToDo.getJP_ToDo_Team_ID() == todo.getJP_ToDo_Team_ID())
+												continue;
+
+											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
+											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+
+											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
+											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
+											if(!todo.save())
+											{
+												//TODO エラー処理
+											}
+										}
+
+										getToDoCalendarEvent(true ,true);
+										refreshWest(null);
+									}
+								}
+
+						};
+						FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					}
+
+				}//Update Related ToDo
+
+			}//Drag & Drop
 
 		}
 

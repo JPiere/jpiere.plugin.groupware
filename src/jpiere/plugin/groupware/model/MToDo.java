@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -370,6 +371,84 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 
 	}
 
+	public static ArrayList<MToDo>  getRelatedToDos(Properties ctx, MToDo m_ToDo, ArrayList<MToDo> list_ToDo, Timestamp time, boolean isIncludingIndirectRelationships, String trxName)
+	{
+		if(list_ToDo == null)
+		{
+			list_ToDo = new ArrayList<MToDo>();
+		}
+
+		StringBuilder whereClauseFinal = null;
+		String orderClause = MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime;
+		List<MToDo> list = null;
+
+		if(m_ToDo.getJP_Processing1().equals("N"))
+		{
+			whereClauseFinal = new StringBuilder(" JP_ToDo_Related_ID = ? AND JP_ToDo_ID <> ? ");
+			if(time == null)
+			{
+				list = new Query(ctx, MToDo.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_ToDo.getJP_ToDo_Related_ID(), m_ToDo.getJP_ToDo_ID() )
+						.setOrderBy(orderClause)
+						.list();
+			}else {
+
+				whereClauseFinal = whereClauseFinal.append(" AND JP_ToDo_ScheduledStartTime >= ?");
+				list = new Query(ctx, MToDo.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_ToDo.getJP_ToDo_Related_ID(), m_ToDo.getJP_ToDo_ID(), time)
+						.setOrderBy(orderClause)
+						.list();
+			}
+
+		}else {
+
+			whereClauseFinal = new StringBuilder(" (JP_ToDo_Related_ID = ? OR JP_ToDo_Related_ID = ?) AND JP_ToDo_ID <> ? ");
+			if(time == null)
+			{
+				list = new Query(ctx, MToDo.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_ToDo.getJP_ToDo_Related_ID() ,m_ToDo.getJP_ToDo_ID() ,m_ToDo.getJP_ToDo_ID())
+						.setOrderBy(orderClause)
+						.list();
+
+			}else {
+
+				whereClauseFinal = whereClauseFinal.append(" AND JP_ToDo_ScheduledStartTime >= ?");
+				list = new Query(ctx, MToDo.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_ToDo.getJP_ToDo_Related_ID() ,m_ToDo.getJP_ToDo_ID() ,m_ToDo.getJP_ToDo_ID(), time)
+						.setOrderBy(orderClause)
+						.list();
+
+			}
+		}
+
+		boolean isContained = false;
+		for(MToDo todo : list)
+		{
+			isContained = false;
+			for(MToDo td : list_ToDo)
+			{
+				if(todo.getJP_ToDo_ID() == td.getJP_ToDo_ID())
+				{
+					isContained = true;
+				}
+			}
+
+			if(isContained)
+				continue;
+
+			list_ToDo.add(todo);
+			if(isIncludingIndirectRelationships)
+			{
+				if(todo.getJP_Processing1().equals("Y"))
+				{
+					list_ToDo = MToDo.getRelatedToDos(ctx, todo, list_ToDo, time, true, trxName);
+				}
+			}
+
+		}
+
+		return list_ToDo;
+	}
 
 	@Override
 	public int getParent_Team_ToDo_ID()

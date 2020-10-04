@@ -240,6 +240,8 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 					+ " , C_Project_ID = ? "
 					+ " , C_ProjectPhase_ID = ? "
 					+ " , C_ProjectTask_ID = ? "
+					+ " , AD_Org_ID = ? "
+					+ " , IsOpenToDoJP = ? "
 					+ "WHERE JP_ToDo_Team_ID= ? ";
 
 				Object[] para = {
@@ -252,10 +254,12 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 						, getJP_ToDo_ScheduledStartTime()
 						, getJP_ToDo_ScheduledEndDate()
 						, isEndDateAllDayJP()? "Y":"N"
-						,getJP_ToDo_ScheduledEndTime()
-						,getC_Project_ID() == 0 ? null : getC_Project_ID()
-						,getC_ProjectPhase_ID() == 0 ? null : getC_ProjectPhase_ID()
-						,getC_ProjectTask_ID() == 0 ? null : getC_ProjectTask_ID()
+						, getJP_ToDo_ScheduledEndTime()
+						, getC_Project_ID() == 0 ? null : getC_Project_ID()
+						, getC_ProjectPhase_ID() == 0 ? null : getC_ProjectPhase_ID()
+						, getC_ProjectTask_ID() == 0 ? null : getC_ProjectTask_ID()
+						, getAD_Org_ID()
+						, isOpenToDoJP()? "Y":"N"
 						,getJP_ToDo_Team_ID()
 						};
 
@@ -459,6 +463,85 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 
 		return m_ToDoes;
 
+	}
+
+
+	public static ArrayList<MToDoTeam>  getRelatedTeamToDos(Properties ctx, MToDoTeam m_TeamToDo, ArrayList<MToDoTeam> list_ToDoTeam, Timestamp time, boolean isIncludingIndirectRelationships, String trxName)
+	{
+		if(list_ToDoTeam == null)
+		{
+			list_ToDoTeam = new ArrayList<MToDoTeam>();
+		}
+
+		StringBuilder whereClauseFinal = null;
+		String orderClause = MToDoTeam.COLUMNNAME_JP_ToDo_ScheduledStartTime;
+		List<MToDoTeam> list = null;
+
+		if(m_TeamToDo.getJP_Processing3().equals("N"))
+		{
+			whereClauseFinal = new StringBuilder(" JP_ToDo_Team_Related_ID =? AND JP_ToDo_Team_ID <> ?");
+			if(time == null)
+			{
+				list = new Query(ctx, MToDoTeam.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_TeamToDo.getJP_ToDo_Team_Related_ID(), m_TeamToDo.getJP_ToDo_Team_ID())
+						.setOrderBy(orderClause)
+						.list();
+			}else {
+
+				whereClauseFinal = whereClauseFinal.append(" AND JP_ToDo_ScheduledStartTime >= ?");
+				list = new Query(ctx, MToDoTeam.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_TeamToDo.getJP_ToDo_Team_Related_ID(), m_TeamToDo.getJP_ToDo_Team_ID(), time)
+						.setOrderBy(orderClause)
+						.list();
+			}
+
+		}else {
+
+			whereClauseFinal = new StringBuilder(" (JP_ToDo_Team_Related_ID =? OR JP_ToDo_Team_Related_ID =?) AND JP_ToDo_Team_ID <> ?");
+			if(time == null)
+			{
+				list = new Query(ctx, MToDoTeam.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_TeamToDo.getJP_ToDo_Team_Related_ID(), m_TeamToDo.getJP_ToDo_Team_ID(), m_TeamToDo.getJP_ToDo_Team_ID())
+						.setOrderBy(orderClause)
+						.list();
+			}else {
+
+				whereClauseFinal = whereClauseFinal.append(" AND JP_ToDo_ScheduledStartTime >= ?");
+				list = new Query(ctx, MToDoTeam.Table_Name, whereClauseFinal.toString(), trxName)
+						.setParameters(m_TeamToDo.getJP_ToDo_Team_Related_ID(), m_TeamToDo.getJP_ToDo_Team_ID(), m_TeamToDo.getJP_ToDo_Team_ID(), time)
+						.setOrderBy(orderClause)
+						.list();
+			}
+		}
+
+		boolean isContained = false;
+		for(MToDoTeam teamToDo : list)
+		{
+			isContained = false;
+			for(MToDoTeam td : list_ToDoTeam)
+			{
+				if(teamToDo.getJP_ToDo_Team_ID() == td.getJP_ToDo_Team_ID())
+				{
+					isContained = true;
+				}
+			}
+
+			if(isContained)
+				continue;
+
+			list_ToDoTeam.add(teamToDo);
+			if(isIncludingIndirectRelationships)
+			{
+				if(teamToDo.getJP_Processing3().equals("Y"))
+				{
+					list_ToDoTeam = MToDoTeam.getRelatedTeamToDos(ctx, teamToDo, list_ToDoTeam, time, true, trxName);
+				}
+
+			}
+
+		}
+
+		return list_ToDoTeam;
 	}
 
 
