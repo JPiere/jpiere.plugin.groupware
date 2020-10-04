@@ -1874,6 +1874,75 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			receiveToDoCalendarEvent.delete(p_iToDo);
 		}
 
+		//Update Related ToDo
+		if(p_iToDo instanceof MToDo)//TODO
+		{
+			MToDo m_ToDo =	(MToDo)p_iToDo;
+			ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, m_ToDo.getJP_ToDo_ScheduledStartTime(), true, null);
+
+			if(list.size() > 0)
+			{
+				Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+				{
+						@Override
+						public void onCallback(Boolean result)
+						{
+							if(result)
+							{
+								for(MToDo todo : list)
+								{
+
+									for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+									{
+										receiveToDoCalendarEvent.delete(todo);
+									}
+
+									if(!todo.delete(false))
+									{
+										//TODO エラー処理
+									}
+								}
+							}
+						}
+				};
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+			}
+		}else if(p_iToDo instanceof MToDoTeam) {
+
+			MToDoTeam m_TeamToDo =	(MToDoTeam)p_iToDo;
+			ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, m_TeamToDo.getJP_ToDo_ScheduledStartTime(), true, null);
+
+			if(list.size() > 0)
+			{
+				Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+				{
+						@Override
+						public void onCallback(Boolean result)
+						{
+							if(result)
+							{
+								for(MToDoTeam todo : list)
+								{
+
+									for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+									{
+										receiveToDoCalendarEvent.delete(todo);
+									}
+
+									if(!todo.delete(false))
+									{
+										//TODO エラー処理
+									}
+								}
+							}
+						}
+
+				};
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+			}
+
+		}//Update Related ToDo
+
 		p_iToDo.delete(false);
 		p_iToDo = null;
 		p_ParentTeamToDo = null;
