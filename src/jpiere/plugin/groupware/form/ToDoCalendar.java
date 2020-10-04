@@ -1890,8 +1890,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				}else if(todo instanceof MToDoTeam) {
 
 					MToDoTeam m_TeamToDo =	(MToDoTeam)todo;
-
 					ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
+
 					if(list.size() > 0)
 					{
 

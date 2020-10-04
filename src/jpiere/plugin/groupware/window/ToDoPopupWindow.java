@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1462,6 +1463,13 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 		}
 
+		//TODO
+		Timestamp old_ScheduledStartTime = p_iToDo.getJP_ToDo_ScheduledStartTime();
+		Timestamp new_ScheduledStartTime = null;
+
+		Timestamp old_ScheduledEndTime = p_iToDo.getJP_ToDo_ScheduledEndTime();
+		Timestamp new_ScheduledEndTime = null;
+
 		//Check AD_Org_ID
 		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID);
 		if(editor.getValue() == null)
@@ -1588,6 +1596,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				}
 				p_iToDo.setJP_ToDo_ScheduledStartDate(p_iToDo.getJP_ToDo_ScheduledStartTime());
 			}
+			new_ScheduledStartTime = p_iToDo.getJP_ToDo_ScheduledStartTime();
 		}
 
 
@@ -1628,11 +1637,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				p_iToDo.setJP_ToDo_ScheduledEndDate(p_iToDo.getJP_ToDo_ScheduledEndTime());
 			}
 
+			new_ScheduledEndTime = p_iToDo.getJP_ToDo_ScheduledEndTime();
+
 			if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 			{
 				p_iToDo.setJP_ToDo_ScheduledStartDate(p_iToDo.getJP_ToDo_ScheduledEndDate());
 				p_iToDo.setJP_ToDo_ScheduledStartTime(p_iToDo.getJP_ToDo_ScheduledEndTime());
+				new_ScheduledStartTime = p_iToDo.getJP_ToDo_ScheduledEndTime();
 			}
+
 
 		}
 
@@ -1734,6 +1747,120 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			FDialog.error(0, this, Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 			return false;
 		}
+
+
+		//Update Related ToDo
+		if(!p_IsNewRecord)//TODO
+		{
+			if(new_ScheduledStartTime.compareTo(old_ScheduledStartTime) != 0
+					||	new_ScheduledEndTime.compareTo(old_ScheduledEndTime) != 0)
+			{
+				if(p_iToDo instanceof MToDo)
+				{
+					MToDo m_ToDo =	(MToDo)p_iToDo;
+					ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, old_ScheduledStartTime, true, null);
+
+					if(list.size() > 0)
+					{
+						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+						{
+								@Override
+								public void onCallback(Boolean result)
+								{
+									if(result)
+									{
+										Timestamp scheduledStartTime = null;
+										Timestamp scheduledEndTime = null;
+
+										for(MToDo todo : list)
+										{
+											if(m_ToDo.getJP_ToDo_ID() == todo.getJP_ToDo_ID())
+												continue;
+
+											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
+											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+
+											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
+											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
+											if(!todo.save())
+											{
+												//TODO エラー処理
+											}
+										}
+
+										for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+										{
+											receiveToDoCalendarEvent.refresh(p_iToDo);
+										}
+									}
+								}
+						};
+						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					}
+
+
+				}else if(p_iToDo instanceof MToDoTeam) {
+
+					MToDoTeam m_TeamToDo =	(MToDoTeam)p_iToDo;
+					ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
+
+					if(list.size() > 0)
+					{
+
+						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+						{
+								@Override
+								public void onCallback(Boolean result)
+								{
+									if(result)
+									{
+										Timestamp scheduledStartTime = null;
+										Timestamp scheduledEndTime = null;
+
+										for(MToDoTeam todo : list)
+										{
+											if(m_TeamToDo.getJP_ToDo_Team_ID() == todo.getJP_ToDo_Team_ID())
+												continue;
+
+											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
+											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+
+											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
+											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
+											if(!todo.save())
+											{
+												//TODO エラー処理
+											}
+										}
+
+										for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+										{
+											receiveToDoCalendarEvent.refresh(p_iToDo);
+										}
+									}
+								}
+
+						};
+						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					}
+
+				}
+
+			}
+
+		}//Update Related ToDo
 
 		return true;
 	}
