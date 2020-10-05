@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.adempiere.exceptions.AdempiereException;
 import org.adempiere.util.Callback;
 import org.adempiere.webui.AdempiereWebUI;
 import org.adempiere.webui.apps.AEnv;
@@ -1532,15 +1533,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 							m_GroupwareUser.setJP_ToDo_Calendar(p_JP_ToDo_Calendar);
 						}
 
-						try
+						if(!m_GroupwareUser.save())
 						{
-							m_GroupwareUser.saveEx();
-
-						}catch (Exception e) {
-
-							FDialog.error(form.getWindowNo(),"Error", e.getMessage());//TODO: 保存時のエラーメッセージ処理の改善
-
-							return;
+							getToDoCalendarEvent(true ,true);
+							refreshWest(null);
+							throw new AdempiereException(Msg.getMsg(ctx, "Error") + Msg.getMsg(ctx, "SaveError"));
 						}
 
 						if(button_Customize_Save.isVisible())
@@ -1828,9 +1825,12 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				ToDoCalendarEvent newEvent = new ToDoCalendarEvent(todo);
 
 				events.put(todo.get_ID(), newEvent);
+
 				if(!todo.save())
 				{
-					//TODO エラー処理
+					getToDoCalendarEvent(true ,true);
+					refreshWest(null);
+					throw new AdempiereException(Msg.getMsg(ctx, "Error") + Msg.getMsg(ctx, "SaveError"));
 				}
 
 				updateCalendarEvent(oldEvent, newEvent);
@@ -1875,10 +1875,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
 											if(!todo.save())
 											{
-												//TODO エラー処理
+												;//Nothing to do because refresh after all
 											}
 										}
 
+										//Refresh
 										getToDoCalendarEvent(true ,true);
 										refreshWest(null);
 									}
@@ -1923,10 +1924,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
 											if(!todo.save())
 											{
-												//TODO エラー処理
+												;//Nothing to do because refresh after all
 											}
 										}
 
+										//Refresh
 										getToDoCalendarEvent(true ,true);
 										refreshWest(null);
 									}
@@ -2685,7 +2687,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	/**
 	 * Get Main User's Nonbusiness Day Calendar Event.
 	 */
-	 private void queryNonBusinessDayCalendarEvents_User()//TODO
+	 private void queryNonBusinessDayCalendarEvents_User()
 	 {
 		 if(m_GroupwareUser == null)
 			 return ;
