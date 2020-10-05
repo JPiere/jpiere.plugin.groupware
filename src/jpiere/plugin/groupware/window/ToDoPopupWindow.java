@@ -1463,7 +1463,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}
 		}
 
-		//TODO
 		Timestamp old_ScheduledStartTime = p_iToDo.getJP_ToDo_ScheduledStartTime();
 		Timestamp new_ScheduledStartTime = null;
 
@@ -1790,18 +1789,20 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
 											if(!todo.save())
 											{
-												//TODO エラー処理
+												;//TODO エラー処理
 											}
 										}
 
 										for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
 										{
-											receiveToDoCalendarEvent.refresh(p_iToDo);
+											receiveToDoCalendarEvent.refresh(null);
 										}
+
+										detach();
 									}
 								}
 						};
-						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 					}
 
 
@@ -1841,19 +1842,21 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
 											if(!todo.save())
 											{
-												//TODO エラー処理
+												;//TODO エラー処理
 											}
 										}
 
 										for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
 										{
-											receiveToDoCalendarEvent.refresh(p_iToDo);
+											receiveToDoCalendarEvent.refresh(null);
 										}
+
+										detach();
 									}
 								}
 
 						};
-						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 					}
 
 				}
@@ -1891,21 +1894,22 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 							{
 								for(MToDo todo : list)
 								{
-
-									for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
-									{
-										receiveToDoCalendarEvent.delete(todo);
-									}
-
 									if(!todo.delete(false))
 									{
-										//TODO エラー処理
+										;//TODO エラー処理
 									}
 								}
+
+								for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+								{
+									receiveToDoCalendarEvent.refresh(null);
+								}
+
+								detach();
 							}
 						}
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
 			}
 		}else if(p_iToDo instanceof MToDoTeam) {
 
@@ -1924,21 +1928,23 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 								for(MToDoTeam todo : list)
 								{
 
-									for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
-									{
-										receiveToDoCalendarEvent.delete(todo);
-									}
-
 									if(!todo.delete(false))
 									{
-										//TODO エラー処理
+										;//TODO エラー処理
 									}
 								}
+
+								for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+								{
+									receiveToDoCalendarEvent.refresh(null);
+								}
+
+								detach();
 							}
 						}
 
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this ,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
 			}
 
 		}//Update Related ToDo

@@ -1082,9 +1082,18 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 
 	@Override
-	public boolean refresh(I_ToDo todo)
+	public boolean refresh(I_ToDo todo)//TODO
 	{
-		return update(todo);
+		if(todo == null)
+		{
+			createContents();
+			return true;
+
+		}else {
+
+			return update(todo);
+
+		}
 	}
 
 
