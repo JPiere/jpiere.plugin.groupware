@@ -1874,7 +1874,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			receiveToDoCalendarEvent.delete(p_iToDo);
 		}
 
-		//Update Related ToDo
+		//Delete Related ToDo
 		if(p_iToDo instanceof MToDo)//TODO
 		{
 			MToDo m_ToDo =	(MToDo)p_iToDo;
@@ -1905,7 +1905,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 							}
 						}
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
 			}
 		}else if(p_iToDo instanceof MToDoTeam) {
 

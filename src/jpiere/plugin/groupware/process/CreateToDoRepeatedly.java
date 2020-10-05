@@ -106,7 +106,8 @@ public class CreateToDoRepeatedly extends SvrProcess {
 
 		if(MToDo.JP_TODO_TYPE_Memo.equals(m_ToDo.getJP_ToDo_Type()))
 		{
-			return "";//TODO メモだから繰返しは無い！
+			//We can not create ToDo repeatedly that ToDo type is Memo.
+			throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_Memo_CouldNotCreateRepeatedly"));
 		}
 
 		//Check Last Day of Month
@@ -130,7 +131,8 @@ public class CreateToDoRepeatedly extends SvrProcess {
 
 		if(m_ToDo.getJP_Processing1().equals("Y"))
 		{
-			throw new Exception(Msg.getElement(getCtx(), "Processed"));
+			//ToDo have already been created repeatedly. So, you can not create ToDo repeatedly.
+			throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_AlreadyCreatedRepeatedly"));
 		}
 
 
@@ -155,11 +157,9 @@ public class CreateToDoRepeatedly extends SvrProcess {
 
 		p_DateTo = Timestamp.valueOf(LocalDateTime.of(p_DateTo.toLocalDateTime().toLocalDate(), LocalTime.MAX));
 
-		int created = 0;
 		while(p_DateTo.compareTo(v_JP_ToDo_ScheduledStartTime) >= 0)
 		{
 			createToDo();
-			created++;
 
 			v_JP_ToDo_ScheduledStartTime = calculateNextScheduleTime(v_JP_ToDo_ScheduledStartTime);
 			if(p_IsScheduledStartDateEndOfMonth)
@@ -184,7 +184,7 @@ public class CreateToDoRepeatedly extends SvrProcess {
 		m_ToDo.setJP_Processing1("Y");
 		m_ToDo.saveEx(get_TrxName());
 
-		return Msg.getMsg(getCtx(), "Success") + " " + Msg.getMsg(getCtx(), "Created")+":" + created;
+		return "Success";
 	}
 
 	private void createToDo()
