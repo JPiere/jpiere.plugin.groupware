@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.adempiere.exceptions.AdempiereException;
 import org.compiere.model.I_C_NonBusinessDay;
 import org.compiere.model.PO;
 import org.compiere.model.Query;
@@ -106,8 +107,14 @@ public class CreateToDoRepeatedly extends SvrProcess {
 
 		if(MToDo.JP_TODO_TYPE_Memo.equals(m_ToDo.getJP_ToDo_Type()))
 		{
-			//We can not create ToDo repeatedly that ToDo type is Memo.
-			throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_Memo_CouldNotCreateRepeatedly"));
+			if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+			{
+				return "JP_ToDo_Memo_CouldNotCreateRepeatedly";//We can not create ToDo repeatedly that ToDo type is Memo.
+
+			}else {//Process is Called From Personal ToDo Window
+
+				throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_Memo_CouldNotCreateRepeatedly"));
+			}
 		}
 
 		//Check Last Day of Month
@@ -120,7 +127,6 @@ public class CreateToDoRepeatedly extends SvrProcess {
 				p_IsScheduledStartDateEndOfMonth = true;
 			}
 
-
 			localDate = m_ToDo.getJP_ToDo_ScheduledEndDate().toLocalDateTime().toLocalDate();
 			endOfMonth =localDate.with(TemporalAdjusters.lastDayOfMonth());
 			if(localDate.compareTo(endOfMonth) == 0)
@@ -131,8 +137,14 @@ public class CreateToDoRepeatedly extends SvrProcess {
 
 		if(m_ToDo.getJP_Processing1().equals("Y"))
 		{
-			//ToDo have already been created repeatedly. So, you can not create ToDo repeatedly.
-			throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_AlreadyCreatedRepeatedly"));
+			if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+			{
+				return "JP_ToDo_AlreadyCreatedRepeatedly";//ToDo have already been created repeatedly. So, you can not create ToDo repeatedly.
+
+			}else {//Process is Called From Personal ToDo Window
+
+				throw new AdempiereException(Msg.getMsg(getCtx(), "JP_ToDo_AlreadyCreatedRepeatedly"));
+			}
 		}
 
 
@@ -184,7 +196,15 @@ public class CreateToDoRepeatedly extends SvrProcess {
 		m_ToDo.setJP_Processing1("Y");
 		m_ToDo.saveEx(get_TrxName());
 
-		return "Success";
+		if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+		{
+			return "Success";
+
+		}else {//Process is Called From Personal ToDo Window
+
+			return Msg.getMsg(getCtx(), "Success");
+
+		}
 	}
 
 	private void createToDo()

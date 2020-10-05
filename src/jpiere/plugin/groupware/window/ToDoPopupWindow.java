@@ -1256,7 +1256,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else if(BUTTON_KICK_PROCESS.equals(btnName)) {
 
 				int AD_Process_ID =(Integer)btn.getAttribute("AD_Process_ID");
-				ProcessInfo pi = new ProcessInfo("", AD_Process_ID, MTable.getTable_ID(MToDo.Table_Name), p_iToDo.get_ID());
+				ProcessInfo pi = new ProcessInfo("", AD_Process_ID, 0, p_iToDo.get_ID());
 				ProcessModalDialog dialog = new ProcessModalDialog(this, i_PersonalToDoPopupwindowCaller.getWindowNo(), pi, true);
 
 				dialog.setBorder("normal");

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.adempiere.exceptions.AdempiereException;
 import org.adempiere.util.ProcessUtil;
 import org.compiere.model.I_C_NonBusinessDay;
 import org.compiere.model.MUser;
@@ -114,8 +115,14 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 
 		if(MToDoTeam.JP_TODO_TYPE_Memo.equals(m_TeamToDo.getJP_ToDo_Type()))
 		{
-			//We can not create ToDo repeatedly that ToDo type is Memo.
-			throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_Memo_CouldNotCreateRepeatedly"));
+			if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+			{
+				return "JP_ToDo_Memo_CouldNotCreateRepeatedly";//We can not create ToDo repeatedly that ToDo type is Memo.
+
+			}else {//Process is Called From Personal ToDo Window
+
+				throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_Memo_CouldNotCreateRepeatedly"));
+			}
 		}
 
 		//Check Last Day of Month
@@ -128,7 +135,6 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 				p_IsScheduledStartDateEndOfMonth = true;
 			}
 
-
 			localDate = m_TeamToDo.getJP_ToDo_ScheduledEndDate().toLocalDateTime().toLocalDate();
 			endOfMonth =localDate.with(TemporalAdjusters.lastDayOfMonth());
 			if(localDate.compareTo(endOfMonth) == 0)
@@ -139,8 +145,14 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 
 		if(m_TeamToDo.getJP_Processing3().equals("Y"))
 		{
-			//ToDo have already been created repeatedly. So, you can not create ToDo repeatedly.
-			throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_AlreadyCreatedRepeatedly"));
+			if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+			{
+				return "JP_ToDo_AlreadyCreatedRepeatedly";//ToDo have already been created repeatedly. So, you can not create ToDo repeatedly.
+
+			}else {//Process is Called From Personal ToDo Window
+
+				throw new AdempiereException(Msg.getMsg(getCtx(), "JP_ToDo_AlreadyCreatedRepeatedly"));
+			}
 		}
 
 		v_JP_ToDo_ScheduledStartTime = calculateNextScheduleTime(m_TeamToDo.getJP_ToDo_ScheduledStartTime() );
@@ -190,7 +202,15 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 		m_TeamToDo.setJP_Processing3("Y");
 		m_TeamToDo.saveEx(get_TrxName());
 
-		return "Success";
+		if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+		{
+			return "Success";
+
+		}else {//Process is Called From Personal ToDo Window
+
+			return Msg.getMsg(getCtx(), "Success");
+
+		}
 	}
 
 	private void createTeamToDo()
