@@ -15,6 +15,7 @@ package jpiere.plugin.groupware.process;
 
 import java.util.logging.Level;
 
+import org.adempiere.exceptions.AdempiereException;
 import org.compiere.model.MUser;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
@@ -63,7 +64,7 @@ public class CreateAdditionalTeamToDoMember extends SvrProcess {
 		{
 			Object[] objs = new Object[]{Msg.getElement(Env.getCtx(), "JP_Team_ID")};
 			String msg = Msg.getMsg(Env.getCtx(),"JP_Mandatory",objs);//Team field  is mandatory.
-			throw new Exception(msg);
+			throw new AdempiereException(msg);
 		}
 
 		MTeam team = new MTeam(getCtx(), p_JP_Team_ID, get_TrxName());
@@ -100,7 +101,15 @@ public class CreateAdditionalTeamToDoMember extends SvrProcess {
 		}//For i
 
 
-		return Msg.getMsg(getCtx(), "Success") + " " + Msg.getMsg(getCtx(), "Created")+":" + created;
+		if(getTable_ID()==0)	//Process is Called From ToDoPopupWindow.
+		{
+			return "Success";
+
+		}else {	//Process is Called From Personal ToDo Window
+
+			return Msg.getMsg(getCtx(), "Success") + " " + Msg.getMsg(getCtx(), "Created")+":" + created;
+
+		}
 	}
 
 }

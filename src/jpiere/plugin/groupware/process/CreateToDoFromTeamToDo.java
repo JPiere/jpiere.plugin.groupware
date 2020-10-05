@@ -13,6 +13,7 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.process;
 
+import org.adempiere.exceptions.AdempiereException;
 import org.compiere.model.MUser;
 import org.compiere.model.PO;
 import org.compiere.process.SvrProcess;
@@ -57,7 +58,14 @@ public class CreateToDoFromTeamToDo extends SvrProcess {
 
 		if(users.length == 0)
 		{
-			throw new Exception("だれもいません！");//TODO
+			if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+			{
+				return "JP_ToDo_NoUserToCreatePersonalToDo";//There are not any users to create a Personal ToDo.
+
+			}else {//Process is Called From Personal ToDo Window
+
+				throw new AdempiereException(Msg.getMsg(getCtx(), "JP_ToDo_NoUserToCreatePersonalToDo"));
+			}
 		}
 
 
@@ -83,7 +91,7 @@ public class CreateToDoFromTeamToDo extends SvrProcess {
 				MToDo newToDo = new MToDo(getCtx(), 0 , get_TrxName());
 				PO.copyValues(teamToDo, newToDo);
 
-				newToDo.setAD_Org_ID(0);
+				newToDo.setAD_Org_ID(teamToDo.getAD_Org_ID());
 				newToDo.setJP_ToDo_Team_ID(teamToDo.getJP_ToDo_Team_ID());
 				newToDo.setAD_User_ID(users[i].getAD_User_ID());
 				newToDo.setJP_ToDo_Status(MToDo.JP_TODO_STATUS_NotYetStarted);
@@ -96,8 +104,16 @@ public class CreateToDoFromTeamToDo extends SvrProcess {
 
 		}//For i
 
+		if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+		{
+			return "Success";
 
-		return Msg.getMsg(getCtx(), "Success") + " " + Msg.getMsg(getCtx(), "Created")+":" + created;
+		}else {//Process is Called From Personal ToDo Window
+
+			return Msg.getMsg(getCtx(), "Success") + " " + Msg.getMsg(getCtx(), "Created")+":" + created;
+
+		}
+
 	}
 
 }
