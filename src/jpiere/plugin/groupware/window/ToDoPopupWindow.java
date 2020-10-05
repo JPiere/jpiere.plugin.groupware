@@ -2193,7 +2193,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					{
 						for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
 						{
-							receiveToDoCalendarEvent.refresh(p_iToDo);
+							receiveToDoCalendarEvent.refresh(null);
 						}
 					}
 
@@ -2208,7 +2208,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			{
 				for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
 				{
-					receiveToDoCalendarEvent.refresh(p_iToDo);
+					receiveToDoCalendarEvent.refresh(null);
 				}
 			}
 
