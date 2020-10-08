@@ -883,24 +883,40 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 			Timestamp scheduledEndDay = Timestamp.valueOf(LocalDateTime.of(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate(), LocalTime.MIN));
 			if(today.compareTo(scheduledEndDay) < 0)
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Info-Circle");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
 
 			}else if(today.compareTo(scheduledEndDay) == 0){
 
 				if(MToDo.JP_TODO_STATUS_Completed.equals(toDo.getJP_ToDo_Status()))
 				{
-					btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+					if (ThemeManager.isUseFontIconForImage())
+						btn.setIconSclass("z-icon-Info-Circle");
+					else
+						btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+
 				}else {
-					btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
+					if (ThemeManager.isUseFontIconForImage())
+						btn.setIconSclass("z-icon-Exclamation-Triangle");
+					else
+						btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
 				}
 
 			}else if(today.compareTo(scheduledEndDay) > 0) {
 
 				if(MToDo.JP_TODO_STATUS_Completed.equals(toDo.getJP_ToDo_Status()))
 				{
-					btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+					if (ThemeManager.isUseFontIconForImage())
+						btn.setIconSclass("z-icon-Info-Circle");
+					else
+						btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
 				}else {
-					btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
+					if (ThemeManager.isUseFontIconForImage())
+						btn.setIconSclass("z-icon-Minus-Circle");
+					else
+						btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
 				}
 
 			}
@@ -992,7 +1008,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			if(isOneDaySchedule)
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Clock");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
 
 				if(isAllDaySchedule)
 				{
@@ -1006,7 +1025,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 			}else {
 
-				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Calendar-O");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
 
 				if(isAllDaySchedule)
 				{
