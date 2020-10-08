@@ -261,14 +261,20 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 	{
 		//Delete popup
 		detachPopupBtn = new Button();
-		detachPopupBtn.setImage(ThemeManager.getThemeResource("images/X8.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			detachPopupBtn.setIconSclass("z-icon-Window-Close");
+		else
+			detachPopupBtn.setImage(ThemeManager.getThemeResource("images/X8.png"));
 		detachPopupBtn.setClass("btn-small");
 		detachPopupBtn.setName(DETACH_POPUP);
 		detachPopupBtn.addEventListener(Events.ON_CLICK, this);
 
 		//Personal ToDo Zoom Button
 		zoomPersonalToDoBtn = new Button();
-		zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			zoomPersonalToDoBtn.setIconSclass("z-icon-Zoom");
+		else
+			zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
 		zoomPersonalToDoBtn.setClass("btn-small");
 		zoomPersonalToDoBtn.setName(ZOOM_PERSONALTODO);
 		zoomPersonalToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));
@@ -276,7 +282,10 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
 		//Team ToDo Zoom Button
 		zoomTeamToDoBtn = new Button();
-		zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			zoomTeamToDoBtn.setIconSclass("z-icon-ZoomAcross");
+		else
+			zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
 		zoomTeamToDoBtn.setClass("btn-small");
 		zoomTeamToDoBtn.setName(ZOOM_TEAMTODO);
 		zoomTeamToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));

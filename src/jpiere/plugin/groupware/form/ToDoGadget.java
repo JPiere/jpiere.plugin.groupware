@@ -272,7 +272,10 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
 			Button leftBtn = new Button();
-			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				leftBtn.setIconSclass("z-icon-MoveLeft");
+			else
+				leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 			leftBtn.setClass("btn-small");
 			leftBtn.setName(BUTTON_NAME_PREVIOUS_DAY);
 			leftBtn.addEventListener(Events.ON_CLICK, this);
@@ -288,7 +291,10 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, Msg.getMsg(ctx, "JP_Days"), true));
 
 			Button rightBtn = new Button();
-			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				rightBtn.setIconSclass("z-icon-MoveRight");
+			else
+				rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 			rightBtn.setClass("btn-small");
 			rightBtn.addEventListener(Events.ON_CLICK, this);
 			rightBtn.setName(BUTTON_NAME_NEXT_DAY);
@@ -317,7 +323,10 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			return ;
 
 		Button createNewToDo = new Button();
-		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			createNewToDo.setIconSclass("z-icon-New");
+		else
+			createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
 		createNewToDo.setClass("btn-small");
 		createNewToDo.setName(BUTTON_NAME_NEW_TODO);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
@@ -325,14 +334,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 		hlayout.appendChild(createNewToDo);
 
 		Button refresh = new Button();
-		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			refresh.setIconSclass("z-icon-Refresh");
+		else
+			refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
 		refresh.setClass("btn-small");
 		refresh.setName(BUTTON_NAME_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
 		hlayout.appendChild(refresh);
 
 		Button calander = new Button();
-		calander.setImage(ThemeManager.getThemeResource("images/Calendar16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			calander.setIconSclass("z-icon-Calendar");
+		else
+			calander.setImage(ThemeManager.getThemeResource("images/Calendar16.png"));
 		calander.setClass("btn-small");
 		calander.setName(BUTTON_NAME_CALENDER);
 		calander.addEventListener(Events.ON_CLICK, this);
@@ -465,15 +480,24 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			Timestamp scheduledEndDay = Timestamp.valueOf(LocalDateTime.of(toDo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalDate(), LocalTime.MIN));
 			if(today.compareTo(scheduledEndDay) < 0)
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Info-Circle");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/InfoIndicator16.png"));
 
 			}else if(today.compareTo(scheduledEndDay) == 0){
 
-				btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Exclamation-Triangle");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/mSetVariable.png"));
 
 			}else if(today.compareTo(scheduledEndDay) > 0) {
 
-				btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Minus-Circle");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/ErrorIndicator16.png"));
 
 			}
 
@@ -520,7 +544,10 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 			if(isOneDaySchedule)
 			{
-				btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Clock");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/InfoSchedule16.png"));
 
 				if(isAllDaySchedule)
 				{
@@ -534,7 +561,10 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 			}else {
 
-				btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Calendar-O");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/Register16.png"));
 
 				if(isAllDaySchedule)
 				{
@@ -566,7 +596,11 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 		}else if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type)) {
 
-			btn.setImage(ThemeManager.getThemeResource("images/Editor16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				btn.setIconSclass("z-icon-Edit");
+			else
+				btn.setImage(ThemeManager.getThemeResource("images/Editor16.png"));
+
 			if(toDo.getParent_Team_ToDo_ID() == 0)
 			{
 				btn.setLabel(toDo.getName());

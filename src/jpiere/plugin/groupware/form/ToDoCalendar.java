@@ -543,7 +543,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		//Create New ToDo Button
 		Button createNewToDo = new Button();
-		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			createNewToDo.setIconSclass("z-icon-New");
+		else
+			createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
 		createNewToDo.setName(BUTTON_NEW);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
@@ -554,7 +557,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		//Refresh Button
 		Button refresh = new Button();
-		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			refresh.setIconSclass("z-icon-Refresh");
+		else
+			refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
 		refresh.setName(BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
 		refresh.setLabel(Msg.getMsg(ctx, "Refresh"));
@@ -606,7 +612,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 
 		Button leftBtn = new Button();
-		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			leftBtn.setIconSclass("z-icon-MoveLeft");
+		else
+			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 		//leftBtn.setClass("btn-small");
 		leftBtn.setName(BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
@@ -624,7 +633,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
 		Button rightBtn = new Button();
-		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			rightBtn.setIconSclass("z-icon-MoveRight");
+		else
+			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 		//rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(BUTTON_NEXT);
@@ -648,7 +660,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		//Customize
 		button_Customize = new Button();
-		button_Customize.setImage(ThemeManager.getThemeResource("images/Customize16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			button_Customize.setIconSclass("z-icon-Customize");
+		else
+			button_Customize.setImage(ThemeManager.getThemeResource("images/Customize16.png"));
 		button_Customize.addEventListener(Events.ON_CLICK, this);
 		button_Customize.setName(BUTTON_CUSTOMIZE);
 		button_Customize.setLabel(" ");
@@ -771,7 +786,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
     			tab_p_AD_User_ID.setLabel(GroupwareToDoUtil.trimName(MUser.get(ctx, p_AD_User_ID).getName()) + " & "  + Msg.getElement(ctx, MTeam.COLUMNNAME_JP_Team_ID));//
 
     		tab_p_AD_User_ID.setAttribute("AD_User_ID", p_AD_User_ID);
-    		tab_p_AD_User_ID.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
+    		if (ThemeManager.isUseFontIconForImage())
+    			tab_p_AD_User_ID.setIconSclass("z-icon-BPartner");
+    		else
+    			tab_p_AD_User_ID.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
     		tab_p_AD_User_ID.setClosable(false);
     		tab_p_AD_User_ID.addEventListener(Events.ON_CLICK, this);
 
