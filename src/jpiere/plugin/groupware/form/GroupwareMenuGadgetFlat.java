@@ -143,7 +143,12 @@ public class GroupwareMenuGadgetFlat extends DashboardPanel implements EventList
 			ToolBarButton btn = new ToolBarButton(node.toString().trim());
 			btn.setSclass("link");
 			btn.setLabel(node.toString().trim());
-			btn.setImage(ThemeManager.getThemeResource(getIconFile(node)));
+			if (ThemeManager.isUseFontIconForImage())
+			{
+				btn.setIconSclass(getIconFile(node));
+			}else {
+				btn.setImage(ThemeManager.getThemeResource(getIconFile(node)));
+			}
 			btn.addEventListener(Events.ON_CLICK, this);
 			int node_ID = node.getNode_ID();
 			btn.setAttribute(NODE_ID, String.valueOf(node_ID));

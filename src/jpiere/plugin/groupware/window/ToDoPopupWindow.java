@@ -2041,7 +2041,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				row = rows.newRow();
 
 				btn = new Button();
-				btn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Process");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
 				btn.setClass("btn-small");
 				btn.setStyle("text-align: left");
 				btn.setName(BUTTON_KICK_PROCESS);
