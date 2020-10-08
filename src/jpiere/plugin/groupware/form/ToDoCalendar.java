@@ -739,7 +739,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		//Save Button
 		button_Customize_Save = new Button();
-		button_Customize_Save.setImage(ThemeManager.getThemeResource("images/Save16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			button_Customize_Save.setIconSclass("z-icon-Save");
+		else
+			button_Customize_Save.setImage(ThemeManager.getThemeResource("images/Save16.png"));
 		button_Customize_Save.addEventListener(Events.ON_CLICK, this);
 		button_Customize_Save.setName(BUTTON_CUSTOMIZE_SAVE);
 		button_Customize_Save.setLabel(Msg.getMsg(ctx, "save"));
