@@ -117,6 +117,20 @@ public class CreateToDoRepeatedly extends SvrProcess {
 			}
 		}
 
+		if(m_ToDo.getJP_ToDo_Team_ID() > 0)
+		{
+
+			if(getTable_ID()==0)//Process is Called From ToDoPopupWindow.
+			{
+				//You can not create Personal ToDo repeatedly that was created from Team ToDo.
+				return "JP_ToDo_NotCreatPersonalToDoFromTeamToDo";
+
+			}else {//Process is Called From Personal ToDo Window
+
+				throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_NotCreatPersonalToDoFromTeamToDo"));
+			}
+		}
+
 		//Check Last Day of Month
 		if(p_JP_Repetition_Interval.equals("M"))//Month
 		{
