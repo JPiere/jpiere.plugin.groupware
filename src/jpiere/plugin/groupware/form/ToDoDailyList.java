@@ -417,7 +417,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 		//Create New ToDo Button
 		Button createNewToDo = new Button();
-		createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			createNewToDo.setIconSclass("z-icon-New");
+		else
+			createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
 		createNewToDo.setName(BUTTON_NEW);
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
@@ -428,7 +431,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 		//Refresh Button
 		Button refresh = new Button();
-		refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			refresh.setIconSclass("z-icon-Refresh");
+		else
+			refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
 		refresh.setName(BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
 		refresh.setLabel(Msg.getMsg(ctx, "Refresh"));
@@ -440,7 +446,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 
 		leftBtn = new Button();
-		leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			leftBtn.setIconSclass("z-icon-MoveLeft");
+		else
+			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 		//leftBtn.setClass("btn-small");
 		leftBtn.setName(BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
@@ -461,7 +470,10 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, Msg.getMsg(ctx, "JP_Days"), true));
 
 		rightBtn = new Button();
-		rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+		if (ThemeManager.isUseFontIconForImage())
+			rightBtn.setIconSclass("z-icon-MoveRight");
+		else
+			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 		//rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(BUTTON_NEXT);
