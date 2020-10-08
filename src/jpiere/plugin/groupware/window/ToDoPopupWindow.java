@@ -727,7 +727,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			if(zoomPersonalToDoBtn == null)
 			{
 				zoomPersonalToDoBtn = new Button();
-				zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
+				if (ThemeManager.isUseFontIconForImage())
+					zoomPersonalToDoBtn.setIconSclass("z-icon-Zoom");
+				else
+					zoomPersonalToDoBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
 				zoomPersonalToDoBtn.setClass("btn-small");
 				zoomPersonalToDoBtn.setName(BUTTON_NAME_ZOOM_PERSONALTODO);
 				zoomPersonalToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));
@@ -741,7 +744,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(zoomTeamToDoBtn == null)
 		{
 			zoomTeamToDoBtn = new Button();
-			zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				zoomTeamToDoBtn.setIconSclass("z-icon-ZoomAcross");
+			else
+				zoomTeamToDoBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
 			zoomTeamToDoBtn.setClass("btn-small");
 			zoomTeamToDoBtn.setName(BUTTON_NAME_ZOOM_TEAMTODO);
 			zoomTeamToDoBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));
@@ -769,7 +775,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(undoBtn == null)
 		{
 			undoBtn = new Button();
-			undoBtn.setImage(ThemeManager.getThemeResource("images/Undo16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				undoBtn.setIconSclass("z-icon-Ignore");
+			else
+				undoBtn.setImage(ThemeManager.getThemeResource("images/Undo16.png"));
 			undoBtn.setClass("btn-small");
 			undoBtn.setName(BUTTON_NAME_UNDO);
 			undoBtn.setTooltiptext(Msg.getMsg(ctx, "Ignore"));
@@ -786,7 +795,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(saveBtn == null)
 		{
 			saveBtn = new Button();
-			saveBtn.setImage(ThemeManager.getThemeResource("images/Save16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				saveBtn.setIconSclass("z-icon-Save");
+			else
+				saveBtn.setImage(ThemeManager.getThemeResource("images/Save16.png"));
 			saveBtn.setClass("btn-small");
 			saveBtn.setName(BUTTON_NAME_SAVE);
 			saveBtn.setTooltiptext(Msg.getMsg(ctx, "Save"));
@@ -803,7 +815,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(processBtn == null)
 		{
 			processBtn = new Button();
-			processBtn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				processBtn.setIconSclass("z-icon-Process");
+			else
+				processBtn.setImage(ThemeManager.getThemeResource("images/Process16.png"));
 			processBtn.setClass("btn-small");
 			processBtn.setName(BUTTON_NAME_PROCESS);
 			processBtn.setTooltiptext(Msg.getMsg(ctx, "Process"));
@@ -818,7 +833,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(leftBtn  == null)
 		{
 			leftBtn = new Button();
-			leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				leftBtn.setIconSclass("z-icon-MoveLeft");
+			else
+				leftBtn.setImage(ThemeManager.getThemeResource("images/MoveLeft16.png"));
 			leftBtn.setClass("btn-small");
 			leftBtn.setName(BUTTON_NAME_PREVIOUS_TODO);
 			leftBtn.setTooltiptext(Msg.getMsg(ctx, "Previous"));
@@ -835,7 +853,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(rightBtn == null)
 		{
 			rightBtn = new Button();
-			rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				rightBtn.setIconSclass("z-icon-MoveRight");
+			else
+				rightBtn.setImage(ThemeManager.getThemeResource("images/MoveRight16.png"));
 			rightBtn.setClass("btn-small");
 			rightBtn.setName(BUTTON_NAME_NEXT_TODO);
 			rightBtn.setTooltiptext(Msg.getMsg(ctx, "Next"));
@@ -870,7 +891,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(deleteBtn == null)
 		{
 			deleteBtn = new Button();
-			deleteBtn.setImage(ThemeManager.getThemeResource("images/Delete16.png"));
+			if (ThemeManager.isUseFontIconForImage())
+				deleteBtn.setIconSclass("z-icon-Delete");
+			else
+				deleteBtn.setImage(ThemeManager.getThemeResource("images/Delete16.png"));
 			deleteBtn.setClass("btn-small");
 			deleteBtn.setName(BUTTON_NAME_DELETE);
 			deleteBtn.setTooltiptext(Msg.getMsg(ctx, "Delete"));
