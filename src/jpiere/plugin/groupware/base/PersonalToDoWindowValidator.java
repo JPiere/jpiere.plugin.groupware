@@ -47,7 +47,7 @@ public class PersonalToDoWindowValidator implements WindowValidator {
 		if(event.getName().equals(WindowValidatorEventType.BEFORE_SAVE.getName()))
 		{
 			/**
-			 * AFTER_SAVE could not get old value.
+			 * AFTER_SAVE could not get old value correctly.
 			 * So, I use BEFORE_SAVE.
 			 **/
 
