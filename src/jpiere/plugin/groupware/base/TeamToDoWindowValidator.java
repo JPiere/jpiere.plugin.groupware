@@ -144,7 +144,43 @@ public class TeamToDoWindowValidator implements WindowValidator {
 					}//if(list.size() > 0)
 				}
 			}//if(gridTab.getTabNo() == 0 )
-		}//AFTER_SAVE
+
+		} else if(event.getName().equals(WindowValidatorEventType.BEFORE_DELETE.getName())) {
+
+			GridTab gridTab =event.getWindow().getADWindowContent().getActiveGridTab();
+			int Record_ID = gridTab.getRecord_ID();
+			if(gridTab.getTabNo() == 0 && Record_ID > 0 )
+			{
+				MToDoTeam m_ToDo =	new MToDoTeam(Env.getCtx(), Record_ID, null);
+				ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(Env.getCtx(), m_ToDo, null, m_ToDo.getJP_ToDo_ScheduledStartTime(), true, null);
+
+				if(list.size() > 0)
+				{
+					Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+					{
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
+								{
+									for(MToDoTeam todo : list)
+									{
+
+										if(!todo.delete(false))
+										{
+											;//TODO エラー処理
+										}
+									}
+								}
+							}
+
+					};
+					FDialog.ask(gridTab.getWindowNo(), null ,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(Env.getCtx(), "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
+				}
+			}
+
+		}
+
 
 		callback.onCallback(true);
 

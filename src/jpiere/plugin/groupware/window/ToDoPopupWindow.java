@@ -1933,7 +1933,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 							}
 						}
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
 			}
 		}else if(p_iToDo instanceof MToDoTeam) {
 
@@ -1968,7 +1968,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 						}
 
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this ,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);//TODO
+				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this ,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
 			}
 
 		}//Update Related ToDo
