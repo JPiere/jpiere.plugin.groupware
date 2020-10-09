@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="PersonalToDoWindowValidator">
+   <implementation class="jpiere.plugin.groupware.base.PersonalToDoWindowValidator"/>
+   <property name="AD_Window_UU" type="String">754c84c4-051b-44df-9655-69ba1d8f48fb
+d7da0f1f-5e40-490f-8bc4-15bdd7592046
+   </property>
+   <service>
+      <provide interface="org.adempiere.webui.adwindow.validator.WindowValidator"/>
+   </service>
+</scr:component>
