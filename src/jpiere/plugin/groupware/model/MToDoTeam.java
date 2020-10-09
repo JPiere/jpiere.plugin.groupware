@@ -266,7 +266,7 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 				DB.executeUpdate(sql, para, false, get_TrxName());
 		}
 
-		if(success && !newRecord)
+		if(success && !newRecord && is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
 		{
 			if(MToDoTeam.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status()))
 			{

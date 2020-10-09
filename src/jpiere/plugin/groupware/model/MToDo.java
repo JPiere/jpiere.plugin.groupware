@@ -272,7 +272,7 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 	@Override
 	protected boolean afterSave(boolean newRecord, boolean success)
 	{
-		if(success && !newRecord)
+		if(success && !newRecord && is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Status))
 		{
 			if(MToDo.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status()))
 			{
