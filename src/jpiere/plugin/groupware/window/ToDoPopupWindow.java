@@ -1369,7 +1369,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					}
 				}
 
-			}else if(BUTTON_NAME_ADD_END_HOURS.equals(btnName) || BUTTON_NAME_ADD_END_MINS.equals(btnName) ) {//TODO
+			}else if(BUTTON_NAME_ADD_END_HOURS.equals(btnName) || BUTTON_NAME_ADD_END_MINS.equals(btnName) ) {
 
 				p_IsDirty = true;
 				updateNorth();
@@ -2134,7 +2134,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 
 		//Delete Related ToDo
-		if(p_iToDo instanceof MToDo)//TODO
+		if(p_iToDo instanceof MToDo)
 		{
 			MToDo m_ToDo =	(MToDo)p_iToDo;
 			ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, m_ToDo.getJP_ToDo_ScheduledStartTime(), true, null);
@@ -2373,7 +2373,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			updateCenter();
 
-		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate.equals(name) || MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime.equals(name)) {//TODO
+		}else if(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate.equals(name) || MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime.equals(name)) {
 
 			if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type) || MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 			{
