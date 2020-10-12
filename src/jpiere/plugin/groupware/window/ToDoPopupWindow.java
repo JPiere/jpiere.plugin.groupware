@@ -1477,6 +1477,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			return true;
 		}
 
+		I_ToDo db_ToDo = null;
+
 		if(p_IsNewRecord)
 		{
 			if(p_IsPersonalToDo)
@@ -1485,7 +1487,70 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo = new MToDoTeam(Env.getCtx(), 0, null);
 			}
-		}
+
+		}else {//Exclusive Control
+
+			if(p_iToDo.get_TableName().equals(MToDo.Table_Name))
+			{
+				db_ToDo = new MToDo(ctx, p_iToDo.get_ID(), null);
+
+			}else if(p_iToDo.get_TableName().equals(MToDoTeam.Table_Name)){
+
+				db_ToDo = new MToDoTeam(ctx, p_iToDo.get_ID(), null);
+			}
+
+			if(p_iToDo.getUpdated().compareTo(db_ToDo.getUpdated()) != 0)
+			{
+				//Current ToDo was changed by another user, so refreshed.
+				FDialog.info(0, this, "JP_ToDo_CurrentToDoModified");
+
+				p_iToDo.setAD_Org_ID(db_ToDo.getAD_Org_ID());
+				p_iToDo.setAD_User_ID(db_ToDo.getAD_User_ID());
+				p_iToDo.setJP_ToDo_Type(db_ToDo.getJP_ToDo_Type());
+				p_iToDo.setJP_ToDo_Category_ID(db_ToDo.getJP_ToDo_Category_ID());
+				p_iToDo.setName(db_ToDo.getName());
+				p_iToDo.setDescription(db_ToDo.getDescription());
+				p_iToDo.setComments(db_ToDo.getComments());
+				p_iToDo.setJP_ToDo_ScheduledStartDate(db_ToDo.getJP_ToDo_ScheduledStartDate());
+				p_iToDo.setJP_ToDo_ScheduledStartTime(db_ToDo.getJP_ToDo_ScheduledStartTime());
+				p_iToDo.setIsStartDateAllDayJP(db_ToDo.isStartDateAllDayJP());
+				p_iToDo.setJP_ToDo_ScheduledEndDate(db_ToDo.getJP_ToDo_ScheduledEndDate());
+				p_iToDo.setJP_ToDo_ScheduledEndTime(db_ToDo.getJP_ToDo_ScheduledEndTime());
+				p_iToDo.setIsEndDateAllDayJP(db_ToDo.isEndDateAllDayJP());
+				p_iToDo.setJP_ToDo_Status(db_ToDo.getJP_ToDo_Status());
+				p_iToDo.setIsOpenToDoJP(db_ToDo.isOpenToDoJP());
+				p_iToDo.setProcessed(db_ToDo.isProcessed());
+				p_iToDo.setUpdated(db_ToDo.getUpdated());
+
+				if(p_iToDo.get_TableName().equals(MToDo.Table_Name))
+				{
+					p_iToDo.setJP_Statistics_Choice(db_ToDo.getJP_Statistics_Choice());
+					p_iToDo.setJP_Statistics_DateAndTime(db_ToDo.getJP_Statistics_DateAndTime());
+					p_iToDo.setJP_Statistics_Number(db_ToDo.getJP_Statistics_Number());
+					p_iToDo.setJP_Statistics_YesNo(db_ToDo.getJP_Statistics_YesNo());
+
+				}else if(p_iToDo.get_TableName().equals(MToDoTeam.Table_Name)){
+
+					p_iToDo.setJP_Mandatory_Statistics_Info(db_ToDo.getJP_Mandatory_Statistics_Info());
+				}
+
+				p_IsDirty = false;
+				updateControlParameter(p_iToDo.get_ID());
+				//updateWindowTitle();
+				updateEditorValue();
+				updateEditorStatus();
+				updateNorth();
+				updateCenter();
+
+				for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+				{
+					receiveToDoCalendarEvent.update(p_iToDo);
+				}
+				return true;
+
+			}//Exclusive Control
+
+		}//if(p_IsNewRecord)
 
 		Timestamp old_ScheduledStartTime = p_iToDo.getJP_ToDo_ScheduledStartTime();
 		Timestamp new_ScheduledStartTime = null;
@@ -1503,6 +1568,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setAD_Org_ID((Integer)editor.getValue());
 		}
+		final boolean isChanged_AD_Org_ID = p_iToDo.is_ValueChanged( MToDo.COLUMNNAME_AD_Org_ID);
 
 		//Check AD_User_ID
 		editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
@@ -1514,6 +1580,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setAD_User_ID((Integer)editor.getValue());
 		}
+		final boolean isChanged_AD_User_ID = p_iToDo.is_ValueChanged( MToDo.COLUMNNAME_AD_User_ID);
 
 		//Check JP_ToDo_Type
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type);
@@ -1525,6 +1592,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setJP_ToDo_Type((String)editor.getValue());
 		}
+		final boolean isChanged_JP_ToDo_Type = p_iToDo.is_ValueChanged( MToDo.COLUMNNAME_JP_ToDo_Type);
 
 		//Check JP_ToDo_Category_ID
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
@@ -1534,6 +1602,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setJP_ToDo_Category_ID((Integer)editor.getValue());
 		}
+		final boolean isChanged_JP_ToDo_Category_ID = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
 
 		//Check Name
 		editor = map_Editor.get(MToDo.COLUMNNAME_Name);
@@ -1545,6 +1614,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setName((String)editor.getValue());
 		}
+		final boolean isChanged_Name = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Name);
 
 		//Check Description
 		editor = map_Editor.get(MToDo.COLUMNNAME_Description);
@@ -1554,8 +1624,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setDescription(editor.getValue().toString());
 		}
+		final boolean isChanged_Description = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Description);
 
 		//Check Comments
+		boolean isChanged_Comments_temp = false;
 		if(p_IsPersonalToDo)
 		{
 			editor = map_Editor.get(MToDo.COLUMNNAME_Comments);
@@ -1565,10 +1637,12 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setComments(editor.getValue().toString());
 			}
-
+			isChanged_Comments_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Comments);
 		}
+		final boolean isChanged_Comments = isChanged_Comments_temp;
 
 		//Check JP_Team_ID
+		boolean isChanged_JP_Team_ID_temp = false;
 		if(!p_IsPersonalToDo)
 		{
 			editor = map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID);
@@ -1578,8 +1652,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Team_ID((Integer)editor.getValue());
 			}
+			isChanged_JP_Team_ID_temp = p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Team_ID);
 		}
-
+		final boolean isChanged_JP_Team_ID = isChanged_JP_Team_ID_temp;
 
 		//Check JP_ToDo_ScheduledStartDate & Time
 		LocalDate date = null;
@@ -1680,6 +1755,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setJP_ToDo_ScheduledEndTime(null);
 		}
 
+		final boolean isChanged_IsStartDateAllDayJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsStartDateAllDayJP);
+		final boolean isChanged_IsEndDateAllDayJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsEndDateAllDayJP);
+
 
 		//Check JP_ToDo_Status
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
@@ -1696,6 +1774,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//Set IsOpenToDoJP
 		editor = map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP);
 		p_iToDo.setIsOpenToDoJP(((boolean)editor.getValue()));
+		final boolean isChanged_IsOpenToDoJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsOpenToDoJP);
+
+
+		boolean isChanged_JP_Statistics_YesNo_temp = false;
+		boolean isChanged_JP_Statistics_Choice_temp = false;
+		boolean isChanged_JP_Statistics_DateAndTime_temp = false;
+		boolean isChanged_JP_Statistics_Number_temp = false;
+		boolean isChanged_JP_Mandatory_Statistics_Info_temp = false;
+
 
 		if(p_IsPersonalToDo)
 		{
@@ -1715,6 +1802,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
 			p_iToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
 
+			isChanged_JP_Statistics_YesNo_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_YesNo);
+			isChanged_JP_Statistics_Choice_temp =p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Choice);
+			isChanged_JP_Statistics_DateAndTime_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
+			isChanged_JP_Statistics_Number_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Number);
+
 		}else {
 
 			//Set JP_Mandatory_Statistics_Info
@@ -1727,7 +1819,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				p_iToDo.setJP_Mandatory_Statistics_Info(editor.getValue().toString());
 			}
 
+			isChanged_JP_Mandatory_Statistics_Info_temp = p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
 		}
+
+		final boolean isChanged_JP_Statistics_YesNo = isChanged_JP_Statistics_YesNo_temp;
+		final boolean isChanged_JP_Statistics_Choice = isChanged_JP_Statistics_Choice_temp;
+		final boolean isChanged_JP_Statistics_DateAndTime = isChanged_JP_Statistics_DateAndTime_temp;
+		final boolean isChanged_JP_Statistics_Number = isChanged_JP_Statistics_Number_temp;
+		final boolean isChanged_JP_Mandatory_Statistics_Info = isChanged_JP_Mandatory_Statistics_Info_temp;
+
 
 		String msg = p_iToDo.beforeSavePreCheck(true);
 		if(!Util.isEmpty(msg))
@@ -1775,114 +1875,181 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//Update Related ToDo
 		if(!p_IsNewRecord)//TODO
 		{
-			if(new_ScheduledStartTime.compareTo(old_ScheduledStartTime) != 0
-					||	new_ScheduledEndTime.compareTo(old_ScheduledEndTime) != 0)
+			if(p_iToDo instanceof MToDo)
 			{
-				if(p_iToDo instanceof MToDo)
+				MToDo m_ToDo =	(MToDo)p_iToDo;
+				ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, old_ScheduledStartTime, true, null);
+
+				if(list.size() > 0)
 				{
-					MToDo m_ToDo =	(MToDo)p_iToDo;
-					ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, old_ScheduledStartTime, true, null);
+					long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+					long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
 
-					if(list.size() > 0)
+					Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
 					{
-						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
-						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
-
-						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
-						{
-								@Override
-								public void onCallback(Boolean result)
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
 								{
-									if(result)
+									Timestamp scheduledStartTime = null;
+									Timestamp scheduledEndTime = null;
+
+									for(MToDo todo : list)
 									{
-										Timestamp scheduledStartTime = null;
-										Timestamp scheduledEndTime = null;
+										if(m_ToDo.getJP_ToDo_ID() == todo.getJP_ToDo_ID())
+											continue;
 
-										for(MToDo todo : list)
+										if(isChanged_AD_Org_ID)
+											todo.setAD_Org_ID(m_ToDo.getAD_Org_ID());
+										if(isChanged_AD_User_ID)
+											todo.setAD_User_ID(m_ToDo.getAD_User_ID());
+										if(isChanged_JP_ToDo_Type)
+											todo.setJP_ToDo_Type(m_ToDo.getJP_ToDo_Type());
+										if(isChanged_JP_ToDo_Category_ID)
+											todo.setJP_ToDo_Category_ID(m_ToDo.getJP_ToDo_Category_ID());
+										if(isChanged_Name)
+											todo.setName(m_ToDo.getName());
+										if(isChanged_Description)
+											todo.setDescription(m_ToDo.getDescription());
+										if(isChanged_Comments)
+											todo.setComments(m_ToDo.getComments());
+										if(isChanged_IsOpenToDoJP)
+											todo.setIsOpenToDoJP(m_ToDo.isOpenToDoJP());
+
+										if(isChanged_JP_Statistics_YesNo)
+											todo.setJP_Statistics_YesNo(m_ToDo.getJP_Statistics_YesNo());
+										if(isChanged_JP_Statistics_Choice)
+											todo.setJP_Statistics_Choice(m_ToDo.getJP_Statistics_Choice());
+										if(isChanged_JP_Statistics_DateAndTime)
+											todo.setJP_Statistics_DateAndTime(m_ToDo.getJP_Statistics_DateAndTime());
+										if(isChanged_JP_Statistics_Number)
+											todo.setJP_Statistics_Number(m_ToDo.getJP_Statistics_Number());
+
+										if(isChanged_IsStartDateAllDayJP)
+											todo.setIsStartDateAllDayJP(m_ToDo.isStartDateAllDayJP());
+										if(isChanged_IsEndDateAllDayJP)
+											todo.setIsEndDateAllDayJP(m_ToDo.isEndDateAllDayJP());
+
+										scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+										scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+										if(between_ScheduledStartMins != 0)
 										{
-											if(m_ToDo.getJP_ToDo_ID() == todo.getJP_ToDo_ID())
-												continue;
-
-											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
-											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
-
 											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
 											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+										}
 
+										if(between_ScheduledEndMins != 0)
+										{
 											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
 											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
-											if(!todo.save())
-											{
-												;//TODO エラー処理
-											}
 										}
 
-										for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+										if(!todo.save())
 										{
-											receiveToDoCalendarEvent.refresh(null);
+											;//TODO エラー処理
 										}
-
-										detach();
 									}
-								}
-						};
-						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
-					}
 
-
-				}else if(p_iToDo instanceof MToDoTeam) {
-
-					MToDoTeam m_TeamToDo =	(MToDoTeam)p_iToDo;
-					ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
-
-					if(list.size() > 0)
-					{
-
-						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
-						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
-
-						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
-						{
-								@Override
-								public void onCallback(Boolean result)
-								{
-									if(result)
+									for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
 									{
-										Timestamp scheduledStartTime = null;
-										Timestamp scheduledEndTime = null;
+										receiveToDoCalendarEvent.refresh(null);
+									}
 
-										for(MToDoTeam todo : list)
+									detach();
+								}
+							}
+					};
+					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+				}
+
+
+			}else if(p_iToDo instanceof MToDoTeam) {
+
+				MToDoTeam m_TeamToDo =	(MToDoTeam)p_iToDo;
+				ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
+
+				if(list.size() > 0)
+				{
+
+					long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+					long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+					Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+					{
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
+								{
+									Timestamp scheduledStartTime = null;
+									Timestamp scheduledEndTime = null;
+
+									for(MToDoTeam todo : list)
+									{
+										if(m_TeamToDo.getJP_ToDo_Team_ID() == todo.getJP_ToDo_Team_ID())
+											continue;
+
+										if(isChanged_AD_Org_ID)
+											todo.setAD_Org_ID(m_TeamToDo.getAD_Org_ID());
+										if(isChanged_AD_User_ID)
+											todo.setAD_User_ID(m_TeamToDo.getAD_User_ID());
+										if(isChanged_JP_ToDo_Type)
+											todo.setJP_ToDo_Type(m_TeamToDo.getJP_ToDo_Type());
+										if(isChanged_JP_ToDo_Category_ID)
+											todo.setJP_ToDo_Category_ID(m_TeamToDo.getJP_ToDo_Category_ID());
+										if(isChanged_Name)
+											todo.setName(m_TeamToDo.getName());
+										if(isChanged_Description)
+											todo.setDescription(m_TeamToDo.getDescription());
+										if(isChanged_IsOpenToDoJP)
+											todo.setIsOpenToDoJP(m_TeamToDo.isOpenToDoJP());
+
+										if(isChanged_JP_Team_ID)
+											todo.setJP_Team_ID(m_TeamToDo.getJP_Team_ID());
+
+										if(isChanged_JP_Mandatory_Statistics_Info)
+											todo.setJP_Mandatory_Statistics_Info(m_TeamToDo.getJP_Mandatory_Statistics_Info());
+
+										if(isChanged_IsStartDateAllDayJP)
+											todo.setIsStartDateAllDayJP(m_TeamToDo.isStartDateAllDayJP());
+										if(isChanged_IsEndDateAllDayJP)
+											todo.setIsEndDateAllDayJP(m_TeamToDo.isEndDateAllDayJP());
+
+										scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+										scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+										if(between_ScheduledStartMins != 0)
 										{
-											if(m_TeamToDo.getJP_ToDo_Team_ID() == todo.getJP_ToDo_Team_ID())
-												continue;
-
-											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
-											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
-
 											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
 											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+										}
 
+										if(between_ScheduledEndMins != 0)
+										{
 											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
 											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
-											if(!todo.save())
-											{
-												;//TODO エラー処理
-											}
 										}
 
-										for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+
+										if(!todo.save())
 										{
-											receiveToDoCalendarEvent.refresh(null);
+											;//TODO エラー処理
 										}
-
-										detach();
 									}
+
+									for(I_ToDoCalendarEventReceiver receiveToDoCalendarEvent : list_ToDoCalendarEventReceiver)
+									{
+										receiveToDoCalendarEvent.refresh(null);
+									}
+
+									detach();
 								}
+							}
 
-						};
-						FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
-					}
-
+					};
+					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 				}
 
 			}

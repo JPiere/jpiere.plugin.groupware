@@ -621,4 +621,9 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 		return null;
 	}
 
+	@Override
+	public void setUpdated(Timestamp updated)
+	{
+		set_ValueNoCheck("Updated", updated);
+	}
 }

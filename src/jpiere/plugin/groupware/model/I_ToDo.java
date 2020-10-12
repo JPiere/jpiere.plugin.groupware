@@ -105,8 +105,9 @@ public interface I_ToDo
 	public boolean isEndDateAllDayJP();
 
 	/** Processed **/
-	//public void setProcessed (boolean Processed);
+	public void setProcessed (boolean Processed);
 	public boolean isProcessed();
+
 
 	/** JP_ToDo_ScheduledStartDate **/
 	public void setJP_ToDo_ScheduledStartDate (Timestamp JP_ToDo_ScheduledStartTime);
@@ -157,6 +158,15 @@ public interface I_ToDo
 	/** CreatedBy **/
 	public int getCreatedBy();
 
+	/** Updated **/
+	public Timestamp getUpdated();
+
+	/** Updated **/
+	public void setUpdated(Timestamp updated);
+
+	/** get_TableName **/
+	public String get_TableName();
+
 
 	/** JP_ToDo_StartTime **/
 	//public void setJP_ToDo_StartTime (Timestamp JP_ToDo_StartTime);
@@ -180,8 +190,7 @@ public interface I_ToDo
 	//public void setC_ProjectTask_ID (int C_ProjectTask_ID);
 	//public int getC_ProjectTask_ID();
 
-
-
+	public boolean is_ValueChanged (String columnName);
 
 	public String beforeSavePreCheck(boolean newRecord);
 

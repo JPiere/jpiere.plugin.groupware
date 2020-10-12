@@ -485,4 +485,11 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 	}
 
 
+	@Override
+	public void setUpdated(Timestamp updated)
+	{
+		set_ValueNoCheck("Updated", updated);
+	}
+
+
 }
