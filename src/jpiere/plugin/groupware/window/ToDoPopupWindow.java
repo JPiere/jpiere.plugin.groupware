@@ -583,7 +583,16 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private void updateEditorStatus()
 	{
 		map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
-		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
+
+		if(p_iToDo == null)
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
+		else if(p_iToDo.isCreatedToDoRepeatedly())
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(false);
+		else if(p_iToDo.getRelated_ToDo_ID() > 0)
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(false);
+		else
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
+
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_Name).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_Description).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
@@ -1434,6 +1443,22 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				;
 			else
 				FDialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
+
+			p_IsDirty = false;
+			I_ToDo todo = null;
+			if(p_iToDo.get_TableName().equals(MToDo.Table_Name))
+			{
+				todo = new MToDo(ctx, p_iToDo.get_ID(), null);
+			}else {
+				todo = new MToDoTeam(ctx, p_iToDo.get_ID(), null);
+			}
+			p_iToDo.setisCreatedToDoRepeatedly(todo.isCreatedToDoRepeatedly());
+			updateControlParameter(p_iToDo.get_ID());
+			//updateWindowTitle();
+			updateEditorValue();
+			updateEditorStatus();
+			updateNorth();
+			updateCenter();
     	}
 	}
 
@@ -1478,6 +1503,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 
 		I_ToDo db_ToDo = null;
+		boolean isOnlyUpdateToDoStatus = true;
 
 		if(p_IsNewRecord)
 		{
@@ -1569,6 +1595,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setAD_Org_ID((Integer)editor.getValue());
 		}
 		final boolean isChanged_AD_Org_ID = p_iToDo.is_ValueChanged( MToDo.COLUMNNAME_AD_Org_ID);
+		if(isChanged_AD_Org_ID)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check AD_User_ID
 		editor = map_Editor.get(MToDo.COLUMNNAME_AD_User_ID);
@@ -1581,6 +1609,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setAD_User_ID((Integer)editor.getValue());
 		}
 		final boolean isChanged_AD_User_ID = p_iToDo.is_ValueChanged( MToDo.COLUMNNAME_AD_User_ID);
+		if(isChanged_AD_User_ID)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check JP_ToDo_Type
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type);
@@ -1593,6 +1623,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setJP_ToDo_Type((String)editor.getValue());
 		}
 		final boolean isChanged_JP_ToDo_Type = p_iToDo.is_ValueChanged( MToDo.COLUMNNAME_JP_ToDo_Type);
+		if(isChanged_JP_ToDo_Type)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check JP_ToDo_Category_ID
 		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
@@ -1603,6 +1635,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setJP_ToDo_Category_ID((Integer)editor.getValue());
 		}
 		final boolean isChanged_JP_ToDo_Category_ID = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
+		if(isChanged_JP_ToDo_Category_ID)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check Name
 		editor = map_Editor.get(MToDo.COLUMNNAME_Name);
@@ -1615,6 +1649,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setName((String)editor.getValue());
 		}
 		final boolean isChanged_Name = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Name);
+		if(isChanged_Name)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check Description
 		editor = map_Editor.get(MToDo.COLUMNNAME_Description);
@@ -1625,6 +1661,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setDescription(editor.getValue().toString());
 		}
 		final boolean isChanged_Description = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Description);
+		if(isChanged_Description)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check Comments
 		boolean isChanged_Comments_temp = false;
@@ -1640,6 +1678,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			isChanged_Comments_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Comments);
 		}
 		final boolean isChanged_Comments = isChanged_Comments_temp;
+		if(isChanged_Comments)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check JP_Team_ID
 		boolean isChanged_JP_Team_ID_temp = false;
@@ -1655,6 +1695,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			isChanged_JP_Team_ID_temp = p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Team_ID);
 		}
 		final boolean isChanged_JP_Team_ID = isChanged_JP_Team_ID_temp;
+		if(isChanged_JP_Team_ID)
+			isOnlyUpdateToDoStatus= false;
 
 		//Check JP_ToDo_ScheduledStartDate & Time
 		LocalDate date = null;
@@ -1747,6 +1789,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		}
 
+		final long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+		if(between_ScheduledStartMins != 0)
+			isOnlyUpdateToDoStatus= false;
+
+		final long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+		if(between_ScheduledEndMins != 0 )
+			isOnlyUpdateToDoStatus= false;
+
+
 		if(MToDo.JP_TODO_TYPE_Memo.equals(p_JP_ToDo_Type))
 		{
 			p_iToDo.setJP_ToDo_ScheduledStartDate(null);
@@ -1756,7 +1807,12 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 
 		final boolean isChanged_IsStartDateAllDayJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsStartDateAllDayJP);
+		if(isChanged_IsStartDateAllDayJP)
+			isOnlyUpdateToDoStatus= false;
+
 		final boolean isChanged_IsEndDateAllDayJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsEndDateAllDayJP);
+		if(isChanged_IsEndDateAllDayJP)
+			isOnlyUpdateToDoStatus= false;
 
 
 		//Check JP_ToDo_Status
@@ -1775,6 +1831,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		editor = map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP);
 		p_iToDo.setIsOpenToDoJP(((boolean)editor.getValue()));
 		final boolean isChanged_IsOpenToDoJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsOpenToDoJP);
+		if(isChanged_IsOpenToDoJP)
+			isOnlyUpdateToDoStatus= false;
 
 
 		boolean isChanged_JP_Statistics_YesNo_temp = false;
@@ -1823,10 +1881,24 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 
 		final boolean isChanged_JP_Statistics_YesNo = isChanged_JP_Statistics_YesNo_temp;
+		if(isChanged_JP_Statistics_YesNo)
+			isOnlyUpdateToDoStatus= false;
+
 		final boolean isChanged_JP_Statistics_Choice = isChanged_JP_Statistics_Choice_temp;
+		if(isChanged_JP_Statistics_Choice)
+			isOnlyUpdateToDoStatus= false;
+
 		final boolean isChanged_JP_Statistics_DateAndTime = isChanged_JP_Statistics_DateAndTime_temp;
+		if(isChanged_JP_Statistics_DateAndTime)
+			isOnlyUpdateToDoStatus= false;
+
 		final boolean isChanged_JP_Statistics_Number = isChanged_JP_Statistics_Number_temp;
+		if(isChanged_JP_Statistics_Number)
+			isOnlyUpdateToDoStatus= false;
+
 		final boolean isChanged_JP_Mandatory_Statistics_Info = isChanged_JP_Mandatory_Statistics_Info_temp;
+		if(isChanged_JP_Mandatory_Statistics_Info)
+			isOnlyUpdateToDoStatus= false;
 
 
 		String msg = p_iToDo.beforeSavePreCheck(true);
@@ -1873,7 +1945,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 
 		//Update Related ToDo
-		if(!p_IsNewRecord)//TODO
+		if(!p_IsNewRecord && !isOnlyUpdateToDoStatus)
 		{
 			if(p_iToDo instanceof MToDo)
 			{
@@ -1882,9 +1954,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				if(list.size() > 0)
 				{
-					long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
-					long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
-
 					Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
 					{
 							@Override
@@ -1972,10 +2041,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				if(list.size() > 0)
 				{
-
-					long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
-					long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
-
 					Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
 					{
 							@Override

@@ -44,6 +44,8 @@ public interface I_ToDo
 	//public int getJP_ToDo_Team_ID();
 	public int getParent_Team_ToDo_ID();
 
+	public int getRelated_ToDo_ID();
+
 
 	/** AD_Client_ID **/
 	//public int getAD_Client_ID();
@@ -199,5 +201,9 @@ public interface I_ToDo
 	public String beforeDeletePreCheck();
 
 	public boolean delete(boolean force);
+
+	public boolean isCreatedToDoRepeatedly();
+	public void setisCreatedToDoRepeatedly (boolean Processed);
+
 
 }

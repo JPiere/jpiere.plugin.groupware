@@ -621,9 +621,34 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 		return null;
 	}
 
+
 	@Override
 	public void setUpdated(Timestamp updated)
 	{
 		set_ValueNoCheck("Updated", updated);
 	}
+
+
+	@Override
+	public boolean isCreatedToDoRepeatedly()
+	{
+		return getJP_Processing3().equals("Y");
+	}
+
+
+	@Override
+	public void setisCreatedToDoRepeatedly(boolean Processed)
+	{
+		setJP_Processing3(Processed == true? "Y" : "N");
+	}
+
+
+	@Override
+	public int getRelated_ToDo_ID()
+	{
+		return getJP_ToDo_Team_Related_ID();
+	}
+
+
+
 }

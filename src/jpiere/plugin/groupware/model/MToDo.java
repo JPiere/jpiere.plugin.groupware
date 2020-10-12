@@ -492,4 +492,27 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 	}
 
 
+	@Override
+	public boolean isCreatedToDoRepeatedly()
+	{
+		return getJP_Processing1().equals("Y");
+	}
+
+
+	@Override
+	public void setisCreatedToDoRepeatedly(boolean Processed)
+	{
+		setJP_Processing1(Processed == true? "Y" : "N");
+	}
+
+
+	@Override
+	public int getRelated_ToDo_ID()
+	{
+		return getJP_ToDo_Related_ID();
+	}
+
+
+
+
 }
