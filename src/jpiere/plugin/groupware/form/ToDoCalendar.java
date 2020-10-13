@@ -649,6 +649,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 
 		label_DisplayPeriod = new Label();
+		label_DisplayPeriod.setStyle("white-space: nowrap;");
 		updateDateLabel();
 
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(null,  Msg.getMsg(ctx, "JP_DisplayPeriod") + " : ", true));
