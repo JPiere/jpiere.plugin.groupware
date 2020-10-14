@@ -174,6 +174,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private Button addEndHoursBtn = null;
 	private Button addEndMinsBtn = null;
 
+	private Button showPersonaToDoBtn = null;
+
 	/** Process PopupWindow Components **/
 	private Popup popup = null;
 
@@ -192,6 +194,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private final static String BUTTON_NAME_ADD_START_MINS = "ADD_START_MINS";
 	private final static String BUTTON_NAME_ADD_END_HOURS = "ADD_END_HOURS";
 	private final static String BUTTON_NAME_ADD_END_MINS = "ADD_END_MINS";
+	private final static String BUTTON_NAME_SHOW_PERSONAL_TODO = "SHOW_PERSONAL_TODO";
 
 
 
@@ -965,6 +968,16 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			ZKUpdateUtil.setHflex(addEndMinsBtn, "true");
 		}
 
+		if(showPersonaToDoBtn == null)
+		{
+			showPersonaToDoBtn = new Button();
+			showPersonaToDoBtn.setName(BUTTON_NAME_SHOW_PERSONAL_TODO);
+			showPersonaToDoBtn.setLabel(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoList"));//Personal ToDo list that was created from this Team ToDo
+			showPersonaToDoBtn.setVisible(true);
+			showPersonaToDoBtn.addEventListener(Events.ON_CLICK, this);
+			ZKUpdateUtil.setHflex(showPersonaToDoBtn, "true");
+		}
+
 		Div centerContent = new Div();
 		center.appendChild(centerContent);
 		ZKUpdateUtil.setVflex(center, "min");
@@ -1101,6 +1114,12 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		row.appendCellChild(div_IsOpenToDoJP,2);
 
 
+		if(!p_IsPersonalToDo && !p_IsNewRecord)
+		{
+			row = rows.newRow();
+			row.appendCellChild(showPersonaToDoBtn,6);
+		}
+
 		/********************************************************************************************
 		 * Statistics Info
 		 ********************************************************************************************/
@@ -1180,6 +1199,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			row = statisticsInfo_rows.newRow();
 			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info), false),2);
 			row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info).getComponent(),4);
+
 		}
 
 		return center;
@@ -1423,6 +1443,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					}
 
 				}
+
+			}else if(BUTTON_NAME_SHOW_PERSONAL_TODO.equals(btnName)) {
+
+				PersonalToDoListWindow personalToDoListWindow = new PersonalToDoListWindow(this);
+				personalToDoListWindow.setVisible(true);
+				personalToDoListWindow.setStyle("border: 2px");
+				personalToDoListWindow.setClosable(true);
+				AEnv.showWindow(personalToDoListWindow);
+
 			}
 
 		}
