@@ -81,7 +81,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 	private ToDoPopupWindow todoPopupWindow = null;
 	private MToDoTeam m_TeamToDo = null;
 
-	public final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
+	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
 	private Button zoomPersonalToDoBtn = null;
 
 	/**
@@ -214,7 +214,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 		}catch (Exception e){
 
-			int a = 1+1;//ToDo
+			;//ToDo
 
 		}finally{
 
@@ -234,10 +234,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		grid.setMold("paging");
 		grid.setPageSize(20);
 		grid.setPagingPosition("bottom");
-		//grid.setClass("z-grid");
-
 		center.appendChild(grid);
-
 
 		org.zkoss.zul.Columns columns = new Columns();
 		grid.appendChild(columns);
