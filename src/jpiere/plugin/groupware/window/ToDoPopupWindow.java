@@ -971,6 +971,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(showPersonaToDoBtn == null)
 		{
 			showPersonaToDoBtn = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				showPersonaToDoBtn.setIconSclass("z-icon-Report");
+			else
+				showPersonaToDoBtn.setImage(ThemeManager.getThemeResource("images/Report16.png"));
 			showPersonaToDoBtn.setName(BUTTON_NAME_SHOW_PERSONAL_TODO);
 			showPersonaToDoBtn.setLabel(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoList"));//Personal ToDo list that was created from this Team ToDo
 			showPersonaToDoBtn.setVisible(true);
@@ -1446,7 +1450,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			}else if(BUTTON_NAME_SHOW_PERSONAL_TODO.equals(btnName)) {
 
-				PersonalToDoListWindow personalToDoListWindow = new PersonalToDoListWindow(this);
+				PersonalToDoListWindow personalToDoListWindow = new PersonalToDoListWindow(this, (MToDoTeam)p_iToDo);
 				personalToDoListWindow.setVisible(true);
 				personalToDoListWindow.setStyle("border: 2px");
 				personalToDoListWindow.setClosable(true);
