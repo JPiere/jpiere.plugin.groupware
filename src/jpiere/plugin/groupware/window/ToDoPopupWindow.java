@@ -2293,7 +2293,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			popup = new Popup();
 			popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 
-			String whereClause = " AD_Table_ID=? AND AD_Reference_ID = ? AND AD_Process_ID IS NOT NULL";
+			String whereClause = " AD_Table_ID=? AND AD_Reference_ID = ? AND AD_Process_ID IS NOT NULL AND IsToolbarButton <> 'Y' ";
 			String orderClause ="";
 
 			List<MColumn> list = null;
