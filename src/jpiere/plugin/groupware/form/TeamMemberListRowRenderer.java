@@ -11,54 +11,46 @@
  * JPiere is maintained by OSS ERP Solutions Co., Ltd.                        *
  * (http://www.oss-erp.co.jp)                                                 *
  *****************************************************************************/
-package jpiere.plugin.groupware.window;
+package jpiere.plugin.groupware.form;
 
-import java.util.ArrayList;
-
-import org.zkoss.zul.ListModel;
-import org.zkoss.zul.event.ListDataListener;
+import org.adempiere.webui.component.Label;
+import org.zkoss.zul.Cell;
+import org.zkoss.zul.Row;
+import org.zkoss.zul.RowRenderer;
 
 
 /**
 *
-* JPIERE-0473 Personal ToDo Popup Window - Team Member Popup
+* JPIERE-0473 Personal ToDo List Popup Window
 *
 *
 * @author h.hagiwara
 *
 */
-public class PersonalToDoListModel implements ListModel<Object>
-{
+public class TeamMemberListRowRenderer implements RowRenderer<TeamMemberModel> {
 
-	ArrayList<PersonalToDoModel> list ;
+	private TeamMemberPopup personalToDoListWindow = null;
 
-	public PersonalToDoListModel(ArrayList<PersonalToDoModel> list )
+
+	public TeamMemberListRowRenderer(TeamMemberPopup personalToDoListWindow)
 	{
-		this.list=list;
+		this.personalToDoListWindow = personalToDoListWindow;
 	}
 
 	@Override
-	public PersonalToDoModel getElementAt(int index)
+	public void render(Row row, TeamMemberModel data, int index) throws Exception
 	{
-		return list.get(index);
-	}
 
-	@Override
-	public int getSize()
-	{
-		return list.size();
-	}
+		//User
+		Cell cell = new Cell();
+		cell.appendChild(new Label(data.user));
+		row.appendChild(cell);
 
-	@Override
-	public void addListDataListener(ListDataListener l)
-	{
-		;
-	}
+		//EMail
+		cell = new Cell();
+		cell.appendChild(new Label(data.EMail));
+		row.appendChild(cell);
 
-	@Override
-	public void removeListDataListener(ListDataListener l)
-	{
-		;
 	}
 
 }

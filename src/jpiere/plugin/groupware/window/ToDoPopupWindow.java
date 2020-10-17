@@ -89,6 +89,7 @@ import org.zkoss.zul.Popup;
 import org.zkoss.zul.South;
 import org.zkoss.zul.Timebox;
 
+import jpiere.plugin.groupware.form.TeamMemberPopup;
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
@@ -174,6 +175,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private Button addEndHoursBtn = null;
 	private Button addEndMinsBtn = null;
 
+	private Button showTeamMemberBtn = null;
 	private Button showPersonaToDoBtn = null;
 
 	/** Process PopupWindow Components **/
@@ -194,6 +196,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private final static String BUTTON_NAME_ADD_START_MINS = "ADD_START_MINS";
 	private final static String BUTTON_NAME_ADD_END_HOURS = "ADD_END_HOURS";
 	private final static String BUTTON_NAME_ADD_END_MINS = "ADD_END_MINS";
+	private final static String BUTTON_NAME_SHOW_TEAM_MEMBER = "SHOW_TEAM_MEMBER";
 	private final static String BUTTON_NAME_SHOW_PERSONAL_TODO = "SHOW_PERSONAL_TODO";
 
 
@@ -968,6 +971,22 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			ZKUpdateUtil.setHflex(addEndMinsBtn, "true");
 		}
 
+		if(showTeamMemberBtn == null)
+		{
+			showTeamMemberBtn = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				showTeamMemberBtn.setIconSclass("z-icon-BPartner");
+			else
+				showTeamMemberBtn.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
+			showTeamMemberBtn.setClass("btn-small");
+			showTeamMemberBtn.setStyle("float:right;");
+			showTeamMemberBtn.setName(BUTTON_NAME_SHOW_TEAM_MEMBER);
+			showTeamMemberBtn.setLabel(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID));
+			showTeamMemberBtn.setVisible(true);
+			showTeamMemberBtn.addEventListener(Events.ON_CLICK, this);
+			ZKUpdateUtil.setHflex(showTeamMemberBtn, "max");
+		}
+
 		if(showPersonaToDoBtn == null)
 		{
 			showPersonaToDoBtn = new Button();
@@ -1043,7 +1062,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(!p_IsPersonalToDo)
 		{
 			row = rows.newRow();
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID), false),2);
+			//row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Team_ID), false),2);
+			row.appendCellChild(showTeamMemberBtn,2);
 			row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).getComponent(),4);
 		}
 
@@ -1447,6 +1467,12 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					}
 
 				}
+
+			}else if(BUTTON_NAME_SHOW_TEAM_MEMBER.equals(btnName)) {//TODO
+
+				TeamMemberPopup teampMemberPopup = new TeamMemberPopup(this);
+				teampMemberPopup.setPage(showTeamMemberBtn.getPage());
+				teampMemberPopup.open(showTeamMemberBtn,"start_before");
 
 			}else if(BUTTON_NAME_SHOW_PERSONAL_TODO.equals(btnName)) {
 
@@ -2531,4 +2557,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	}
 
+	public int getJP_Team_ID()
+	{
+		Object value = map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).getValue();
+		return value == null ? 0 : ((Integer)value).intValue();
+	}
 }

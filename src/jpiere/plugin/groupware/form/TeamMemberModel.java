@@ -11,52 +11,23 @@
  * JPiere is maintained by OSS ERP Solutions Co., Ltd.                        *
  * (http://www.oss-erp.co.jp)                                                 *
  *****************************************************************************/
-package jpiere.plugin.groupware.window;
-
-import java.util.ArrayList;
-
-import org.zkoss.zul.ListModel;
-import org.zkoss.zul.event.ListDataListener;
-
+package jpiere.plugin.groupware.form;
 
 /**
 *
-* JPIERE-0473 Personal ToDo Popup Window - Team Member Popup
+* JPIERE-0473 Team Member Popup window
 *
 *
 * @author h.hagiwara
 *
 */
-public class PersonalToDoListModel implements ListModel<Object>
-{
+public class TeamMemberModel {
 
-	ArrayList<PersonalToDoModel> list ;
+	public int AD_User_ID = 0;
+	public String user = null;
+	public String EMail = null;
 
-	public PersonalToDoListModel(ArrayList<PersonalToDoModel> list )
-	{
-		this.list=list;
-	}
-
-	@Override
-	public PersonalToDoModel getElementAt(int index)
-	{
-		return list.get(index);
-	}
-
-	@Override
-	public int getSize()
-	{
-		return list.size();
-	}
-
-	@Override
-	public void addListDataListener(ListDataListener l)
-	{
-		;
-	}
-
-	@Override
-	public void removeListDataListener(ListDataListener l)
+	public TeamMemberModel()
 	{
 		;
 	}

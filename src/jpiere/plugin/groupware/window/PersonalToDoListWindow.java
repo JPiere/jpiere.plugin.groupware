@@ -37,6 +37,7 @@ import org.adempiere.webui.part.WindowContainer;
 import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
+import org.compiere.model.MColumn;
 import org.compiere.model.MLookupFactory;
 import org.compiere.model.MTable;
 import org.compiere.util.CLogger;
@@ -89,27 +90,17 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 	 */
 	private static final long serialVersionUID = 304878472233552113L;
 
-	public PersonalToDoListWindow(ToDoPopupWindow todoPopupWindow, MToDoTeam todoTeam)
+	public PersonalToDoListWindow(ToDoPopupWindow todoPopupWindow, MToDoTeam todoTeam) throws Exception
 	{
 		ctx = Env.getCtx();
 
 		this.todoPopupWindow = todoPopupWindow;
 		this.m_TeamToDo = todoTeam;
 
-		init();
-
 		addEventListener(WindowContainer.ON_WINDOW_CONTAINER_SELECTION_CHANGED_EVENT, this);
 		addEventListener(Events.ON_CLOSE, this);
-	}
-
-	public MToDoTeam getMToDoTeam()
-	{
-		return m_TeamToDo;
-	}
 
 
-	private void init()
-	{
 		setTitle(m_TeamToDo.getName());
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
@@ -150,7 +141,8 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		//Comments(3)
 		sqlSELECT.append(", JP_ToDo.Comments");
 
-		int AD_Reference_Value_ID = 1000215;//TODO 変数化
+		MColumn m_Column = MColumn.get(ctx, MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status);
+		int AD_Reference_Value_ID = m_Column.getAD_Reference_Value_ID();
 
 		//ToDo Status(4)
 		if (Env.isBaseLanguage(Env.getLanguage(ctx), "AD_Ref_List"))
@@ -191,8 +183,14 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		{
 			pstmt = DB.prepareStatement(sql.toString(), null);
 			pstmt.setInt(1, AD_Reference_Value_ID);
-			pstmt.setString(2, Env.getAD_Language(ctx));
-			pstmt.setInt(3, m_TeamToDo.get_ID());
+			if (Env.isBaseLanguage(Env.getLanguage(ctx), "AD_Ref_List"))
+			{
+				pstmt.setInt(2, m_TeamToDo.get_ID());
+			}else {
+				pstmt.setString(2, Env.getAD_Language(ctx));
+				pstmt.setInt(3, m_TeamToDo.get_ID());
+			}
+
 			rs = pstmt.executeQuery();
 
 			PersonalToDoModel todo = null;
@@ -214,7 +212,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 		}catch (Exception e){
 
-			;//ToDo
+			throw e;
 
 		}finally{
 
@@ -282,7 +280,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		grid.setRowRenderer(rowRenderer);
 
 
-		//North
+		//South
 		South south = new South();
 		layout.appendChild(south);
 
@@ -318,6 +316,10 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 	}
 
+	public MToDoTeam getMToDoTeam()
+	{
+		return m_TeamToDo;
+	}
 
 	@Override
 	public void tableChanged(WTableModelEvent event)
