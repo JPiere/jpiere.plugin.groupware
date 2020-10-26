@@ -15,10 +15,17 @@ package jpiere.plugin.groupware.model;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Properties;
 
+import org.compiere.model.MClient;
 import org.compiere.model.MMessage;
+import org.compiere.model.MUser;
+import org.compiere.model.MUserMail;
+import org.compiere.util.DisplayType;
+import org.compiere.util.EMail;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.compiere.util.Util;
@@ -35,9 +42,9 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 
 	private MToDo parent = null;
 
-	public MToDoReminder(Properties ctx, int JP_ToDo_Team_ID, String trxName)
+	public MToDoReminder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
 	{
-		super(ctx, JP_ToDo_Team_ID, trxName);
+		super(ctx, JP_ToDo_Reminder_ID, trxName);
 	}
 
 
@@ -45,6 +52,9 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 	{
 		super(ctx, rs, trxName);
 	}
+
+
+	private boolean isProcessingReminder = false;
 
 
 	@Override
@@ -60,11 +70,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 		return true;
 	}
 
+
 	public String beforeSavePreCheck(boolean newRecord)
 	{
 
 		//** Check User**/
-		if(!newRecord)
+		if(!newRecord && !isProcessingReminder)
 		{
 			int loginUser  = Env.getAD_User_ID(getCtx());
 			if(loginUser == getParent().getAD_User_ID() || loginUser == getParent().getCreatedBy() || loginUser == getCreatedBy())
@@ -184,6 +195,91 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 			parent = new MToDo(getCtx(), getJP_ToDo_ID(), get_TrxName());
 
 		return parent;
+	}
+
+	static public boolean sendMailRemainder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)//TODO
+	{
+
+		return sendMailRemainder(ctx, new MToDoReminder(ctx, JP_ToDo_Reminder_ID, trxName) , trxName);
+	}
+
+	static public boolean sendMailRemainder(Properties ctx, MToDoReminder reminder, String trxName)//TODO
+	{
+		int AD_Client_ID = Env.getAD_Client_ID(ctx);
+		MClient client =  MClient.get(ctx, AD_Client_ID);
+		MToDo todo = new MToDo(ctx, reminder.getJP_ToDo_ID(), trxName);
+		MUser to = new MUser (ctx, todo.getAD_User_ID(), trxName);
+
+		String subject = Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+todo.getName();
+		StringBuilder message = new StringBuilder();
+
+		SimpleDateFormat sdfV = DisplayType.getDateFormat();
+
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type()))
+		{
+			Date startDate = new Date(todo.getJP_ToDo_ScheduledStartDate().getTime());
+			String string_StartDate = sdfV.format(startDate);
+			message.append(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
+			if(todo.isStartDateAllDayJP())
+			{
+				message.append(System.lineSeparator());
+
+			}else {
+
+				String string_StartTime = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalTime().toString();
+				message.append(" ").append(string_StartTime).append(System.lineSeparator());
+			}
+		}
+
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(todo.getJP_ToDo_Type()) || MToDo.JP_TODO_TYPE_Task.equals(todo.getJP_ToDo_Type()))
+		{
+			Date endDate = new Date(todo.getJP_ToDo_ScheduledEndDate().getTime());
+			String string_EndDate = sdfV.format(endDate);
+
+			message.append(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
+			if(todo.isEndDateAllDayJP())
+			{
+				message.append(System.lineSeparator());
+
+			}else {
+
+				String string_EndTime = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime().toString();
+				message.append(" ").append(string_EndTime).append(System.lineSeparator());
+			}
+		}
+
+		if(MToDo.JP_TODO_TYPE_Memo.equals(todo.getJP_ToDo_Type()))
+		{
+			;
+		}else {
+			message.append(System.lineSeparator());
+		}
+
+		message.append(reminder.getDescription());
+
+		EMail email = client.createEMail(to.getEMail(), subject, message.toString(), false);
+
+		boolean isOK = EMail.SENT_OK.equals(email.send());
+		if(isOK)
+		{
+			reminder.isProcessingReminder = true;
+			reminder.setIsSentReminderJP(true);
+			reminder.setProcessed(true);
+			reminder.saveEx(trxName);
+			reminder.isProcessingReminder = false;
+		}
+
+		MUserMail userMail = new MUserMail(ctx, 0, trxName);
+		userMail.setMessageID(MToDo.COLUMNNAME_JP_ToDo_ID +" = "+ todo.getJP_ToDo_ID() + " - " + MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID +" = "+ reminder.getJP_ToDo_Reminder_ID());
+		userMail.setAD_User_ID(todo.getAD_User_ID());
+		userMail.setEMailFrom(client.getRequestEMail());
+		userMail.setRecipientTo(to.getEMail());
+		userMail.setSubject(subject);
+		userMail.setMailText(message.toString());
+		userMail.setIsDelivered(isOK ? "Y" : "N");
+		userMail.save(trxName);
+
+		return true;
 	}
 
 }
