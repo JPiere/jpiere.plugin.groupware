@@ -33,7 +33,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200921L;
+	private static final long serialVersionUID = 20201027L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Reminder (Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
@@ -83,6 +83,88 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
         .append(get_ID()).append("]");
       return sb.toString();
     }
+
+	public org.compiere.model.I_AD_BroadcastMessage getAD_BroadcastMessage() throws RuntimeException
+    {
+		return (org.compiere.model.I_AD_BroadcastMessage)MTable.get(getCtx(), org.compiere.model.I_AD_BroadcastMessage.Table_Name)
+			.getPO(getAD_BroadcastMessage_ID(), get_TrxName());	}
+
+	/** Set Broadcast Message.
+		@param AD_BroadcastMessage_ID 
+		Broadcast Message
+	  */
+	public void setAD_BroadcastMessage_ID (int AD_BroadcastMessage_ID)
+	{
+		if (AD_BroadcastMessage_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_AD_BroadcastMessage_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_AD_BroadcastMessage_ID, Integer.valueOf(AD_BroadcastMessage_ID));
+	}
+
+	/** Get Broadcast Message.
+		@return Broadcast Message
+	  */
+	public int getAD_BroadcastMessage_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_AD_BroadcastMessage_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public org.compiere.model.I_AD_UserMail getAD_UserMail() throws RuntimeException
+    {
+		return (org.compiere.model.I_AD_UserMail)MTable.get(getCtx(), org.compiere.model.I_AD_UserMail.Table_Name)
+			.getPO(getAD_UserMail_ID(), get_TrxName());	}
+
+	/** Set User Mail.
+		@param AD_UserMail_ID 
+		Mail sent to the user
+	  */
+	public void setAD_UserMail_ID (int AD_UserMail_ID)
+	{
+		if (AD_UserMail_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_AD_UserMail_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_AD_UserMail_ID, Integer.valueOf(AD_UserMail_ID));
+	}
+
+	/** Get User Mail.
+		@return Mail sent to the user
+	  */
+	public int getAD_UserMail_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_AD_UserMail_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	/** Until Acknowledge = A */
+	public static final String BROADCASTFREQUENCY_UntilAcknowledge = "A";
+	/** Until Expiration = E */
+	public static final String BROADCASTFREQUENCY_UntilExpiration = "E";
+	/** Just Once = J */
+	public static final String BROADCASTFREQUENCY_JustOnce = "J";
+	/** Until Expiration or Acknowledge = O */
+	public static final String BROADCASTFREQUENCY_UntilExpirationOrAcknowledge = "O";
+	/** Set Broadcast Frequency.
+		@param BroadcastFrequency 
+		How Many Times Message Should be Broadcasted
+	  */
+	public void setBroadcastFrequency (String BroadcastFrequency)
+	{
+
+		set_Value (COLUMNNAME_BroadcastFrequency, BroadcastFrequency);
+	}
+
+	/** Get Broadcast Frequency.
+		@return How Many Times Message Should be Broadcasted
+	  */
+	public String getBroadcastFrequency () 
+	{
+		return (String)get_Value(COLUMNNAME_BroadcastFrequency);
+	}
 
 	/** Set Comments.
 		@param Comments 
@@ -293,8 +375,10 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_RemindTime);
 	}
 
-	/** Mail = M */
-	public static final String JP_TODO_REMINDERTYPE_Mail = "M";
+	/** Send Mail = M */
+	public static final String JP_TODO_REMINDERTYPE_SendMail = "M";
+	/** Broadcast Message = B */
+	public static final String JP_TODO_REMINDERTYPE_BroadcastMessage = "B";
 	/** Set Reminder Type.
 		@param JP_ToDo_ReminderType Reminder Type	  */
 	public void setJP_ToDo_ReminderType (String JP_ToDo_ReminderType)

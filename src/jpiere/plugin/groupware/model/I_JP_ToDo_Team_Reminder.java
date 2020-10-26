@@ -64,6 +64,19 @@ public interface I_JP_ToDo_Team_Reminder
 	  */
 	public int getAD_Org_ID();
 
+    /** Column name BroadcastFrequency */
+    public static final String COLUMNNAME_BroadcastFrequency = "BroadcastFrequency";
+
+	/** Set Broadcast Frequency.
+	  * How Many Times Message Should be Broadcasted
+	  */
+	public void setBroadcastFrequency (String BroadcastFrequency);
+
+	/** Get Broadcast Frequency.
+	  * How Many Times Message Should be Broadcasted
+	  */
+	public String getBroadcastFrequency();
+
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
 

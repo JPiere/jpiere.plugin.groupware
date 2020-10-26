@@ -28,12 +28,12 @@ import jpiere.plugin.groupware.model.MToDoTeamReminder;
 
 
 /**
- * JPIERE-0480: Send Mail Process of ToDo Reminder
+ * JPIERE-0480: Send Message Process of ToDo Reminder
  *
  * @author h.hagiwara
  *
  */
-public class ToDoReminderMail extends SvrProcess {
+public class ToDoReminderMessage extends SvrProcess {
 
 	private int p_AD_Client_ID = 0;
 
@@ -65,91 +65,91 @@ public class ToDoReminderMail extends SvrProcess {
 	{
 		if(m_Table == null)
 		{
-			sendMailPersonalToDoRemainder();
-			sendMailTeamToDoRemainder();
+			sendMessagePersonalToDoRemainder();
+			sendMessageTeamToDoRemainder();
 
 		}else if(MToDoReminder.Table_Name.equals(m_Table.getTableName())) {
 
 			if(record_ID == 0)
 			{
-				sendMailPersonalToDoRemainder();
+				sendMessagePersonalToDoRemainder();
 			}else {
-				sendMailPersonalToDoRemainder(record_ID);
+				sendMessagePersonalToDoRemainder(record_ID);
 			}
 
 		}else if(MToDoTeamReminder.Table_Name.equals(m_Table.getTableName())) {
 
 			if(record_ID == 0)
 			{
-				sendMailTeamToDoRemainder();
+				sendMessageTeamToDoRemainder();
 			}else {
-				sendMailTeamToDoRemainder(record_ID);
+				sendMessageTeamToDoRemainder(record_ID);
 			}
 
 		}else {
 
-			sendMailPersonalToDoRemainder();
-			sendMailTeamToDoRemainder();
+			sendMessagePersonalToDoRemainder();
+			sendMessageTeamToDoRemainder();
 		}
 
 		return null;//TODO
 	}
 
-	private boolean sendMailPersonalToDoRemainder() throws SQLException
+	private boolean sendMessagePersonalToDoRemainder() throws SQLException
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
-														.append(" AND Processed = 'N' AND JP_ToDo_ReminderType = 'M' AND ")
-														.append(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
+												.append(" AND Processed = 'N' AND JP_ToDo_ReminderType = 'B' AND ")
+												.append(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
 		List<MToDoReminder> list = new Query(getCtx(), MToDoReminder.Table_Name, whereClauseFinal.toString(), get_TrxName())
 										.setParameters(p_AD_Client_ID, remindTime)
 										.list();
 
 		for(MToDoReminder reminder : list)
 		{
-			sendMailPersonalToDoRemainder(reminder);
+			sendMessagePersonalToDoRemainder(reminder);
 			commitEx();
 		}
 
 		return true;
 	}
 
-	private boolean sendMailPersonalToDoRemainder(int JP_ToDo_Reminder_ID)
+	private boolean sendMessagePersonalToDoRemainder(int JP_ToDo_Reminder_ID)
 	{
-		return MToDoReminder.sendMailRemainder(getCtx(), JP_ToDo_Reminder_ID, get_TrxName());
+		return MToDoReminder.sendMessageRemainder(getCtx(), JP_ToDo_Reminder_ID, get_TrxName());
 	}
 
-	private boolean sendMailPersonalToDoRemainder(MToDoReminder reminder )
+	private boolean sendMessagePersonalToDoRemainder(MToDoReminder reminder )
 	{
-		return MToDoReminder.sendMailRemainder(getCtx(), reminder, get_TrxName());
+		return MToDoReminder.sendMessageRemainder(getCtx(), reminder, get_TrxName());
 	}
 
-	private boolean sendMailTeamToDoRemainder() throws SQLException
+	private boolean sendMessageTeamToDoRemainder() throws SQLException
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
-														.append(" AND Processed = 'N' AND JP_ToDo_ReminderType = 'M' AND ")
-														.append(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
+												.append(" AND Processed = 'N' AND JP_ToDo_ReminderType = 'B' AND ")
+												.append(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
 		List<MToDoTeamReminder> list = new Query(getCtx(), MToDoTeamReminder.Table_Name, whereClauseFinal.toString(), get_TrxName())
 										.setParameters(p_AD_Client_ID, remindTime)
 										.list();
 
 		for(MToDoTeamReminder reminder : list)
 		{
-			sendMailTeamToDoRemainder(reminder);
+			sendMessageTeamToDoRemainder(reminder);
 			commitEx();
 		}
 
 		return true;
 	}
 
-	private boolean sendMailTeamToDoRemainder(int JP_ToDo_Team_Reminder_ID)
+	private boolean sendMessageTeamToDoRemainder(int JP_ToDo_Team_Reminder_ID)
 	{
-		return MToDoTeamReminder.sendMailRemainder(getCtx(), JP_ToDo_Team_Reminder_ID, get_TrxName());
+		return MToDoTeamReminder.sendMessageRemainder(getCtx(), JP_ToDo_Team_Reminder_ID, get_TrxName());
 	}
 
-	private boolean sendMailTeamToDoRemainder(MToDoTeamReminder reminder)
+	private boolean sendMessageTeamToDoRemainder(MToDoTeamReminder reminder)
 	{
-		return MToDoTeamReminder.sendMailRemainder(getCtx(), reminder, get_TrxName());
+		return MToDoTeamReminder.sendMessageRemainder(getCtx(), reminder, get_TrxName());
 	}
 }

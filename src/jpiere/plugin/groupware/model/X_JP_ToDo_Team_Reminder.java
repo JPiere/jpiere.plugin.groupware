@@ -31,7 +31,7 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200921L;
+	private static final long serialVersionUID = 20201027L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team_Reminder (Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
@@ -82,6 +82,32 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
         .append(get_ID()).append("]");
       return sb.toString();
     }
+
+	/** Until Acknowledge = A */
+	public static final String BROADCASTFREQUENCY_UntilAcknowledge = "A";
+	/** Until Expiration = E */
+	public static final String BROADCASTFREQUENCY_UntilExpiration = "E";
+	/** Just Once = J */
+	public static final String BROADCASTFREQUENCY_JustOnce = "J";
+	/** Until Expiration or Acknowledge = O */
+	public static final String BROADCASTFREQUENCY_UntilExpirationOrAcknowledge = "O";
+	/** Set Broadcast Frequency.
+		@param BroadcastFrequency 
+		How Many Times Message Should be Broadcasted
+	  */
+	public void setBroadcastFrequency (String BroadcastFrequency)
+	{
+
+		set_Value (COLUMNNAME_BroadcastFrequency, BroadcastFrequency);
+	}
+
+	/** Get Broadcast Frequency.
+		@return How Many Times Message Should be Broadcasted
+	  */
+	public String getBroadcastFrequency () 
+	{
+		return (String)get_Value(COLUMNNAME_BroadcastFrequency);
+	}
 
 	/** Set Description.
 		@param Description 
@@ -160,8 +186,10 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_RemindTime);
 	}
 
-	/** Mail = M */
-	public static final String JP_TODO_REMINDERTYPE_Mail = "M";
+	/** Send Mail = M */
+	public static final String JP_TODO_REMINDERTYPE_SendMail = "M";
+	/** Broadcast Message = B */
+	public static final String JP_TODO_REMINDERTYPE_BroadcastMessage = "B";
 	/** Set Reminder Type.
 		@param JP_ToDo_ReminderType Reminder Type	  */
 	public void setJP_ToDo_ReminderType (String JP_ToDo_ReminderType)

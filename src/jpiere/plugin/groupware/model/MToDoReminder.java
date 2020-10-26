@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Properties;
 
+import org.adempiere.model.MBroadcastMessage;
 import org.compiere.model.MClient;
 import org.compiere.model.MMessage;
 import org.compiere.model.MUser;
@@ -28,7 +29,9 @@ import org.compiere.util.DisplayType;
 import org.compiere.util.EMail;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Trx;
 import org.compiere.util.Util;
+import org.idempiere.broadcast.BroadcastMsgUtil;
 
 /**
  * JPIERE-0469: JPiere Groupware
@@ -278,6 +281,30 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 		userMail.setMailText(message.toString());
 		userMail.setIsDelivered(isOK ? "Y" : "N");
 		userMail.save(trxName);
+
+		return true;
+	}
+
+	static public boolean sendMessageRemainder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)//TODO
+	{
+		return sendMessageRemainder(ctx, new MToDoReminder(ctx, JP_ToDo_Reminder_ID, trxName) , trxName);
+	}
+
+	static public boolean sendMessageRemainder(Properties ctx, MToDoReminder reminder, String trxName)//TODO
+	{
+		MBroadcastMessage bm = new MBroadcastMessage(ctx, 0, trxName);
+		bm.setAD_Org_ID(reminder.getAD_Org_ID());
+		bm.setBroadcastMessage(reminder.getDescription());
+//		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_Login);
+		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_ImmediatePlusLogin);
+		bm.setTarget(MBroadcastMessage.TARGET_User);
+		bm.setAD_User_ID(reminder.getParent().getAD_User_ID());
+		bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
+		//bm.setExpiration(reminder.getParent().getJP_ToDo_ScheduledEndTime());//TODOメモの時の対応
+		bm.saveEx(trxName);
+		Trx.get(trxName, true).commit();
+
+		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), trxName);
 
 		return true;
 	}

@@ -43,6 +43,21 @@ public interface I_JP_ToDo_Reminder
 
     /** Load Meta Data */
 
+    /** Column name AD_BroadcastMessage_ID */
+    public static final String COLUMNNAME_AD_BroadcastMessage_ID = "AD_BroadcastMessage_ID";
+
+	/** Set Broadcast Message.
+	  * Broadcast Message
+	  */
+	public void setAD_BroadcastMessage_ID (int AD_BroadcastMessage_ID);
+
+	/** Get Broadcast Message.
+	  * Broadcast Message
+	  */
+	public int getAD_BroadcastMessage_ID();
+
+	public org.compiere.model.I_AD_BroadcastMessage getAD_BroadcastMessage() throws RuntimeException;
+
     /** Column name AD_Client_ID */
     public static final String COLUMNNAME_AD_Client_ID = "AD_Client_ID";
 
@@ -63,6 +78,34 @@ public interface I_JP_ToDo_Reminder
 	  * Organizational entity within client
 	  */
 	public int getAD_Org_ID();
+
+    /** Column name AD_UserMail_ID */
+    public static final String COLUMNNAME_AD_UserMail_ID = "AD_UserMail_ID";
+
+	/** Set User Mail.
+	  * Mail sent to the user
+	  */
+	public void setAD_UserMail_ID (int AD_UserMail_ID);
+
+	/** Get User Mail.
+	  * Mail sent to the user
+	  */
+	public int getAD_UserMail_ID();
+
+	public org.compiere.model.I_AD_UserMail getAD_UserMail() throws RuntimeException;
+
+    /** Column name BroadcastFrequency */
+    public static final String COLUMNNAME_BroadcastFrequency = "BroadcastFrequency";
+
+	/** Set Broadcast Frequency.
+	  * How Many Times Message Should be Broadcasted
+	  */
+	public void setBroadcastFrequency (String BroadcastFrequency);
+
+	/** Get Broadcast Frequency.
+	  * How Many Times Message Should be Broadcasted
+	  */
+	public String getBroadcastFrequency();
 
     /** Column name Comments */
     public static final String COLUMNNAME_Comments = "Comments";
