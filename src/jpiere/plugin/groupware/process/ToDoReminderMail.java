@@ -74,7 +74,7 @@ public class ToDoReminderMail extends SvrProcess {
 			{
 				sendMailPersonalToDoRemainder();
 			}else {
-				sendMailPersonalToDoRemainder(record_ID);
+				sendMailPersonalToDoRemainder(new MToDoReminder(getCtx(), record_ID, get_TrxName()));
 			}
 
 		}else if(MToDoTeamReminder.Table_Name.equals(m_Table.getTableName())) {
@@ -83,7 +83,7 @@ public class ToDoReminderMail extends SvrProcess {
 			{
 				sendMailTeamToDoRemainder();
 			}else {
-				sendMailTeamToDoRemainder(record_ID);
+				sendMailTeamToDoRemainder(new MToDoTeamReminder(getCtx(), record_ID, get_TrxName()));
 			}
 
 		}else {
@@ -114,14 +114,9 @@ public class ToDoReminderMail extends SvrProcess {
 		return true;
 	}
 
-	private boolean sendMailPersonalToDoRemainder(int JP_ToDo_Reminder_ID)
-	{
-		return MToDoReminder.sendMailRemainder(getCtx(), JP_ToDo_Reminder_ID, get_TrxName());
-	}
-
 	private boolean sendMailPersonalToDoRemainder(MToDoReminder reminder )
 	{
-		return MToDoReminder.sendMailRemainder(getCtx(), reminder, get_TrxName());
+		return reminder.sendMailRemainder();
 	}
 
 	private boolean sendMailTeamToDoRemainder() throws SQLException
@@ -143,13 +138,8 @@ public class ToDoReminderMail extends SvrProcess {
 		return true;
 	}
 
-	private boolean sendMailTeamToDoRemainder(int JP_ToDo_Team_Reminder_ID)
-	{
-		return MToDoTeamReminder.sendMailRemainder(getCtx(), JP_ToDo_Team_Reminder_ID, get_TrxName());
-	}
-
 	private boolean sendMailTeamToDoRemainder(MToDoTeamReminder reminder)
 	{
-		return MToDoTeamReminder.sendMailRemainder(getCtx(), reminder, get_TrxName());
+		return reminder.sendMailRemainder();
 	}
 }

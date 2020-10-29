@@ -200,20 +200,14 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 		return parent;
 	}
 
-	static public boolean sendMailRemainder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)//TODO
+
+	public boolean sendMailRemainder()
 	{
+		MClient client =  MClient.get(getCtx(), getAD_Client_ID());
+		MToDo todo = new MToDo(getCtx(), getJP_ToDo_ID(), get_TrxName());
+		MUser to = new MUser (getCtx(), todo.getAD_User_ID(), get_TrxName());
 
-		return sendMailRemainder(ctx, new MToDoReminder(ctx, JP_ToDo_Reminder_ID, trxName) , trxName);
-	}
-
-	static public boolean sendMailRemainder(Properties ctx, MToDoReminder reminder, String trxName)//TODO
-	{
-		int AD_Client_ID = Env.getAD_Client_ID(ctx);
-		MClient client =  MClient.get(ctx, AD_Client_ID);
-		MToDo todo = new MToDo(ctx, reminder.getJP_ToDo_ID(), trxName);
-		MUser to = new MUser (ctx, todo.getAD_User_ID(), trxName);
-
-		String subject = Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+todo.getName();
+		String subject = Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+todo.getName();
 		StringBuilder message = new StringBuilder();
 
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
@@ -222,7 +216,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 		{
 			Date startDate = new Date(todo.getJP_ToDo_ScheduledStartDate().getTime());
 			String string_StartDate = sdfV.format(startDate);
-			message.append(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
+			message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
 			if(todo.isStartDateAllDayJP())
 			{
 				message.append(System.lineSeparator());
@@ -239,7 +233,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 			Date endDate = new Date(todo.getJP_ToDo_ScheduledEndDate().getTime());
 			String string_EndDate = sdfV.format(endDate);
 
-			message.append(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
+			message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
 			if(todo.isEndDateAllDayJP())
 			{
 				message.append(System.lineSeparator());
@@ -258,53 +252,94 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 			message.append(System.lineSeparator());
 		}
 
-		message.append(reminder.getDescription());
+		message.append(getDescription());
 
 		EMail email = client.createEMail(to.getEMail(), subject, message.toString(), false);
 
 		boolean isOK = EMail.SENT_OK.equals(email.send());
 		if(isOK)
 		{
-			reminder.isProcessingReminder = true;
-			reminder.setIsSentReminderJP(true);
-			reminder.setProcessed(true);
-			reminder.saveEx(trxName);
-			reminder.isProcessingReminder = false;
+			this.isProcessingReminder = true;
+			this.setIsSentReminderJP(true);
+			this.setProcessed(true);
+			this.saveEx(get_TrxName());
+			this.isProcessingReminder = false;
 		}
 
-		MUserMail userMail = new MUserMail(ctx, 0, trxName);
-		userMail.setMessageID(MToDo.COLUMNNAME_JP_ToDo_ID +" = "+ todo.getJP_ToDo_ID() + " - " + MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID +" = "+ reminder.getJP_ToDo_Reminder_ID());
+		MUserMail userMail = new MUserMail(getCtx(), 0, get_TrxName());
+		userMail.setMessageID(MToDo.COLUMNNAME_JP_ToDo_ID +" = "+ todo.getJP_ToDo_ID() + " - " + MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID +" = "+ getJP_ToDo_Reminder_ID());
 		userMail.setAD_User_ID(todo.getAD_User_ID());
 		userMail.setEMailFrom(client.getRequestEMail());
 		userMail.setRecipientTo(to.getEMail());
 		userMail.setSubject(subject);
 		userMail.setMailText(message.toString());
 		userMail.setIsDelivered(isOK ? "Y" : "N");
-		userMail.save(trxName);
+		userMail.save(get_TrxName());
 
 		return true;
 	}
 
-	static public boolean sendMessageRemainder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)//TODO
-	{
-		return sendMessageRemainder(ctx, new MToDoReminder(ctx, JP_ToDo_Reminder_ID, trxName) , trxName);
-	}
 
-	static public boolean sendMessageRemainder(Properties ctx, MToDoReminder reminder, String trxName)//TODO
+	public boolean sendMessageRemainder()
 	{
-		MBroadcastMessage bm = new MBroadcastMessage(ctx, 0, trxName);
-		bm.setAD_Org_ID(reminder.getAD_Org_ID());
-		bm.setBroadcastMessage(reminder.getDescription());
-//		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_Login);
+		MBroadcastMessage bm = new MBroadcastMessage(getCtx(), 0, get_TrxName());
+		bm.setAD_Org_ID(getAD_Org_ID());
+		bm.setBroadcastMessage(getDescription());
 		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_ImmediatePlusLogin);
 		bm.setTarget(MBroadcastMessage.TARGET_User);
-		bm.setAD_User_ID(reminder.getParent().getAD_User_ID());
-		bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
-		//bm.setExpiration(reminder.getParent().getJP_ToDo_ScheduledEndTime());//TODOメモの時の対応
-		bm.saveEx(trxName);
-		Trx.get(trxName, true).commit();
+		bm.setAD_User_ID(getParent().getAD_User_ID());
 
-		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), trxName);
+		int login_User_ID = Env.getAD_User_ID(getCtx());
+		getParent();
+		if(parent.getAD_User_ID() == login_User_ID)
+		{
+			bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_Login);
+		}else {
+			bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_ImmediatePlusLogin);
+		}
+
+
+		if(MToDo.JP_TODO_TYPE_Memo.equals(parent.getJP_ToDo_Type()))
+		{
+			//TODOメモの時の対応
+
+		}else {
+
+			if(Util.isEmpty(getBroadcastFrequency()))
+			{
+				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
+
+			}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge.equals(getBroadcastFrequency()) ){
+
+				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
+
+			}else if(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency()) ){
+
+				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce);
+
+			}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration.equals(getBroadcastFrequency()) ){
+
+				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
+				bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
+
+			}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(getBroadcastFrequency()) ){
+
+				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge);
+				bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
+			}
+
+		}
+
+
+		bm.saveEx(get_TrxName());
+		Trx.get(get_TrxName(), true).commit();
+
+		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
+
+		this.setAD_BroadcastMessage_ID(bm.getAD_BroadcastMessage_ID());
+		this.setIsSentReminderJP(true);
+		this.setProcessed(true);
+		this.saveEx(get_TrxName());
 
 		return true;
 	}

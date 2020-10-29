@@ -121,69 +121,59 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder {
 	}
 
 
-
-	static public boolean sendMailRemainder(Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
+	public boolean sendMailRemainder()
 	{
-		return sendMailRemainder(ctx, new MToDoTeamReminder(ctx, JP_ToDo_Team_Reminder_ID, trxName), trxName);
-	}
-
-	static public boolean sendMailRemainder(Properties ctx, MToDoTeamReminder teamToDoreminder, String trxName)
-	{
-		MToDoTeam teamToDo = new MToDoTeam(ctx, teamToDoreminder.getJP_ToDo_Team_ID(), trxName);
-		MToDo[] todoes = teamToDo.getToDoes();
+		getParent();
+		MToDo[] todoes = parent.getToDoes();
 
 		MToDoReminder todoReminder = null;
 		for(int i = 0; i < todoes.length; i++)
 		{
-			todoReminder = new MToDoReminder(ctx, 0, trxName);
+			todoReminder = new MToDoReminder(getCtx(), 0, get_TrxName());
 			todoReminder.setAD_Org_ID(todoes[i].getAD_Org_ID());
 			todoReminder.setJP_ToDo_ID(todoes[i].getJP_ToDo_ID());
-			todoReminder.setJP_ToDo_Team_Reminder_ID(teamToDoreminder.getJP_ToDo_Team_Reminder_ID());
+			todoReminder.setJP_ToDo_Team_Reminder_ID(getJP_ToDo_Team_Reminder_ID());
 			todoReminder.setJP_ToDo_ReminderType(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail);
-			todoReminder.setJP_ToDo_RemindTime(teamToDoreminder.getJP_ToDo_RemindTime());
-			todoReminder.setDescription(teamToDoreminder.getDescription());
-			todoReminder.save(trxName);
-			MToDoReminder.sendMailRemainder(ctx, todoReminder, trxName);
+			todoReminder.setJP_ToDo_RemindTime(getJP_ToDo_RemindTime());
+			todoReminder.setDescription(getDescription());
+			todoReminder.sendMailRemainder();
+			todoReminder.save(get_TrxName());
 		}
 
-		teamToDoreminder.isProcessingReminder = true;
-		teamToDoreminder.setIsSentReminderJP(true);
-		teamToDoreminder.setProcessed(true);
-		teamToDoreminder.saveEx(trxName);
-		teamToDoreminder.isProcessingReminder = false;
+		this.isProcessingReminder = true;
+		this.setIsSentReminderJP(true);
+		this.setProcessed(true);
+		this.saveEx(get_TrxName());
+		this.isProcessingReminder = false;
 
 		return true;
 	}
 
-	static public boolean sendMessageRemainder(Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
-	{
-		return sendMessageRemainder(ctx, new MToDoTeamReminder(ctx, JP_ToDo_Team_Reminder_ID, trxName), trxName);
-	}
 
-	static public boolean sendMessageRemainder(Properties ctx, MToDoTeamReminder teamToDoreminder, String trxName)
+	public boolean sendMessageRemainder()
 	{
-		MToDoTeam teamToDo = new MToDoTeam(ctx, teamToDoreminder.getJP_ToDo_Team_ID(), trxName);
-		MToDo[] todoes = teamToDo.getToDoes();
+		getParent();
+		MToDo[] todoes = parent.getToDoes();
 
 		MToDoReminder todoReminder = null;
 		for(int i = 0; i < todoes.length; i++)
 		{
-			todoReminder = new MToDoReminder(ctx, 0, trxName);
+			todoReminder = new MToDoReminder(getCtx(), 0, get_TrxName());
 			todoReminder.setAD_Org_ID(todoes[i].getAD_Org_ID());
 			todoReminder.setJP_ToDo_ID(todoes[i].getJP_ToDo_ID());
-			todoReminder.setJP_ToDo_Team_Reminder_ID(teamToDoreminder.getJP_ToDo_Team_Reminder_ID());
+			todoReminder.setJP_ToDo_Team_Reminder_ID(getJP_ToDo_Team_Reminder_ID());
 			todoReminder.setJP_ToDo_ReminderType(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail);//TODO
-			todoReminder.setJP_ToDo_RemindTime(teamToDoreminder.getJP_ToDo_RemindTime());
-			todoReminder.setDescription(teamToDoreminder.getDescription());
-			todoReminder.save(trxName);
-			MToDoReminder.sendMessageRemainder(ctx, todoReminder, trxName);
+			todoReminder.setJP_ToDo_RemindTime(getJP_ToDo_RemindTime());
+			todoReminder.setDescription(getDescription());
+			todoReminder.sendMessageRemainder();
+			todoReminder.save(get_TrxName());
 		}
 
-		teamToDoreminder.isProcessingReminder = true;
-		teamToDoreminder.setIsSentReminderJP(true);
-		teamToDoreminder.setProcessed(true);
-		teamToDoreminder.saveEx(trxName);
-		teamToDoreminder.isProcessingReminder = false;
+		this.isProcessingReminder = true;
+		this.setIsSentReminderJP(true);
+		this.setProcessed(true);
+		this.saveEx(get_TrxName());
+		this.isProcessingReminder = false;
 
 		return true;
 	}
