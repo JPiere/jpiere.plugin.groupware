@@ -15,6 +15,7 @@ package jpiere.plugin.groupware.window;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -93,7 +94,9 @@ import jpiere.plugin.groupware.form.TeamMemberPopup;
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoReminder;
 import jpiere.plugin.groupware.model.MToDoTeam;
+import jpiere.plugin.groupware.model.MToDoTeamReminder;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 
@@ -166,6 +169,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private Button undoBtn = null;
 	private Button saveBtn = null;
 	private Button processBtn = null;
+	private Button reminderBtn = null;
 	private Button leftBtn = null;
 	private Button rightBtn = null;
 	private Button deleteBtn = null;
@@ -178,8 +182,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private Button showTeamMemberBtn = null;
 	private Button showPersonaToDoBtn = null;
 
-	/** Process PopupWindow Components **/
-	private Popup popup = null;
+	/** PopupWindow Components **/
+	private Popup processPopup = null;
+	private Popup reminderPopup = null;
 
 	//*** Constants ***//
 	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
@@ -188,10 +193,14 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private final static String BUTTON_NAME_SAVE = "SAVE";
 	private final static String BUTTON_NAME_PROCESS = "PROCESS";
 	private final static String BUTTON_KICK_PROCESS = "KICK_PROCESS";
+	private final static String BUTTON_NAME_REMINDER = "REMINDER";
+	private final static String BUTTON_NEW_REMINDER = "KICK_REMINDER";
+	private final static String BUTTON_UPDATE_REMINDER = "ZOOM_REMINDER";
 
 	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";
 	private final static String BUTTON_NAME_DELETE = "DELETE";
+
 	private final static String BUTTON_NAME_ADD_START_HOURS = "ADD_START_HOURS";
 	private final static String BUTTON_NAME_ADD_START_MINS = "ADD_START_MINS";
 	private final static String BUTTON_NAME_ADD_END_HOURS = "ADD_END_HOURS";
@@ -496,7 +505,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		WDateEditor editor_JP_ToDo_ScheduledStartDate = new WDateEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
 		editor_JP_ToDo_ScheduledStartDate.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartDate.getComponent(), "true");
-		map_Editor.put("JP_ToDo_ScheduledStartDate", editor_JP_ToDo_ScheduledStartDate);
+		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, editor_JP_ToDo_ScheduledStartDate);
 
 		//*** IsStarDateAllDayJP ***//
 		WYesNoEditor editor_IsStartDateAllDayJP = new WYesNoEditor(MToDo.COLUMNNAME_IsStartDateAllDayJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsStartDateAllDayJP), null, true, !p_IsUpdatable, true);
@@ -516,7 +525,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		WDateEditor editor_JP_ToDo_ScheduledEndDate = new WDateEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, false, p_haveParentTeamToDo? true :!p_IsUpdatable, true, null);
 		editor_JP_ToDo_ScheduledEndDate.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndDate.getComponent(), "true");
-		map_Editor.put("JP_ToDo_ScheduledEndDate", editor_JP_ToDo_ScheduledEndDate);
+		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, editor_JP_ToDo_ScheduledEndDate);
 
 		//*** IsEndDateAllDayJP ***//
 		WYesNoEditor editor_IsEndDateAllDayJP = new WYesNoEditor(MToDo.COLUMNNAME_IsEndDateAllDayJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsEndDateAllDayJP), null, true, !p_IsUpdatable, true);
@@ -841,8 +850,23 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 		hlyaout.appendChild(processBtn);
 
-		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
+		//Reminder
+		if(reminderBtn == null)
+		{
+			reminderBtn = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				reminderBtn.setIconSclass("z-icon-Request");
+			else
+				reminderBtn.setImage(ThemeManager.getThemeResource("images/Request16.png"));
+			reminderBtn.setClass("btn-small");
+			reminderBtn.setName(BUTTON_NAME_REMINDER);
+			reminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Reminder"));
+			reminderBtn.addEventListener(Events.ON_CLICK, this);
+		}
+		hlyaout.appendChild(reminderBtn);
+
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
 
 		//Left Button
 		if(leftBtn  == null)
@@ -1352,7 +1376,53 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				}
 
 				isKickedProcess = true;
-				popup.close();
+				processPopup.close();
+
+			}else if(BUTTON_NAME_REMINDER.equals(btnName)){
+
+				createReminderPopupWindow();
+
+			}else if(BUTTON_NEW_REMINDER.equals(btnName)) {//TODO
+
+				ReminderPopupWindow rpw = new ReminderPopupWindow(this, p_iToDo, 0);
+				this.appendChild(rpw);
+				if (ClientInfo.isMobile())
+				{
+					rpw.doHighlighted();
+				}
+				else
+				{
+					showBusyMask(this);
+					LayoutUtils.openOverlappedWindow(this, rpw, "middle_center");
+					rpw.focus();
+				}
+
+				reminderPopup.close();
+
+			}else if(BUTTON_UPDATE_REMINDER.equals(btnName)) {//TODO
+
+				int reminder_ID = 0;
+				if(p_IsPersonalToDo)
+				{
+					reminder_ID = ((Integer)comp.getAttribute("JP_ToDo_Reminder_ID")).intValue();
+				}else {
+					reminder_ID = ((Integer)comp.getAttribute("JP_ToDo_Team_Reminder_ID")).intValue();
+				}
+
+				ReminderPopupWindow rpw = new ReminderPopupWindow(this, p_iToDo, reminder_ID);
+				this.appendChild(rpw);
+				if (ClientInfo.isMobile())
+				{
+					rpw.doHighlighted();
+				}
+				else
+				{
+					showBusyMask(this);
+					LayoutUtils.openOverlappedWindow(this, rpw, "middle_center");
+					rpw.focus();
+				}
+
+				reminderPopup.close();
 
 			}else if(BUTTON_NAME_DELETE.equals(btnName)){
 
@@ -1607,6 +1677,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				p_iToDo.setIsOpenToDoJP(db_ToDo.isOpenToDoJP());
 				p_iToDo.setProcessed(db_ToDo.isProcessed());
 				p_iToDo.setUpdated(db_ToDo.getUpdated());
+				p_iToDo.setIsActive(db_ToDo.isActive());
 
 				if(p_iToDo.get_TableName().equals(MToDo.Table_Name))
 				{
@@ -1925,22 +1996,42 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		{
 			//Set JP_Statistics_YesNo
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo);
-			p_iToDo.setJP_Statistics_YesNo(((String)editor.getValue()));
+			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+			{
+				p_iToDo.setJP_Statistics_YesNo(null);
+			}else {
+				p_iToDo.setJP_Statistics_YesNo(((String)editor.getValue()));
+			}
 			isChanged_JP_Statistics_YesNo_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_YesNo);
 
 			//Set JP_Statistics_Choice
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice);
-			p_iToDo.setJP_Statistics_Choice(((String)editor.getValue()));
+			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+			{
+				p_iToDo.setJP_Statistics_Choice(null);
+			}else {
+				p_iToDo.setJP_Statistics_Choice(((String)editor.getValue()));
+			}
 			isChanged_JP_Statistics_Choice_temp =p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Choice);
 
 			//Set JP_Statistics_DateAndTime
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
-			p_iToDo.setJP_Statistics_DateAndTime(((Timestamp)editor.getValue()));
+			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+			{
+				p_iToDo.setJP_Statistics_DateAndTime(null);
+			}else {
+				p_iToDo.setJP_Statistics_DateAndTime(((Timestamp)editor.getValue()));
+			}
 			isChanged_JP_Statistics_DateAndTime_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
 
 			//Set JP_Statistics_Number
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
-			p_iToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
+			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+			{
+				p_iToDo.setJP_Statistics_Number(null);
+			}else {
+				p_iToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
+			}
 			isChanged_JP_Statistics_Number_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Number);
 
 		}else {
@@ -1949,7 +2040,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			editor = map_Editor.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
 			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 			{
-				;
+				p_iToDo.setJP_Mandatory_Statistics_Info(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None);
 
 			}else {
 				p_iToDo.setJP_Mandatory_Statistics_Info(editor.getValue().toString());
@@ -2314,10 +2405,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	private void createProcessPopupWindow()
 	{
-		if(popup == null)
+		if(processPopup == null)
 		{
-			popup = new Popup();
-			popup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
+			processPopup = new Popup();
+			processPopup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 
 			String whereClause = " AD_Table_ID=? AND AD_Reference_ID = ? AND AD_Process_ID IS NOT NULL AND IsToolbarButton <> 'Y' ";
 			String orderClause ="";
@@ -2340,7 +2431,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			Grid grid = GridFactory.newGridLayout();
 			ZKUpdateUtil.setVflex(grid, "min");
 			ZKUpdateUtil.setHflex(grid, "min");
-			popup.appendChild(grid);
+			processPopup.appendChild(grid);
 			Rows rows = grid.newRows();
 			Row row = null;
 
@@ -2375,10 +2466,109 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		}
 
-		popup.setPage(processBtn.getPage());
-		popup.open(processBtn, "after_start");
+		processPopup.setPage(processBtn.getPage());
+		processPopup.open(processBtn, "after_start");
 
 		return ;
+	}
+
+
+	private void createReminderPopupWindow()
+	{
+
+		reminderPopup = new Popup();
+		reminderPopup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "reminderButtonPopup");
+
+		Grid grid = GridFactory.newGridLayout();
+		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setHflex(grid, "min");
+		reminderPopup.appendChild(grid);
+		Rows rows = grid.newRows();
+		Row row = rows.newRow();
+
+		//Create New Reminder Button
+		Button btn = new Button();
+		if (ThemeManager.isUseFontIconForImage())
+			btn.setIconSclass("z-icon-New");
+		else
+			btn.setImage(ThemeManager.getThemeResource("images/New16.png"));
+		btn.setClass("btn-small");
+		btn.setStyle("text-align: left");
+		btn.setName(BUTTON_NEW_REMINDER);
+		btn.setLabel(Msg.getMsg(ctx, "JP_ToDo_Reminder_Create"));//Create ToDo Reminder
+		btn.addEventListener(Events.ON_CLICK, this);
+		row.appendCellChild(btn);
+
+		//Get Reminders
+		SimpleDateFormat sdfV = DisplayType.getDateFormat();
+		if(p_IsPersonalToDo)
+		{
+			String whereClause = " JP_ToDo_ID=? ";
+			String orderClause ="";
+			List<MToDoReminder> list = new Query(ctx, MToDoReminder.Table_Name, whereClause, null)
+					.setParameters(p_iToDo.get_ID())
+					.setOrderBy(orderClause)
+					.list();
+
+			Timestamp remindTime = null;
+			for(MToDoReminder reminder : list)
+			{
+				row = rows.newRow();
+
+				btn = new Button();
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Request");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/Request16.png"));
+				btn.setClass("btn-small");
+				btn.setStyle("text-align: left");
+				btn.setName(BUTTON_UPDATE_REMINDER);
+				remindTime = reminder.getJP_ToDo_RemindTime();
+				btn.setLabel(sdfV.format(remindTime) + " " + remindTime.toLocalDateTime().toLocalTime().toString().substring(0, 5));
+				btn.setAttribute("JP_ToDo_Reminder_ID", reminder.getJP_ToDo_Reminder_ID());
+				btn.addEventListener(Events.ON_CLICK, this);
+
+				ZKUpdateUtil.setHflex(btn, "true");
+				row.appendCellChild(btn);
+			}
+
+		}else {
+
+			String whereClause = " JP_ToDo_Team_ID=? ";
+			String orderClause ="";
+			List<MToDoTeamReminder> list = new Query(ctx, MToDoTeamReminder.Table_Name, whereClause, null)
+					.setParameters(p_iToDo.get_ID())
+					.setOrderBy(orderClause)
+					.list();
+
+			Timestamp remindTime = null;
+			for(MToDoTeamReminder reminder : list)
+			{
+				row = rows.newRow();
+
+				btn = new Button();
+				if (ThemeManager.isUseFontIconForImage())
+					btn.setIconSclass("z-icon-Request");
+				else
+					btn.setImage(ThemeManager.getThemeResource("images/Request16.png"));
+				btn.setClass("btn-small");
+				btn.setStyle("text-align: left");
+				btn.setName(BUTTON_UPDATE_REMINDER);
+				remindTime = reminder.getJP_ToDo_RemindTime();
+				btn.setLabel(sdfV.format(remindTime) + " " + remindTime.toLocalDateTime().toLocalTime().toString().substring(0, 5));
+				btn.setAttribute("JP_ToDo_Team_Reminder_ID", reminder.getJP_ToDo_Team_Reminder_ID());
+				btn.addEventListener(Events.ON_CLICK, this);
+
+				ZKUpdateUtil.setHflex(btn, "true");
+				row.appendCellChild(btn);
+			}
+		}
+
+		reminderPopup.setPage(reminderBtn.getPage());
+		reminderPopup.open(reminderBtn, "after_start");
+
+		return ;
+
 	}
 
 

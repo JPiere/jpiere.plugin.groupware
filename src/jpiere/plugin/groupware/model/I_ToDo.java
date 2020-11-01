@@ -205,5 +205,9 @@ public interface I_ToDo
 	public boolean isCreatedToDoRepeatedly();
 	public void setisCreatedToDoRepeatedly (boolean Processed);
 
+	/** IsActive **/
+	public void setIsActive (boolean IsActive);
+	public boolean isActive();
+
 
 }

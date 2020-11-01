@@ -13,7 +13,9 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.model;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.Properties;
 
 import org.compiere.model.MMessage;
@@ -26,7 +28,7 @@ import org.compiere.util.Util;
  * @author h.hagiwara
  *
  */
-public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder {
+public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDoReminder  {
 
 	private MToDoTeam parent = null;
 
@@ -176,6 +178,108 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder {
 		this.isProcessingReminder = false;
 
 		return true;
+	}
+
+	@Override
+	public void setIsConfirmed(boolean IsConfirmed)
+	{
+		;
+	}
+
+	@Override
+	public boolean isConfirmed()
+	{
+		return false;
+	}
+
+	@Override
+	public void setJP_Confirmed(Timestamp JP_Confirmed)
+	{
+		;
+	}
+
+	@Override
+	public Timestamp getJP_Confirmed()
+	{
+		return null;
+	}
+
+	@Override
+	public void setComments(String Comments)
+	{
+		;
+	}
+
+	@Override
+	public String getComments()
+	{
+		return null;
+	}
+
+	@Override
+	public void setJP_Statistics_Choice(String JP_Statistics_Choice)
+	{
+		;
+	}
+
+	@Override
+	public String getJP_Statistics_Choice()
+	{
+		return null;
+	}
+
+	@Override
+	public void setJP_Statistics_DateAndTime(Timestamp JP_Statistics_DateAndTime)
+	{
+		;
+	}
+
+	@Override
+	public Timestamp getJP_Statistics_DateAndTime()
+	{
+		return null;
+	}
+
+	@Override
+	public void setJP_Statistics_Number(BigDecimal JP_Statistics_Number)
+	{
+		;
+	}
+
+	@Override
+	public BigDecimal getJP_Statistics_Number()
+	{
+		return null;
+	}
+
+	@Override
+	public void setJP_Statistics_YesNo(String JP_Statistics_YesNo)
+	{
+		;
+	}
+
+	@Override
+	public String getJP_Statistics_YesNo()
+	{
+		return null;
+	}
+
+	@Override
+	public void setUpdated(Timestamp updated)
+	{
+		set_ValueNoCheck("Updated", updated);
+	}
+
+	@Override
+	public void setJP_ToDo_ID(int JP_ToDo_ID)
+	{
+		;
+	}
+
+	@Override
+	public int getJP_ToDo_ID()
+	{
+		return 0;
 	}
 
 

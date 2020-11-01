@@ -41,8 +41,9 @@ import org.idempiere.broadcast.BroadcastMsgUtil;
  * @author h.hagiwara
  *
  */
-public class MToDoReminder extends X_JP_ToDo_Reminder {
+public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder {
 
+	public static final String COLUMNNAME_JP_ToDo_RemindDate = "JP_ToDo_RemindDate";
 	private MToDo parent = null;
 
 	public MToDoReminder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
@@ -332,7 +333,8 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 
 
 		bm.saveEx(get_TrxName());
-		Trx.get(get_TrxName(), true).commit();
+		if(get_TrxName() != null)
+			Trx.get(get_TrxName(), true).commit();
 
 		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
 
@@ -342,6 +344,41 @@ public class MToDoReminder extends X_JP_ToDo_Reminder {
 		this.saveEx(get_TrxName());
 
 		return true;
+	}
+
+
+	@Override
+	public void setJP_Mandatory_Statistics_Info(String JP_Mandatory_Statistics_Info)
+	{
+		;
+	}
+
+
+	@Override
+	public String getJP_Mandatory_Statistics_Info()
+	{
+		return null;
+	}
+
+
+	@Override
+	public void setUpdated(Timestamp updated)
+	{
+		set_ValueNoCheck("Updated", updated);
+	}
+
+
+	@Override
+	public int getJP_ToDo_Team_ID()
+	{
+		return 0;
+	}
+
+
+	@Override
+	public void setJP_ToDo_Team_ID(int JP_ToDo_Team_ID)
+	{
+		;
 	}
 
 }
