@@ -193,9 +193,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private final static String BUTTON_NAME_SAVE = "SAVE";
 	private final static String BUTTON_NAME_PROCESS = "PROCESS";
 	private final static String BUTTON_KICK_PROCESS = "KICK_PROCESS";
-	private final static String BUTTON_NAME_REMINDER = "REMINDER";
-	private final static String BUTTON_NEW_REMINDER = "KICK_REMINDER";
-	private final static String BUTTON_UPDATE_REMINDER = "ZOOM_REMINDER";
+	public final static String BUTTON_NAME_REMINDER = "REMINDER";
+	public final static String BUTTON_NEW_REMINDER = "NEW_REMINDER";
+	public final static String BUTTON_UPDATE_REMINDER = "UPDATE_REMINDER";
 
 	private final static String BUTTON_NAME_PREVIOUS_TODO = "PREVIOUS";
 	private final static String BUTTON_NAME_NEXT_TODO = "NEXT";

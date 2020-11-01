@@ -71,6 +71,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private Properties ctx = null;
 
 	private ToDoPopupWindow p_TodoPopupWindow = null;
+	private PersonalToDoListWindow p_PersonalTodoListWindow = null;
+
 	private I_ToDo p_iToDo = null;
 	private I_ToDoReminder i_Reminder = null;
 	private int p_Reminder_ID = 0;
@@ -112,18 +114,32 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private Button addHoursBtn = null;
 	private Button addMinsBtn = null;
 
+	public ReminderPopupWindow(PersonalToDoListWindow PersonalTodoListWindow, I_ToDo i_ToDo, int reminder_ID)
+	{
+		super();
+		ctx = Env.getCtx();
+		p_Login_User_ID = Env.getAD_User_ID(ctx);
+		this.p_PersonalTodoListWindow = PersonalTodoListWindow;
+		init(i_ToDo, reminder_ID);
+	}
+
 	public ReminderPopupWindow(ToDoPopupWindow todoPopupWindow, I_ToDo i_ToDo, int reminder_ID)
 	{
 		super();
 		ctx = Env.getCtx();
 		p_Login_User_ID = Env.getAD_User_ID(ctx);
+		this.p_TodoPopupWindow = todoPopupWindow;
+		init(i_ToDo, reminder_ID);
+	}
 
+	private void init(I_ToDo i_ToDo, int reminder_ID)
+	{
 		this.setSclass("popup-dialog request-dialog");
 		this.setBorder("normal");
 		this.setShadow(true);
 		this.setClosable(true);
 
-		this.p_TodoPopupWindow = todoPopupWindow;
+
 		this.p_iToDo = i_ToDo;
 		this.p_Reminder_ID = reminder_ID;
 		if(reminder_ID == 0)
@@ -1060,7 +1076,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
     @Override
 	public void onClose()
     {
-    	p_TodoPopupWindow.hideBusyMask();
+    	if(p_TodoPopupWindow != null)
+    		p_TodoPopupWindow.hideBusyMask();
+    	else
+    		p_PersonalTodoListWindow.hideBusyMask();
 		super.onClose();
 	}
 

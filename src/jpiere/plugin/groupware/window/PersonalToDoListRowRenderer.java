@@ -13,7 +13,11 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
+import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Label;
+import org.adempiere.webui.theme.ThemeManager;
+import org.compiere.util.Env;
+import org.compiere.util.Msg;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Cell;
 import org.zkoss.zul.Radio;
@@ -62,6 +66,20 @@ public class PersonalToDoListRowRenderer implements RowRenderer<PersonalToDoMode
 		cell.appendChild(radio);
 		row.appendChild(cell);
 
+		//Reminder button
+		cell = new Cell();
+		Button reminderBtn = new Button();
+		if (ThemeManager.isUseFontIconForImage())
+			reminderBtn.setIconSclass("z-icon-Request");
+		else
+			reminderBtn.setImage(ThemeManager.getThemeResource("images/Request16.png"));
+		reminderBtn.setClass("btn-small");
+		reminderBtn.setName(ToDoPopupWindow.BUTTON_NAME_REMINDER);
+		reminderBtn.setTooltiptext(Msg.getMsg(Env.getCtx(), "JP_Reminder"));
+		reminderBtn.addEventListener(Events.ON_CLICK, personalToDoListWindow);
+		reminderBtn.setAttribute(MToDo.COLUMNNAME_JP_ToDo_ID,data.JP_ToDo_ID);
+		cell.appendChild(reminderBtn);
+		row.appendChild(cell);
 
 		//User
 		cell = new Cell();
