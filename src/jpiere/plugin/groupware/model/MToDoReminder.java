@@ -46,6 +46,8 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	public static final String COLUMNNAME_JP_ToDo_RemindDate = "JP_ToDo_RemindDate";
 	private MToDo parent = null;
 
+	protected String		m_RemindMsg = null;
+
 	public MToDoReminder(Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
 	{
 		super(ctx, JP_ToDo_Reminder_ID, trxName);
@@ -71,6 +73,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			return false;
 		}
 
+		if(!newRecord && is_ValueChanged(MToDoReminder.COLUMNNAME_IsConfirmed) && isConfirmed() && getJP_Confirmed() == null)
+		{
+			setJP_Confirmed(Timestamp.valueOf(LocalDateTime.now()));
+		}
+
+
 		return true;
 	}
 
@@ -92,20 +100,6 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 				return msg.get_Translation("MsgText") + " - "+ msg.get_Translation("MsgTip");
 			}
 
-		}
-
-		if(is_ValueChanged(MToDoReminder.COLUMNNAME_IsConfirmed))
-		{
-			if(isConfirmed() && getJP_Confirmed() == null)
-			{
-				setJP_Confirmed(Timestamp.valueOf(LocalDateTime.now()));
-				setProcessed(true);
-
-			}else {
-
-				setJP_Confirmed(null);
-				setProcessed(false);
-			}
 		}
 
 		//*** Check Statistics info ***//
@@ -265,6 +259,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			this.setProcessed(true);
 			this.saveEx(get_TrxName());
 			this.isProcessingReminder = false;
+
+		}else {
+
+			m_RemindMsg = "メールは送信できませんでした。";//TODO
+
+			return false;
 		}
 
 		MUserMail userMail = new MUserMail(getCtx(), 0, get_TrxName());
@@ -380,5 +380,11 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	{
 		;
 	}
+
+	@Override
+	public String getRemindMsg()
+	{
+		return m_RemindMsg;
+	}	//	getProcessMsg
 
 }

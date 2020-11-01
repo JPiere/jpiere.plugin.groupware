@@ -282,5 +282,11 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 		return 0;
 	}
 
+	@Override
+	public String getRemindMsg() //TODO
+	{
+		return null;
+	}
+
 
 }

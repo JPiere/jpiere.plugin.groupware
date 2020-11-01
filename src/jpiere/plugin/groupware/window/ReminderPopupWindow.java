@@ -77,8 +77,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private boolean p_IsPersonalToDo = false;
 	private boolean p_IsNewRecord = true;
 	private boolean p_IsUpdatable = false;
-	private boolean p_haveParentTeamToDo = false;
+	private boolean p_haveParentTeamToDoReminder = false;
+	private boolean p_IsReadonlyConfirmed = false;
 	private boolean p_IsDirty = false;
+	private int  p_Login_User_ID = 0;
 
 	private Timestamp p_Now = null;
 
@@ -114,6 +116,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	{
 		super();
 		ctx = Env.getCtx();
+		p_Login_User_ID = Env.getAD_User_ID(ctx);
+
 		this.setSclass("popup-dialog request-dialog");
 		this.setBorder("normal");
 		this.setShadow(true);
@@ -122,6 +126,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		this.p_TodoPopupWindow = todoPopupWindow;
 		this.p_iToDo = i_ToDo;
 		this.p_Reminder_ID = reminder_ID;
+		if(reminder_ID == 0)
+			p_IsNewRecord = true;
+		else
+			p_IsNewRecord = false;
 		this.p_Now = Timestamp.valueOf(LocalDateTime.now());
 
 		if(i_ToDo.get_TableName().equals(MToDo.Table_Name))
@@ -148,7 +156,6 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			}
 			this.setTitle(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_ToDo_Team_Reminder_ID));
 		}
-
 		updateControlParameter();
 		createLabelMap();
 		createEditorMap();
@@ -182,6 +189,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		}
 
+
+
+
+
 		if(p_IsNewRecord)
 		{
 			if(p_IsPersonalToDo)
@@ -205,20 +216,62 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private void updateControlParameter()
 	{
 
-		if(p_Reminder_ID == 0)
+		if(p_IsNewRecord)
 		{
-			p_IsNewRecord = true;
 			p_IsUpdatable = true;
+			p_haveParentTeamToDoReminder = false;
 
 		}else {
 
-			p_IsNewRecord = false;
+			if(i_Reminder.get_TableName().equals(MToDoReminder.Table_Name))
+			{
+				if(i_Reminder.getJP_ToDo_Team_Reminder_ID() == 0)
+					p_haveParentTeamToDoReminder = false;
+				else
+					p_haveParentTeamToDoReminder = true;
+
+			}else {
+				p_haveParentTeamToDoReminder = false;
+			}
+
 			if(i_Reminder.isProcessed())
 			{
 				p_IsUpdatable = false;
 			}else {
-				p_IsUpdatable = true;
+
+				if(p_iToDo.getAD_User_ID() == p_Login_User_ID)
+				{
+					p_IsUpdatable = true;
+				}
+				else if(i_Reminder.getCreatedBy()  == p_Login_User_ID )
+				{
+					p_IsUpdatable = true;
+
+				}else {
+
+					p_IsUpdatable = false;
+
+				}
+
 			}
+		}
+
+		//*** IsConfirmed ***//
+		if(p_iToDo.getAD_User_ID() != p_Login_User_ID)
+		{
+			p_IsReadonlyConfirmed = true;
+
+		}else {
+
+			if(i_Reminder.isConfirmed())
+			{
+				p_IsReadonlyConfirmed = true;
+			}else if (!i_Reminder.isSentReminderJP()) {
+				p_IsReadonlyConfirmed = true;
+			}else {
+				p_IsReadonlyConfirmed = false;
+			}
+
 		}
 	}
 
@@ -251,19 +304,19 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	{
 		//*** JP_ToDo_ReminderType ***//
 		MLookup lookup_JP_ToDo_ReminderType = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoReminder.Table_Name,  MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType),  DisplayType.List);
-		WTableDirEditor editor_JP_ToDo_ReminderType = new WTableDirEditor(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, lookup_JP_ToDo_ReminderType);
+		WTableDirEditor editor_JP_ToDo_ReminderType = new WTableDirEditor(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType, true, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, lookup_JP_ToDo_ReminderType);
 		editor_JP_ToDo_ReminderType.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ReminderType.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType, editor_JP_ToDo_ReminderType);
 
 		//*** JP_ToDo_RemindDate ***//
-		WDateEditor editor_JP_ToDo_RemindDate = new WDateEditor(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
+		WDateEditor editor_JP_ToDo_RemindDate = new WDateEditor(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate, false, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, null);
 		editor_JP_ToDo_RemindDate.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_RemindDate.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate, editor_JP_ToDo_RemindDate);
 
 		//*** JP_ToDo_RemindTime ***//
-		WTimeEditor editor_JP_ToDo_RemindTime = new WTimeEditor(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
+		WTimeEditor editor_JP_ToDo_RemindTime = new WTimeEditor(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime, false, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, null);
 		editor_JP_ToDo_RemindTime.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_RemindTime.getComponent(), "true");
 		Timebox reminderTimebox = editor_JP_ToDo_RemindTime.getComponent();
@@ -272,14 +325,14 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		//*** BroadcastFrequency ***//
 		MLookup lookup_BroadcastFrequency = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoReminder.Table_Name,  MToDoReminder.COLUMNNAME_BroadcastFrequency),  DisplayType.List);
-		WTableDirEditor editor_BroadcastFrequency = new WTableDirEditor(MToDoReminder.COLUMNNAME_BroadcastFrequency, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, lookup_BroadcastFrequency);
+		WTableDirEditor editor_BroadcastFrequency = new WTableDirEditor(MToDoReminder.COLUMNNAME_BroadcastFrequency, true, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, lookup_BroadcastFrequency);
 		editor_BroadcastFrequency.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_BroadcastFrequency.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_BroadcastFrequency, editor_BroadcastFrequency);
 
 
 		//*** Description ***//
-		WStringEditor editor_Description = new WStringEditor(MToDoReminder.COLUMNNAME_Description, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
+		WStringEditor editor_Description = new WStringEditor(MToDoReminder.COLUMNNAME_Description, true, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, 30, 30, "", null);
 		editor_Description.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
 		editor_Description.getComponent().setRows(5);
@@ -288,7 +341,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		if(p_IsPersonalToDo)
 		{
-			WStringEditor editor_Comments = new WStringEditor(MToDoReminder.COLUMNNAME_Comments, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
+			WStringEditor editor_Comments = new WStringEditor(MToDoReminder.COLUMNNAME_Comments, true, false, true, 30, 30, "", null);
 			editor_Comments.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
 			editor_Comments.getComponent().setRows(3);
@@ -300,38 +353,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		editor_IsSentReminderJP.addValueChangeListener(this);
 		map_Editor.put(MToDoReminder.COLUMNNAME_IsSentReminderJP, editor_IsSentReminderJP);
 
-
-		//*** IsConfirmed ***//
-		boolean isReadonlyConfirmed = true;
-		int login_User_ID = Env.getAD_User_ID(ctx);
-		if(p_iToDo.getAD_User_ID() != login_User_ID)
-		{
-			isReadonlyConfirmed = true;
-
-		}else {
-
-			if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(i_Reminder.getJP_ToDo_ReminderType()))
-			{
-				isReadonlyConfirmed = true;
-			}else {
-
-				if(i_Reminder.isConfirmed())
-				{
-					isReadonlyConfirmed = true;
-				}else if (!i_Reminder.isSentReminderJP()) {
-					isReadonlyConfirmed = true;
-				}else {
-					isReadonlyConfirmed = false;
-				}
-			}
-		}
-		WYesNoEditor editor_IsConfirmed = new WYesNoEditor(MToDoReminder.COLUMNNAME_IsConfirmed, Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsConfirmed), null, true, isReadonlyConfirmed, true);
+		WYesNoEditor editor_IsConfirmed = new WYesNoEditor(MToDoReminder.COLUMNNAME_IsConfirmed, Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsConfirmed), null, true, p_IsReadonlyConfirmed, true);
 		editor_IsConfirmed.addValueChangeListener(this);
 		map_Editor.put(MToDoReminder.COLUMNNAME_IsConfirmed, editor_IsConfirmed);
 
 
 		//*** JP_ToDo_RemindTime ***//
-		WDatetimeEditor editor_JP_Confirmed = new WDatetimeEditor(MToDoReminder.COLUMNNAME_JP_Confirmed, false, p_haveParentTeamToDo? true : true, true, null);
+		WDatetimeEditor editor_JP_Confirmed = new WDatetimeEditor(MToDoReminder.COLUMNNAME_JP_Confirmed, false, p_haveParentTeamToDoReminder? true : true, true, null);
 		editor_JP_Confirmed.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_Confirmed.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_Confirmed, editor_JP_Confirmed);
@@ -383,9 +411,28 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}
 	}
 
-	private void updateEditorStatus()
+	private void updateEditorStatus()//TODO
 	{
-		;
+		if(p_IsNewRecord)
+		{
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType).setReadWrite(true);
+		}else {
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType).setReadWrite(false);
+		}
+
+		map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDoReminder.COLUMNNAME_BroadcastFrequency).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDoReminder.COLUMNNAME_Description).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDoReminder.COLUMNNAME_Comments).setReadWrite(true);//TODO 編集権があるかどうかのチェック
+		map_Editor.get(MToDoReminder.COLUMNNAME_IsSentReminderJP).setReadWrite(false);
+
+		if(i_Reminder.isConfirmed())
+			map_Editor.get(MToDoReminder.COLUMNNAME_IsConfirmed).setReadWrite(false);
+		else
+			map_Editor.get(MToDoReminder.COLUMNNAME_IsConfirmed).setReadWrite(true);
+		map_Editor.get(MToDoReminder.COLUMNNAME_JP_Confirmed).setReadWrite(false);
+
 	}
 
 	private void updateEditorValue()
@@ -495,7 +542,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			deleteBtn.setTooltiptext(Msg.getMsg(ctx, "Delete"));
 			deleteBtn.addEventListener(Events.ON_CLICK, this);
 		}
-		deleteBtn.setEnabled(p_IsUpdatable);
+
+		if(i_Reminder.isProcessed())
+		{
+			deleteBtn.setEnabled(false);
+		}else {
+			deleteBtn.setEnabled(p_IsUpdatable);
+		}
 		hlyaout.appendChild(deleteBtn);
 
 		return north;
@@ -512,7 +565,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			addHoursBtn.setClass("btn-small");
 			addHoursBtn.setName(BUTTON_NAME_ADD_HOURS);
 			addHoursBtn.setLabel("+"+p_Add_Hours+Msg.getMsg(ctx, "JP_Hours"));
-			addHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
+			addHoursBtn.setVisible(p_haveParentTeamToDoReminder? false : p_IsUpdatable);
 			addHoursBtn.addEventListener(Events.ON_CLICK, this);
 			ZKUpdateUtil.setHflex(addHoursBtn, "true");
 		}
@@ -523,7 +576,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			addMinsBtn.setClass("btn-small");
 			addMinsBtn.setName(BUTTON_NAME_ADD_MINS);
 			addMinsBtn.setLabel("+"+p_Add_Mins+Msg.getMsg(ctx, "JP_Mins"));
-			addMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
+			addMinsBtn.setVisible(p_haveParentTeamToDoReminder? false : p_IsUpdatable);
 			addMinsBtn.addEventListener(Events.ON_CLICK, this);
 			ZKUpdateUtil.setHflex(addMinsBtn, "true");
 		}
@@ -707,6 +760,26 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 				}
 
+			}else if(BUTTON_NAME_SAVE.equals(btnName)){
+
+				if(saveReminder())
+					this.onClose();
+
+			}else if(BUTTON_NAME_DELETE.equals(btnName)){
+
+				if(deleteReminder())
+					this.onClose();
+
+			}else if(BUTTON_NAME_UNDO.equals(btnName)) {
+
+				p_IsDirty = false;
+				//updateControlParameter(list_ToDoes.get(index).getJP_ToDo_ID());
+				//updateWindowTitle();
+				updateEditorValue();
+				//updateEditorStatus();
+				updateNorth();
+				updateCenter();
+
 			}else if(BUTTON_NAME_ADD_HOURS.equals(btnName) || BUTTON_NAME_ADD_MINS.equals(btnName)) {
 
 				p_IsDirty = true;
@@ -860,6 +933,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			i_Reminder.setDescription((String)editor.getValue());
 		}
 
+
+
 		if(p_IsPersonalToDo)
 		{
 
@@ -873,6 +948,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				i_Reminder.setComments((String)editor.getValue());
 			}
 
+			//IsConfirmed
+			editor = map_Editor.get(MToDoReminder.COLUMNNAME_IsConfirmed);
+			i_Reminder.setIsConfirmed(((boolean)editor.getValue()));
 
 			//Set JP_Statistics_YesNo
 			editor = map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_YesNo);
@@ -945,13 +1023,20 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				{
 					if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(i_Reminder.getJP_ToDo_ReminderType()))
 					{
-						i_Reminder.sendMailRemainder();
+						if(!i_Reminder.sendMailRemainder())
+						{
+							FDialog.error(0, this, i_Reminder.getRemindMsg());
+						}
 					}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(i_Reminder.getJP_ToDo_ReminderType())) {
-						i_Reminder.sendMessageRemainder();
+
+						if(!i_Reminder.sendMessageRemainder())
+						{
+							FDialog.error(0, this, i_Reminder.getRemindMsg());
+						}
 					}
 				}
-
 			}
+
 			updateControlParameter();
 			updateEditorValue();
 			updateEditorStatus();
@@ -965,6 +1050,11 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}
 
 		return true;
+	}
+
+	private boolean deleteReminder()
+	{
+		return i_Reminder.delete(false);
 	}
 
     @Override
@@ -1007,6 +1097,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			editor_RemindTime.setValue(ts_RemindTime);
 
 		}
+
+		p_IsDirty = true;
+		updateNorth();
 	}
 
 }
