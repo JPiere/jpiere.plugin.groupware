@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.adempiere.model.MBroadcastMessage;
+import org.adempiere.webui.apps.AEnv;
 import org.compiere.model.MClient;
 import org.compiere.model.MMessage;
 import org.compiere.model.MUser;
@@ -285,7 +286,6 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	{
 		MBroadcastMessage bm = new MBroadcastMessage(getCtx(), 0, get_TrxName());
 		bm.setAD_Org_ID(getAD_Org_ID());
-		bm.setBroadcastMessage(getDescription());
 		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_ImmediatePlusLogin);
 		bm.setTarget(MBroadcastMessage.TARGET_User);
 		bm.setAD_User_ID(getParent().getAD_User_ID());
@@ -300,41 +300,100 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}
 
 
-		if(MToDo.JP_TODO_TYPE_Memo.equals(parent.getJP_ToDo_Type()))
+		if(Util.isEmpty(getBroadcastFrequency()))
 		{
-			//TODOメモの時の対応
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
 
-		}else {
+		}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge.equals(getBroadcastFrequency()) ){
 
-			if(Util.isEmpty(getBroadcastFrequency()))
-			{
-				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
 
-			}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge.equals(getBroadcastFrequency()) ){
+		}else if(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency()) ){
 
-				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce);
 
-			}else if(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency()) ){
+		}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration.equals(getBroadcastFrequency()) ){
 
-				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce);
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
+			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
 
-			}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration.equals(getBroadcastFrequency()) ){
+		}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(getBroadcastFrequency()) ){
 
-				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
-				bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
-
-			}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(getBroadcastFrequency()) ){
-
-				bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge);
-				bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
-			}
-
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge);
+			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
 		}
 
+
+
+		SimpleDateFormat sdfV = DisplayType.getDateFormat();
+		StringBuilder message = new StringBuilder();
+
+//		String p_Start = "<p style=\"text-align:left;\">";
+		String p_Start = "<p class=\"z-label\">";
+		String p_Start_Description = "<p class=\"z-label\" style=\"text-align:left;\">";
+		String p_End = "</p>";
+		String br = "<BR />";
+
+		message.append("<h4>").append(parent.getName()).append(p_End).append("</h4>");
+
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(parent.getJP_ToDo_Type()))
+		{
+			Date startDate = new Date(parent.getJP_ToDo_ScheduledStartDate().getTime());
+			String string_StartDate = sdfV.format(startDate);
+			message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
+			if(parent.isStartDateAllDayJP())
+			{
+				;
+
+			}else {
+
+				String string_StartTime = parent.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalTime().toString();
+				message.append(" ").append(string_StartTime);
+			}
+
+			message.append(p_End);
+		}
+
+		if(MToDo.JP_TODO_TYPE_Schedule.equals(parent.getJP_ToDo_Type()) || MToDo.JP_TODO_TYPE_Task.equals(parent.getJP_ToDo_Type()))
+		{
+			Date endDate = new Date(parent.getJP_ToDo_ScheduledEndDate().getTime());
+			String string_EndDate = sdfV.format(endDate);
+
+			message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
+			if(parent.isEndDateAllDayJP())
+			{
+				;
+
+			}else {
+
+				String string_EndTime = parent.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime().toString();
+				message.append(" ").append(string_EndTime);
+			}
+
+			message.append(p_End);
+		}
+
+		if(MToDo.JP_TODO_TYPE_Memo.equals(parent.getJP_ToDo_Type()))
+		{
+			;
+		}else {
+
+			message.append(br);
+		}
+
+		message.append(p_Start_Description).append(getDescription()).append(p_End);
+
+		bm.setBroadcastMessage(message.toString());
 
 		bm.saveEx(get_TrxName());
 		if(get_TrxName() != null)
 			Trx.get(get_TrxName(), true).commit();
+
+		boolean isServerPushEnabled = AEnv.getDesktop().isServerPushEnabled();
+        if (AEnv.getDesktop().isServerPushEnabled())
+    	{
+        	AEnv.getDesktop().enableServerPush(true);
+    	}
 
 		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
 
