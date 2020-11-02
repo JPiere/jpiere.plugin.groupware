@@ -499,7 +499,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		//Get Reminders
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
 		String whereClause = " JP_ToDo_ID=? ";
-		String orderClause ="";
+		String orderClause ="JP_ToDo_RemindTime";
 
 		List<MToDoReminder> list = new Query(ctx, MToDoReminder.Table_Name, whereClause, null)
 				.setParameters(JP_ToDo_ID)

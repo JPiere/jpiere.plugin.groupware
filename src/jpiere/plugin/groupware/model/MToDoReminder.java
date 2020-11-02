@@ -262,7 +262,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 		}else {
 
-			m_RemindMsg = "メールは送信できませんでした。";//TODO
+			m_RemindMsg = Msg.getMsg(getCtx(), "RequestActionEMailError");
 
 			return false;
 		}
