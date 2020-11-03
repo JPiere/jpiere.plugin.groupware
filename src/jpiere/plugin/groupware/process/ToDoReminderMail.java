@@ -75,7 +75,13 @@ public class ToDoReminderMail extends SvrProcess {
 			{
 				sendMailPersonalToDoRemainder();
 			}else {
-				sendMailPersonalToDoRemainder(new MToDoReminder(getCtx(), record_ID, get_TrxName()));
+
+				MToDoReminder reminder = new MToDoReminder(getCtx(), record_ID, get_TrxName());
+				if(!sendMailPersonalToDoRemainder(reminder))
+				{
+					addLog(0, null, null, Msg.getMsg(getCtx(), "RequestActionEMailError")+ " : JP_ToDo_Reminder_ID = " + reminder.get_ID()
+									,MTable.getTable_ID(MToDoReminder.Table_Name), reminder.get_ID() );
+				}
 			}
 
 		}else if(MToDoTeamReminder.Table_Name.equals(m_Table.getTableName())) {
@@ -108,7 +114,11 @@ public class ToDoReminderMail extends SvrProcess {
 
 		for(MToDoReminder reminder : list)
 		{
-			sendMailPersonalToDoRemainder(reminder);
+			if(!sendMailPersonalToDoRemainder(reminder))
+			{
+				addLog(Msg.getMsg(getCtx(), "RequestActionEMailError")+ " : JP_ToDo_Reminder_ID = " + reminder.get_ID());
+			}
+
 			commitEx();
 		}
 
