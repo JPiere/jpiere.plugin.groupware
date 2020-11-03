@@ -16,11 +16,14 @@ package jpiere.plugin.groupware.base;
 import java.util.Properties;
 
 import org.compiere.model.MClient;
+import org.compiere.model.MNote;
 import org.compiere.model.MRole;
 import org.compiere.model.ModelValidationEngine;
 import org.compiere.model.ModelValidator;
 import org.compiere.model.PO;
 import org.compiere.util.Env;
+
+import jpiere.plugin.groupware.model.MToDoReminder;
 
 
 
@@ -39,6 +42,8 @@ public class JPierePluginGroupwareModelValidator implements ModelValidator {
 	@Override
 	public void initialize(ModelValidationEngine engine, MClient client)
 	{
+		engine.addModelChange(MNote.Table_Name, this);
+
 		if(client != null)
 			this.AD_Client_ID = client.getAD_Client_ID();
 	}
@@ -62,6 +67,34 @@ public class JPierePluginGroupwareModelValidator implements ModelValidator {
 	@Override
 	public String modelChange(PO po, int type) throws Exception
 	{
+
+		if(MNote.Table_Name.equals(po.get_TableName()))
+		{
+			if(type == ModelValidator.TYPE_AFTER_CHANGE)
+			{
+				if(po instanceof MNote)
+				{
+					MNote note = (MNote)po;
+					int AD_BroadcastMessage_ID = note.getAD_BroadcastMessage_ID();
+
+					if(AD_BroadcastMessage_ID != 0 && note.isProcessed() && po.is_ValueChanged("Processed"))
+					{
+						MToDoReminder reminder = MToDoReminder.getFromBroadcastMessage(Env.getCtx(), AD_BroadcastMessage_ID, null);
+						if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(reminder.getJP_ToDo_ReminderType()))
+						{
+							if(MToDoReminder.BROADCASTFREQUENCY_UntilAcknowledge.equals(reminder.getBroadcastFrequency())
+									|| MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(reminder.getBroadcastFrequency()))
+							{
+								reminder.setIsConfirmed(true);
+								reminder.saveEx();
+							}
+						}
+					}
+				}
+			}
+		}
+
+
 		return null;
 	}
 

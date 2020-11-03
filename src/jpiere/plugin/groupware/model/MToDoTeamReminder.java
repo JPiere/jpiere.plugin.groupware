@@ -173,7 +173,7 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 
 		this.isProcessingReminder = true;
 		this.setIsSentReminderJP(true);
-		this.setProcessed(true);
+		//this.setProcessed(true);
 		this.saveEx(get_TrxName());
 		this.isProcessingReminder = false;
 

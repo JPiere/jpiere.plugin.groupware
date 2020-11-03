@@ -21,11 +21,11 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.adempiere.model.MBroadcastMessage;
-import org.adempiere.webui.apps.AEnv;
 import org.compiere.model.MClient;
 import org.compiere.model.MMessage;
 import org.compiere.model.MUser;
 import org.compiere.model.MUserMail;
+import org.compiere.model.Query;
 import org.compiere.util.DisplayType;
 import org.compiere.util.EMail;
 import org.compiere.util.Env;
@@ -253,19 +253,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		EMail email = client.createEMail(to.getEMail(), subject, message.toString(), false);
 
 		boolean isOK = EMail.SENT_OK.equals(email.send());
+
 		if(isOK)
 		{
-			this.isProcessingReminder = true;
 			this.setIsSentReminderJP(true);
-			this.setProcessed(true);
-			this.saveEx(get_TrxName());
-			this.isProcessingReminder = false;
-
 		}else {
-
 			m_RemindMsg = Msg.getMsg(getCtx(), "RequestActionEMailError");
-
-			return false;
 		}
 
 		MUserMail userMail = new MUserMail(getCtx(), 0, get_TrxName());
@@ -273,12 +266,17 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		userMail.setAD_User_ID(todo.getAD_User_ID());
 		userMail.setEMailFrom(client.getRequestEMail());
 		userMail.setRecipientTo(to.getEMail());
-		userMail.setSubject(subject);
+		userMail.setSubject(isOK ? "": (m_RemindMsg+" > ") + subject);
 		userMail.setMailText(message.toString());
 		userMail.setIsDelivered(isOK ? "Y" : "N");
 		userMail.save(get_TrxName());
 
-		return true;
+		this.setAD_UserMail_ID(userMail.getAD_UserMail_ID());
+		this.isProcessingReminder = true;
+		this.saveEx(get_TrxName());
+		this.isProcessingReminder = false;
+
+		return isOK;
 	}
 
 
@@ -328,7 +326,6 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
 		StringBuilder message = new StringBuilder();
 
-//		String p_Start = "<p style=\"text-align:left;\">";
 		String p_Start = "<p class=\"z-label\">";
 		String p_Start_Description = "<p class=\"z-label\" style=\"text-align:left;\">";
 		String p_End = "</p>";
@@ -389,17 +386,17 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		if(get_TrxName() != null)
 			Trx.get(get_TrxName(), true).commit();
 
-		boolean isServerPushEnabled = AEnv.getDesktop().isServerPushEnabled();
-        if (AEnv.getDesktop().isServerPushEnabled())
-    	{
-        	AEnv.getDesktop().enableServerPush(true);
-    	}
+//		boolean isServerPushEnabled = AEnv.getDesktop().isServerPushEnabled();
+//        if (AEnv.getDesktop().isServerPushEnabled())
+//    	{
+//        	AEnv.getDesktop().enableServerPush(true);
+//    	}
 
 		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
 
 		this.setAD_BroadcastMessage_ID(bm.getAD_BroadcastMessage_ID());
 		this.setIsSentReminderJP(true);
-		this.setProcessed(true);
+		//this.setProcessed(true);
 		this.saveEx(get_TrxName());
 
 		return true;
@@ -445,5 +442,19 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	{
 		return m_RemindMsg;
 	}	//	getProcessMsg
+
+
+	static public MToDoReminder getFromBroadcastMessage(Properties ctx, int AD_BroadcastMessage_ID, String trxName)
+	{
+		StringBuilder whereClauseFinal = new StringBuilder(MToDoReminder.COLUMNNAME_AD_BroadcastMessage_ID+"=? ");
+		String		orderClause = "";
+
+		MToDoReminder reminder = new Query(ctx, MToDoReminder.Table_Name, whereClauseFinal.toString(), trxName)
+										.setParameters(AD_BroadcastMessage_ID)
+										.setOrderBy(orderClause)
+										.first();
+
+		return reminder;
+	}
 
 }

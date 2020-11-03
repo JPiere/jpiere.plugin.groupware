@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.adempiere.util.Callback;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.ConfirmPanel;
@@ -251,7 +252,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				p_haveParentTeamToDoReminder = false;
 			}
 
-			if(i_Reminder.isProcessed())
+			if(i_Reminder.isSentReminderJP())
 			{
 				p_IsUpdatable = false;
 			}else {
@@ -1069,13 +1070,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 					{
 						if(!i_Reminder.sendMailRemainder())
 						{
-							FDialog.error(0, this, i_Reminder.getRemindMsg());
+							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
 						}
 					}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(i_Reminder.getJP_ToDo_ReminderType())) {
 
 						if(!i_Reminder.sendMessageRemainder())
 						{
-							FDialog.error(0, this, i_Reminder.getRemindMsg());
+							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
 						}
 					}
 				}
@@ -1089,7 +1090,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}
 		else
 		{
-			FDialog.error(0, this, Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+			FDialog.error(0, this, "SaveError", Msg.getMsg(ctx, "JP_UnexpectedError"));
 			return false;
 		}
 
@@ -1104,11 +1105,41 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
     @Override
 	public void onClose()
     {
-    	if(p_TodoPopupWindow != null)
-    		p_TodoPopupWindow.hideBusyMask();
-    	else
-    		p_PersonalTodoListWindow.hideBusyMask();
-		super.onClose();
+		if(p_IsDirty)
+		{
+
+			FDialog.ask(0, null, "SaveChanges?", new Callback<Boolean>() {//Do you want to save changes?
+
+				@Override
+				public void onCallback(Boolean result)
+				{
+					if (result)
+					{
+						if(!saveReminder())
+							return ;
+
+					}else{
+						;
+					}
+
+				   	if(p_TodoPopupWindow != null)
+			    		p_TodoPopupWindow.hideBusyMask();
+			    	else
+			    		p_PersonalTodoListWindow.hideBusyMask();
+				   	detach();
+		        }
+
+			});//FDialog.
+
+		}else {
+
+		   	if(p_TodoPopupWindow != null)
+	    		p_TodoPopupWindow.hideBusyMask();
+	    	else
+	    		p_PersonalTodoListWindow.hideBusyMask();
+			super.onClose();
+		}
+
 	}
 
 	@Override

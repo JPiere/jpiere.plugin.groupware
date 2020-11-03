@@ -2535,7 +2535,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 
 			String whereClause = " JP_ToDo_Team_ID=? ";
-			String orderClause ="";
+			String orderClause ="JP_ToDo_RemindTime";
 			List<MToDoTeamReminder> list = new Query(ctx, MToDoTeamReminder.Table_Name, whereClause, null)
 					.setParameters(p_iToDo.get_ID())
 					.setOrderBy(orderClause)

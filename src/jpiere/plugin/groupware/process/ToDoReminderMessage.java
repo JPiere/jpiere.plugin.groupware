@@ -22,6 +22,7 @@ import org.compiere.model.MTable;
 import org.compiere.model.Query;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
+import org.compiere.util.Msg;
 
 import jpiere.plugin.groupware.model.MToDoReminder;
 import jpiere.plugin.groupware.model.MToDoTeamReminder;
@@ -92,14 +93,14 @@ public class ToDoReminderMessage extends SvrProcess {
 			sendMessageTeamToDoRemainder();
 		}
 
-		return null;//TODO
+		return Msg.getMsg(getCtx(), "Success");
 	}
 
 	private boolean sendMessagePersonalToDoRemainder() throws SQLException
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
-												.append(" AND Processed = 'N' AND JP_ToDo_ReminderType = 'B' AND ")
+												.append(" AND IsSentReminderJP = 'N' AND JP_ToDo_ReminderType = 'B' AND ")
 												.append(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
 		List<MToDoReminder> list = new Query(getCtx(), MToDoReminder.Table_Name, whereClauseFinal.toString(), get_TrxName())
 										.setParameters(p_AD_Client_ID, remindTime)
@@ -123,7 +124,7 @@ public class ToDoReminderMessage extends SvrProcess {
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
-												.append(" AND Processed = 'N' AND JP_ToDo_ReminderType = 'B' AND ")
+												.append(" AND IsSentReminderJP = 'N' AND JP_ToDo_ReminderType = 'B' AND ")
 												.append(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
 		List<MToDoTeamReminder> list = new Query(getCtx(), MToDoTeamReminder.Table_Name, whereClauseFinal.toString(), get_TrxName())
 										.setParameters(p_AD_Client_ID, remindTime)
