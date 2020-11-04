@@ -59,7 +59,7 @@ public class CreateToDoRepeatedly extends SvrProcess {
 	private boolean p_IsScheduledEndDateEndOfMonth = false;
 
 	private MToDo m_ToDo = null;
-
+	private List<Long> diffList_RemindTime = new ArrayList<Long> ();
 
 	/*** Variable ***/
 	private Timestamp v_JP_ToDo_ScheduledStartTime = null;
@@ -99,6 +99,7 @@ public class CreateToDoRepeatedly extends SvrProcess {
 		p_JP_ToDo_ID = getRecord_ID();
 	}
 
+
 	@Override
 	protected String doIt() throws Exception
 	{
@@ -129,6 +130,17 @@ public class CreateToDoRepeatedly extends SvrProcess {
 
 				throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_NotCreatPersonalToDoFromTeamToDo"));
 			}
+		}
+
+
+		MToDoReminder[] reminders = m_ToDo.getReminders();
+		Timestamp scheduledEndTime = null;
+		Timestamp remindTime = null;
+		for(int i = 0; i < reminders.length; i++)
+		{
+			scheduledEndTime = m_ToDo.getJP_ToDo_ScheduledEndTime();
+			remindTime = reminders[i].getJP_ToDo_RemindTime();
+			diffList_RemindTime.add(scheduledEndTime.getTime() - remindTime.getTime());
 		}
 
 		//Check Last Day of Month
@@ -324,6 +336,7 @@ public class CreateToDoRepeatedly extends SvrProcess {
 	{
 		MToDoReminder[] m_ToDoReminders = v_ToDo.getReminders();
 		MToDoReminder tdr = null;
+		Timestamp remindTime = null;
 		for(int i = 0; i < m_ToDoReminders.length; i++)
 		{
 			tdr = new MToDoReminder(getCtx(), 0, get_TrxName());
@@ -331,7 +344,11 @@ public class CreateToDoRepeatedly extends SvrProcess {
 			tdr.setJP_ToDo_ID(new_ToDo.getJP_ToDo_ID());
 			tdr.setJP_ToDo_ReminderType(m_ToDoReminders[i].getJP_ToDo_ReminderType());
 			tdr.setDescription(m_ToDoReminders[i].getDescription());
-			tdr.setJP_ToDo_RemindTime(calculateNextScheduleTime(m_ToDoReminders[i].getJP_ToDo_RemindTime()));
+
+			//Calculate Remind Time
+			remindTime = new Timestamp(new_ToDo.getJP_ToDo_ScheduledEndTime().getTime() - diffList_RemindTime.get(i));
+			tdr.setJP_ToDo_RemindTime(remindTime);
+
 			tdr.setIsSentReminderJP(false);
 			tdr.saveEx(get_TrxName());
 		}
