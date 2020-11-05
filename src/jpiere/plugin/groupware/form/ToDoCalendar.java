@@ -151,6 +151,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private boolean p_IsDisplaySchedule = true;
 	private boolean p_IsDisplayTask = false;
 	private boolean p_IsDisplayNonBusinessDay = false;
+	private boolean p_IsToDoMouseoverPopup = true;
 
 	private String p_JP_FirstDayOfWeek = MGroupwareUser.JP_FIRSTDAYOFWEEK_Sunday;
 	private String p_JP_ToDo_Main_Calendar = MGroupwareUser.JP_TODO_MAIN_CALENDAR_IncludeTeamMemberSToDo;
@@ -206,6 +207,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	private WYesNoEditor    editor_IsDisplaySchedule_For_Custom ;
 	private WYesNoEditor    editor_IsDisplayTask_For_Custom ;
 	private WYesNoEditor    editor_IsDisplayNonBusinessDay ;
+	private WYesNoEditor    editor_IsToDoMouseoverPopup  ;
 
 	private WTableDirEditor editor_JP_ToDo_Main_Calendar ;
 	private WTableDirEditor editor_JP_ToDo_Calendar_For_Custom ;
@@ -299,6 +301,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				p_IsDisplayTask = m_GroupwareUser.isDisplayTaskJP();
 				if(m_GroupwareUser.getJP_NonBusinessDayCalendar_ID() > 0)
 					p_IsDisplayNonBusinessDay = m_GroupwareUser.isDisplayNonBusinessDayJP();
+				p_IsToDoMouseoverPopup =m_GroupwareUser.isToDoMouseoverPopupJP();
 				calendars.setBeginTime(m_GroupwareUser.getJP_ToDo_Calendar_BeginTime());
 				calendars.setEndTime(m_GroupwareUser.getJP_ToDo_Calendar_EndTime());
 
@@ -737,6 +740,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		editor_JP_ToDo_Calendar_For_Custom.setValue(p_JP_ToDo_Calendar);
 		editor_JP_ToDo_Calendar_For_Custom.addValueChangeListener(this);
 
+		editor_IsToDoMouseoverPopup = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsToDoMouseoverPopupJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsToDoMouseoverPopupJP), null, true, false, true);
+		editor_IsToDoMouseoverPopup.setValue(p_IsToDoMouseoverPopup);
+		editor_IsToDoMouseoverPopup.addValueChangeListener(this);
 
 		//Save Button
 		button_Customize_Save = new Button();
@@ -1226,6 +1232,21 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			resetSelectedTabCalendarModel();
 
+		}else if (MGroupwareUser.COLUMNNAME_IsToDoMouseoverPopupJP.equals(name)) {//TODO
+
+			p_IsToDoMouseoverPopup = (boolean)value;
+			editor_IsToDoMouseoverPopup.setValue(value);
+			if(editor_IsToDoMouseoverPopup.isVisible())
+				button_Customize_Save.setDisabled(false);
+
+			personalToDoGadget_Schedule.setIsToDoMouseoverPopup(p_IsToDoMouseoverPopup);
+			personalToDoGadget_Task.setIsToDoMouseoverPopup(p_IsToDoMouseoverPopup);
+			personalToDoGadget_Memo.setIsToDoMouseoverPopup(p_IsToDoMouseoverPopup);
+
+			teamToDoGadget_Schedule.setIsToDoMouseoverPopup(p_IsToDoMouseoverPopup);
+			teamToDoGadget_Task.setIsToDoMouseoverPopup(p_IsToDoMouseoverPopup);
+			teamToDoGadget_Memo.setIsToDoMouseoverPopup(p_IsToDoMouseoverPopup);
+
 		}else if(MToDo.COLUMNNAME_JP_ToDo_Status.equals(name)){
 
 			if(value == null)
@@ -1555,6 +1576,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 							m_GroupwareUser.setJP_ToDo_Calendar(p_JP_ToDo_Calendar);
 						}
 
+						if(editor_IsToDoMouseoverPopup.isVisible())
+							m_GroupwareUser.setIsToDoMouseoverPopupJP(p_IsToDoMouseoverPopup);
+
 						if(!m_GroupwareUser.save())
 						{
 							getToDoCalendarEvent(true ,true);
@@ -1644,13 +1668,16 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			if (event instanceof CalendarsEvent)
 			{
-				CalendarsEvent cse = (CalendarsEvent)event;
-				if(cse.getCalendarEvent() instanceof ToDoCalendarEvent)
+				if(p_IsToDoMouseoverPopup)
 				{
-					ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)cse.getCalendarEvent();
-					popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
-					popup_CalendarEvent.setPage(cse.getPage());
-					popup_CalendarEvent.open(cse.getX()+10, cse.getY()+10);
+					CalendarsEvent cse = (CalendarsEvent)event;
+					if(cse.getCalendarEvent() instanceof ToDoCalendarEvent)
+					{
+						ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)cse.getCalendarEvent();
+						popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
+						popup_CalendarEvent.setPage(cse.getPage());
+						popup_CalendarEvent.open(cse.getX()+12, cse.getY()+10);
+					}
 				}
 			}
 
@@ -2127,6 +2154,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar_For_Custom, label_JP_ToDo_Calendar_For_Custom, true));
 		row.appendChild(editor_JP_ToDo_Calendar_For_Custom.getComponent());
 
+		row = rows.newRow();
+		row.appendChild(new Div());
+		row.appendChild(GroupwareToDoUtil.createEditorDiv(editor_IsToDoMouseoverPopup, true));
 
 		if(m_GroupwareUser != null)
 		{

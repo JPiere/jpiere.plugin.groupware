@@ -65,7 +65,7 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 	private boolean p_IsScheduledEndDateEndOfMonth = false;
 
 	private MToDoTeam m_TeamToDo = null;
-
+	private List<Long> diffList_RemindTime = new ArrayList<Long> ();
 
 
 	/*** Variable ***/
@@ -124,6 +124,17 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 				throw new Exception(Msg.getMsg(getCtx(), "JP_ToDo_Memo_CouldNotCreateRepeatedly"));
 			}
 		}
+
+		MToDoTeamReminder[] reminders = m_TeamToDo.getReminders();
+		Timestamp scheduledEndTime = null;
+		Timestamp remindTime = null;
+		for(int i = 0; i < reminders.length; i++)
+		{
+			scheduledEndTime = m_TeamToDo.getJP_ToDo_ScheduledEndTime();
+			remindTime = reminders[i].getJP_ToDo_RemindTime();
+			diffList_RemindTime.add(scheduledEndTime.getTime() - remindTime.getTime());
+		}
+
 
 		//Check Last Day of Month
 		if(p_JP_Repetition_Interval.equals("M"))//Month
@@ -334,6 +345,7 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 	{
 		MToDoTeamReminder[] m_TeamToDoReminders = v_TeamToDo.getReminders();
 		MToDoTeamReminder tdtr = null;
+		Timestamp remindTime = null;
 		for(int i = 0; i < m_TeamToDoReminders.length; i++)
 		{
 			tdtr = new MToDoTeamReminder(getCtx(), 0, get_TrxName());
@@ -341,7 +353,11 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 			tdtr.setJP_ToDo_Team_ID(new_TeamToDo.getJP_ToDo_Team_ID());
 			tdtr.setJP_ToDo_ReminderType(m_TeamToDoReminders[i].getJP_ToDo_ReminderType());
 			tdtr.setDescription(m_TeamToDoReminders[i].getDescription());
-			tdtr.setJP_ToDo_RemindTime(calculateNextScheduleTime(m_TeamToDoReminders[i].getJP_ToDo_RemindTime()));
+
+			//Calculate Remind Time
+			remindTime = new Timestamp(new_TeamToDo.getJP_ToDo_ScheduledEndTime().getTime() - diffList_RemindTime.get(i));
+			tdtr.setJP_ToDo_RemindTime(remindTime);
+
 			tdtr.setIsSentReminderJP(false);
 			tdtr.setJP_Mandatory_Statistics_Info(m_TeamToDoReminders[i].getJP_Mandatory_Statistics_Info());
 			tdtr.saveEx(get_TrxName());

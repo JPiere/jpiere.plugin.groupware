@@ -1354,20 +1354,23 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 
 		if(Events.ON_MOUSE_OVER.equals(eventName))
 		{
-			Object obj_ToDoCalendarEvent = comp.getAttribute("ToDo");
-			ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)obj_ToDoCalendarEvent;
-			if(p_JP_Team_ID == 0)
+			if(m_GroupwareUser == null || m_GroupwareUser.isToDoMouseoverPopupJP())
 			{
-				popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), null);
-			}else {
+				Object obj_ToDoCalendarEvent = comp.getAttribute("ToDo");
+				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent)obj_ToDoCalendarEvent;
+				if(p_JP_Team_ID == 0)
+				{
+					popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), null);
+				}else {
 
-				todoEvent.setHeaderColor(todoEvent.team_Default_Long_HeaderColor);
-				todoEvent.setContentColor(todoEvent.team_Default_Long_ContentColor);
+					todoEvent.setHeaderColor(todoEvent.team_Default_Long_HeaderColor);
+					todoEvent.setContentColor(todoEvent.team_Default_Long_ContentColor);
 
-				popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
+					popup_CalendarEvent.setToDoCalendarEvent(todoEvent.getToDo(), todoEvent);
+				}
+				popup_CalendarEvent.setPage(form.getPage());
+				popup_CalendarEvent.open(comp,"end_before");
 			}
-			popup_CalendarEvent.setPage(form.getPage());
-			popup_CalendarEvent.open(comp,"end_before");
 
 		}else  if(eventName.equals(Events.ON_CLICK)) {
 

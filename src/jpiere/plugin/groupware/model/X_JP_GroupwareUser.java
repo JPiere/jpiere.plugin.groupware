@@ -30,7 +30,7 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200924L;
+	private static final long serialVersionUID = 20201105L;
 
     /** Standard Constructor */
     public X_JP_GroupwareUser (Properties ctx, int JP_GroupwareUser_ID, String trxName)
@@ -47,6 +47,8 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 // Y
 			setIsDisplayTaskJP (false);
 // N
+			setIsToDoMouseoverPopupJP (true);
+// Y
 			setJP_Add_Hours (0);
 // 5
 			setJP_Add_Mins (0);
@@ -330,6 +332,27 @@ public class X_JP_GroupwareUser extends PO implements I_JP_GroupwareUser, I_Pers
 	public boolean isDisplayTaskJP () 
 	{
 		Object oo = get_Value(COLUMNNAME_IsDisplayTaskJP);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set Show ToDo Mouseover Popup.
+		@param IsToDoMouseoverPopupJP Show ToDo Mouseover Popup	  */
+	public void setIsToDoMouseoverPopupJP (boolean IsToDoMouseoverPopupJP)
+	{
+		set_Value (COLUMNNAME_IsToDoMouseoverPopupJP, Boolean.valueOf(IsToDoMouseoverPopupJP));
+	}
+
+	/** Get Show ToDo Mouseover Popup.
+		@return Show ToDo Mouseover Popup	  */
+	public boolean isToDoMouseoverPopupJP () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsToDoMouseoverPopupJP);
 		if (oo != null) 
 		{
 			 if (oo instanceof Boolean) 

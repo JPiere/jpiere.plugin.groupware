@@ -106,6 +106,9 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	private Div contentsArea = new Div();
 	private Div footerArea = new Div();
 
+	private MGroupwareUser p_GroupwareUser = null;
+	private boolean p_IsToDoMouseoverPopup = true;
+
 	//Popup
 	private CalendarEventPopup popup_CalendarEvent = new CalendarEventPopup();
 
@@ -122,10 +125,14 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	public ToDoGadget()
 	{
 		super();
-		MGroupwareUser gUser = MGroupwareUser.get(ctx, Env.getAD_User_ID(ctx));
-		if(gUser != null && !Util.isEmpty(gUser.getJP_ToDo_Type()))
+		p_GroupwareUser = MGroupwareUser.get(ctx, Env.getAD_User_ID(ctx));
+		if(p_GroupwareUser != null)
 		{
-			init(gUser.getJP_ToDo_Type(), gUser.getJP_ToDo_Calendar(),  true);
+			if(!Util.isEmpty(p_GroupwareUser.getJP_ToDo_Type()))
+				init(p_GroupwareUser.getJP_ToDo_Type(), p_GroupwareUser.getJP_ToDo_Calendar(),  true);
+
+			p_IsToDoMouseoverPopup = p_GroupwareUser.isToDoMouseoverPopupJP();
+
 		}else {
 
 			init(MToDo.JP_TODO_TYPE_Task, MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo, true);
@@ -139,9 +146,19 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 	public ToDoGadget(String JP_ToDo_Type, String JP_ToDo_Calendar)
 	{
 		super();
+		p_GroupwareUser = MGroupwareUser.get(ctx, Env.getAD_User_ID(ctx));
+		if(p_GroupwareUser != null)
+		{
+			p_IsToDoMouseoverPopup = p_GroupwareUser.isToDoMouseoverPopupJP();
+		}
+
 		init(JP_ToDo_Type, JP_ToDo_Calendar, false);
 	}
 
+	public void setIsToDoMouseoverPopup(boolean IsToDoMouseoverPopup)
+	{
+		p_IsToDoMouseoverPopup = IsToDoMouseoverPopup;
+	}
 
 	/**
 	 * Initialization Personal ToDo Gadget
@@ -772,12 +789,15 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 		}else if(Events.ON_MOUSE_OVER.equals(eventName)) {
 
-			Object list_index = comp.getAttribute("index");
-			int index = Integer.valueOf(list_index.toString()).intValue();
+			if(p_IsToDoMouseoverPopup)
+			{
+				Object list_index = comp.getAttribute("index");
+				int index = Integer.valueOf(list_index.toString()).intValue();
 
-			popup_CalendarEvent.setToDoCalendarEvent(list_ToDoes.get(index), null);
-			popup_CalendarEvent.setPage(this.getPage());
-			popup_CalendarEvent.open(comp,"end_before");
+				popup_CalendarEvent.setToDoCalendarEvent(list_ToDoes.get(index), null);
+				popup_CalendarEvent.setPage(this.getPage());
+				popup_CalendarEvent.open(comp,"end_before");
+			}
 
 		}
 

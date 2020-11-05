@@ -223,6 +223,15 @@ public interface I_JP_GroupwareUser
 	/** Get Display Task	  */
 	public boolean isDisplayTaskJP();
 
+    /** Column name IsToDoMouseoverPopupJP */
+    public static final String COLUMNNAME_IsToDoMouseoverPopupJP = "IsToDoMouseoverPopupJP";
+
+	/** Set Show ToDo Mouseover Popup	  */
+	public void setIsToDoMouseoverPopupJP (boolean IsToDoMouseoverPopupJP);
+
+	/** Get Show ToDo Mouseover Popup	  */
+	public boolean isToDoMouseoverPopupJP();
+
     /** Column name JP_Add_Hours */
     public static final String COLUMNNAME_JP_Add_Hours = "JP_Add_Hours";
 
