@@ -888,20 +888,22 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ZKUpdateUtil.setVflex(vlayout, "1");
 
 		//Menu
-		Groupbox groupBox0 = new Groupbox();
-		groupBox0.setOpen(false);
-		groupBox0.setDraggable("false");
-		groupBox0.setMold("3d");
-		groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
-		vlayout.appendChild(groupBox0);
+		if(m_GroupwareUser != null && m_GroupwareUser.getAD_Tree_Menu_ID() > 0)
+		{
+			Groupbox groupBox0 = new Groupbox();
+			groupBox0.setOpen(false);
+			groupBox0.setDraggable("false");
+			groupBox0.setMold("3d");
+			groupBox0.setWidgetListener("onOpen", "this.caption.setIconSclass('z-icon-caret-' + (event.open ? 'down' : 'right'));");
+			vlayout.appendChild(groupBox0);
 
-		Caption caption0 = new Caption(Msg.getMsg(ctx, "Menu"));
-		caption0.setIconSclass("z-icon-caret-right");
-		groupBox0.appendChild(caption0);
+			Caption caption0 = new Caption(Msg.getMsg(ctx, "Menu"));
+			caption0.setIconSclass("z-icon-caret-right");
+			groupBox0.appendChild(caption0);
 
-		GroupwareMenuGadgetFlat toDoMenu = new GroupwareMenuGadgetFlat();
-		groupBox0.appendChild(toDoMenu);
-
+			GroupwareMenuGadgetFlat toDoMenu = new GroupwareMenuGadgetFlat();
+			groupBox0.appendChild(toDoMenu);
+		}
 
 		/**********************************************************
 		 *  Personal ToDo Gadget
