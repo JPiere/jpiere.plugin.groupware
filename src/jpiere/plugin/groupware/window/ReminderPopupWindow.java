@@ -1,3 +1,16 @@
+/******************************************************************************
+ * Product: JPiere                                                            *
+ * Copyright (C) Hideaki Hagiwara (h.hagiwara@oss-erp.co.jp)                  *
+ *                                                                            *
+ * This program is free software, you can redistribute it and/or modify it    *
+ * under the terms version 2 of the GNU General Public License as published   *
+ * by the Free Software Foundation. This program is distributed in the hope   *
+ * that it will be useful, but WITHOUT ANY WARRANTY.                          *
+ * See the GNU General Public License for more details.                       *
+ *                                                                            *
+ * JPiere is maintained by OSS ERP Solutions Co., Ltd.                        *
+ * (http://www.oss-erp.co.jp)                                                 *
+ *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
 import java.math.BigDecimal;
@@ -28,12 +41,15 @@ import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WTimeEditor;
+import org.adempiere.webui.editor.WUrlEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.adempiere.webui.window.FDialog;
+import org.compiere.model.GridField;
+import org.compiere.model.GridFieldVO;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
@@ -66,6 +82,14 @@ import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.model.MToDoTeamReminder;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
+
+/**
+ * JPIERE-0480 ToDo Reminder Popup Window
+ *
+ *
+ * @author h.hagiwara
+ *
+ */
 public class ReminderPopupWindow extends Window implements EventListener<Event> ,ValueChangeListener {
 
 
@@ -305,6 +329,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		map_Label.put(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime)) );
 		map_Label.put(MToDoReminder.COLUMNNAME_BroadcastFrequency, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_BroadcastFrequency)) );
 		map_Label.put(MToDoReminder.COLUMNNAME_Description, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_Description)) );
+		map_Label.put(MToDoReminder.COLUMNNAME_URL, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_URL)) );
 		map_Label.put(MToDoReminder.COLUMNNAME_IsSentReminderJP, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsSentReminderJP)) );
 		map_Label.put(MToDoReminder.COLUMNNAME_IsConfirmed, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsConfirmed)) );
 		map_Label.put(MToDoReminder.COLUMNNAME_JP_Confirmed, new Label(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_Confirmed)) );
@@ -360,6 +385,14 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
 		editor_Description.getComponent().setRows(5);
 		map_Editor.put(MToDoReminder.COLUMNNAME_Description, editor_Description);
+
+
+		//*** URL ***//
+		GridFieldVO gridFieldVO = GridFieldVO.createParameter(ctx, 0, 0, 0, 0, MToDo.COLUMNNAME_URL, MToDo.COLUMNNAME_URL, DisplayType.URL, 0, false, false, null);
+		WUrlEditor editor_URL = new WUrlEditor(new GridField(gridFieldVO));
+		editor_URL.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_URL.getComponent(), "true");
+		map_Editor.put("URL", editor_URL);
 
 
 		if(p_IsPersonalToDo)
@@ -447,6 +480,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).setReadWrite(p_IsUpdatable);
 		map_Editor.get(MToDoReminder.COLUMNNAME_BroadcastFrequency).setReadWrite(p_IsUpdatable);
 		map_Editor.get(MToDoReminder.COLUMNNAME_Description).setReadWrite(p_IsUpdatable);
+		map_Editor.get(MToDoReminder.COLUMNNAME_URL).setReadWrite(p_IsUpdatable);
 		map_Editor.get(MToDoReminder.COLUMNNAME_IsSentReminderJP).setReadWrite(false);
 
 		if(p_IsPersonalToDo)
@@ -486,7 +520,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).setValue(i_Reminder.getJP_ToDo_RemindTime());
 			map_Editor.get(MToDoReminder.COLUMNNAME_BroadcastFrequency).setValue(i_Reminder.getBroadcastFrequency());
 			map_Editor.get(MToDoReminder.COLUMNNAME_Description).setValue(i_Reminder.getDescription());
-
+			map_Editor.get(MToDoReminder.COLUMNNAME_URL).setValue(i_Reminder.getURL());
 			map_Editor.get(MToDoReminder.COLUMNNAME_IsSentReminderJP).setValue(i_Reminder.isSentReminderJP());
 			map_Editor.get(MToDoReminder.COLUMNNAME_IsConfirmed).setValue(i_Reminder.isConfirmed());
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_Confirmed).setValue(i_Reminder.getJP_Confirmed());
@@ -702,6 +736,12 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		row = rows.newRow();
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_Description), false),2);
 		row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_Description).getComponent(),4);
+
+
+		//*** URL ***//
+		row = rows.newRow();
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_URL), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_URL).getComponent(),4);
 
 
 		if(p_IsPersonalToDo)
@@ -959,6 +999,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				i_Reminder.setJP_ToDo_ReminderType(db_Reminder.getJP_ToDo_ReminderType());
 				i_Reminder.setJP_ToDo_RemindTime(db_Reminder.getJP_ToDo_RemindTime());
 				i_Reminder.setDescription(db_Reminder.getDescription());
+				i_Reminder.setURL(db_Reminder.getURL());
 				i_Reminder.setIsActive(db_Reminder.isActive());
 				i_Reminder.setIsSentReminderJP(db_Reminder.isSentReminderJP());
 				i_Reminder.setProcessed(db_Reminder.isProcessed());
@@ -1048,6 +1089,15 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			i_Reminder.setDescription((String)editor.getValue());
 		}
 
+
+		//URL
+		editor = map_Editor.get(MToDoReminder.COLUMNNAME_URL);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+			i_Reminder.setURL(null);
+		}else {
+			i_Reminder.setURL(editor.getValue().toString());
+		}
 
 
 		if(p_IsPersonalToDo)
@@ -1244,6 +1294,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			ts_RemindTime = Timestamp.valueOf(LocalDateTime.of(ts_RemindDate.toLocalDateTime().toLocalDate(), ts_RemindTime.toLocalDateTime().toLocalTime()));
 			editor_RemindDate.setValue(ts_RemindTime);
 			editor_RemindTime.setValue(ts_RemindTime);
+
+		}else if(MToDoReminder.COLUMNNAME_URL.equals(name)) {
+
+			map_Editor.get(MToDoReminder.COLUMNNAME_URL).setValue(value.toString());
 
 		}
 

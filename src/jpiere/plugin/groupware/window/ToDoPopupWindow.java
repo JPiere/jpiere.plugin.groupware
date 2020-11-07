@@ -104,7 +104,7 @@ import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 
 /**
- * JPIERE-0473 Personal ToDo Popup Window
+ * JPIERE-0473 ToDo Popup Window
  *
  *
  * @author h.hagiwara
@@ -408,14 +408,13 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_Name, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Name)) );
 		map_Label.put(MToDo.COLUMNNAME_Description, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Description)) );
+		map_Label.put(MToDo.COLUMNNAME_URL, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_URL)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Status, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status)) );
 		map_Label.put(MToDo.COLUMNNAME_IsOpenToDoJP, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP)) );
-
-		map_Label.put(MToDo.COLUMNNAME_URL, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_URL)) );
 
 		if(p_IsPersonalToDo)
 		{
@@ -1371,13 +1370,28 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				if(p_IsDirty)
 				{
-					if(!saveToDo())
+					Callback<Boolean> isSave = new Callback<Boolean>()
 					{
-						return ;
-					}
-				}
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
+								{
+									if(!saveToDo())
+									{
+										return ;
+									}
 
-				createProcessPopupWindow();
+								}
+							}
+					};
+					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_SaveBeforeProcess", Msg.getMsg(ctx, "SaveChanges?"), isSave);
+					//Please save changes before Process
+
+				}else {
+
+					createProcessPopupWindow();
+				}
 
 				return;
 
@@ -1407,7 +1421,30 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			}else if(BUTTON_NAME_REMINDER.equals(btnName)){
 
-				createReminderPopupWindow();
+				if(p_IsDirty)
+				{
+					Callback<Boolean> isSave = new Callback<Boolean>()
+					{
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
+								{
+									if(!saveToDo())
+									{
+										return ;
+									}
+
+								}
+							}
+					};
+					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_SaveBeforeEditToDoReminder", Msg.getMsg(ctx, "SaveChanges?"), isSave);
+					//Please save changes before edit ToDo Reminder.
+
+				}else {
+
+					createReminderPopupWindow();
+				}
 
 			}else if(BUTTON_NEW_REMINDER.equals(btnName)) {//TODO
 
@@ -1427,6 +1464,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				reminderPopup.close();
 
 			}else if(BUTTON_UPDATE_REMINDER.equals(btnName)) {//TODO
+
+				saveToDo();
 
 				int reminder_ID = 0;
 				if(p_IsPersonalToDo)
@@ -1968,7 +2007,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				new_ScheduledStartTime = p_iToDo.getJP_ToDo_ScheduledEndTime();
 			}
 
-
 		}
 
 
@@ -2240,7 +2278,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 										receiveToDoCalendarEvent.refresh(null);
 									}
 
-									detach();
+									//detach();
 								}
 							}
 					};
@@ -2324,7 +2362,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 										receiveToDoCalendarEvent.refresh(null);
 									}
 
-									detach();
+									//detach();
 								}
 							}
 
