@@ -32,7 +32,7 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200921L;
+	private static final long serialVersionUID = 20201107L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team (Properties ctx, int JP_ToDo_Team_ID, String trxName)
@@ -74,7 +74,7 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
     }
 
     /** AccessLevel
-      * @return 6 - System - Client 
+      * @return 7 - System - Client - Org 
       */
     protected int get_AccessLevel()
     {
@@ -687,5 +687,22 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
+	}
+
+	/** Set URL.
+		@param URL 
+		Full URL address - e.g. http://www.idempiere.org
+	  */
+	public void setURL (String URL)
+	{
+		set_Value (COLUMNNAME_URL, URL);
+	}
+
+	/** Get URL.
+		@return Full URL address - e.g. http://www.idempiere.org
+	  */
+	public String getURL () 
+	{
+		return (String)get_Value(COLUMNNAME_URL);
 	}
 }

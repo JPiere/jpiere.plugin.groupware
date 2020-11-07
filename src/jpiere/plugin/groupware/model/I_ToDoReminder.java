@@ -113,4 +113,8 @@ public interface I_ToDoReminder {
 	public boolean sendMessageRemainder();
 
 	public String getRemindMsg();
+
+	/** URL **/
+	public void setURL (String URL);
+	public String getURL();
 }

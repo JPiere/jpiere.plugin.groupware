@@ -51,6 +51,7 @@ import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WTimeEditor;
+import org.adempiere.webui.editor.WUrlEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.DialogEvents;
 import org.adempiere.webui.event.ValueChangeEvent;
@@ -58,6 +59,8 @@ import org.adempiere.webui.event.ValueChangeListener;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.adempiere.webui.window.FDialog;
+import org.compiere.model.GridField;
+import org.compiere.model.GridFieldVO;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
@@ -227,15 +230,18 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		login_User_ID = Env.getAD_User_ID(ctx);
 
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
-		if (!ThemeManager.isUseCSSForWindowSize()) {
-			ZKUpdateUtil.setWindowWidthX(this, 400);
-			ZKUpdateUtil.setWindowHeightX(this, 600);
-		} else {
-			addCallback(AFTER_PAGE_ATTACHED, t -> {
-				ZKUpdateUtil.setCSSHeight(this);
-				ZKUpdateUtil.setCSSWidth(this);
-			});
-		}
+//		if (!ThemeManager.isUseCSSForWindowSize()) {
+//			ZKUpdateUtil.setWindowWidthX(this, 400);
+//			ZKUpdateUtil.setWindowHeightX(this, 600);
+//		} else {
+//			addCallback(AFTER_PAGE_ATTACHED, t -> {
+//				ZKUpdateUtil.setCSSHeight(this);
+//				ZKUpdateUtil.setCSSWidth(this);
+//			});
+//		}
+
+		ZKUpdateUtil.setWindowWidthX(this, 420);
+		ZKUpdateUtil.setWindowHeightX(this, 580);
 
 		this.setSclass("popup-dialog request-dialog");
 		this.setBorder("normal");
@@ -409,6 +415,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Status, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status)) );
 		map_Label.put(MToDo.COLUMNNAME_IsOpenToDoJP, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP)) );
 
+		map_Label.put(MToDo.COLUMNNAME_URL, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_URL)) );
+
 		if(p_IsPersonalToDo)
 		{
 			map_Label.put(MToDo.COLUMNNAME_Comments, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Comments)) );
@@ -492,6 +500,14 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
 		editor_Description.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Description, editor_Description);
+
+
+		//*** URL ***//
+		GridFieldVO gridFieldVO = GridFieldVO.createParameter(ctx, 0, 0, 0, 0, MToDo.COLUMNNAME_URL, MToDo.COLUMNNAME_URL, DisplayType.URL, 0, false, false, null);
+		WUrlEditor editor_URL = new WUrlEditor(new GridField(gridFieldVO));
+		editor_URL.addValueChangeListener(this);
+		ZKUpdateUtil.setHflex(editor_URL.getComponent(), "true");
+		map_Editor.put("URL", editor_URL);
 
 
 		//*** Comments ***//
@@ -614,6 +630,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_Name).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_Description).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
+		map_Editor.get(MToDo.COLUMNNAME_URL).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
 		map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
@@ -671,6 +688,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_iToDo.getJP_ToDo_Category_ID());
 			map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_iToDo.getName());
 			map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_iToDo.getDescription());
+			map_Editor.get(MToDo.COLUMNNAME_URL).setValue(p_iToDo.getURL());
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(p_iToDo.getJP_ToDo_ScheduledStartTime());
 			map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).setValue(p_iToDo.isStartDateAllDayJP());
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_iToDo.getJP_ToDo_ScheduledStartTime());
@@ -1076,6 +1094,12 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		row = rows.newRow();
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), false),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Description).getComponent(),4);
+
+
+		//*** URL ***//
+		row = rows.newRow();
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_URL), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_URL).getComponent(),4);
 
 
 		//*** Comments ***//
@@ -1541,7 +1565,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				}
 
-			}else if(BUTTON_NAME_SHOW_TEAM_MEMBER.equals(btnName)) {//TODO
+			}else if(BUTTON_NAME_SHOW_TEAM_MEMBER.equals(btnName)) {
 
 				TeamMemberPopup teampMemberPopup = new TeamMemberPopup(this);
 				teampMemberPopup.setPage(showTeamMemberBtn.getPage());
@@ -1669,7 +1693,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				p_iToDo.setJP_ToDo_Category_ID(db_ToDo.getJP_ToDo_Category_ID());
 				p_iToDo.setName(db_ToDo.getName());
 				p_iToDo.setDescription(db_ToDo.getDescription());
-				p_iToDo.setComments(db_ToDo.getComments());
+				p_iToDo.setURL(db_ToDo.getURL());
 				p_iToDo.setJP_ToDo_ScheduledStartDate(db_ToDo.getJP_ToDo_ScheduledStartDate());
 				p_iToDo.setJP_ToDo_ScheduledStartTime(db_ToDo.getJP_ToDo_ScheduledStartTime());
 				p_iToDo.setIsStartDateAllDayJP(db_ToDo.isStartDateAllDayJP());
@@ -1684,6 +1708,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				if(p_iToDo.get_TableName().equals(MToDo.Table_Name))
 				{
+					p_iToDo.setComments(db_ToDo.getComments());
 					p_iToDo.setJP_Statistics_Choice(db_ToDo.getJP_Statistics_Choice());
 					p_iToDo.setJP_Statistics_DateAndTime(db_ToDo.getJP_Statistics_DateAndTime());
 					p_iToDo.setJP_Statistics_Number(db_ToDo.getJP_Statistics_Number());
@@ -1803,6 +1828,19 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 		final boolean isChanged_Description = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Description);
 		if(isChanged_Description)
+			isOnlyUpdateToDoStatus= false;
+
+
+		//Check URL
+		editor = map_Editor.get(MToDo.COLUMNNAME_URL);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+			p_iToDo.setURL(null);
+		}else {
+			p_iToDo.setURL(editor.getValue().toString());
+		}
+		final boolean isChanged_URL = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_URL);
+		if(isChanged_URL)
 			isOnlyUpdateToDoStatus= false;
 
 
@@ -2156,6 +2194,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 											todo.setName(m_ToDo.getName());
 										if(isChanged_Description)
 											todo.setDescription(m_ToDo.getDescription());
+										if(isChanged_URL)
+											todo.setURL(m_ToDo.getURL());
 										if(isChanged_Comments)
 											todo.setComments(m_ToDo.getComments());
 										if(isChanged_IsOpenToDoJP)
@@ -2242,6 +2282,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 											todo.setName(m_TeamToDo.getName());
 										if(isChanged_Description)
 											todo.setDescription(m_TeamToDo.getDescription());
+										if(isChanged_URL)
+											todo.setURL(m_TeamToDo.getURL());
 										if(isChanged_IsOpenToDoJP)
 											todo.setIsOpenToDoJP(m_TeamToDo.isOpenToDoJP());
 
@@ -2694,6 +2736,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else if(MToDo.COLUMNNAME_IsEndDateAllDayJP.equals(name)) {
 
 			updateCenter();
+
+		}else if(MToDo.COLUMNNAME_URL.equals(name)) {
+
+			map_Editor.get(MToDo.COLUMNNAME_URL).setValue(value.toString());
+
 		}
 
 		p_IsDirty = true;

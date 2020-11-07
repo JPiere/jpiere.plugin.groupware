@@ -33,7 +33,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20201027L;
+	private static final long serialVersionUID = 20201107L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Reminder (Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
@@ -63,7 +63,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
     }
 
     /** AccessLevel
-      * @return 6 - System - Client 
+      * @return 7 - System - Client - Org 
       */
     protected int get_AccessLevel()
     {
@@ -475,5 +475,22 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 			return "Y".equals(oo);
 		}
 		return false;
+	}
+
+	/** Set URL.
+		@param URL 
+		Full URL address - e.g. http://www.idempiere.org
+	  */
+	public void setURL (String URL)
+	{
+		set_Value (COLUMNNAME_URL, URL);
+	}
+
+	/** Get URL.
+		@return Full URL address - e.g. http://www.idempiere.org
+	  */
+	public String getURL () 
+	{
+		return (String)get_Value(COLUMNNAME_URL);
 	}
 }

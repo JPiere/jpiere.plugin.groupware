@@ -37,9 +37,9 @@ public interface I_JP_ToDo_Team
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
 
-    /** AccessLevel = 6 - System - Client 
+    /** AccessLevel = 7 - System - Client - Org 
      */
-    BigDecimal accessLevel = BigDecimal.valueOf(6);
+    BigDecimal accessLevel = BigDecimal.valueOf(7);
 
     /** Load Meta Data */
 
@@ -405,6 +405,19 @@ public interface I_JP_ToDo_Team
 	  * Direct internal record ID
 	  */
 	public int getRecord_ID();
+
+    /** Column name URL */
+    public static final String COLUMNNAME_URL = "URL";
+
+	/** Set URL.
+	  * Full URL address - e.g. http://www.idempiere.org
+	  */
+	public void setURL (String URL);
+
+	/** Get URL.
+	  * Full URL address - e.g. http://www.idempiere.org
+	  */
+	public String getURL();
 
     /** Column name Updated */
     public static final String COLUMNNAME_Updated = "Updated";

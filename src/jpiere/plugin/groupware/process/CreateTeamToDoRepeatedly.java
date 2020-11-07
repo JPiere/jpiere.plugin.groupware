@@ -374,6 +374,13 @@ public class CreateTeamToDoRepeatedly extends SvrProcess {
 		pi.setAD_User_ID(getAD_User_ID());
 		pi.setAD_PInstance_ID(getAD_PInstance_ID());
 		pi.setRecord_ID(new_TeamToDo.getJP_ToDo_Team_ID());
+
+		ArrayList<ProcessInfoParameter> list = new ArrayList<ProcessInfoParameter>();
+		list.add (new ProcessInfoParameter("JP_Team_ID", new_TeamToDo.getJP_Team_ID(), null, null, null ));
+		ProcessInfoParameter[] pars = new ProcessInfoParameter[list.size()];
+		list.toArray(pars);
+		pi.setParameter(pars);
+
 		ProcessUtil.startJavaProcess(getCtx(), pi, Trx.get(get_TrxName(), true), false, null);
 
 	}

@@ -209,5 +209,8 @@ public interface I_ToDo
 	public void setIsActive (boolean IsActive);
 	public boolean isActive();
 
+	/** URL **/
+	public void setURL (String URL);
+	public String getURL();
 
 }

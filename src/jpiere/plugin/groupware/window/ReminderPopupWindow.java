@@ -216,27 +216,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		}
 
-
-
-
-
-		if(p_IsNewRecord)
-		{
-			if(p_IsPersonalToDo)
-			{
-				ZKUpdateUtil.setWindowWidthX(this, 480);
-				ZKUpdateUtil.setWindowHeightX(this, 420);
-			} else {
-				ZKUpdateUtil.setWindowWidthX(this, 480);
-				ZKUpdateUtil.setWindowHeightX(this, 420);
-			}
-
-		}else {
-
-			ZKUpdateUtil.setWindowWidthX(this, 480);
-			ZKUpdateUtil.setWindowHeightX(this, 420);
-		}
-
+		ZKUpdateUtil.setWindowWidthX(this, 480);
+		ZKUpdateUtil.setWindowHeightX(this, 420);
 
 	}
 
