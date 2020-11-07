@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.adempiere.util.Callback;
+import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.ConfirmPanel;
@@ -36,6 +37,7 @@ import org.adempiere.webui.window.FDialog;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MTable;
 import org.compiere.util.CLogger;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
@@ -94,6 +96,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private Center center;
 	private ConfirmPanel confirmPanel;
 
+	//*** Constants ***//
+	private final static String BUTTON_NAME_ZOOM_PERSONALTODO_REMINDER = "ZOOM_P";
+	private final static String BUTTON_NAME_ZOOM_TEAMTODO_REMINDER = "ZOOM_T";
+
 	private final static String BUTTON_NAME_UNDO = "REDO";
 	private final static String BUTTON_NAME_SAVE = "SAVE";
 	private final static String BUTTON_NAME_DELETE = "DELETE";
@@ -108,6 +114,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 
 	//Buttons
+	private Button zoomPersonalToDoReminderBtn = null;
+	private Button zoomTeamToDoReminderBtn = null;
 	private Button undoBtn = null;
 	private Button saveBtn = null;
 	private Button deleteBtn = null;
@@ -189,6 +197,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		borderlayout.appendChild(north);
 
 		center = new Center();
+		ZKUpdateUtil.setVflex(center, "max");
+
 		center.setSclass("dialog-content");
 		center.setAutoscroll(true);
 		center = updateCenter();
@@ -528,6 +538,55 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		hlyaout.setStyle("margin:2px 2px 2px 2px; padding:2px 2px 2px 2px;");// border: solid 1px #dddddd;
 		north.appendChild(hlyaout);
 
+		//Personal ToDo Zoom Button
+		if(p_IsPersonalToDo)
+		{
+			if(zoomPersonalToDoReminderBtn == null)
+			{
+				zoomPersonalToDoReminderBtn = new Button();
+				if (ThemeManager.isUseFontIconForImage())
+					zoomPersonalToDoReminderBtn.setIconSclass("z-icon-Zoom");
+				else
+					zoomPersonalToDoReminderBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
+				zoomPersonalToDoReminderBtn.setClass("btn-small");
+				zoomPersonalToDoReminderBtn.setName(BUTTON_NAME_ZOOM_PERSONALTODO_REMINDER);
+				zoomPersonalToDoReminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));//TODO メッセージを変更する
+				zoomPersonalToDoReminderBtn.addEventListener(Events.ON_CLICK, this);
+			}
+			hlyaout.appendChild(zoomPersonalToDoReminderBtn);
+		}
+
+
+		//Team ToDo Zoom Button
+		if(zoomTeamToDoReminderBtn == null)
+		{
+			zoomTeamToDoReminderBtn = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				zoomTeamToDoReminderBtn.setIconSclass("z-icon-ZoomAcross");
+			else
+				zoomTeamToDoReminderBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
+			zoomTeamToDoReminderBtn.setClass("btn-small");
+			zoomTeamToDoReminderBtn.setName(BUTTON_NAME_ZOOM_TEAMTODO_REMINDER);
+			zoomTeamToDoReminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));//TODO メッセージを変更する
+			zoomTeamToDoReminderBtn.addEventListener(Events.ON_CLICK, this);
+		}
+
+		if(p_IsPersonalToDo)
+		{
+			if(i_Reminder.getJP_ToDo_Team_Reminder_ID() == 0)
+			{
+				zoomTeamToDoReminderBtn.setEnabled(false);
+			}else {
+				zoomTeamToDoReminderBtn.setEnabled(true);
+			}
+		}else {
+			zoomTeamToDoReminderBtn.setEnabled(true);
+		}
+		hlyaout.appendChild(zoomTeamToDoReminderBtn);
+
+
+		hlyaout.appendChild(GroupwareToDoUtil.getDividingLine());
+
 		//Undo Button
 		if(undoBtn == null)
 		{
@@ -623,10 +682,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		Div centerContent = new Div();
 		center.appendChild(centerContent);
-		ZKUpdateUtil.setVflex(center, "min");
+		ZKUpdateUtil.setHeight(centerContent, "100%");
 
 		Grid grid = GridFactory.newGridLayout();
-		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setHeight(grid, "100%");
 		ZKUpdateUtil.setHflex(grid, "1");
 		centerContent.appendChild(grid);
 
@@ -856,6 +915,37 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				editor_RemindDate.setValue(ts_RemindTime);
 				editor_RemindTime.setValue(ts_RemindTime);
 				editor_RemindTime.getComponent().focus();
+
+			}else if(BUTTON_NAME_ZOOM_PERSONALTODO_REMINDER.equals(btnName)){
+
+				AEnv.zoom(MTable.getTable_ID(MToDoReminder.Table_Name), p_Reminder_ID);
+				if(p_TodoPopupWindow != null)
+				{
+		    		p_TodoPopupWindow.hideBusyMask();
+		    		p_TodoPopupWindow.dispose();
+				}else {
+		    		p_PersonalTodoListWindow.hideBusyMask();
+		    		p_PersonalTodoListWindow.dispose();
+				}
+			   	detach();
+
+			}else if(BUTTON_NAME_ZOOM_TEAMTODO_REMINDER.equals(btnName)){
+
+				if(p_IsPersonalToDo)
+					AEnv.zoom(MTable.getTable_ID(MToDoTeamReminder.Table_Name), i_Reminder.getJP_ToDo_Team_Reminder_ID());
+				else
+					AEnv.zoom(MTable.getTable_ID(MToDoTeamReminder.Table_Name), p_Reminder_ID);
+
+				if(p_TodoPopupWindow != null)
+				{
+		    		p_TodoPopupWindow.hideBusyMask();
+		    		p_TodoPopupWindow.dispose();
+				}else {
+		    		p_PersonalTodoListWindow.hideBusyMask();
+		    		p_PersonalTodoListWindow.dispose();
+				}
+				detach();
+
 			}
 		}
 

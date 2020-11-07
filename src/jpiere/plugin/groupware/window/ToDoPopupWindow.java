@@ -298,6 +298,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		borderlayout.appendChild(north);
 
 		center = new Center();
+		ZKUpdateUtil.setVflex(center, "max");
+
 		center.setSclass("dialog-content");
 		center.setAutoscroll(true);
 		center = updateCenter();
@@ -485,6 +487,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		//*** Description ***//
 		WStringEditor editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
+
 		editor_Description.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
 		editor_Description.getComponent().setRows(3);
@@ -1027,10 +1030,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		Div centerContent = new Div();
 		center.appendChild(centerContent);
-		ZKUpdateUtil.setVflex(center, "min");
+		ZKUpdateUtil.setHeight(centerContent, "100%");
 
 		Grid grid = GridFactory.newGridLayout();
-		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setHeight(grid, "100%");
 		ZKUpdateUtil.setHflex(grid, "1");
 		centerContent.appendChild(grid);
 
