@@ -282,6 +282,21 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 	public boolean sendMessageRemainder()
 	{
+		int AD_BroadcastMessage_ID = createMessage();
+		if(AD_BroadcastMessage_ID == 0)
+		{
+			return false;
+		}
+
+        this.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+        this.setIsSentReminderJP(true);
+        this.saveEx(get_TrxName());
+
+		return true;
+	}
+
+	public int createMessage()
+	{
 		MBroadcastMessage bm = new MBroadcastMessage(getCtx(), 0, get_TrxName());
 		bm.setAD_Org_ID(getAD_Org_ID());
 		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_ImmediatePlusLogin);
@@ -302,25 +317,34 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		{
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
 
-		}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilAcknowledge.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilAcknowledge);
 
-		}else if(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(getBroadcastFrequency()) ){
 
-			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce);
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
+			bm.setExpiration(Timestamp.valueOf("9999-12-31 00:00:00"));
 
-		}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpiration.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
 			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
 
-		}else if(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency()) ){
+
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce);
+
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrComplete.equals(getBroadcastFrequency()) ){
+
+			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
+			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
+
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge);
 			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
 		}
-
 
 
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
@@ -386,20 +410,9 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		if(get_TrxName() != null)
 			Trx.get(get_TrxName(), true).commit();
 
-//		boolean isServerPushEnabled = AEnv.getDesktop().isServerPushEnabled();
-//        if (AEnv.getDesktop().isServerPushEnabled())
-//    	{
-//        	AEnv.getDesktop().enableServerPush(true);
-//    	}
-
 		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
 
-		this.setAD_BroadcastMessage_ID(bm.getAD_BroadcastMessage_ID());
-		this.setIsSentReminderJP(true);
-		//this.setProcessed(true);
-		this.saveEx(get_TrxName());
-
-		return true;
+		return bm.getAD_BroadcastMessage_ID();
 	}
 
 

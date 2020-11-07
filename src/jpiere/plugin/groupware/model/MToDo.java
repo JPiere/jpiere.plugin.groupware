@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.adempiere.model.MBroadcastMessage;
 import org.compiere.model.MMessage;
 import org.compiere.model.Query;
+import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.compiere.util.Util;
@@ -281,6 +283,24 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 				{
 					reminders[i].setProcessed(true);
 					reminders[i].saveEx(get_TrxName());
+
+					if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(reminders[i].getBroadcastFrequency())
+							|| MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrComplete.equals(reminders[i].getBroadcastFrequency()))
+					{
+						if(reminders[i].getAD_BroadcastMessage_ID() > 0)
+						{
+							MBroadcastMessage mbMessage = MBroadcastMessage.get(Env.getCtx(), reminders[i].getAD_BroadcastMessage_ID());
+							if (MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration.equals(mbMessage.getBroadcastFrequency())
+									&& !mbMessage.isExpired() && mbMessage.isPublished())
+							{
+								String sql = "UPDATE AD_Note SET Processed='Y' WHERE AD_BroadcastMessage_ID = ?";
+								DB.executeUpdateEx(sql, new Object[] {getRecord_ID()}, null);
+								mbMessage.setProcessed(true);
+								mbMessage.setExpired(true);
+								mbMessage.saveEx();
+							}
+						}
+					}
 				}
 
 			}else {
@@ -290,13 +310,23 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 					MToDoReminder[] reminders = getReminders();
 					for(int i = 0;  i < reminders.length; i++)
 					{
-						if(reminders[i].isConfirmed())
+						reminders[i].setProcessed(false);
+
+						if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(reminders[i].getBroadcastFrequency()))
 						{
-							;
-						}else {
-							reminders[i].setProcessed(false);
-							reminders[i].saveEx(get_TrxName());
+							int AD_BroadcastMessage_ID = reminders[i].createMessage();
+							reminders[i].setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+
+						}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrComplete.equals(reminders[i].getBroadcastFrequency())) {
+
+							MBroadcastMessage mbMessage = MBroadcastMessage.get(Env.getCtx(), reminders[i].getAD_BroadcastMessage_ID());
+							if(mbMessage.getExpiration().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0)
+							{
+								int AD_BroadcastMessage_ID = reminders[i].createMessage();
+								reminders[i].setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+							}
 						}
+						reminders[i].saveEx(get_TrxName());
 
 					}//for
 				}

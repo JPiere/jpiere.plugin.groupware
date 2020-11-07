@@ -91,6 +91,10 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	public static final String BROADCASTFREQUENCY_JustOnce = "J";
 	/** Until Expiration or Acknowledge = O */
 	public static final String BROADCASTFREQUENCY_UntilExpirationOrAcknowledge = "O";
+	/** Until Complete = C */
+	public static final String BROADCASTFREQUENCY_UntilComplete = "C";
+	/** Until Expiration or Complete = M */
+	public static final String BROADCASTFREQUENCY_UntilExpirationOrComplete = "M";
 	/** Set Broadcast Frequency.
 		@param BroadcastFrequency 
 		How Many Times Message Should be Broadcasted
