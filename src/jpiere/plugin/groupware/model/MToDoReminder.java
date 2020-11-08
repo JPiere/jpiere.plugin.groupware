@@ -464,4 +464,18 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		return reminder;
 	}
 
+
+	@Override
+	public void setJP_ToDo_RemindTarget(String JP_ToDo_RemindTarget)
+	{
+		;
+	}
+
+
+	@Override
+	public String getJP_ToDo_RemindTarget()
+	{
+		return null;
+	}
+
 }

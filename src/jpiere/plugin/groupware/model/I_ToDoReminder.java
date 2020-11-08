@@ -113,4 +113,12 @@ public interface I_ToDoReminder {
 	/** URL **/
 	public void setURL (String URL);
 	public String getURL();
+
+	/** JP_MailFrequency **/
+	public void setJP_MailFrequency (String JP_MailFrequency);
+	public String getJP_MailFrequency();
+
+	/** Set Remind Target	  */
+	public void setJP_ToDo_RemindTarget (String JP_ToDo_RemindTarget);
+	public String getJP_ToDo_RemindTarget();
 }
