@@ -187,7 +187,6 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	}
 
 
-
 	private MToDo getParent()
 	{
 		if(parent == null)
@@ -196,10 +195,6 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		return parent;
 	}
 
-	public boolean setMailRemainder()
-	{
-		return false;
-	}
 
 	public boolean sendMailRemainder()
 	{
@@ -283,15 +278,11 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		return isOK;
 	}
 
-	public boolean setMessageRemainder()
-	{
-		return false;
-	}
-
 
 	public int sendMessageRemainder()
 	{
-		MBroadcastMessage bm = new MBroadcastMessage(getCtx(), 0, get_TrxName());
+		int AD_BroadcastMessage_ID = 0;
+		MBroadcastMessage bm = new MBroadcastMessage(getCtx(), AD_BroadcastMessage_ID, get_TrxName());
 		bm.setAD_Org_ID(getAD_Org_ID());
 		bm.setBroadcastType(MBroadcastMessage.BROADCASTTYPE_ImmediatePlusLogin);
 		bm.setTarget(MBroadcastMessage.TARGET_User);
@@ -400,13 +391,41 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 		bm.setBroadcastMessage(message.toString());
 
-		bm.saveEx(get_TrxName());
-		if(get_TrxName() != null)
-			Trx.get(get_TrxName(), true).commit();
+		if(bm.save(get_TrxName()))
+		{
+			if(get_TrxName() != null)
+				Trx.get(get_TrxName(), true).commit();
 
-		BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
+			BroadcastMsgUtil.publishBroadcastMessage(bm.getAD_BroadcastMessage_ID(), get_TrxName());
 
-		return bm.getAD_BroadcastMessage_ID();
+		}else {
+
+			m_RemindMsg = Msg.getMsg(getCtx(), "SaveError") + Msg.getElement(getCtx(), "AD_BroadcastMessage_ID");
+			AD_BroadcastMessage_ID = -1;
+		}
+
+		AD_BroadcastMessage_ID = bm.getAD_BroadcastMessage_ID();
+
+		MToDoReminderLog reminderlog = new MToDoReminderLog(getCtx(), 0, get_TrxName());
+		reminderlog.setJP_ToDo_Reminder_ID(getJP_ToDo_Reminder_ID());
+
+		if(AD_BroadcastMessage_ID <= 0)
+		{
+			reminderlog.setIsError(true);
+			reminderlog.setDescription(m_RemindMsg);
+
+		}else {
+			reminderlog.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+			reminderlog.setIsError(false);
+		}
+
+		if(reminderlog.save(get_TrxName()))
+		{
+			if(get_TrxName() != null)
+				Trx.get(get_TrxName(), true).commit();
+		}
+
+		return AD_BroadcastMessage_ID;
 	}
 
 

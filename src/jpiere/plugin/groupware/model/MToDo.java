@@ -305,6 +305,7 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 
 			}else {
 
+				//Reset Broadcast Message
 				if(MToDo.JP_TODO_STATUS_Completed.equals(get_ValueOld(MToDo.COLUMNNAME_JP_ToDo_Status)))
 				{
 					MToDoReminder[] reminders = getReminders();
