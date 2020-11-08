@@ -115,9 +115,20 @@ public class ToDoReminderMessage extends SvrProcess {
 		return true;
 	}
 
-	private boolean sendMessagePersonalToDoRemainder(MToDoReminder reminder )
+	private boolean sendMessagePersonalToDoRemainder(MToDoReminder todoReminder )
 	{
-		return reminder.sendMessageRemainder();
+		int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
+		todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+		todoReminder.setIsSentReminderJP(true);
+		todoReminder.saveEx();
+
+		if(AD_BroadcastMessage_ID > 0)
+		{
+			return true;
+		}else {
+			return false;
+		}
+
 	}
 
 	private boolean sendMessageTeamToDoRemainder() throws SQLException

@@ -285,7 +285,7 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 					reminders[i].saveEx(get_TrxName());
 
 					if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(reminders[i].getBroadcastFrequency())
-							|| MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrComplete.equals(reminders[i].getBroadcastFrequency()))
+							|| MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete.equals(reminders[i].getBroadcastFrequency()))
 					{
 						if(reminders[i].getAD_BroadcastMessage_ID() > 0)
 						{
@@ -314,15 +314,15 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 
 						if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(reminders[i].getBroadcastFrequency()))
 						{
-							int AD_BroadcastMessage_ID = reminders[i].createMessage();
+							int AD_BroadcastMessage_ID = reminders[i].sendMessageRemainder();
 							reminders[i].setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
 
-						}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrComplete.equals(reminders[i].getBroadcastFrequency())) {
+						}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete.equals(reminders[i].getBroadcastFrequency())) {
 
 							MBroadcastMessage mbMessage = MBroadcastMessage.get(Env.getCtx(), reminders[i].getAD_BroadcastMessage_ID());
 							if(mbMessage.getExpiration().compareTo(Timestamp.valueOf(LocalDateTime.now())) < 0)
 							{
-								int AD_BroadcastMessage_ID = reminders[i].createMessage();
+								int AD_BroadcastMessage_ID = reminders[i].sendMessageRemainder();
 								reminders[i].setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
 							}
 						}

@@ -33,7 +33,7 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20201107L;
+	private static final long serialVersionUID = 20201108L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Reminder (Properties ctx, int JP_ToDo_Reminder_ID, String trxName)
@@ -142,16 +142,16 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 
 	/** Until Acknowledge = A */
 	public static final String BROADCASTFREQUENCY_UntilAcknowledge = "A";
-	/** Until Expiration = E */
-	public static final String BROADCASTFREQUENCY_UntilExpiration = "E";
+	/** Until Scheduled end time = E */
+	public static final String BROADCASTFREQUENCY_UntilScheduledEndTime = "E";
 	/** Just Once = J */
 	public static final String BROADCASTFREQUENCY_JustOnce = "J";
-	/** Until Expiration or Acknowledge = O */
-	public static final String BROADCASTFREQUENCY_UntilExpirationOrAcknowledge = "O";
+	/** Until Scheduled end time or Acknowledge = O */
+	public static final String BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge = "O";
 	/** Until Complete = C */
 	public static final String BROADCASTFREQUENCY_UntilComplete = "C";
-	/** Until Expiration or Complete = M */
-	public static final String BROADCASTFREQUENCY_UntilExpirationOrComplete = "M";
+	/** Until Scheduled end time or Complete = M */
+	public static final String BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete = "M";
 	/** Set Broadcast Frequency.
 		@param BroadcastFrequency 
 		How Many Times Message Should be Broadcasted
@@ -263,6 +263,50 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 		return (Timestamp)get_Value(COLUMNNAME_JP_Confirmed);
 	}
 
+	/** Once a day until Acknowledge  = A */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilAcknowledge = "A";
+	/** Once a day until Complete = C */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilComplete = "C";
+	/** Once a day until Scheduled end time = E */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime = "E";
+	/** Just One = J */
+	public static final String JP_MAILFREQUENCY_JustOne = "J";
+	/** Once a day Until Scheduled end time or Complete = M */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrComplete = "M";
+	/** Once a day Until Scheduled end time or Acknowledge = O */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrAcknowledge = "O";
+	/** Set Mail Frequency.
+		@param JP_MailFrequency 
+		How Many Times EMail Should be send
+	  */
+	public void setJP_MailFrequency (String JP_MailFrequency)
+	{
+
+		set_Value (COLUMNNAME_JP_MailFrequency, JP_MailFrequency);
+	}
+
+	/** Get Mail Frequency.
+		@return How Many Times EMail Should be send
+	  */
+	public String getJP_MailFrequency () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_MailFrequency);
+	}
+
+	/** Set Send Mail Next Time.
+		@param JP_SendMailNextTime Send Mail Next Time	  */
+	public void setJP_SendMailNextTime (Timestamp JP_SendMailNextTime)
+	{
+		set_Value (COLUMNNAME_JP_SendMailNextTime, JP_SendMailNextTime);
+	}
+
+	/** Get Send Mail Next Time.
+		@return Send Mail Next Time	  */
+	public Timestamp getJP_SendMailNextTime () 
+	{
+		return (Timestamp)get_Value(COLUMNNAME_JP_SendMailNextTime);
+	}
+
 	/** A = A */
 	public static final String JP_STATISTICS_CHOICE_A = "A";
 	/** B = B */
@@ -365,15 +409,15 @@ public class X_JP_ToDo_Reminder extends PO implements I_JP_ToDo_Reminder, I_Pers
 		return ii.intValue();
 	}
 
-	/** Set Remind Time.
-		@param JP_ToDo_RemindTime Remind Time	  */
+	/** Set Remind Start Time.
+		@param JP_ToDo_RemindTime Remind Start Time	  */
 	public void setJP_ToDo_RemindTime (Timestamp JP_ToDo_RemindTime)
 	{
 		set_Value (COLUMNNAME_JP_ToDo_RemindTime, JP_ToDo_RemindTime);
 	}
 
-	/** Get Remind Time.
-		@return Remind Time	  */
+	/** Get Remind Start Time.
+		@return Remind Start Time	  */
 	public Timestamp getJP_ToDo_RemindTime () 
 	{
 		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_RemindTime);

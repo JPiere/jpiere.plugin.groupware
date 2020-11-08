@@ -31,7 +31,7 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20201107L;
+	private static final long serialVersionUID = 20201108L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team_Reminder (Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
@@ -44,6 +44,8 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 // N
 			setJP_Mandatory_Statistics_Info (null);
 // NO
+			setJP_ToDo_RemindTarget (null);
+// AL
 			setJP_ToDo_RemindTime (new Timestamp( System.currentTimeMillis() ));
 // @#Date@
 			setJP_ToDo_ReminderType (null);
@@ -85,16 +87,16 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 
 	/** Until Acknowledge = A */
 	public static final String BROADCASTFREQUENCY_UntilAcknowledge = "A";
-	/** Until Expiration = E */
-	public static final String BROADCASTFREQUENCY_UntilExpiration = "E";
+	/** Until Scheduled end time = E */
+	public static final String BROADCASTFREQUENCY_UntilScheduledEndTime = "E";
 	/** Just Once = J */
 	public static final String BROADCASTFREQUENCY_JustOnce = "J";
-	/** Until Expiration or Acknowledge = O */
-	public static final String BROADCASTFREQUENCY_UntilExpirationOrAcknowledge = "O";
+	/** Until Scheduled end time or Acknowledge = O */
+	public static final String BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge = "O";
 	/** Until Complete = C */
 	public static final String BROADCASTFREQUENCY_UntilComplete = "C";
-	/** Until Expiration or Complete = M */
-	public static final String BROADCASTFREQUENCY_UntilExpirationOrComplete = "M";
+	/** Until Scheduled end time or Complete = M */
+	public static final String BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete = "M";
 	/** Set Broadcast Frequency.
 		@param BroadcastFrequency 
 		How Many Times Message Should be Broadcasted
@@ -151,6 +153,36 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 		return false;
 	}
 
+	/** Once a day until Acknowledge  = A */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilAcknowledge = "A";
+	/** Once a day until Complete = C */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilComplete = "C";
+	/** Once a day until Scheduled end time = E */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime = "E";
+	/** Just One = J */
+	public static final String JP_MAILFREQUENCY_JustOne = "J";
+	/** Once a day Until Scheduled end time or Complete = M */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrComplete = "M";
+	/** Once a day Until Scheduled end time or Acknowledge = O */
+	public static final String JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrAcknowledge = "O";
+	/** Set Mail Frequency.
+		@param JP_MailFrequency 
+		How Many Times EMail Should be send
+	  */
+	public void setJP_MailFrequency (String JP_MailFrequency)
+	{
+
+		set_Value (COLUMNNAME_JP_MailFrequency, JP_MailFrequency);
+	}
+
+	/** Get Mail Frequency.
+		@return How Many Times EMail Should be send
+	  */
+	public String getJP_MailFrequency () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_MailFrequency);
+	}
+
 	/** Yes / No = YN */
 	public static final String JP_MANDATORY_STATISTICS_INFO_YesNo = "YN";
 	/** Choice = CC */
@@ -176,15 +208,40 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 		return (String)get_Value(COLUMNNAME_JP_Mandatory_Statistics_Info);
 	}
 
-	/** Set Remind Time.
-		@param JP_ToDo_RemindTime Remind Time	  */
+	/** All User of Personal ToDo = AL */
+	public static final String JP_TODO_REMINDTARGET_AllUserOfPersonalToDo = "AL";
+	/** User of Not yet started Personal ToDo = NY */
+	public static final String JP_TODO_REMINDTARGET_UserOfNotYetStartedPersonalToDo = "NY";
+	/** User of Work in progress Personal ToDo = WP */
+	public static final String JP_TODO_REMINDTARGET_UserOfWorkInProgressPersonalToDo = "WP";
+	/** User of Completed Personal ToDo = CO */
+	public static final String JP_TODO_REMINDTARGET_UserOfCompletedPersonalToDo = "CO";
+	/** User of Uncomplete Personal ToDo = UN */
+	public static final String JP_TODO_REMINDTARGET_UserOfUncompletePersonalToDo = "UN";
+	/** Set Remind Target.
+		@param JP_ToDo_RemindTarget Remind Target	  */
+	public void setJP_ToDo_RemindTarget (String JP_ToDo_RemindTarget)
+	{
+
+		set_Value (COLUMNNAME_JP_ToDo_RemindTarget, JP_ToDo_RemindTarget);
+	}
+
+	/** Get Remind Target.
+		@return Remind Target	  */
+	public String getJP_ToDo_RemindTarget () 
+	{
+		return (String)get_Value(COLUMNNAME_JP_ToDo_RemindTarget);
+	}
+
+	/** Set Remind Start Time.
+		@param JP_ToDo_RemindTime Remind Start Time	  */
 	public void setJP_ToDo_RemindTime (Timestamp JP_ToDo_RemindTime)
 	{
 		set_Value (COLUMNNAME_JP_ToDo_RemindTime, JP_ToDo_RemindTime);
 	}
 
-	/** Get Remind Time.
-		@return Remind Time	  */
+	/** Get Remind Start Time.
+		@return Remind Start Time	  */
 	public Timestamp getJP_ToDo_RemindTime () 
 	{
 		return (Timestamp)get_Value(COLUMNNAME_JP_ToDo_RemindTime);

@@ -193,6 +193,28 @@ public interface I_JP_ToDo_Reminder
 	/** Get Confirmed	  */
 	public Timestamp getJP_Confirmed();
 
+    /** Column name JP_MailFrequency */
+    public static final String COLUMNNAME_JP_MailFrequency = "JP_MailFrequency";
+
+	/** Set Mail Frequency.
+	  * How Many Times EMail Should be send
+	  */
+	public void setJP_MailFrequency (String JP_MailFrequency);
+
+	/** Get Mail Frequency.
+	  * How Many Times EMail Should be send
+	  */
+	public String getJP_MailFrequency();
+
+    /** Column name JP_SendMailNextTime */
+    public static final String COLUMNNAME_JP_SendMailNextTime = "JP_SendMailNextTime";
+
+	/** Set Send Mail Next Time	  */
+	public void setJP_SendMailNextTime (Timestamp JP_SendMailNextTime);
+
+	/** Get Send Mail Next Time	  */
+	public Timestamp getJP_SendMailNextTime();
+
     /** Column name JP_Statistics_Choice */
     public static final String COLUMNNAME_JP_Statistics_Choice = "JP_Statistics_Choice";
 
@@ -243,10 +265,10 @@ public interface I_JP_ToDo_Reminder
     /** Column name JP_ToDo_RemindTime */
     public static final String COLUMNNAME_JP_ToDo_RemindTime = "JP_ToDo_RemindTime";
 
-	/** Set Remind Time	  */
+	/** Set Remind Start Time	  */
 	public void setJP_ToDo_RemindTime (Timestamp JP_ToDo_RemindTime);
 
-	/** Get Remind Time	  */
+	/** Get Remind Start Time	  */
 	public Timestamp getJP_ToDo_RemindTime();
 
     /** Column name JP_ToDo_ReminderType */

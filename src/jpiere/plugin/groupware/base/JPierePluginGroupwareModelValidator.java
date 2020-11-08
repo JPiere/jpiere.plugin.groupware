@@ -83,7 +83,7 @@ public class JPierePluginGroupwareModelValidator implements ModelValidator {
 						if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(reminder.getJP_ToDo_ReminderType()))
 						{
 							if(MToDoReminder.BROADCASTFREQUENCY_UntilAcknowledge.equals(reminder.getBroadcastFrequency())
-									|| MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(reminder.getBroadcastFrequency()))
+									|| MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(reminder.getBroadcastFrequency()))
 							{
 								reminder.setIsConfirmed(true);
 								reminder.saveEx();

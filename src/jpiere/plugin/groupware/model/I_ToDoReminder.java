@@ -108,10 +108,6 @@ public interface I_ToDoReminder {
 
 	public boolean delete(boolean force);
 
-	public boolean sendMailRemainder();
-
-	public boolean sendMessageRemainder();
-
 	public String getRemindMsg();
 
 	/** URL **/

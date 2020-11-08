@@ -32,7 +32,7 @@ public class X_JP_ToDo_Team extends PO implements I_JP_ToDo_Team, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20201107L;
+	private static final long serialVersionUID = 20201108L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team (Properties ctx, int JP_ToDo_Team_ID, String trxName)

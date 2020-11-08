@@ -196,6 +196,10 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		return parent;
 	}
 
+	public boolean setMailRemainder()
+	{
+		return false;
+	}
 
 	public boolean sendMailRemainder()
 	{
@@ -279,23 +283,13 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		return isOK;
 	}
 
-
-	public boolean sendMessageRemainder()
+	public boolean setMessageRemainder()
 	{
-		int AD_BroadcastMessage_ID = createMessage();
-		if(AD_BroadcastMessage_ID == 0)
-		{
-			return false;
-		}
-
-        this.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-        this.setIsSentReminderJP(true);
-        this.saveEx(get_TrxName());
-
-		return true;
+		return false;
 	}
 
-	public int createMessage()
+
+	public int sendMessageRemainder()
 	{
 		MBroadcastMessage bm = new MBroadcastMessage(getCtx(), 0, get_TrxName());
 		bm.setAD_Org_ID(getAD_Org_ID());
@@ -326,7 +320,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
 			bm.setExpiration(Timestamp.valueOf("9999-12-31 00:00:00"));
 
-		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpiration.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTime.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
 			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
@@ -335,12 +329,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_JustOnce);
 
-		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrComplete.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
 			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
 
-		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge.equals(getBroadcastFrequency()) ){
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge);
 			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());

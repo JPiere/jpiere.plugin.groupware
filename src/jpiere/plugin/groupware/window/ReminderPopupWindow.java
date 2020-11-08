@@ -1187,19 +1187,50 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 				if(i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
 				{
-					if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(i_Reminder.getJP_ToDo_ReminderType()))
+					if(p_IsPersonalToDo)//TODO
 					{
-						if(!i_Reminder.sendMailRemainder())
+						MToDoReminder todoReminder = (MToDoReminder)i_Reminder;
+						if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
 						{
-							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
-						}
-					}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(i_Reminder.getJP_ToDo_ReminderType())) {
+							if(!todoReminder.sendMailRemainder())
+							{
+								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+							}
 
-						if(!i_Reminder.sendMessageRemainder())
-						{
-							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+						}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(todoReminder.getJP_ToDo_ReminderType())) {
+
+							int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
+
+							if(AD_BroadcastMessage_ID <= 0 )
+							{
+								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+							}
+
+							todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+							todoReminder.setIsSentReminderJP(true);
+							todoReminder.saveEx();
 						}
+
+					}else {//TODO
+
+						MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
+						if(MToDoTeamReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
+						{
+							if(!todoReminder.sendMailRemainder())
+							{
+								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+							}
+						}else if(MToDoTeamReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(todoReminder.getJP_ToDo_ReminderType())) {
+
+							if(!todoReminder.sendMessageRemainder())
+							{
+								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+							}
+						}
+
 					}
+
+
 				}
 			}
 
