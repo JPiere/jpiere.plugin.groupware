@@ -602,7 +602,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 					zoomPersonalToDoReminderBtn.setImage(ThemeManager.getThemeResource("images/Zoom16.png"));
 				zoomPersonalToDoReminderBtn.setClass("btn-small");
 				zoomPersonalToDoReminderBtn.setName(BUTTON_NAME_ZOOM_PERSONALTODO_REMINDER);
-				zoomPersonalToDoReminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDo"));//TODO メッセージを変更する
+				zoomPersonalToDoReminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_PersonalToDoReminder"));//Zoom to Personal ToDo Reminder
 				zoomPersonalToDoReminderBtn.addEventListener(Events.ON_CLICK, this);
 			}
 			hlyaout.appendChild(zoomPersonalToDoReminderBtn);
@@ -619,7 +619,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				zoomTeamToDoReminderBtn.setImage(ThemeManager.getThemeResource("images/ZoomAcross16.png"));
 			zoomTeamToDoReminderBtn.setClass("btn-small");
 			zoomTeamToDoReminderBtn.setName(BUTTON_NAME_ZOOM_TEAMTODO_REMINDER);
-			zoomTeamToDoReminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDo"));//TODO メッセージを変更する
+			zoomTeamToDoReminderBtn.setTooltiptext(Msg.getMsg(ctx, "JP_Zoom_To_TeamToDoReminder"));//Zoom to Team ToDo Reminder
 			zoomTeamToDoReminderBtn.addEventListener(Events.ON_CLICK, this);
 		}
 
@@ -1025,7 +1025,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 	}
 
-	private boolean saveReminder()//TODO
+	private boolean saveReminder()
 	{
 
 		if(p_IsNewRecord)
@@ -1278,7 +1278,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 				if(i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
 				{
-					if(p_IsPersonalToDo)//TODO
+					if(p_IsPersonalToDo)
 					{
 						MToDoReminder todoReminder = (MToDoReminder)i_Reminder;
 						if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
@@ -1302,7 +1302,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 							todoReminder.saveEx();
 						}
 
-					}else {//TODO
+					}else {
 
 						MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
 						if(!todoReminder.createPersonalToDoRemainder())

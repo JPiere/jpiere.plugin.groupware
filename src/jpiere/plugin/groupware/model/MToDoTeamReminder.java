@@ -316,7 +316,7 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	}
 
 	@Override
-	public String getRemindMsg() //TODO
+	public String getRemindMsg()
 	{
 		return null;
 	}
