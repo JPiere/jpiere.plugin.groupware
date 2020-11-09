@@ -275,7 +275,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 		if(isOK)
 		{
-			this.setIsSentReminderJP(true);
+			setIsSentReminderJP(true);
 		}else {
 			m_RemindMsg = Msg.getMsg(getCtx(), "RequestActionEMailError");
 		}
@@ -292,7 +292,8 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 		setAD_UserMail_ID(userMail.getAD_UserMail_ID());
 		isProcessingReminder = true;
-		updateSendMailNextTime();
+		if(isOK)
+			updateSendMailNextTime();
 		saveEx(get_TrxName());
 		isProcessingReminder = false;
 

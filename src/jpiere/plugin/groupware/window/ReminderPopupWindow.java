@@ -267,9 +267,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				p_haveParentTeamToDoReminder = false;
 			}
 
-			if(i_Reminder.isSentReminderJP())
+			if(i_Reminder.isSentReminderJP() || i_Reminder.isProcessed() || !i_Reminder.isActive() )
 			{
 				p_IsUpdatable = false;
+
 			}else {
 
 				if(p_iToDo.getAD_User_ID() == p_Login_User_ID)
@@ -312,8 +313,6 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 			if(i_Reminder.isConfirmed())
 			{
-				p_IsUpdatebale_IsConfirmed = false;
-			}else if (!i_Reminder.isSentReminderJP()) {
 				p_IsUpdatebale_IsConfirmed = false;
 			}else {
 				p_IsUpdatebale_IsConfirmed = true;
