@@ -67,17 +67,17 @@ public class ToDoReminderMail extends SvrProcess {
 		if(m_Table == null)
 		{
 			createPersonalToDoRemainderFromTeamToDoReminder();
-			sendMailPersonalToDoRemainder();
+			sendMailFromPersonalToDoRemainder();
 
 		}else if(MToDoReminder.Table_Name.equals(m_Table.getTableName())) {
 
 			if(record_ID == 0)
 			{
-				sendMailPersonalToDoRemainder();
+				sendMailFromPersonalToDoRemainder();
 			}else {
 
 				MToDoReminder reminder = new MToDoReminder(getCtx(), record_ID, get_TrxName());
-				if(!sendMailPersonalToDoRemainder(reminder))
+				if(!sendMailFromPersonalToDoRemainder(reminder))
 				{
 					addLog(0, null, null, Msg.getMsg(getCtx(), "RequestActionEMailError")+ " : JP_ToDo_Reminder_ID = " + reminder.get_ID()
 									,MTable.getTable_ID(MToDoReminder.Table_Name), reminder.get_ID() );
@@ -96,26 +96,26 @@ public class ToDoReminderMail extends SvrProcess {
 		}else {
 
 			createPersonalToDoRemainderFromTeamToDoReminder();
-			sendMailPersonalToDoRemainder();
+			sendMailFromPersonalToDoRemainder();
 
 		}
 
 		return Msg.getMsg(getCtx(), "Success");
 	}
 
-	private boolean sendMailPersonalToDoRemainder() throws SQLException
+	private boolean sendMailFromPersonalToDoRemainder() throws SQLException
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
-		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
-														.append(" AND IsSentReminderJP = 'N' AND JP_ToDo_ReminderType = 'M' AND ")
-														.append(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
+		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? AND Processed = 'N' ")
+														.append(" AND JP_ToDo_ReminderType = 'M' AND IsActive = 'Y'  AND ")
+														.append(MToDoReminder.COLUMNNAME_JP_SendMailNextTime + " <= ? ");
 		List<MToDoReminder> list = new Query(getCtx(), MToDoReminder.Table_Name, whereClauseFinal.toString(), get_TrxName())
 										.setParameters(p_AD_Client_ID, remindTime)
 										.list();
 
 		for(MToDoReminder reminder : list)
 		{
-			if(!sendMailPersonalToDoRemainder(reminder))
+			if(!sendMailFromPersonalToDoRemainder(reminder))
 			{
 				addLog(Msg.getMsg(getCtx(), "RequestActionEMailError")+ " : JP_ToDo_Reminder_ID = " + reminder.get_ID());
 			}
@@ -126,7 +126,7 @@ public class ToDoReminderMail extends SvrProcess {
 		return true;
 	}
 
-	private boolean sendMailPersonalToDoRemainder(MToDoReminder reminder )
+	private boolean sendMailFromPersonalToDoRemainder(MToDoReminder reminder )
 	{
 		return reminder.sendMailRemainder();
 	}
@@ -134,8 +134,8 @@ public class ToDoReminderMail extends SvrProcess {
 	private boolean createPersonalToDoRemainderFromTeamToDoReminder() throws SQLException
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
-		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
-														.append(" AND IsSentReminderJP = 'N' AND JP_ToDo_ReminderType = 'M' AND ")
+		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? AND Processed = 'N' ")
+														.append(" AND IsSentReminderJP = 'N' AND JP_ToDo_ReminderType = 'M' AND IsActive = 'Y' AND ")
 														.append(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTime + " <= ? ");
 		List<MToDoTeamReminder> list = new Query(getCtx(), MToDoTeamReminder.Table_Name, whereClauseFinal.toString(), get_TrxName())
 										.setParameters(p_AD_Client_ID, remindTime)

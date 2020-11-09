@@ -16,16 +16,22 @@ package jpiere.plugin.groupware.model;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.adempiere.model.MBroadcastMessage;
+import org.compiere.model.I_C_NonBusinessDay;
 import org.compiere.model.MClient;
 import org.compiere.model.MMessage;
 import org.compiere.model.MUser;
 import org.compiere.model.MUserMail;
 import org.compiere.model.Query;
+import org.compiere.model.X_C_NonBusinessDay;
 import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
 import org.compiere.util.EMail;
@@ -271,12 +277,174 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		userMail.setIsDelivered(isOK ? "Y" : "N");
 		userMail.save(get_TrxName());
 
-		this.setAD_UserMail_ID(userMail.getAD_UserMail_ID());
-		this.isProcessingReminder = true;
-		this.saveEx(get_TrxName());
-		this.isProcessingReminder = false;
+		setAD_UserMail_ID(userMail.getAD_UserMail_ID());
+		isProcessingReminder = true;
+		updateSendMailNextTime();
+		saveEx(get_TrxName());
+		isProcessingReminder = false;
+
+		MToDoReminderLog reminderlog = new MToDoReminderLog(getCtx(), 0, get_TrxName());
+		reminderlog.setJP_ToDo_Reminder_ID(getJP_ToDo_Reminder_ID());
+
+		if(!isOK)
+		{
+			reminderlog.setIsError(true);
+			reminderlog.setDescription(m_RemindMsg);
+
+		}else {
+			reminderlog.setAD_UserMail_ID(userMail.getAD_UserMail_ID());
+			reminderlog.setIsError(false);
+		}
+
+		if(reminderlog.save(get_TrxName()))
+		{
+			if(get_TrxName() != null)
+				Trx.get(get_TrxName(), true).commit();
+		}
 
 		return isOK;
+	}
+
+	private void updateSendMailNextTime()//TODO
+	{
+		if(!MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(getJP_ToDo_ReminderType()))
+			return;
+
+		if(MToDoReminder.JP_MAILFREQUENCY_JustOne.equals(getJP_MailFrequency()))
+		{
+			setProcessed(true);
+			return ;
+		}
+
+		LocalDate date = LocalDate.now();
+		LocalTime time = getJP_ToDo_RemindTime().toLocalDateTime().toLocalTime();
+		Timestamp JP_SendMailNextTime = nextDay(date, time);
+
+		if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilAcknowledge.equals(getJP_MailFrequency()))
+		{
+			if(isConfirmed())
+			{
+				setProcessed(true);
+			}else {
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+			}
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilComplete.equals(getJP_MailFrequency())){
+
+			if(MToDo.JP_TODO_STATUS_Completed.equals(getParent().getJP_ToDo_Status()))
+			{
+				setProcessed(true);
+			}else {
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+			}
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime.equals(getJP_MailFrequency())){
+
+			Timestamp scheduledEndTime =	getParent().getJP_ToDo_ScheduledEndTime();
+			if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0)
+			{
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+
+			}else {
+				setProcessed(true);
+			}
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrAcknowledge.equals(getJP_MailFrequency())){
+
+			Timestamp scheduledEndTime =	getParent().getJP_ToDo_ScheduledEndTime();
+			if(isConfirmed())
+			{
+				setProcessed(true);
+			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+			}else {
+				setProcessed(true);
+			}
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrComplete.equals(getJP_MailFrequency())){
+
+			Timestamp scheduledEndTime =	getParent().getJP_ToDo_ScheduledEndTime();
+			if(MToDo.JP_TODO_STATUS_Completed.equals(getParent().getJP_ToDo_Status()))
+			{
+				setProcessed(true);
+			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+			}else {
+				setProcessed(true);
+			}
+		}
+	}
+
+	private Timestamp nextDay(LocalDate localDate, LocalTime localTime)
+	{
+		boolean isNonBusinessDay = true;
+		while(isNonBusinessDay)
+		{
+			localDate = localDate.plusDays(1);
+			isNonBusinessDay = checkNonBusinessDay(localDate);
+		}
+
+		return Timestamp.valueOf(LocalDateTime.of(localDate, localTime));
+	}
+
+	private boolean checkNonBusinessDay(LocalDate localDate)
+	{
+		MGroupwareUser m_GroupwareUser = MGroupwareUser.get(getCtx(), getParent().getAD_User_ID());
+		if(m_GroupwareUser == null)
+			return false;
+
+		StringBuilder whereClause = null;
+		StringBuilder orderClause = null;
+		ArrayList<Object> list_parameters  = new ArrayList<Object>();
+		Object[] parameters = null;
+
+		LocalDateTime toDayMin = LocalDateTime.of(localDate, LocalTime.MIN);
+		LocalDateTime toDayMax = LocalDateTime.of(localDate, LocalTime.MAX);
+
+		//AD_Client_ID
+		whereClause = new StringBuilder(" AD_Client_ID=? ");
+		list_parameters.add(Env.getAD_Client_ID(getCtx()));
+
+		//C_Calendar_ID
+		whereClause = whereClause.append(" AND C_Calendar_ID = ? ");
+		list_parameters.add(m_GroupwareUser.getJP_NonBusinessDayCalendar_ID());
+
+		//Date1
+		whereClause = whereClause.append(" AND Date1 <= ? AND Date1 >= ? AND IsActive='Y' ");
+		list_parameters.add(Timestamp.valueOf(toDayMax));
+		list_parameters.add(Timestamp.valueOf(toDayMin));
+
+		//C_Country_ID
+		if(m_GroupwareUser.getC_Country_ID() == 0)
+		{
+			whereClause = whereClause.append(" AND C_Country_ID IS NULL ");
+
+		}else {
+			whereClause = whereClause.append(" AND ( C_Country_ID IS NULL OR C_Country_ID = ? ) ");
+			list_parameters.add(m_GroupwareUser.getC_Country_ID());
+		}
+
+		parameters = list_parameters.toArray(new Object[list_parameters.size()]);
+		orderClause = new StringBuilder("Date1");
+
+
+		List<X_C_NonBusinessDay> list_NonBusinessDays = new Query(Env.getCtx(), I_C_NonBusinessDay.Table_Name, whereClause.toString(), null)
+											.setParameters(parameters)
+											.setOrderBy(orderClause.toString())
+											.list();
+
+		boolean isNonBusinessDay = false;
+		for(X_C_NonBusinessDay nonBusinessDay : list_NonBusinessDays )
+		{
+			if(nonBusinessDay.getDate1().toLocalDateTime().toLocalDate().compareTo(localDate) == 0 )
+			{
+				isNonBusinessDay = true;
+				break;
+			}
+		}
+
+		return isNonBusinessDay;
+
 	}
 
 
@@ -497,7 +665,6 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	{
 		return null;
 	}
-
 
 	public boolean stopBroadcastMessage()
 	{
