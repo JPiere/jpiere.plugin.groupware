@@ -157,7 +157,7 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	}
 
 
-	public boolean setMessageRemainder()
+	public boolean sendMessageRemainder()
 	{
 		getParent();
 		MToDo[] todoes = parent.getToDoes();
@@ -183,11 +183,6 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 		this.isProcessingReminder = false;
 
 		return true;
-	}
-
-	public boolean sendMessageRemainder()
-	{
-		return false;
 	}
 
 	@Override
