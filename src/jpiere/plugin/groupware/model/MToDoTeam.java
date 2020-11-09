@@ -63,6 +63,33 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 			return false;
 		}
 
+		//*** ToDo Status***//
+		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
+		{
+
+			if(MToDoTeam.JP_TODO_STATUS_NotYetStarted.equals(getJP_ToDo_Status()))
+			{
+				setJP_ToDo_StartTime(null);
+				setJP_ToDo_EndTime(null);
+				setProcessed(false);
+
+			}else if(MToDoTeam.JP_TODO_STATUS_WorkInProgress.equals(getJP_ToDo_Status())) {
+
+				if(getJP_ToDo_StartTime() == null)
+					setJP_ToDo_StartTime(new Timestamp(System.currentTimeMillis()));
+				setJP_ToDo_EndTime(null);
+				setProcessed(false);
+
+			}else if(MToDoTeam.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status())) {
+
+				if(getJP_ToDo_StartTime() == null)
+					setJP_ToDo_StartTime(new Timestamp(System.currentTimeMillis()));
+				setJP_ToDo_EndTime(new Timestamp(System.currentTimeMillis()));
+				setProcessed(true);
+
+			}
+		}
+
 		return true;
 
 	}
@@ -188,34 +215,6 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 			}
 		}
 
-
-		//*** Check ToDo Status***//
-		if(newRecord || is_ValueChanged(MToDoTeam.COLUMNNAME_JP_ToDo_Status))
-		{
-
-			if(MToDoTeam.JP_TODO_STATUS_NotYetStarted.equals(getJP_ToDo_Status()))
-			{
-				setJP_ToDo_StartTime(null);
-				setJP_ToDo_EndTime(null);
-				setProcessed(false);
-
-			}else if(MToDoTeam.JP_TODO_STATUS_WorkInProgress.equals(getJP_ToDo_Status())) {
-
-				if(getJP_ToDo_StartTime() == null)
-					setJP_ToDo_StartTime(new Timestamp(System.currentTimeMillis()));
-				setJP_ToDo_EndTime(null);
-				setProcessed(false);
-
-			}else if(MToDoTeam.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status())) {
-
-				if(getJP_ToDo_StartTime() == null)
-					setJP_ToDo_StartTime(new Timestamp(System.currentTimeMillis()));
-				setJP_ToDo_EndTime(new Timestamp(System.currentTimeMillis()));
-				setProcessed(true);
-
-			}
-		}
-
 		return null;
 	}
 
@@ -231,6 +230,7 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 					+ " , JP_ToDo_Type = ? "
 					+ " , Name = ? "
 					+ " , Description = ? "
+					+ " , URL = ? "
 					+ " , JP_ToDo_ScheduledStartDate = ? "
 					+ " , IsStartDateAllDayJP = ? "
 					+ " , JP_ToDo_ScheduledStartTime = ? "
@@ -249,6 +249,7 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 						, getJP_ToDo_Type()
 						, getName()
 						, getDescription()
+						, getURL()
 						, getJP_ToDo_ScheduledStartDate()
 						, isStartDateAllDayJP()? "Y":"N"
 						, getJP_ToDo_ScheduledStartTime()
@@ -277,6 +278,13 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 					reminders[i].saveEx(get_TrxName());
 				}
 
+				MToDo[] todoes = getToDoes(true);
+				for(int i = 0; i < todoes.length; i++)
+				{
+					todoes[i].setProcessed(true);
+					todoes[i].saveEx(get_TrxName());
+				}
+
 			}else {
 
 				if(MToDoTeam.JP_TODO_STATUS_Completed.equals(get_ValueOld(MToDoTeam.COLUMNNAME_JP_ToDo_Status)))
@@ -286,9 +294,14 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 					{
 						reminders[i].setProcessed(false);
 						reminders[i].saveEx(get_TrxName());
+					}
 
-
-					}//for
+					MToDo[] todoes = getToDoes(true);
+					for(int i = 0; i < todoes.length; i++)
+					{
+						todoes[i].setProcessed(false);
+						todoes[i].saveEx(get_TrxName());
+					}
 				}
 			}
 		}

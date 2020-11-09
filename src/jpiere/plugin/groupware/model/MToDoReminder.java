@@ -26,6 +26,7 @@ import org.compiere.model.MMessage;
 import org.compiere.model.MUser;
 import org.compiere.model.MUserMail;
 import org.compiere.model.Query;
+import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
 import org.compiere.util.EMail;
 import org.compiere.util.Env;
@@ -495,6 +496,113 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	public String getJP_ToDo_RemindTarget()
 	{
 		return null;
+	}
+
+
+	public boolean stopBroadcastMessage()
+	{
+		if(getAD_BroadcastMessage_ID() > 0)
+		{
+			MBroadcastMessage mbMessage = MBroadcastMessage.get(Env.getCtx(), getAD_BroadcastMessage_ID());
+			if (!mbMessage.isExpired() && mbMessage.isPublished())
+			{
+				String sql = "UPDATE AD_Note SET Processed='Y' WHERE AD_BroadcastMessage_ID = ?";
+				DB.executeUpdateEx(sql, new Object[] {getAD_BroadcastMessage_ID()}, null);
+				mbMessage.setProcessed(true);
+				mbMessage.setExpired(true);
+				mbMessage.saveEx();
+			}
+
+		}else {
+			return false;
+		}
+		return true;
+	}
+
+
+	public boolean processedReminder()
+	{
+		stopBroadcastMessage();
+		setProcessed(true);
+		saveEx(get_TrxName());
+
+		return true;
+	}
+
+
+	public boolean reprocessReminder()
+	{
+		if(isProcessed() == false)
+			return false;
+
+		if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(getBroadcastFrequency())
+				|| (MToDoReminder.BROADCASTFREQUENCY_UntilAcknowledge.equals(getBroadcastFrequency()) && !isConfirmed()) )
+		{
+			int AD_BroadcastMessage_ID = sendMessageRemainder();
+			setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+			setProcessed(false);
+			saveEx(get_TrxName());
+
+			return true;
+
+		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete.equals(getBroadcastFrequency())
+				|| MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTime.equals(getBroadcastFrequency())
+				|| (MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(getBroadcastFrequency()) && !isConfirmed()) 	) {
+
+			if(getParent().getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
+			{
+				int AD_BroadcastMessage_ID = sendMessageRemainder();
+				setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+				setProcessed(false);
+				saveEx(get_TrxName());
+
+				return true;
+			}
+
+		} else if(MToDoReminder.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency())) {
+
+			if(!isSentReminderJP())
+			{
+				setProcessed(false);
+				saveEx(get_TrxName());
+
+				return true;
+			}
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilComplete.equals(getJP_MailFrequency())
+				|| (MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilAcknowledge.equals(getJP_MailFrequency()) && !isConfirmed()) ) {
+
+			setProcessed(false);
+			saveEx(get_TrxName());
+
+			return true;
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrComplete.equals(getJP_MailFrequency())
+					|| MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime.equals(getJP_MailFrequency())
+					|| (MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrAcknowledge.equals(getJP_MailFrequency())&& !isConfirmed()) ) {
+
+			if(getParent().getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
+			{
+				setProcessed(false);
+				saveEx(get_TrxName());
+
+				return true;
+			}
+
+
+		}else if(MToDoReminder.JP_MAILFREQUENCY_JustOne.equals(getJP_MailFrequency())) {
+
+			if(!isSentReminderJP())
+			{
+				setProcessed(false);
+				saveEx(get_TrxName());
+
+				return true;
+			}
+
+		}
+
+		return false;
 	}
 
 }

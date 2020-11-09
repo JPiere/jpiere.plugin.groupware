@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.adempiere.model.MBroadcastMessage;
 import org.compiere.model.MMessage;
 import org.compiere.model.Query;
-import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.compiere.util.Util;
@@ -278,118 +276,93 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 		{
 			if(MToDo.JP_TODO_STATUS_Completed.equals(getJP_ToDo_Status()))
 			{
-				MToDoReminder[] reminders = getReminders();
-				for(int i = 0;  i < reminders.length; i++)
-				{
-					if(reminders[i].getAD_BroadcastMessage_ID() > 0)
-					{
-						MBroadcastMessage mbMessage = MBroadcastMessage.get(Env.getCtx(), reminders[i].getAD_BroadcastMessage_ID());
-						if (!mbMessage.isExpired() && mbMessage.isPublished())
-						{
-							String sql = "UPDATE AD_Note SET Processed='Y' WHERE AD_BroadcastMessage_ID = ?";
-							DB.executeUpdateEx(sql, new Object[] {getRecord_ID()}, null);
-							mbMessage.setProcessed(true);
-							mbMessage.setExpired(true);
-							mbMessage.saveEx();
-						}
-					}
+				processedReminders();
 
-					reminders[i].setProcessed(true);
-					reminders[i].saveEx(get_TrxName());
-				}
+			}else if(MToDo.JP_TODO_STATUS_Completed.equals(get_ValueOld(MToDo.COLUMNNAME_JP_ToDo_Status))){
 
-			}else {
-
-				//Reset Reminder
-				if(MToDo.JP_TODO_STATUS_Completed.equals(get_ValueOld(MToDo.COLUMNNAME_JP_ToDo_Status)))
-				{
-					MToDoReminder[] reminders = getReminders();
-					for(int i = 0;  i < reminders.length; i++)
-					{
-						reProcessReminder(reminders[i]);
-
-					}//for
-				}
+				reprocessReminders();
 			}
+
+		}else if (success && !newRecord && is_ValueChanged(MToDo.COLUMNNAME_Processed) ) {
+
+			if(isProcessed())
+			{
+				processedReminders();
+			}else{
+				reprocessReminders();
+			}
+
+		}
+
+		if(success && !newRecord && is_ValueChanged(MToDo.COLUMNNAME_IsActive))
+		{
+			if(isActive())
+			{
+				reactiveReminders();
+			}else {
+				inactiveReminders();
+			}
+
+		}
+
+		return true;
+
+	}//afterSave
+
+
+	public boolean reactiveReminders()
+	{
+		MToDoReminder[] reminders = getReminders(true);
+		for(int i = 0;  i < reminders.length; i++)
+		{
+			reminders[i].setIsActive(true);
+			if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(reminders[i].getJP_ToDo_ReminderType()))
+			{
+				int AD_BroadcastMessage_ID = reminders[i].sendMessageRemainder();
+				reminders[i].setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+				reminders[i].setIsSentReminderJP(true);
+			}
+
+			reminders[i].saveEx();
+		}
+
+		return true;
+	}
+
+	public boolean inactiveReminders()
+	{
+		MToDoReminder[] reminders = getReminders(true);
+		for(int i = 0;  i < reminders.length; i++)
+		{
+			reminders[i].setIsActive(false);
+			reminders[i].stopBroadcastMessage();
+			reminders[i].saveEx();
+		}
+
+		return true;
+	}
+
+	public boolean processedReminders()
+	{
+		MToDoReminder[] reminders = getReminders(true);
+		for(int i = 0;  i < reminders.length; i++)
+		{
+			reminders[i].processedReminder();
 		}
 
 		return true;
 	}
 
 
-	public boolean reProcessReminder(MToDoReminder reminder)
+	public boolean reprocessReminders()
 	{
-		if(reminder.isProcessed() == false)
-			return false;
-
-		if(MToDoReminder.BROADCASTFREQUENCY_UntilComplete.equals(reminder.getBroadcastFrequency())
-				|| (MToDoReminder.BROADCASTFREQUENCY_UntilAcknowledge.equals(reminder.getBroadcastFrequency()) && !reminder.isConfirmed()) )
+		MToDoReminder[] reminders = getReminders(true);
+		for(int i = 0;  i < reminders.length; i++)
 		{
-			int AD_BroadcastMessage_ID = reminder.sendMessageRemainder();
-			reminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-			reminder.setProcessed(false);
-			reminder.saveEx(get_TrxName());
-
-			return true;
-
-		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete.equals(reminder.getBroadcastFrequency())
-				|| MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTime.equals(reminder.getBroadcastFrequency())
-				|| (MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(reminder.getBroadcastFrequency()) && !reminder.isConfirmed()) 	) {
-
-			if(getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
-			{
-				int AD_BroadcastMessage_ID = reminder.sendMessageRemainder();
-				reminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-				reminder.setProcessed(false);
-				reminder.saveEx(get_TrxName());
-
-				return true;
-			}
-
-		} else if(MToDoReminder.BROADCASTFREQUENCY_JustOnce.equals(reminder.getBroadcastFrequency())) {
-
-			if(!reminder.isSentReminderJP())
-			{
-				reminder.setProcessed(false);
-				reminder.saveEx(get_TrxName());
-
-				return true;
-			}
-
-		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilComplete.equals(reminder.getJP_MailFrequency())
-				|| (MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilAcknowledge.equals(reminder.getJP_MailFrequency()) && !reminder.isConfirmed()) ) {
-
-			reminder.setProcessed(false);
-			reminder.saveEx(get_TrxName());
-
-			return true;
-
-		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrComplete.equals(reminder.getJP_MailFrequency())
-					|| MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime.equals(reminder.getJP_MailFrequency())
-					|| (MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrAcknowledge.equals(reminder.getJP_MailFrequency())&& !reminder.isConfirmed()) ) {
-
-			if(getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
-			{
-				reminder.setProcessed(false);
-				reminder.saveEx(get_TrxName());
-
-				return true;
-			}
-
-
-		}else if(MToDoReminder.JP_MAILFREQUENCY_JustOne.equals(reminder.getJP_MailFrequency())) {
-
-			if(!reminder.isSentReminderJP())
-			{
-				reminder.setProcessed(false);
-				reminder.saveEx(get_TrxName());
-
-				return true;
-			}
-
+			reminders[i].reprocessReminder();
 		}
 
-		return false;
+		return true;
 	}
 
 
