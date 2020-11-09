@@ -1305,23 +1305,12 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 					}else {//TODO
 
 						MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
-						if(MToDoTeamReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
+						if(!todoReminder.createPersonalToDoRemainder())
 						{
-							if(!todoReminder.sendMailRemainder())
-							{
-								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
-							}
-						}else if(MToDoTeamReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(todoReminder.getJP_ToDo_ReminderType())) {
-
-							if(!todoReminder.sendMessageRemainder())
-							{
-								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
-							}
+							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
 						}
 
 					}
-
-
 				}
 			}
 

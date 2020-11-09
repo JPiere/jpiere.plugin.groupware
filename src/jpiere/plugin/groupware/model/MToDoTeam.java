@@ -292,15 +292,21 @@ public class MToDoTeam extends X_JP_ToDo_Team implements I_ToDo{
 					MToDoTeamReminder[] reminders = getReminders();
 					for(int i = 0;  i < reminders.length; i++)
 					{
-						reminders[i].setProcessed(false);
-						reminders[i].saveEx(get_TrxName());
+						if(!reminders[i].isSentReminderJP())
+						{
+							reminders[i].setProcessed(false);
+							reminders[i].saveEx(get_TrxName());
+						}
 					}
 
 					MToDo[] todoes = getToDoes(true);
 					for(int i = 0; i < todoes.length; i++)
 					{
-						todoes[i].setProcessed(false);
-						todoes[i].saveEx(get_TrxName());
+						if(!MToDo.JP_TODO_STATUS_Completed.equals(todoes[i].getJP_ToDo_Status()))
+						{
+							todoes[i].setProcessed(false);
+							todoes[i].saveEx(get_TrxName());
+						}
 					}
 				}
 			}

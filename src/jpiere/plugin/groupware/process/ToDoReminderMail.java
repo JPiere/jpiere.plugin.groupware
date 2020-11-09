@@ -66,8 +66,8 @@ public class ToDoReminderMail extends SvrProcess {
 	{
 		if(m_Table == null)
 		{
+			createPersonalToDoRemainderFromTeamToDoReminder();
 			sendMailPersonalToDoRemainder();
-			sendMailTeamToDoRemainder();
 
 		}else if(MToDoReminder.Table_Name.equals(m_Table.getTableName())) {
 
@@ -88,15 +88,16 @@ public class ToDoReminderMail extends SvrProcess {
 
 			if(record_ID == 0)
 			{
-				sendMailTeamToDoRemainder();
+				createPersonalToDoRemainderFromTeamToDoReminder();
 			}else {
-				sendMailTeamToDoRemainder(new MToDoTeamReminder(getCtx(), record_ID, get_TrxName()));
+				createPersonalToDoRemainderFromTeamToDoReminder(new MToDoTeamReminder(getCtx(), record_ID, get_TrxName()));
 			}
 
 		}else {
 
+			createPersonalToDoRemainderFromTeamToDoReminder();
 			sendMailPersonalToDoRemainder();
-			sendMailTeamToDoRemainder();
+
 		}
 
 		return Msg.getMsg(getCtx(), "Success");
@@ -130,7 +131,7 @@ public class ToDoReminderMail extends SvrProcess {
 		return reminder.sendMailRemainder();
 	}
 
-	private boolean sendMailTeamToDoRemainder() throws SQLException
+	private boolean createPersonalToDoRemainderFromTeamToDoReminder() throws SQLException
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
@@ -142,15 +143,15 @@ public class ToDoReminderMail extends SvrProcess {
 
 		for(MToDoTeamReminder reminder : list)
 		{
-			sendMailTeamToDoRemainder(reminder);
+			createPersonalToDoRemainderFromTeamToDoReminder(reminder);
 			commitEx();
 		}
 
 		return true;
 	}
 
-	private boolean sendMailTeamToDoRemainder(MToDoTeamReminder reminder)
+	private boolean createPersonalToDoRemainderFromTeamToDoReminder(MToDoTeamReminder reminder)
 	{
-		return reminder.sendMailRemainder();
+		return reminder.createPersonalToDoRemainder();
 	}
 }

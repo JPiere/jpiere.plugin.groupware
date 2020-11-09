@@ -13,7 +13,6 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.process;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -66,8 +65,8 @@ public class ToDoReminderMessage extends SvrProcess {
 	{
 		if(m_Table == null)
 		{
+			createPersonalToDoRemainderFromTeamToDoReminder();
 			sendMessagePersonalToDoRemainder();
-			sendMessageTeamToDoRemainder();
 
 		}else if(MToDoReminder.Table_Name.equals(m_Table.getTableName())) {
 
@@ -82,21 +81,22 @@ public class ToDoReminderMessage extends SvrProcess {
 
 			if(record_ID == 0)
 			{
-				sendMessageTeamToDoRemainder();
+				createPersonalToDoRemainderFromTeamToDoReminder();
 			}else {
-				sendMessageTeamToDoRemainder(new MToDoTeamReminder(getCtx(), record_ID, get_TrxName()));
+				createPersonalToDoRemainderFromTeamToDoReminder(new MToDoTeamReminder(getCtx(), record_ID, get_TrxName()));
 			}
 
 		}else {
 
+			createPersonalToDoRemainderFromTeamToDoReminder();
 			sendMessagePersonalToDoRemainder();
-			sendMessageTeamToDoRemainder();
+
 		}
 
 		return Msg.getMsg(getCtx(), "Success");
 	}
 
-	private boolean sendMessagePersonalToDoRemainder() throws SQLException
+	private boolean sendMessagePersonalToDoRemainder() throws Exception
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
@@ -115,7 +115,7 @@ public class ToDoReminderMessage extends SvrProcess {
 		return true;
 	}
 
-	private boolean sendMessagePersonalToDoRemainder(MToDoReminder todoReminder )
+	private boolean sendMessagePersonalToDoRemainder(MToDoReminder todoReminder) throws Exception
 	{
 		int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
 		todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
@@ -131,7 +131,7 @@ public class ToDoReminderMessage extends SvrProcess {
 
 	}
 
-	private boolean sendMessageTeamToDoRemainder() throws SQLException
+	private boolean createPersonalToDoRemainderFromTeamToDoReminder() throws Exception
 	{
 		Timestamp remindTime = Timestamp.valueOf(now.plusMinutes(plusMin));
 		StringBuilder whereClauseFinal = new StringBuilder(" AD_Client_ID = ? ")
@@ -143,15 +143,15 @@ public class ToDoReminderMessage extends SvrProcess {
 
 		for(MToDoTeamReminder reminder : list)
 		{
-			sendMessageTeamToDoRemainder(reminder);
+			createPersonalToDoRemainderFromTeamToDoReminder(reminder);
 			commitEx();
 		}
 
 		return true;
 	}
 
-	private boolean sendMessageTeamToDoRemainder(MToDoTeamReminder reminder)
+	private boolean createPersonalToDoRemainderFromTeamToDoReminder(MToDoTeamReminder reminder) throws Exception
 	{
-		return reminder.sendMessageRemainder();
+		return reminder.createPersonalToDoRemainder();
 	}
 }

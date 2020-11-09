@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.Properties;
 
 import org.compiere.model.MMessage;
+import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Util;
 
@@ -80,7 +81,6 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	}
 
 
-
 	@Override
 	protected boolean beforeDelete()
 	{
@@ -93,6 +93,7 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 
 		return true;
 	}
+
 
 	public String beforeDeletePreCheck()
 	{
@@ -113,6 +114,29 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	}
 
 
+	@Override
+	protected boolean afterSave(boolean newRecord, boolean success)
+	{
+		if(!newRecord && success)
+		{
+			String sql = "UPDATE JP_ToDo_Reminder t"
+					+ " SET "
+					+ " Description = ? "
+					+ " , URL = ? "
+					+ "WHERE JP_ToDo_Team_Reminder_ID= ? ";
+
+				Object[] para = {
+						getDescription()
+						, getURL()
+						,getJP_ToDo_Team_Reminder_ID()
+						};
+
+				DB.executeUpdate(sql, para, false, get_TrxName());
+		}
+
+		return true;
+	}
+
 
 	private MToDoTeam getParent()
 	{
@@ -123,67 +147,71 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	}
 
 
-	public boolean setMailRemainder()
+	public boolean createPersonalToDoRemainder()
 	{
 		getParent();
-		MToDo[] todoes = parent.getToDoes();
+		MToDo[] todoes = parent.getToDoes(true);
 
 		MToDoReminder todoReminder = null;
 		for(int i = 0; i < todoes.length; i++)
 		{
+			if(MToDoTeamReminder.JP_TODO_REMINDTARGET_AllUserOfPersonalToDo.equals(getJP_ToDo_RemindTarget()))
+			{
+				;
+
+			}else if(MToDoTeamReminder.JP_TODO_REMINDTARGET_UserOfUncompletePersonalToDo.equals(getJP_ToDo_RemindTarget())) {
+
+				if(MToDo.JP_TODO_STATUS_Completed.equals(todoes[i].getJP_ToDo_Status()))
+				{
+					continue;
+				}
+
+			}else if(MToDoTeamReminder.JP_TODO_REMINDTARGET_UserOfNotYetStartedPersonalToDo.equals(getJP_ToDo_RemindTarget())) {
+
+				if(!MToDo.JP_TODO_STATUS_NotYetStarted.equals(todoes[i].getJP_ToDo_Status()))
+				{
+					continue;
+				}
+
+
+			}else if(MToDoTeamReminder.JP_TODO_REMINDTARGET_UserOfWorkInProgressPersonalToDo.equals(getJP_ToDo_RemindTarget())) {
+
+				if(!MToDo.JP_TODO_STATUS_WorkInProgress.equals(todoes[i].getJP_ToDo_Status()))
+				{
+					continue;
+				}
+
+			}else if(MToDoTeamReminder.JP_TODO_REMINDTARGET_UserOfCompletedPersonalToDo.equals(getJP_ToDo_RemindTarget())) {
+
+				if(!MToDo.JP_TODO_STATUS_Completed.equals(todoes[i].getJP_ToDo_Status()))
+				{
+					continue;
+				}
+			}
+
 			todoReminder = new MToDoReminder(getCtx(), 0, get_TrxName());
 			todoReminder.setAD_Org_ID(todoes[i].getAD_Org_ID());
 			todoReminder.setJP_ToDo_ID(todoes[i].getJP_ToDo_ID());
 			todoReminder.setJP_ToDo_Team_Reminder_ID(getJP_ToDo_Team_Reminder_ID());
-			todoReminder.setJP_ToDo_ReminderType(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail);
+			todoReminder.setJP_ToDo_ReminderType(getJP_ToDo_ReminderType());
 			todoReminder.setJP_ToDo_RemindTime(getJP_ToDo_RemindTime());
+			todoReminder.setJP_MailFrequency(getJP_MailFrequency());
+			todoReminder.setBroadcastFrequency(getBroadcastFrequency());
 			todoReminder.setDescription(getDescription());
-			todoReminder.sendMailRemainder();
+			todoReminder.setURL(getURL());
+			todoReminder.setJP_SendMailNextTime(getJP_ToDo_RemindTime());
 			todoReminder.save(get_TrxName());
 		}
 
-		this.isProcessingReminder = true;
-		this.setIsSentReminderJP(true);
-		this.setProcessed(true);
-		this.saveEx(get_TrxName());
-		this.isProcessingReminder = false;
+		isProcessingReminder = true;
+		setIsSentReminderJP(true);
+		setProcessed(true);
+		saveEx(get_TrxName());
+		isProcessingReminder = false;
 
 		return true;
 	}
 
-	public boolean sendMailRemainder()
-	{
-		return false;
-	}
-
-
-	public boolean sendMessageRemainder()
-	{
-		getParent();
-		MToDo[] todoes = parent.getToDoes();
-
-		MToDoReminder todoReminder = null;
-		for(int i = 0; i < todoes.length; i++)
-		{
-			todoReminder = new MToDoReminder(getCtx(), 0, get_TrxName());
-			todoReminder.setAD_Org_ID(todoes[i].getAD_Org_ID());
-			todoReminder.setJP_ToDo_ID(todoes[i].getJP_ToDo_ID());
-			todoReminder.setJP_ToDo_Team_Reminder_ID(getJP_ToDo_Team_Reminder_ID());
-			todoReminder.setJP_ToDo_ReminderType(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail);//TODO
-			todoReminder.setJP_ToDo_RemindTime(getJP_ToDo_RemindTime());
-			todoReminder.setDescription(getDescription());
-			todoReminder.sendMessageRemainder();
-			todoReminder.save(get_TrxName());
-		}
-
-		this.isProcessingReminder = true;
-		this.setIsSentReminderJP(true);
-		//this.setProcessed(true);
-		this.saveEx(get_TrxName());
-		this.isProcessingReminder = false;
-
-		return true;
-	}
 
 	@Override
 	public void setIsConfirmed(boolean IsConfirmed)
