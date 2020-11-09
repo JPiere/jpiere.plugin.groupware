@@ -81,11 +81,24 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			return false;
 		}
 
+		if(newRecord)
+		{
+			setIsConfirmed(false);
+			setJP_Confirmed(null);
+		}
+
 		if(!newRecord && is_ValueChanged(MToDoReminder.COLUMNNAME_IsConfirmed) && isConfirmed() && getJP_Confirmed() == null)
 		{
 			setJP_Confirmed(Timestamp.valueOf(LocalDateTime.now()));
 		}
 
+		if(newRecord || (is_ValueChanged(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime) && !isSentReminderJP()) )
+		{
+			if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(getJP_ToDo_ReminderType()))
+				setJP_SendMailNextTime(getJP_ToDo_RemindTime());
+			else
+				setJP_SendMailNextTime(null);
+		}
 
 		return true;
 	}
