@@ -938,8 +938,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 			}else if(BUTTON_NAME_SAVE.equals(btnName)){
 
-				if(saveReminder())
-					this.onClose();
+				saveReminder();
 
 			}else if(BUTTON_NAME_DELETE.equals(btnName)){
 
@@ -1271,48 +1270,6 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			if (log.isLoggable(Level.FINE)) log.fine("JP_ToDo_ID=" + p_iToDo.get_ID());
 
 			p_IsDirty = false;
-
-			if(!i_Reminder.isSentReminderJP())
-			{
-				Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-				if(i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
-				{
-					if(p_IsPersonalToDo)
-					{
-						MToDoReminder todoReminder = (MToDoReminder)i_Reminder;
-						if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
-						{
-							if(!todoReminder.sendMailRemainder())
-							{
-								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
-							}
-
-						}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(todoReminder.getJP_ToDo_ReminderType())) {
-
-							int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
-
-							if(AD_BroadcastMessage_ID <= 0 )
-							{
-								FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
-							}
-
-							todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-							todoReminder.setIsSentReminderJP(true);
-							todoReminder.saveEx();
-						}
-
-					}else {
-
-						MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
-						if(!todoReminder.createPersonalToDoRemainder())
-						{
-							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
-						}
-
-					}
-				}
-			}
-
 			updateControlParameter();
 			updateEditorValue();
 			updateEditorStatus();
@@ -1331,6 +1288,53 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private boolean deleteReminder()
 	{
 		return i_Reminder.delete(false);
+	}
+
+
+	private boolean sendReminder()
+	{
+		if(!i_Reminder.isSentReminderJP())
+		{
+			Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+			if(i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
+			{
+				if(p_IsPersonalToDo)
+				{
+					MToDoReminder todoReminder = (MToDoReminder)i_Reminder;
+					if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
+					{
+						if(!todoReminder.sendMailRemainder())
+						{
+							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+						}
+
+					}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(todoReminder.getJP_ToDo_ReminderType())) {
+
+						int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
+
+						if(AD_BroadcastMessage_ID <= 0 )
+						{
+							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+						}
+
+						todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+						todoReminder.setIsSentReminderJP(true);
+						todoReminder.saveEx();
+					}
+
+				}else {
+
+					MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
+					if(!todoReminder.createPersonalToDoRemainder())
+					{
+						FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+					}
+
+				}
+			}
+		}
+
+		return true;
 	}
 
     @Override
@@ -1353,6 +1357,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 						;
 					}
 
+					sendReminder();
+
 				   	if(p_TodoPopupWindow != null)
 			    		p_TodoPopupWindow.hideBusyMask();
 			    	else
@@ -1363,6 +1369,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			});//FDialog.
 
 		}else {
+
+			sendReminder();
 
 		   	if(p_TodoPopupWindow != null)
 	    		p_TodoPopupWindow.hideBusyMask();
