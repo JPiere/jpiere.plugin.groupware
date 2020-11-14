@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.adempiere.util.Callback;
@@ -1364,7 +1365,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			}else if(BUTTON_NAME_SAVE.equals(btnName)){
 
-				saveToDo();
+				if(p_IsDirty)
+					saveToDo();
 
 			}else if(BUTTON_NAME_PROCESS.equals(btnName)){
 
@@ -1464,8 +1466,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				reminderPopup.close();
 
 			}else if(BUTTON_UPDATE_REMINDER.equals(btnName)) {
-
-				saveToDo();
 
 				int reminder_ID = 0;
 				if(p_IsPersonalToDo)
@@ -1700,7 +1700,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 
 		I_ToDo db_ToDo = null;
-		boolean isOnlyUpdateToDoStatus = true;
 
 		if(p_IsNewRecord)
 		{
@@ -1787,8 +1786,22 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		HashMap<String, Boolean> valueChangeFieldMap = new HashMap<String, Boolean> ();
 
+
+		//Check JP_ToDo_Status
+		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
+		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
+		{
+			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Status);
+			throw new WrongValueException(editor.getComponent(), msg);
+
+		}else {
+			p_iToDo.setJP_ToDo_Status(editor.getValue().toString());
+		}
+		boolean isOnlyUpdateToDoStatus = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Status);
+
+
 		//Check AD_Org_ID
-		WEditor editor = map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID);
+		editor = map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID);
 		if(editor.getValue() == null)
 		{
 			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_AD_Org_ID);
@@ -1797,10 +1810,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setAD_Org_ID((Integer)editor.getValue());
 		}
-		final boolean isChanged_AD_Org_ID = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_AD_Org_ID);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_AD_Org_ID, isChanged_AD_Org_ID);
-		if(isChanged_AD_Org_ID)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_AD_Org_ID, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_AD_Org_ID));
 
 
 		//Check AD_User_ID
@@ -1813,10 +1823,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setAD_User_ID((Integer)editor.getValue());
 		}
-		final boolean isChanged_AD_User_ID = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_AD_User_ID);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_AD_User_ID, isChanged_AD_User_ID);
-		if(isChanged_AD_User_ID)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_AD_User_ID, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_AD_User_ID));
 
 
 		//Check JP_ToDo_Type
@@ -1829,10 +1836,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setJP_ToDo_Type((String)editor.getValue());
 		}
-		final boolean isChanged_JP_ToDo_Type = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Type);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_ToDo_Type, isChanged_JP_ToDo_Type);
-		if(isChanged_JP_ToDo_Type)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_ToDo_Type, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Type));
 
 
 		//Check JP_ToDo_Category_ID
@@ -1843,10 +1847,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setJP_ToDo_Category_ID((Integer)editor.getValue());
 		}
-		final boolean isChanged_JP_ToDo_Category_ID = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Category_ID);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, isChanged_JP_ToDo_Category_ID);
-		if(isChanged_JP_ToDo_Category_ID)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_ToDo_Category_ID));
 
 
 		//Check Name
@@ -1859,10 +1860,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setName((String)editor.getValue());
 		}
-		final boolean isChanged_Name = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Name);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_Name, isChanged_Name);
-		if(isChanged_Name)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_Name, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Name));
 
 
 		//Check Description
@@ -1873,10 +1871,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setDescription(editor.getValue().toString());
 		}
-		final boolean isChanged_Description = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Description);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_Description, isChanged_Description);
-		if(isChanged_Description)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_Description, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Description));
 
 
 		//Check URL
@@ -1887,14 +1882,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}else {
 			p_iToDo.setURL(editor.getValue().toString());
 		}
-		final boolean isChanged_URL = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_URL);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_URL, isChanged_URL);
-		if(isChanged_URL)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_URL, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_URL));
 
 
 		//Check Comments
-		boolean isChanged_Comments_temp = false;
 		if(p_IsPersonalToDo)
 		{
 			editor = map_Editor.get(MToDo.COLUMNNAME_Comments);
@@ -1904,16 +1895,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setComments(editor.getValue().toString());
 			}
-			isChanged_Comments_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Comments);
+			valueChangeFieldMap.put(MToDo.COLUMNNAME_Comments,  p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_Comments));
 		}
-		final boolean isChanged_Comments = isChanged_Comments_temp;
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_Comments, isChanged_Comments);
-		if(isChanged_Comments)
-			isOnlyUpdateToDoStatus= false;
 
 
 		//Check JP_Team_ID
-		boolean isChanged_JP_Team_ID_temp = false;
 		if(!p_IsPersonalToDo)
 		{
 			editor = map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID);
@@ -1923,12 +1909,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Team_ID((Integer)editor.getValue());
 			}
-			isChanged_JP_Team_ID_temp = p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Team_ID);
+			valueChangeFieldMap.put(MToDoTeam.COLUMNNAME_JP_Team_ID, p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Team_ID));
 		}
-		final boolean isChanged_JP_Team_ID = isChanged_JP_Team_ID_temp;
-		valueChangeFieldMap.put(MToDoTeam.COLUMNNAME_JP_Team_ID, isChanged_JP_Team_ID);
-		if(isChanged_JP_Team_ID)
-			isOnlyUpdateToDoStatus= false;
 
 
 		//Check JP_ToDo_ScheduledStartDate & Time
@@ -2046,46 +2028,17 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			p_iToDo.setJP_ToDo_ScheduledEndTime(null);
 		}
 
-
-		final boolean isChanged_IsStartDateAllDayJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsStartDateAllDayJP);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_IsStartDateAllDayJP, isChanged_IsStartDateAllDayJP);
-		if(isChanged_IsStartDateAllDayJP)
-			isOnlyUpdateToDoStatus= false;
-
-		final boolean isChanged_IsEndDateAllDayJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsEndDateAllDayJP);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_IsEndDateAllDayJP, isChanged_IsEndDateAllDayJP);
-		if(isChanged_IsEndDateAllDayJP)
-			isOnlyUpdateToDoStatus= false;
-
-
-		//Check JP_ToDo_Status
-		editor = map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status);
-		if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
-		{
-			String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDo.COLUMNNAME_JP_ToDo_Status);
-			throw new WrongValueException(editor.getComponent(), msg);
-
-		}else {
-			p_iToDo.setJP_ToDo_Status(editor.getValue().toString());
-		}
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_IsStartDateAllDayJP, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsStartDateAllDayJP));
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_IsEndDateAllDayJP, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsEndDateAllDayJP));
 
 
 		//Set IsOpenToDoJP
 		editor = map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP);
 		p_iToDo.setIsOpenToDoJP(((boolean)editor.getValue()));
-		final boolean isChanged_IsOpenToDoJP = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsOpenToDoJP);
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_IsOpenToDoJP, isChanged_IsOpenToDoJP);
-		if(isChanged_IsOpenToDoJP)
-			isOnlyUpdateToDoStatus= false;
+		valueChangeFieldMap.put(MToDo.COLUMNNAME_IsOpenToDoJP, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_IsOpenToDoJP));
 
 
 		//Check Statistics Info
-		boolean isChanged_JP_Statistics_YesNo_temp = false;
-		boolean isChanged_JP_Statistics_Choice_temp = false;
-		boolean isChanged_JP_Statistics_DateAndTime_temp = false;
-		boolean isChanged_JP_Statistics_Number_temp = false;
-		boolean isChanged_JP_Mandatory_Statistics_Info_temp = false;
-
 		if(p_IsPersonalToDo)
 		{
 			//Set JP_Statistics_YesNo
@@ -2096,7 +2049,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Statistics_YesNo(((String)editor.getValue()));
 			}
-			isChanged_JP_Statistics_YesNo_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_YesNo);
+			valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_YesNo));
 
 			//Set JP_Statistics_Choice
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice);
@@ -2106,7 +2059,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Statistics_Choice(((String)editor.getValue()));
 			}
-			isChanged_JP_Statistics_Choice_temp =p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Choice);
+			valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_Choice, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Choice));
 
 			//Set JP_Statistics_DateAndTime
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
@@ -2116,7 +2069,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Statistics_DateAndTime(((Timestamp)editor.getValue()));
 			}
-			isChanged_JP_Statistics_DateAndTime_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_DateAndTime);
+			valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_DateAndTime));
 
 			//Set JP_Statistics_Number
 			editor = map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number);
@@ -2126,7 +2079,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Statistics_Number(((BigDecimal)editor.getValue()));
 			}
-			isChanged_JP_Statistics_Number_temp = p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Number);
+			valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_Number, p_iToDo.is_ValueChanged(MToDo.COLUMNNAME_JP_Statistics_Number));
 
 		}else {
 
@@ -2139,35 +2092,23 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			}else {
 				p_iToDo.setJP_Mandatory_Statistics_Info(editor.getValue().toString());
 			}
-
-			isChanged_JP_Mandatory_Statistics_Info_temp = p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info);
+			valueChangeFieldMap.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, p_iToDo.is_ValueChanged(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info));
 		}
 
-		final boolean isChanged_JP_Statistics_YesNo = isChanged_JP_Statistics_YesNo_temp;
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, isChanged_JP_Statistics_YesNo);
-		if(isChanged_JP_Statistics_YesNo)
-			isOnlyUpdateToDoStatus= false;
 
-		final boolean isChanged_JP_Statistics_Choice = isChanged_JP_Statistics_Choice_temp;
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_Choice, isChanged_JP_Statistics_Choice);
-		if(isChanged_JP_Statistics_Choice)
-			isOnlyUpdateToDoStatus= false;
-
-		final boolean isChanged_JP_Statistics_DateAndTime = isChanged_JP_Statistics_DateAndTime_temp;
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, isChanged_JP_Statistics_DateAndTime);
-		if(isChanged_JP_Statistics_DateAndTime)
-			isOnlyUpdateToDoStatus= false;
-
-		final boolean isChanged_JP_Statistics_Number = isChanged_JP_Statistics_Number_temp;
-		valueChangeFieldMap.put(MToDo.COLUMNNAME_JP_Statistics_Number, isChanged_JP_Statistics_Number);
-		if(isChanged_JP_Statistics_Number)
-			isOnlyUpdateToDoStatus= false;
-
-		final boolean isChanged_JP_Mandatory_Statistics_Info = isChanged_JP_Mandatory_Statistics_Info_temp;
-		valueChangeFieldMap.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, isChanged_JP_Mandatory_Statistics_Info);
-		if(isChanged_JP_Mandatory_Statistics_Info)
-			isOnlyUpdateToDoStatus= false;
-
+		//Check only update ToDo Status
+		if(isOnlyUpdateToDoStatus)
+		{
+			Set<String> keys = valueChangeFieldMap.keySet();
+			for(String key: keys)
+			{
+				if(valueChangeFieldMap.get(key))
+				{
+					isOnlyUpdateToDoStatus = false;
+					break;
+				}
+			}
+		}
 
 		//Check BeforeSave()
 		String msg = p_iToDo.beforeSavePreCheck(true);
