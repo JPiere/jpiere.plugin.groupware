@@ -1902,7 +1902,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			refreshWest(todo.getJP_ToDo_Type());
 
 
-		//Update Reminder
+		//Adjust Remind Time of Reminder
 		if(todo instanceof MToDo)
 		{
 			MToDo m_ToDo =	(MToDo)todo;
