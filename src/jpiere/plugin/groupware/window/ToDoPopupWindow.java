@@ -1446,7 +1446,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					createReminderPopupWindow();
 				}
 
-			}else if(BUTTON_NEW_REMINDER.equals(btnName)) {//TODO
+			}else if(BUTTON_NEW_REMINDER.equals(btnName)) {
 
 				ReminderPopupWindow rpw = new ReminderPopupWindow(this, p_iToDo, 0);
 				this.appendChild(rpw);
@@ -1463,7 +1463,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				reminderPopup.close();
 
-			}else if(BUTTON_UPDATE_REMINDER.equals(btnName)) {//TODO
+			}else if(BUTTON_UPDATE_REMINDER.equals(btnName)) {
 
 				saveToDo();
 
@@ -2269,7 +2269,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 										if(!todo.save())
 										{
-											;//TODO エラー処理
+											FDialog.error(0, null, "SaveError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+											break;
 										}
 									}
 
@@ -2353,7 +2354,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 										if(!todo.save())
 										{
-											;//TODO エラー処理
+											FDialog.error(0, null, "SaveError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+											break ;
 										}
 									}
 
@@ -2405,7 +2407,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 								{
 									if(!todo.delete(false))
 									{
-										;//TODO エラー処理
+										FDialog.error(0, null, "DeleteError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+										break ;
 									}
 								}
 
@@ -2439,7 +2442,8 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 									if(!todo.delete(false))
 									{
-										;//TODO エラー処理
+										FDialog.error(0, null, "DeleteError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+										break ;
 									}
 								}
 
