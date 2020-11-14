@@ -98,7 +98,9 @@ import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MTeamMember;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoCategory;
+import jpiere.plugin.groupware.model.MToDoReminder;
 import jpiere.plugin.groupware.model.MToDoTeam;
+import jpiere.plugin.groupware.model.MToDoTeamReminder;
 import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 import jpiere.plugin.groupware.window.I_ToDoCalendarEventReceiver;
 import jpiere.plugin.groupware.window.I_ToDoPopupwindowCaller;
@@ -1234,7 +1236,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			resetSelectedTabCalendarModel();
 
-		}else if (MGroupwareUser.COLUMNNAME_IsToDoMouseoverPopupJP.equals(name)) {//TODO
+		}else if (MGroupwareUser.COLUMNNAME_IsToDoMouseoverPopupJP.equals(name)) {
 
 			p_IsToDoMouseoverPopup = (boolean)value;
 			editor_IsToDoMouseoverPopup.setValue(value);
@@ -1803,201 +1805,332 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		}else if(CalendarsEvent.ON_EVENT_UPDATE.equals(eventName)){
 
-			if(event instanceof CalendarsEvent)	//Drag & Drop
+			if(event instanceof CalendarsEvent)//Drag & Drop
 			{
-				CalendarsEvent calEvent = (CalendarsEvent) event;
-				ToDoCalendarEvent todoEvent = (ToDoCalendarEvent) calEvent.getCalendarEvent();
-				I_ToDo todo = todoEvent.getToDo();
-				HashMap<Integer, ToDoCalendarEvent> events = null;
-				Timestamp old_ScheduledStartTime = todo.getJP_ToDo_ScheduledStartTime();
-				Timestamp new_ScheduledStartTime = null;
-
-				Timestamp old_ScheduledEndTime = todo.getJP_ToDo_ScheduledEndTime();
-				Timestamp new_ScheduledEndTime = null;
-
-				if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
-				{
-					Timestamp startTime = new Timestamp(calEvent.getBeginDate().getTime());
-					todo.setJP_ToDo_ScheduledStartDate(startTime);
-					todo.setJP_ToDo_ScheduledStartTime(startTime);
-					new_ScheduledStartTime = startTime;
-
-					//Adjust
-					Timestamp endTime = new Timestamp(calEvent.getEndDate().getTime());
-					Timestamp schesuledEndTime = todo.getJP_ToDo_ScheduledEndTime();
-					if(schesuledEndTime.toLocalDateTime().toLocalTime() == LocalTime.MIN)
-					{
-						endTime = Timestamp.valueOf(LocalDateTime.of(endTime.toLocalDateTime().toLocalDate(), LocalTime.MIN));
-					}
-
-					todo.setJP_ToDo_ScheduledEndDate(endTime);
-					todo.setJP_ToDo_ScheduledEndTime(endTime);
-					new_ScheduledEndTime = endTime;
-
-					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
-					{
-						if(p_AD_User_ID == todo.getAD_User_ID())
-						{
-							events = map_ToDoCalendarEvent_User.get(p_AD_User_ID);
-						}else {
-							events = map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID());
-						}
-
-					}else {
-
-						events = map_ToDoCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
-
-					}
-
-				}else if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
-
-					todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getBeginDate().getTime()));
-					todo.setJP_ToDo_ScheduledEndDate(todo.getJP_ToDo_ScheduledEndTime());
-					todo.setJP_ToDo_ScheduledStartTime(todo.getJP_ToDo_ScheduledEndTime());
-					todo.setJP_ToDo_ScheduledStartDate(todo.getJP_ToDo_ScheduledEndTime());
-					new_ScheduledStartTime = todo.getJP_ToDo_ScheduledEndTime();
-					new_ScheduledEndTime = todo.getJP_ToDo_ScheduledEndTime();;
-
-					if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
-					{
-						if(p_AD_User_ID == todo.getAD_User_ID())
-						{
-							events = map_ToDoCalendarEvent_User.get(p_AD_User_ID);
-						}else {
-							events = map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID());
-						}
-					}else {
-						events = map_ToDoCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
-					}
-
-				}
-
-				ToDoCalendarEvent oldEvent = events.get(todo.get_ID());
-				ToDoCalendarEvent newEvent = new ToDoCalendarEvent(todo);
-
-				events.put(todo.get_ID(), newEvent);
-
-				if(!todo.save())
-				{
-					getToDoCalendarEvent(true ,true);
-					refreshWest(null);
-					throw new AdempiereException(Msg.getMsg(ctx, "Error") + Msg.getMsg(ctx, "SaveError"));
-				}
-
-				updateCalendarEvent(oldEvent, newEvent);
-
-				if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
-					refreshWest(todo.getJP_ToDo_Type());
-
-
-				//Update Related ToDo
-				if(todo instanceof MToDo)
-				{
-					MToDo m_ToDo =	(MToDo)todo;
-					ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, old_ScheduledStartTime, true, null);
-
-					if(list.size() > 0)
-					{
-						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
-						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
-
-						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
-						{
-								@Override
-								public void onCallback(Boolean result)
-								{
-									if(result)
-									{
-										Timestamp scheduledStartTime = null;
-										Timestamp scheduledEndTime = null;
-
-										for(MToDo todo : list)
-										{
-											if(m_ToDo.getJP_ToDo_ID() == todo.getJP_ToDo_ID())
-												continue;
-
-											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
-											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
-
-											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
-											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
-
-											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
-											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
-											if(!todo.save())
-											{
-												;//Nothing to do because refresh after all
-											}
-										}
-
-										//Refresh
-										getToDoCalendarEvent(true ,true);
-										refreshWest(null);
-									}
-								}
-						};
-						FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
-					}
-
-				}else if(todo instanceof MToDoTeam) {
-
-					MToDoTeam m_TeamToDo =	(MToDoTeam)todo;
-					ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
-
-					if(list.size() > 0)
-					{
-
-						long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
-						long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
-
-						Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
-						{
-								@Override
-								public void onCallback(Boolean result)
-								{
-									if(result)
-									{
-										Timestamp scheduledStartTime = null;
-										Timestamp scheduledEndTime = null;
-
-										for(MToDoTeam todo : list)
-										{
-											if(m_TeamToDo.getJP_ToDo_Team_ID() == todo.getJP_ToDo_Team_ID())
-												continue;
-
-											scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
-											scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
-
-											todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
-											todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
-
-											todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
-											todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
-											if(!todo.save())
-											{
-												;//Nothing to do because refresh after all
-											}
-										}
-
-										//Refresh
-										getToDoCalendarEvent(true ,true);
-										refreshWest(null);
-									}
-								}
-
-						};
-						FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
-					}
-
-				}//Update Related ToDo
-
-			}//Drag & Drop
+				dragAndDropToDo(event);
+			}
 
 		}
 
 	}
 
 
+	private void dragAndDropToDo(Event event)
+	{
+		CalendarsEvent calEvent = (CalendarsEvent) event;
+		ToDoCalendarEvent todoEvent = (ToDoCalendarEvent) calEvent.getCalendarEvent();
+		I_ToDo todo = todoEvent.getToDo();
+		HashMap<Integer, ToDoCalendarEvent> events = null;
+		Timestamp old_ScheduledStartTime = todo.getJP_ToDo_ScheduledStartTime();
+		Timestamp new_ScheduledStartTime = null;
+
+		Timestamp old_ScheduledEndTime = todo.getJP_ToDo_ScheduledEndTime();
+		Timestamp new_ScheduledEndTime = null;
+
+		if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
+		{
+			Timestamp startTime = new Timestamp(calEvent.getBeginDate().getTime());
+			todo.setJP_ToDo_ScheduledStartDate(startTime);
+			todo.setJP_ToDo_ScheduledStartTime(startTime);
+			new_ScheduledStartTime = startTime;
+
+			//Adjust
+			Timestamp endTime = new Timestamp(calEvent.getEndDate().getTime());
+			Timestamp schesuledEndTime = todo.getJP_ToDo_ScheduledEndTime();
+			if(schesuledEndTime.toLocalDateTime().toLocalTime() == LocalTime.MIN)
+			{
+				endTime = Timestamp.valueOf(LocalDateTime.of(endTime.toLocalDateTime().toLocalDate(), LocalTime.MIN));
+			}
+
+			todo.setJP_ToDo_ScheduledEndDate(endTime);
+			todo.setJP_ToDo_ScheduledEndTime(endTime);
+			new_ScheduledEndTime = endTime;
+
+			if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+			{
+				if(p_AD_User_ID == todo.getAD_User_ID())
+				{
+					events = map_ToDoCalendarEvent_User.get(p_AD_User_ID);
+				}else {
+					events = map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID());
+				}
+
+			}else {
+
+				events = map_ToDoCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
+
+			}
+
+		}else if(todo.getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
+
+			todo.setJP_ToDo_ScheduledEndTime(new Timestamp(calEvent.getBeginDate().getTime()));
+			todo.setJP_ToDo_ScheduledEndDate(todo.getJP_ToDo_ScheduledEndTime());
+			todo.setJP_ToDo_ScheduledStartTime(todo.getJP_ToDo_ScheduledEndTime());
+			todo.setJP_ToDo_ScheduledStartDate(todo.getJP_ToDo_ScheduledEndTime());
+			new_ScheduledStartTime = todo.getJP_ToDo_ScheduledEndTime();
+			new_ScheduledEndTime = todo.getJP_ToDo_ScheduledEndTime();;
+
+			if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+			{
+				if(p_AD_User_ID == todo.getAD_User_ID())
+				{
+					events = map_ToDoCalendarEvent_User.get(p_AD_User_ID);
+				}else {
+					events = map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID());
+				}
+			}else {
+				events = map_ToDoCalendarEvent_Team.get(p_SelectedTab_AD_User_ID);
+			}
+
+		}
+
+		ToDoCalendarEvent oldEvent = events.get(todo.get_ID());
+		ToDoCalendarEvent newEvent = new ToDoCalendarEvent(todo);
+
+		events.put(todo.get_ID(), newEvent);
+
+		if(!todo.save())
+		{
+			getToDoCalendarEvent(true ,true);
+			refreshWest(null);
+			throw new AdempiereException(Msg.getMsg(ctx, "Error") + Msg.getMsg(ctx, "SaveError"));
+		}
+
+		updateCalendarEvent(oldEvent, newEvent);
+
+		if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+			refreshWest(todo.getJP_ToDo_Type());
+
+
+		//Update Reminder
+		if(todo instanceof MToDo)
+		{
+			MToDo m_ToDo =	(MToDo)todo;
+			MToDoReminder[]  reminders = m_ToDo.getReminders();
+			if(reminders.length == 0)
+			{
+				updateRelatedToDoScheduledTime(todo, old_ScheduledStartTime, new_ScheduledStartTime, old_ScheduledEndTime, new_ScheduledEndTime, false);
+
+			}else{
+
+				final Timestamp osst =	old_ScheduledStartTime;
+				final Timestamp nsst =	new_ScheduledStartTime;
+				final Timestamp oset =	old_ScheduledEndTime;
+			    final Timestamp nset =	new_ScheduledEndTime;
+
+				Callback<Boolean> isReminderUpdate = new Callback<Boolean>()
+				{
+						@Override
+						public void onCallback(Boolean result)
+						{
+							if(result)
+							{
+								adjustRemindTime(todo, nsst.getTime()- osst.getTime());
+							}
+
+							updateRelatedToDoScheduledTime(todo, osst, nsst, oset, nset, result);
+						}
+				};
+				FDialog.ask(getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+				//Would you like to adjust the time for unsent reminders?
+			}
+
+		}else if (todo instanceof MToDoTeam) {
+
+			MToDoTeam m_ToDo =	(MToDoTeam)todo;
+			MToDoTeamReminder[]  reminders = m_ToDo.getReminders();
+			if(reminders.length == 0)
+			{
+				updateRelatedToDoScheduledTime(todo, old_ScheduledStartTime, new_ScheduledStartTime, old_ScheduledEndTime, new_ScheduledEndTime, false);
+
+			}else{
+
+				final Timestamp osst =	old_ScheduledStartTime;
+				final Timestamp nsst =	new_ScheduledStartTime;
+				final Timestamp oset =	old_ScheduledEndTime;
+			    final Timestamp nset =	new_ScheduledEndTime;
+
+				Callback<Boolean> isReminderUpdate = new Callback<Boolean>()
+				{
+						@Override
+						public void onCallback(Boolean result)
+						{
+							if(result)
+							{
+								adjustRemindTime(todo, nsst.getTime()- osst.getTime());
+							}
+
+							updateRelatedToDoScheduledTime(todo, osst, nsst, oset, nset, result);
+						}
+				};
+				FDialog.ask(getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+			}
+		}
+
+	}
+
+	private void adjustRemindTime(I_ToDo todo, long adjustRemindTime)//TODO
+	{
+
+		if(todo instanceof MToDo)
+		{
+			MToDo m_ToDo =	(MToDo)todo;
+			MToDoReminder[]  reminders = m_ToDo.getReminders();
+
+			for(int i = 0; i < reminders.length; i++)
+			{
+				if(reminders[i].getJP_ToDo_Team_Reminder_ID() > 0)
+					continue;
+
+				if(reminders[i].isSentReminderJP())
+					continue;
+
+				if(reminders[i].isProcessed())
+					continue;
+
+				Timestamp remindTime = new Timestamp(reminders[i].getJP_ToDo_RemindTime().getTime() + adjustRemindTime);
+				reminders[i].setJP_ToDo_RemindTime(remindTime);
+				reminders[i].save();
+			}
+
+		}else if(todo instanceof MToDoTeam) {
+
+			MToDoTeam m_ToDo =	(MToDoTeam)todo;
+			MToDoTeamReminder[]  reminders = m_ToDo.getReminders();
+
+			for(int i = 0; i < reminders.length; i++)
+			{
+				if(reminders[i].isSentReminderJP())
+					continue;
+
+				if(reminders[i].isProcessed())
+					continue;
+
+				Timestamp remindTime = new Timestamp(reminders[i].getJP_ToDo_RemindTime().getTime() + adjustRemindTime);
+				reminders[i].setJP_ToDo_RemindTime(remindTime);
+				reminders[i].save();
+			}
+
+		}
+
+	}
+
+	private void updateRelatedToDoScheduledTime(I_ToDo todo, Timestamp old_ScheduledStartTime, Timestamp new_ScheduledStartTime
+													, Timestamp old_ScheduledEndTime, Timestamp new_ScheduledEndTime, boolean isAdjustRemindTime)
+	{
+		//Update Related ToDo
+		if(todo instanceof MToDo)
+		{
+			MToDo m_ToDo =	(MToDo)todo;
+			ArrayList<MToDo> list = MToDo.getRelatedToDos(ctx, m_ToDo, null, old_ScheduledStartTime, true, null);
+
+			if(list.size() > 0)
+			{
+				long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+				long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+				Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+				{
+						@Override
+						public void onCallback(Boolean result)
+						{
+							if(result)
+							{
+								Timestamp scheduledStartTime = null;
+								Timestamp scheduledEndTime = null;
+
+								for(MToDo todo : list)
+								{
+									if(m_ToDo.getJP_ToDo_ID() == todo.getJP_ToDo_ID())
+										continue;
+
+									scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+									scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+									todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
+									todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+
+									todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
+									todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
+									if(!todo.save())
+									{
+										;//Nothing to do because refresh after all
+									}else {
+
+										if(isAdjustRemindTime)
+										{
+											adjustRemindTime(todo, new_ScheduledStartTime.getTime() - old_ScheduledStartTime.getTime() );
+										}
+									}
+								}
+
+								//Refresh
+								getToDoCalendarEvent(true ,true);
+								refreshWest(null);
+							}
+						}
+				};
+				FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+			}
+
+		}else if(todo instanceof MToDoTeam) {
+
+			MToDoTeam m_TeamToDo =	(MToDoTeam)todo;
+			ArrayList<MToDoTeam> list = MToDoTeam.getRelatedTeamToDos(ctx, m_TeamToDo, null, old_ScheduledStartTime, true, null);
+
+			if(list.size() > 0)
+			{
+
+				long between_ScheduledStartMins = ChronoUnit.MINUTES.between(old_ScheduledStartTime.toLocalDateTime(), new_ScheduledStartTime.toLocalDateTime());
+				long between_ScheduledEndMins = ChronoUnit.MINUTES.between(old_ScheduledEndTime.toLocalDateTime(), new_ScheduledEndTime.toLocalDateTime());
+
+				Callback<Boolean> isRelaredToDoUpdate = new Callback<Boolean>()
+				{
+						@Override
+						public void onCallback(Boolean result)
+						{
+							if(result)
+							{
+								Timestamp scheduledStartTime = null;
+								Timestamp scheduledEndTime = null;
+
+								for(MToDoTeam todo : list)
+								{
+									if(m_TeamToDo.getJP_ToDo_Team_ID() == todo.getJP_ToDo_Team_ID())
+										continue;
+
+									scheduledStartTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().plusMinutes(between_ScheduledStartMins));
+									scheduledEndTime = Timestamp.valueOf(todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().plusMinutes(between_ScheduledEndMins));
+
+									todo.setJP_ToDo_ScheduledStartDate(scheduledStartTime);
+									todo.setJP_ToDo_ScheduledStartTime(scheduledStartTime);
+
+									todo.setJP_ToDo_ScheduledEndDate(scheduledEndTime);
+									todo.setJP_ToDo_ScheduledEndTime(scheduledEndTime);
+									if(!todo.save())
+									{
+										;//Nothing to do because refresh after all
+									}else {
+
+										if(isAdjustRemindTime)
+										{
+											adjustRemindTime(todo, new_ScheduledStartTime.getTime() - old_ScheduledStartTime.getTime() );
+										}
+									}
+								}
+
+								//Refresh
+								getToDoCalendarEvent(true ,true);
+								refreshWest(null);
+							}
+						}
+
+				};
+				FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+			}
+
+		}//Update Related ToDo
+	}
 
 	/**
 	 * Update Displayed Calender period.
