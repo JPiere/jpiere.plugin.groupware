@@ -23,6 +23,7 @@ import org.zkoss.zul.Center;
 import org.zkoss.zul.Column;
 import org.zkoss.zul.Columns;
 import org.zkoss.zul.Grid;
+import org.zkoss.zul.North;
 import org.zkoss.zul.Popup;
 
 import jpiere.plugin.groupware.model.I_ToDo;
@@ -74,7 +75,17 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 
 	private void init()throws Exception
 	{
-		//JP_Team_ID = todoPopupWindow.getJP_Team_ID();
+		ZKUpdateUtil.setVflex(this, "min");
+		ZKUpdateUtil.setHflex(this, "min");
+
+		Borderlayout popupContent = new Borderlayout();
+		ZKUpdateUtil.setVflex(popupContent, "min");
+		ZKUpdateUtil.setHflex(popupContent, "min");
+		this.appendChild(popupContent);
+
+		North north = new North();
+		ZKUpdateUtil.setVflex(north, "min");
+		ZKUpdateUtil.setHflex(north, "min");
 
 		createNewBtn = ButtonFactory.createButton(Msg.getMsg(ctx, "JP_ToDo_Reminder_Create"), null, "");
 		if (ThemeManager.isUseFontIconForImage())
@@ -84,7 +95,8 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		createNewBtn.setName(BUTTON_NEW_REMINDER);
 		createNewBtn.addEventListener(Events.ON_CLICK, this);
 
-		this.appendChild(createNewBtn);
+		north.appendChild(createNewBtn);
+		popupContent.appendChild(north);
 
 		//Get Reminders
 		ArrayList<I_ToDoReminder> list = new ArrayList<I_ToDoReminder> ();
@@ -154,22 +166,15 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 			return ;
 		}
 
-
-		ZKUpdateUtil.setWidth(this, 420 + "px");
-		ZKUpdateUtil.setHeight(this, 380 + "px");
-
-
-		Borderlayout popupContent = new Borderlayout();
-		this.appendChild(popupContent);
-		ZKUpdateUtil.setVflex(popupContent, "max");
-		ZKUpdateUtil.setHflex(popupContent, "min");
-
 		//Center
 		Center center = new Center();
+		ZKUpdateUtil.setVflex(center, "min");
+		ZKUpdateUtil.setHflex(center, "min");
 		popupContent.appendChild(center);
 
 		Grid grid = new Grid();
-		ZKUpdateUtil.setVflex(grid, true);
+		ZKUpdateUtil.setVflex(grid, "min");
+		ZKUpdateUtil.setHflex(grid, "min");
 		grid.setMold("paging");
 		grid.setPageSize(10);
 		grid.setPagingPosition("top");
@@ -190,12 +195,16 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime));
+//		ZKUpdateUtil.setVflex(column, "min");
+//		ZKUpdateUtil.setHflex(column, "min");
 
 
 		//RemindType
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType));
+//		ZKUpdateUtil.setVflex(column, "min");
+//		ZKUpdateUtil.setHflex(column, "min");
 
 		ReminderMenuListModel listModel = new ReminderMenuListModel(list);
 		grid.setModel(listModel);
