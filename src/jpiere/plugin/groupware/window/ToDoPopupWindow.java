@@ -15,7 +15,6 @@ package jpiere.plugin.groupware.window;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -94,6 +93,7 @@ import org.zkoss.zul.Popup;
 import org.zkoss.zul.South;
 import org.zkoss.zul.Timebox;
 
+import jpiere.plugin.groupware.form.ReminderMenuPopup;
 import jpiere.plugin.groupware.form.TeamMemberPopup;
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.MGroupwareUser;
@@ -188,7 +188,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	/** PopupWindow Components **/
 	private Popup processPopup = null;
-	private Popup reminderPopup = null;
+
 
 	//*** Constants ***//
 	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
@@ -1445,50 +1445,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 				}else {
 
-					createReminderPopupWindow();
+					ReminderMenuPopup reminderMenuPopup = new ReminderMenuPopup(this, p_iToDo);
+					reminderMenuPopup.setPage(reminderBtn.getPage());
+					reminderMenuPopup.open(reminderBtn,"after_start");
+
 				}
-
-			}else if(BUTTON_NEW_REMINDER.equals(btnName)) {
-
-				ReminderPopupWindow rpw = new ReminderPopupWindow(this, p_iToDo, 0);
-				this.appendChild(rpw);
-				if (ClientInfo.isMobile())
-				{
-					rpw.doHighlighted();
-				}
-				else
-				{
-					showBusyMask(this);
-					LayoutUtils.openOverlappedWindow(this, rpw, "middle_center");
-					rpw.focus();
-				}
-
-				reminderPopup.close();
-
-			}else if(BUTTON_UPDATE_REMINDER.equals(btnName)) {
-
-				int reminder_ID = 0;
-				if(p_IsPersonalToDo)
-				{
-					reminder_ID = ((Integer)comp.getAttribute("JP_ToDo_Reminder_ID")).intValue();
-				}else {
-					reminder_ID = ((Integer)comp.getAttribute("JP_ToDo_Team_Reminder_ID")).intValue();
-				}
-
-				ReminderPopupWindow rpw = new ReminderPopupWindow(this, p_iToDo, reminder_ID);
-				this.appendChild(rpw);
-				if (ClientInfo.isMobile())
-				{
-					rpw.doHighlighted();
-				}
-				else
-				{
-					showBusyMask(this);
-					LayoutUtils.openOverlappedWindow(this, rpw, "middle_center");
-					rpw.focus();
-				}
-
-				reminderPopup.close();
 
 			}else if(BUTTON_NAME_DELETE.equals(btnName)){
 
@@ -2275,7 +2236,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	}
 
 
-	private void adjustRemindTime(I_ToDo todo, long adjustRemindTime)//TODO
+	private void adjustRemindTime(I_ToDo todo, long adjustRemindTime)
 	{
 		if(todo instanceof MToDo)
 		{
@@ -2320,7 +2281,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 	}
 
-	private void updateRelatedToDoes(I_ToDo todo	//TODO
+	private void updateRelatedToDoes(I_ToDo todo
 			, Timestamp old_ScheduledStartTime, Timestamp new_ScheduledStartTime, Timestamp old_ScheduledEndTime, Timestamp new_ScheduledEndTime, boolean isAdjustRemindTime
 			, HashMap<String, Boolean> valueChangeFieldMap, long between_ScheduledStartMins, long between_ScheduledEndMins)
 	{
@@ -2697,105 +2658,6 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		processPopup.open(processBtn, "after_start");
 
 		return ;
-	}
-
-
-	private void createReminderPopupWindow()
-	{
-
-		reminderPopup = new Popup();
-		reminderPopup.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "reminderButtonPopup");
-
-		Grid grid = GridFactory.newGridLayout();
-		ZKUpdateUtil.setVflex(grid, "min");
-		ZKUpdateUtil.setHflex(grid, "min");
-		reminderPopup.appendChild(grid);
-		Rows rows = grid.newRows();
-		Row row = rows.newRow();
-
-		//Create New Reminder Button
-		Button btn = new Button();
-		if (ThemeManager.isUseFontIconForImage())
-			btn.setIconSclass("z-icon-New");
-		else
-			btn.setImage(ThemeManager.getThemeResource("images/New16.png"));
-		btn.setClass("btn-small");
-		btn.setStyle("text-align: left");
-		btn.setName(BUTTON_NEW_REMINDER);
-		btn.setLabel(Msg.getMsg(ctx, "JP_ToDo_Reminder_Create"));//Create ToDo Reminder
-		btn.addEventListener(Events.ON_CLICK, this);
-		row.appendCellChild(btn);
-
-		//Get Reminders
-		SimpleDateFormat sdfV = DisplayType.getDateFormat();
-		if(p_IsPersonalToDo)
-		{
-			String whereClause = " JP_ToDo_ID=? ";
-			String orderClause ="JP_ToDo_RemindTime";
-			List<MToDoReminder> list = new Query(ctx, MToDoReminder.Table_Name, whereClause, null)
-					.setParameters(p_iToDo.get_ID())
-					.setOrderBy(orderClause)
-					.list();
-
-			Timestamp remindTime = null;
-			for(MToDoReminder reminder : list)
-			{
-				row = rows.newRow();
-
-				btn = new Button();
-				if (ThemeManager.isUseFontIconForImage())
-					btn.setIconSclass("z-icon-Request");
-				else
-					btn.setImage(ThemeManager.getThemeResource("images/Request16.png"));
-				btn.setClass("btn-small");
-				btn.setStyle("text-align: left");
-				btn.setName(BUTTON_UPDATE_REMINDER);
-				remindTime = reminder.getJP_ToDo_RemindTime();
-				btn.setLabel(sdfV.format(remindTime) + " " + remindTime.toLocalDateTime().toLocalTime().toString().substring(0, 5));
-				btn.setAttribute("JP_ToDo_Reminder_ID", reminder.getJP_ToDo_Reminder_ID());
-				btn.addEventListener(Events.ON_CLICK, this);
-
-				ZKUpdateUtil.setHflex(btn, "true");
-				row.appendCellChild(btn);
-			}
-
-		}else {
-
-			String whereClause = " JP_ToDo_Team_ID=? ";
-			String orderClause ="JP_ToDo_RemindTime";
-			List<MToDoTeamReminder> list = new Query(ctx, MToDoTeamReminder.Table_Name, whereClause, null)
-					.setParameters(p_iToDo.get_ID())
-					.setOrderBy(orderClause)
-					.list();
-
-			Timestamp remindTime = null;
-			for(MToDoTeamReminder reminder : list)
-			{
-				row = rows.newRow();
-
-				btn = new Button();
-				if (ThemeManager.isUseFontIconForImage())
-					btn.setIconSclass("z-icon-Request");
-				else
-					btn.setImage(ThemeManager.getThemeResource("images/Request16.png"));
-				btn.setClass("btn-small");
-				btn.setStyle("text-align: left");
-				btn.setName(BUTTON_UPDATE_REMINDER);
-				remindTime = reminder.getJP_ToDo_RemindTime();
-				btn.setLabel(sdfV.format(remindTime) + " " + remindTime.toLocalDateTime().toLocalTime().toString().substring(0, 5));
-				btn.setAttribute("JP_ToDo_Team_Reminder_ID", reminder.getJP_ToDo_Team_Reminder_ID());
-				btn.addEventListener(Events.ON_CLICK, this);
-
-				ZKUpdateUtil.setHflex(btn, "true");
-				row.appendCellChild(btn);
-			}
-		}
-
-		reminderPopup.setPage(reminderBtn.getPage());
-		reminderPopup.open(reminderBtn, "after_start");
-
-		return ;
-
 	}
 
 
