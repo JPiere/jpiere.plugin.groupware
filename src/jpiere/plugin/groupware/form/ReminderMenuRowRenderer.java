@@ -25,6 +25,7 @@ import org.compiere.util.Env;
 import org.compiere.util.Msg;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Cell;
+import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 
@@ -43,6 +44,8 @@ import jpiere.plugin.groupware.model.MToDoReminder;
 public class ReminderMenuRowRenderer implements RowRenderer<I_ToDoReminder> {
 
 	private static int reminderType_Reference_ID = 0;
+	private static int mailFrequency_Reference_ID = 0;
+	private static int broadcastFrequency_Reference_ID = 0;
 
 	private ReminderMenuPopup reminderMenuPopup = null;
 
@@ -53,7 +56,7 @@ public class ReminderMenuRowRenderer implements RowRenderer<I_ToDoReminder> {
 	}
 
 	@Override
-	public void render(Row row, I_ToDoReminder data, int index) throws Exception
+	public void render(Row row, I_ToDoReminder i_ToDoReminder, int index) throws Exception
 	{
 		//Image
 		Cell cell = new Cell();
@@ -66,16 +69,18 @@ public class ReminderMenuRowRenderer implements RowRenderer<I_ToDoReminder> {
 		reminderBtn.setName(ReminderMenuPopup.BUTTON_UPDATE_REMINDER);
 		reminderBtn.setTooltiptext(Msg.getMsg(Env.getCtx(), "JP_Reminder"));
 		reminderBtn.addEventListener(Events.ON_CLICK, reminderMenuPopup);
-		reminderBtn.setAttribute(ReminderMenuPopup.I_REMINDER, data);
+		reminderBtn.setAttribute(ReminderMenuPopup.I_REMINDER, i_ToDoReminder);
 		cell.appendChild(reminderBtn);
 		row.appendChild(cell);
+
 
 		//Remind Time
 		cell = new Cell();
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
-		String date = sdfV.format(data.getJP_ToDo_RemindTime());
-		cell.appendChild(new Label(date + " " + data.getJP_ToDo_RemindTime().toLocalDateTime().toLocalTime().toString().substring(0, 5) ));
+		String date = sdfV.format(i_ToDoReminder.getJP_ToDo_RemindTime());
+		cell.appendChild(new Label(date + " " + i_ToDoReminder.getJP_ToDo_RemindTime().toLocalDateTime().toLocalTime().toString().substring(0, 5) ));
 		row.appendChild(cell);
+
 
 		//Remind Type
 		cell = new Cell();
@@ -85,9 +90,69 @@ public class ReminderMenuRowRenderer implements RowRenderer<I_ToDoReminder> {
 			MColumn col_JP_ToDo_ReminderType = MColumn.get(Env.getCtx(), AD_Column_ID);
 			reminderType_Reference_ID = col_JP_ToDo_ReminderType.getAD_Reference_Value_ID();
 		}
-		String JP_ToDo_ReminderType = MRefList.getListName(Env.getCtx(), reminderType_Reference_ID, data.getJP_ToDo_ReminderType());
+		String JP_ToDo_ReminderType = MRefList.getListName(Env.getCtx(), reminderType_Reference_ID, i_ToDoReminder.getJP_ToDo_ReminderType());
 		cell.appendChild(new Label(JP_ToDo_ReminderType));
 		row.appendChild(cell);
+
+
+		//Frequency
+		cell = new Cell();
+		if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(i_ToDoReminder.getJP_ToDo_ReminderType()))
+		{
+			if(mailFrequency_Reference_ID == 0)
+			{
+				int AD_Column_ID = MColumn.getColumn_ID(MToDoReminder.Table_Name, MToDoReminder.COLUMNNAME_JP_MailFrequency);
+				MColumn col_JP_MailFrequency = MColumn.get(Env.getCtx(), AD_Column_ID);
+				mailFrequency_Reference_ID = col_JP_MailFrequency.getAD_Reference_Value_ID();
+			}
+
+			String JP_MailFrequency = MRefList.getListName(Env.getCtx(), mailFrequency_Reference_ID, i_ToDoReminder.getJP_MailFrequency());
+			cell.appendChild(new Label(JP_MailFrequency));
+
+		}else {
+
+			if(broadcastFrequency_Reference_ID == 0)
+			{
+				int AD_Column_ID = MColumn.getColumn_ID(MToDoReminder.Table_Name, MToDoReminder.COLUMNNAME_BroadcastFrequency);
+				MColumn col_BroadcastFrequency = MColumn.get(Env.getCtx(), AD_Column_ID);
+				broadcastFrequency_Reference_ID = col_BroadcastFrequency.getAD_Reference_Value_ID();
+			}
+
+			String BroadcastFrequency = MRefList.getListName(Env.getCtx(), broadcastFrequency_Reference_ID, i_ToDoReminder.getBroadcastFrequency());
+			cell.appendChild(new Label(BroadcastFrequency));
+		}
+		row.appendChild(cell);
+
+
+		//SentReminderJP
+		cell = new Cell();
+		cell.setStyle("text-align:center;");
+		Checkbox cb = new Checkbox();
+		cb.setChecked(i_ToDoReminder.isSentReminderJP());
+		cb.setDisabled(true);
+		cell.appendChild(cb);
+		row.appendChild(cell);
+
+		//Processed
+		cell = new Cell();
+		cell.setStyle("text-align:center;");
+		cb = new Checkbox();
+		cb.setChecked(i_ToDoReminder.isProcessed());
+		cb.setDisabled(true);
+		cell.appendChild(cb);
+		row.appendChild(cell);
+
+		//isConfirmed
+		if(MToDoReminder.Table_Name.equals(i_ToDoReminder.get_TableName()))
+		{
+			cell = new Cell();
+			cell.setStyle("text-align:center;");
+			cb = new Checkbox();
+			cb.setChecked(i_ToDoReminder.isConfirmed());
+			cb.setDisabled(true);
+			cell.appendChild(cb);
+			row.appendChild(cell);
+		}
 
 	}
 

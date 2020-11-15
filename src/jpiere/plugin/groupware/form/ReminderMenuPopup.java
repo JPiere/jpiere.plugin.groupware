@@ -191,20 +191,43 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		column.setLabel("");
 		column.setWidth("30px");
 
+
 		//RemindTime
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime));
-//		ZKUpdateUtil.setVflex(column, "min");
-//		ZKUpdateUtil.setHflex(column, "min");
 
 
 		//RemindType
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType));
-//		ZKUpdateUtil.setVflex(column, "min");
-//		ZKUpdateUtil.setHflex(column, "min");
+
+
+		//Frequency
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, "Frequency"));
+
+
+		//IsSentReminderJP
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getMsg(ctx, "JP_Sent"));
+
+
+		//Processed
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_Processed));
+
+		//IsConfirmed
+		if(MToDo.Table_Name.equals(p_iToDo.get_TableName()))
+		{
+			column = new Column();
+			columns.appendChild(column);
+			column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsConfirmed));
+		}
 
 		ReminderMenuListModel listModel = new ReminderMenuListModel(list);
 		grid.setModel(listModel);
