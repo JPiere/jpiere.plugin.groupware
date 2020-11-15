@@ -2170,28 +2170,50 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			}else{
 
-				final Timestamp osst =	old_ScheduledStartTime;
-				final Timestamp nsst =	new_ScheduledStartTime;
-				final Timestamp oset =	old_ScheduledEndTime;
-			    final Timestamp nset =	new_ScheduledEndTime;
-
-				Callback<Boolean> isReminderUpdate = new Callback<Boolean>()
+				boolean isAdjustRemindTime = false;
+				for(int i = 0; i < reminders.length; i++)
 				{
-						@Override
-						public void onCallback(Boolean result)
-						{
-							if(result)
-							{
-								adjustRemindTime(p_iToDo, nsst.getTime()- osst.getTime());
-							}
+					if(reminders[i].isSentReminderJP() || reminders[i].isProcessed())
+					{
+						continue;
+					}else {
+						isAdjustRemindTime = true;
+						break;
+					}
+				}
 
-							updateRelatedToDoes(p_iToDo
-												,osst, nsst, oset, nset, result
-												,valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
-						}
-				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
-				//Would you like to adjust the time for unsent reminders?
+				if(isAdjustRemindTime)
+				{
+					final Timestamp osst =	old_ScheduledStartTime;
+					final Timestamp nsst =	new_ScheduledStartTime;
+					final Timestamp oset =	old_ScheduledEndTime;
+				    final Timestamp nset =	new_ScheduledEndTime;
+
+					Callback<Boolean> isReminderUpdate = new Callback<Boolean>()
+					{
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
+								{
+									adjustRemindTime(p_iToDo, nsst.getTime()- osst.getTime());
+								}
+
+								updateRelatedToDoes(p_iToDo
+													,osst, nsst, oset, nset, result
+													,valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
+							}
+					};
+					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+					//Would you like to adjust the time for unsent reminders?
+
+				}else {
+
+					updateRelatedToDoes(p_iToDo
+							,old_ScheduledStartTime, new_ScheduledStartTime, old_ScheduledEndTime, new_ScheduledEndTime, true
+							,valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
+
+				}
 			}
 
 		}else if (p_iToDo instanceof MToDoTeam && !isOnlyUpdateToDoStatus) {
@@ -2206,27 +2228,47 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			}else{
 
-				final Timestamp osst =	old_ScheduledStartTime;
-				final Timestamp nsst =	new_ScheduledStartTime;
-				final Timestamp oset =	old_ScheduledEndTime;
-			    final Timestamp nset =	new_ScheduledEndTime;
-
-				Callback<Boolean> isReminderUpdate = new Callback<Boolean>()
+				boolean isAdjustRemindTime = false;
+				for(int i = 0; i < reminders.length; i++)
 				{
-						@Override
-						public void onCallback(Boolean result)
-						{
-							if(result)
-							{
-								adjustRemindTime(p_iToDo, nsst.getTime() - osst.getTime());
-							}
+					if(reminders[i].isSentReminderJP() || reminders[i].isProcessed())
+					{
+						continue;
+					}else {
+						isAdjustRemindTime = true;
+						break;
+					}
+				}
 
-							updateRelatedToDoes(p_iToDo
-											, osst, nsst, oset, nset, result
-											, valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
-						}
-				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+				if(isAdjustRemindTime)
+				{
+					final Timestamp osst =	old_ScheduledStartTime;
+					final Timestamp nsst =	new_ScheduledStartTime;
+					final Timestamp oset =	old_ScheduledEndTime;
+				    final Timestamp nset =	new_ScheduledEndTime;
+
+					Callback<Boolean> isReminderUpdate = new Callback<Boolean>()
+					{
+							@Override
+							public void onCallback(Boolean result)
+							{
+								if(result)
+								{
+									adjustRemindTime(p_iToDo, nsst.getTime() - osst.getTime());
+								}
+
+								updateRelatedToDoes(p_iToDo
+												, osst, nsst, oset, nset, result
+												, valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
+							}
+					};
+					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+				}else {
+
+					updateRelatedToDoes(p_iToDo
+							, old_ScheduledStartTime, new_ScheduledStartTime, old_ScheduledEndTime, new_ScheduledEndTime, true
+							, valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
+				}
 			}
 		}
 		return true;
