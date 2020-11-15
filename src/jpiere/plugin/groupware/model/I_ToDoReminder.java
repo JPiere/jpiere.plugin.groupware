@@ -12,6 +12,8 @@ import java.sql.Timestamp;
 */
 public interface I_ToDoReminder {
 
+	public int get_ID();
+
 	public int getJP_ToDo_Team_Reminder_ID  () ;
 
 	/** JP_ToDo_ID	  */

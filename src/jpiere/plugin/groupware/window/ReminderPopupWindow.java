@@ -1296,7 +1296,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		if(!i_Reminder.isSentReminderJP())
 		{
 			Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-			if(i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
+			if(i_Reminder.get_ID() != 0 && i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
 			{
 				if(p_IsPersonalToDo)
 				{
@@ -1325,8 +1325,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				}else {
 
 					MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
-					if(!todoReminder.createPersonalToDoRemainder())
+					if(todoReminder.createPersonalToDoRemainder())
 					{
+						FDialog.info(0, this, "JP_CreatePersonalToDoReminder", i_Reminder.getRemindMsg());
+					}else {
 						FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
 					}
 

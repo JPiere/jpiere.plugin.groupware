@@ -21,6 +21,7 @@ import java.util.Properties;
 import org.compiere.model.MMessage;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
+import org.compiere.util.Msg;
 import org.compiere.util.Util;
 
 /**
@@ -32,6 +33,8 @@ import org.compiere.util.Util;
 public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDoReminder  {
 
 	private MToDoTeam parent = null;
+
+	protected String  m_RemindMsg = null;
 
 	public MToDoTeamReminder(Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
 	{
@@ -151,8 +154,15 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	{
 		getParent();
 		MToDo[] todoes = parent.getToDoes(true);
+		if(todoes.length == 0)
+		{
+			//Personal ToDo have not been created.
+			m_RemindMsg = Msg.getMsg(getCtx(), "JP_PersonalToDoNotCreated") ;
+			return false;
+		}
 
 		MToDoReminder todoReminder = null;
+		int counter = 0;
 		for(int i = 0; i < todoes.length; i++)
 		{
 			if(MToDoTeamReminder.JP_TODO_REMINDTARGET_AllUserOfPersonalToDo.equals(getJP_ToDo_RemindTarget()))
@@ -172,7 +182,6 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 				{
 					continue;
 				}
-
 
 			}else if(MToDoTeamReminder.JP_TODO_REMINDTARGET_UserOfWorkInProgressPersonalToDo.equals(getJP_ToDo_RemindTarget())) {
 
@@ -201,7 +210,10 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 			todoReminder.setURL(getURL());
 			todoReminder.setJP_SendMailNextTime(getJP_ToDo_RemindTime());
 			todoReminder.save(get_TrxName());
+			counter++;
 		}
+
+		m_RemindMsg = Msg.getMsg(getCtx(), "Created") + " : " + counter;
 
 		isProcessingReminder = true;
 		setIsSentReminderJP(true);
@@ -318,7 +330,7 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 	@Override
 	public String getRemindMsg()
 	{
-		return null;
+		return m_RemindMsg;
 	}
 
 
