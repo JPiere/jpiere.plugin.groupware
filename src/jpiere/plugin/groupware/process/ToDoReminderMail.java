@@ -126,10 +126,20 @@ public class ToDoReminderMail extends SvrProcess {
 		return true;
 	}
 
+
 	private boolean sendMailFromPersonalToDoRemainder(MToDoReminder reminder )
 	{
-		return reminder.sendMailRemainder();
+		int AD_UserMail_ID = reminder.sendMailRemainder();
+		if(AD_UserMail_ID > 0)
+		{
+			reminder.saveEx();
+			return true;
+		}else {
+			return false;
+		}
+
 	}
+
 
 	private boolean createPersonalToDoRemainderFromTeamToDoReminder() throws SQLException
 	{

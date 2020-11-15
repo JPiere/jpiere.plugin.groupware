@@ -267,7 +267,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				p_haveParentTeamToDoReminder = false;
 			}
 
-			if(i_Reminder.isSentReminderJP() || i_Reminder.isProcessed() || !i_Reminder.isActive() )
+			if(i_Reminder.isSentReminderJP() || i_Reminder.isProcessed() || !i_Reminder.isActive() || p_haveParentTeamToDoReminder )
 			{
 				p_IsUpdatable = false;
 
@@ -1293,7 +1293,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 	private boolean sendReminder()
 	{
-		if(!i_Reminder.isSentReminderJP())
+		if(!i_Reminder.isSentReminderJP() && !i_Reminder.isProcessed())
 		{
 			Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 			if(i_Reminder.get_ID() != 0 && i_Reminder.getJP_ToDo_RemindTime().compareTo(now) <= 0)
@@ -1303,8 +1303,16 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 					MToDoReminder todoReminder = (MToDoReminder)i_Reminder;
 					if(MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(todoReminder.getJP_ToDo_ReminderType()))
 					{
-						if(!todoReminder.sendMailRemainder())
+						int AD_UserMail_ID = todoReminder.sendMailRemainder();
+
+						if(AD_UserMail_ID > 0)
 						{
+							todoReminder.setAD_UserMail_ID(AD_UserMail_ID);
+							todoReminder.setIsSentReminderJP(true);
+							todoReminder.saveEx();
+
+							FDialog.info(0, this, "SendMail", i_Reminder.getRemindMsg());
+						}else{
 							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
 						}
 
@@ -1312,14 +1320,18 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 						int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
 
-						if(AD_BroadcastMessage_ID <= 0 )
+						if(AD_BroadcastMessage_ID > 0 )
 						{
+							todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+							todoReminder.setIsSentReminderJP(true);
+							todoReminder.saveEx();
+
+							FDialog.info(0, this, "MessageSent", i_Reminder.getRemindMsg());
+
+						}else {
+
 							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
 						}
-
-						todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-						todoReminder.setIsSentReminderJP(true);
-						todoReminder.saveEx();
 					}
 
 				}else {

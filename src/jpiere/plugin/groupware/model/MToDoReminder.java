@@ -216,7 +216,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	}
 
 
-	public boolean sendMailRemainder()
+	public int sendMailRemainder()
 	{
 		MClient client =  MClient.get(getCtx(), getAD_Client_ID());
 		MToDo todo = new MToDo(getCtx(), getJP_ToDo_ID(), get_TrxName());
@@ -316,7 +316,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 				Trx.get(get_TrxName(), true).commit();
 		}
 
-		return isOK;
+		if(isOK)
+		{
+			return userMail.getAD_UserMail_ID();
+		}else {
+			return 0;
+		}
 	}
 
 	private void updateSendMailNextTime()//TODO

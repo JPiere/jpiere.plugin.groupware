@@ -118,12 +118,12 @@ public class ToDoReminderMessage extends SvrProcess {
 	private boolean sendMessageFromPersonalToDoRemainder(MToDoReminder todoReminder) throws Exception
 	{
 		int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
-		todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-		todoReminder.setIsSentReminderJP(true);
-		todoReminder.saveEx();
-
 		if(AD_BroadcastMessage_ID > 0)
 		{
+			todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+			todoReminder.setIsSentReminderJP(true);
+			todoReminder.saveEx();
+
 			return true;
 		}else {
 			return false;
