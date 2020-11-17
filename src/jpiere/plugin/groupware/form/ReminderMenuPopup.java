@@ -181,6 +181,7 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		center.appendChild(grid);
 
 		org.zkoss.zul.Columns columns = new Columns();
+		//columns.setSizable(true);
 		grid.appendChild(columns);
 
 		org.zkoss.zul.Column column = null;
@@ -207,6 +208,7 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		//Frequency
 		column = new Column();
 		columns.appendChild(column);
+		ZKUpdateUtil.setWidth(column, "180px");
 		column.setLabel(Msg.getElement(ctx, "Frequency"));
 
 
