@@ -530,7 +530,10 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		editor_IsDisplaySchedule.addValueChangeListener(this);
 		ZKUpdateUtil.setVflex(editor_IsDisplaySchedule.getComponent(), "true");
 		ZKUpdateUtil.setHflex(editor_IsDisplaySchedule.getComponent(), "true");
-		row.appendChild(GroupwareToDoUtil.createEditorDiv(editor_IsDisplaySchedule, true));
+		Div div = GroupwareToDoUtil.createEditorDiv(editor_IsDisplaySchedule, true);
+		div.setStyle("vertical-align: middle; white-space: nowrap;");
+		row.appendChild(div);
+
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
@@ -539,7 +542,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		editor_IsDisplayTask.addValueChangeListener(this);
 		ZKUpdateUtil.setVflex(editor_IsDisplayTask.getComponent(), "true");
 		ZKUpdateUtil.setHflex(editor_IsDisplayTask.getComponent(), "true");
-		row.appendChild(GroupwareToDoUtil.createEditorDiv(editor_IsDisplayTask, true));
+		div = GroupwareToDoUtil.createEditorDiv(editor_IsDisplayTask, true);
+		div.setStyle("vertical-align: middle; white-space: nowrap;");
+		row.appendChild(div);
 
 
 		/******************** 2nd floor *********************************/
@@ -692,12 +697,15 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
 
 
-		label_DisplayPeriod = new Label();
-		label_DisplayPeriod.setStyle("white-space: nowrap;");
-		updateDateLabel();
+		div = GroupwareToDoUtil.createLabelDiv(null,  Msg.getMsg(ctx, "JP_DisplayPeriod") + " : ", true);
+		div.setStyle("vertical-align: middle; white-space: nowrap;");
+		row.appendChild(div);
 
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(null,  Msg.getMsg(ctx, "JP_DisplayPeriod") + " : ", true));
-		row.appendChild(GroupwareToDoUtil.createLabelDiv(null, label_DisplayPeriod, true));
+		label_DisplayPeriod = new Label();
+		updateDateLabel();
+		div = GroupwareToDoUtil.createLabelDiv(label_DisplayPeriod, false);
+		div.setStyle("vertical-align: middle; white-space: nowrap;");
+		row.appendChild(div);
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
