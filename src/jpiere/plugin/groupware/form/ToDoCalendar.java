@@ -440,7 +440,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ZKUpdateUtil.setVflex(row, "min");
 		ZKUpdateUtil.setHflex(row, "min");
 
+
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
+
 
 		//User Search
 		MLookup lookupUser = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
@@ -453,8 +455,6 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		label_AD_User_ID = new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID));
 		label_AD_User_ID.setId(MToDo.COLUMNNAME_AD_User_ID);
 		label_AD_User_ID.addEventListener(Events.ON_CLICK, this);
-		ZKUpdateUtil.setVflex(label_AD_User_ID, "true");
-		ZKUpdateUtil.setHflex(label_AD_User_ID, "true");
 
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_AD_User_ID, label_AD_User_ID, true));
 		row.appendChild(editor_AD_User_ID.getComponent());
@@ -489,7 +489,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		row.appendChild(editor_JP_ToDo_Category_ID.getComponent());
 		editor_JP_ToDo_Category_ID.showMenu();
 
+
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
+
 
 		//ToDo Status List
 		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
@@ -537,6 +539,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
+
 		editor_IsDisplayTask = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayTaskJP), null, true, false, true);
 		editor_IsDisplayTask.setValue(p_IsDisplayTask);
 		editor_IsDisplayTask.addValueChangeListener(this);
@@ -562,7 +565,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ZKUpdateUtil.setVflex(row, "false");
 		ZKUpdateUtil.setHflex(row, "min");
 
+
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
+
 
 		//JP_ToDo_Calendar
 		lookup_JP_ToDo_Calendar = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar),  DisplayType.List);
@@ -576,7 +581,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		row.appendChild(GroupwareToDoUtil.createLabelDiv(editor_JP_ToDo_Calendar, label_JP_ToDo_Calendar, true));
 		row.appendChild(editor_JP_ToDo_Calendar.getComponent());
 
+
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
+
 
 		//Create New ToDo Button
 		Button createNewToDo = new Button();
@@ -593,6 +600,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		row.appendCellChild(createNewToDo,2);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
+
 		//Refresh Button
 		Button refresh = new Button();
 		if (ThemeManager.isUseFontIconForImage())
@@ -608,6 +616,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
+
 
 		Button oneDayView = new Button();
 		oneDayView.setLabel(Msg.getMsg(ctx,"Day"));
