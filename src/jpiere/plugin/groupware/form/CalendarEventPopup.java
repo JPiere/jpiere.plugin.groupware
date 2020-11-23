@@ -19,9 +19,12 @@ import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WTimeEditor;
+import org.adempiere.webui.editor.WUrlEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
+import org.compiere.model.GridField;
+import org.compiere.model.GridFieldVO;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
@@ -99,6 +102,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID)) );
 		map_Label.put(MToDo.COLUMNNAME_Name, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Name)) );
 		map_Label.put(MToDo.COLUMNNAME_Description, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_Description)) );
+		map_Label.put(MToDo.COLUMNNAME_URL, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_URL)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)) );
 		map_Label.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, new Label(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate)) );
@@ -166,6 +170,14 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
 		editor_Description.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Description, editor_Description);
+
+
+		//*** URL ***//
+		GridFieldVO gridFieldVO = GridFieldVO.createParameter(ctx, 0, 0, 0, 0, MToDo.COLUMNNAME_URL, MToDo.COLUMNNAME_URL, DisplayType.URL, 0, false, false, null);
+		WUrlEditor editor_URL = new WUrlEditor(new GridField(gridFieldVO));
+		editor_URL.setReadWrite(false);
+		ZKUpdateUtil.setHflex(editor_URL.getComponent(), "true");
+		map_Editor.put("URL", editor_URL);
 
 
 		//*** Comments ***//
@@ -433,6 +445,12 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Description).getComponent(),4);
 
 
+		//*** URL ***//
+		row = rows.newRow();
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_URL), false),2);
+		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_URL).getComponent(),4);
+
+
 		if(p_IsPersonalToDo)
 		{
 			//*** Comments ***//
@@ -646,6 +664,7 @@ public class CalendarEventPopup extends Popup implements EventListener<Event>{
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(null);
 		map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_I_ToDo.getName());
 		map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_I_ToDo.getDescription());
+		map_Editor.get(MToDo.COLUMNNAME_URL).setValue(p_I_ToDo.getURL());
 
 		if(p_IsPersonalToDo)
 		{
