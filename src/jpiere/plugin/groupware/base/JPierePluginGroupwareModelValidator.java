@@ -80,7 +80,7 @@ public class JPierePluginGroupwareModelValidator implements ModelValidator {
 					if(AD_BroadcastMessage_ID != 0 && note.isProcessed() && po.is_ValueChanged("Processed"))
 					{
 						MToDoReminder reminder = MToDoReminder.getFromBroadcastMessage(Env.getCtx(), AD_BroadcastMessage_ID, null);
-						if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(reminder.getJP_ToDo_ReminderType()))
+						if(reminder != null && MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(reminder.getJP_ToDo_ReminderType()))
 						{
 							if(MToDoReminder.BROADCASTFREQUENCY_UntilAcknowledge.equals(reminder.getBroadcastFrequency())
 									|| MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(reminder.getBroadcastFrequency()))
