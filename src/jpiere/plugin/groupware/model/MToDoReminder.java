@@ -564,6 +564,13 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			message.append(p_End);
 		}
 
+		if(!Util.isEmpty(getURL()))
+		{
+			message.append(p_Start).append(Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_URL) + " ")
+									.append("<a href=\"").append(getURL()).append("\"  target=\"_blank\">")
+									.append(getURL()).append("</a>").append(p_End);
+		}
+
 		if(MToDo.JP_TODO_TYPE_Memo.equals(parent.getJP_ToDo_Type()))
 		{
 			;
@@ -573,6 +580,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}
 
 		message.append(p_Start_Description).append(getDescription()).append(p_End);
+
 
 		bm.setBroadcastMessage(message.toString());
 
