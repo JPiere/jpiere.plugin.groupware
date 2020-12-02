@@ -534,13 +534,11 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		{
 			Date startDate = new Date(parent.getJP_ToDo_ScheduledStartDate().getTime());
 			String string_StartDate = sdfV.format(startDate);
-			message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
 			if(parent.isStartDateAllDayJP())
 			{
-				;
-
+				message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate)).append(" : ").append(string_StartDate);
 			}else {
-
+				message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
 				String string_StartTime = parent.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalTime().toString();
 				message.append(" ").append(string_StartTime);
 			}
@@ -552,14 +550,13 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		{
 			Date endDate = new Date(parent.getJP_ToDo_ScheduledEndDate().getTime());
 			String string_EndDate = sdfV.format(endDate);
-
-			message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
 			if(parent.isEndDateAllDayJP())
 			{
-				;
+				message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate)).append(" : ").append(string_EndDate);
 
 			}else {
 
+				message.append(p_Start).append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
 				String string_EndTime = parent.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime().toString();
 				message.append(" ").append(string_EndTime);
 			}

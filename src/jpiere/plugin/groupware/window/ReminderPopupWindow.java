@@ -1324,6 +1324,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 						{
 							todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
 							todoReminder.setIsSentReminderJP(true);
+							if(MToDoReminder.BROADCASTFREQUENCY_JustOnce.equals(todoReminder.getBroadcastFrequency()))
+								todoReminder.setProcessed(true);
 							todoReminder.saveEx();
 
 							FDialog.info(0, this, "MessageSent", i_Reminder.getRemindMsg());
