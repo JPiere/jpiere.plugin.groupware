@@ -13,11 +13,18 @@
  *****************************************************************************/
 package jpiere.plugin.groupware.window;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Label;
 import org.adempiere.webui.theme.ThemeManager;
+import org.compiere.model.MColumn;
+import org.compiere.model.MRefList;
+import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
+import org.compiere.util.Util;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Cell;
 import org.zkoss.zul.Radio;
@@ -99,17 +106,40 @@ public class PersonalToDoListRowRenderer implements RowRenderer<PersonalToDoMode
 			cell = new Cell();
 			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info()))
 			{
-				cell.appendChild(new Label(data.JP_Statistics_YesNo));
+
+				if(Util.isEmpty(data.JP_Statistics_YesNo))
+				{
+					cell.appendChild(new Label(""));
+				}else {
+					int AD_Column_ID = MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_YesNo);
+					MColumn column = MColumn.get(Env.getCtx(), AD_Column_ID);
+					int reference_ID = column.getAD_Reference_Value_ID();
+					String statistics_info = MRefList.getListName(Env.getCtx(), reference_ID, data.JP_Statistics_YesNo);
+					cell.appendChild(new Label(statistics_info));
+				}
 
 			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info())) {
 
-				cell.appendChild(new Label(data.JP_Statistics_Choice));
+				if(Util.isEmpty(data.JP_Statistics_Choice))
+				{
+					cell.appendChild(new Label(""));
+				}else {
+					int AD_Column_ID = MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_Choice);
+					MColumn column = MColumn.get(Env.getCtx(), AD_Column_ID);
+					int reference_ID = column.getAD_Reference_Value_ID();
+					String statistics_info = MRefList.getListName(Env.getCtx(), reference_ID, data.JP_Statistics_Choice);
+					cell.appendChild(new Label(statistics_info));
+				}
 
 			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info())) {
 
 				if(data.JP_Statistics_DateAndTime != null)
 				{
-					cell.appendChild(new Label(data.JP_Statistics_DateAndTime.toString()));//TODO フォーマット
+					SimpleDateFormat sdfV = DisplayType.getDateFormat();
+					Date dateAndTime = new Date(data.JP_Statistics_DateAndTime.getTime());
+					String string_Date = sdfV.format(dateAndTime);
+					String string_Time = data.JP_Statistics_DateAndTime.toLocalDateTime().toLocalTime().toString();
+					cell.appendChild(new Label(string_Date + " " +string_Time));
 				}
 
 			}else if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info())) {
