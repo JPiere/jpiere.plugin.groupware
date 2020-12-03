@@ -241,7 +241,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}
 
 		ZKUpdateUtil.setWindowWidthX(this, 480);
-		ZKUpdateUtil.setWindowHeightX(this, 420);
+		ZKUpdateUtil.setWindowHeightX(this, 480);
 
 	}
 
@@ -870,39 +870,41 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_YesNo.equals(JP_Mandatory_Statistics_Info))
 			{
 				row = statisticsInfo_rows.newRow();
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_YesNo), true),2);
-				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).getComponent(),4);
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Statistics_YesNo), true),2);
+				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_YesNo).getComponent(),4);
+				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_YesNo).dynamicDisplay();
 			}
 
 			//*** JP_Statistics_Choice ***//
 			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Choice.equals(JP_Mandatory_Statistics_Info))
 			{
 				row = statisticsInfo_rows.newRow();
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Choice), true),2);
-				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).getComponent(),4);
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Statistics_Choice), true),2);
+				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_Choice).getComponent(),4);
+				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_Choice).dynamicDisplay();
 			}
 
 			//*** JP_Statistics_DateAndTime ***//
 			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_DateAndTime.equals(JP_Mandatory_Statistics_Info))
 			{
 				row = statisticsInfo_rows.newRow();
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime), true),2);
-				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).getComponent(),4);
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime), true),2);
+				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime).getComponent(),4);
 			}
 
 			//*** JP_Statistics_Number ***//
 			if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_Number.equals(JP_Mandatory_Statistics_Info))
 			{
 				row = statisticsInfo_rows.newRow();
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_JP_Statistics_Number), true),2);
-				row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).getComponent(),4);
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Statistics_Number), true),2);
+				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_Number).getComponent(),4);
 			}
 
 		}else {
 
 			row = statisticsInfo_rows.newRow();
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info), false),3);
-			row.appendCellChild(map_Editor.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info).getComponent(),3);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info), false),3);
+			row.appendCellChild(map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info).getComponent(),3);
 
 		}
 
