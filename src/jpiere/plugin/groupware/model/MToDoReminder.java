@@ -231,13 +231,15 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		{
 			Date startDate = new Date(todo.getJP_ToDo_ScheduledStartDate().getTime());
 			String string_StartDate = sdfV.format(startDate);
-			message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
+
 			if(todo.isStartDateAllDayJP())
 			{
+				message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate)).append(" : ").append(string_StartDate);
 				message.append(System.lineSeparator());
 
 			}else {
 
+				message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime)).append(" : ").append(string_StartDate);
 				String string_StartTime = todo.getJP_ToDo_ScheduledStartTime().toLocalDateTime().toLocalTime().toString();
 				message.append(" ").append(string_StartTime).append(System.lineSeparator());
 			}
@@ -248,13 +250,14 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			Date endDate = new Date(todo.getJP_ToDo_ScheduledEndDate().getTime());
 			String string_EndDate = sdfV.format(endDate);
 
-			message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
 			if(todo.isEndDateAllDayJP())
 			{
+				message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate)).append(" : ").append(string_EndDate);
 				message.append(System.lineSeparator());
 
 			}else {
 
+				message.append(Msg.getElement(getCtx(), MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime)).append(" : ").append(string_EndDate);
 				String string_EndTime = todo.getJP_ToDo_ScheduledEndTime().toLocalDateTime().toLocalTime().toString();
 				message.append(" ").append(string_EndTime).append(System.lineSeparator());
 			}
@@ -264,6 +267,13 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		{
 			;
 		}else {
+			message.append(System.lineSeparator());
+		}
+
+		if(!Util.isEmpty(getURL()))
+		{
+			message.append(Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_URL) + " ").append(getURL());
+			message.append(System.lineSeparator());
 			message.append(System.lineSeparator());
 		}
 
