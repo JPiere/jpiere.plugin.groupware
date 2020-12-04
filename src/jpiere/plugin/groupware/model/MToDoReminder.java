@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.adempiere.model.MBroadcastMessage;
+import org.adempiere.webui.apps.AEnv;
 import org.compiere.model.I_C_NonBusinessDay;
 import org.compiere.model.MClient;
 import org.compiere.model.MMessage;
@@ -223,7 +224,9 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		MUser to = new MUser (getCtx(), todo.getAD_User_ID(), get_TrxName());
 
 		String subject = Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+todo.getName();
-		StringBuilder message = new StringBuilder();
+
+		StringBuilder message = new StringBuilder(todo.getName()).append(System.lineSeparator());
+		message.append(AEnv.getZoomUrlTableID(todo)).append(System.lineSeparator()).append(System.lineSeparator());
 
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
 
@@ -277,7 +280,10 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			message.append(System.lineSeparator());
 		}
 
-		message.append(getDescription());
+		message.append(getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
+
+		String reminderURL = Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+ AEnv.getZoomUrlTableID(this);
+		message.append(reminderURL).append(System.lineSeparator());
 
 		EMail email = client.createEMail(to.getEMail(), subject, message.toString(), false);
 
