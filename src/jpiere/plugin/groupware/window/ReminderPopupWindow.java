@@ -930,16 +930,20 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 					if(saveReminder())
 					{
 						this.onClose();
+						return;
 					}
 
 				}else if(btn== confirmPanel.getButton(ConfirmPanel.A_CANCEL)) {
 
 					this.onClose();
+					return ;
 
 				}
+			}
 
-			}else if(BUTTON_NAME_SAVE.equals(btnName)){
 
+			if(BUTTON_NAME_SAVE.equals(btnName))
+			{
 				saveReminder();
 
 			}else if(BUTTON_NAME_DELETE.equals(btnName)){
