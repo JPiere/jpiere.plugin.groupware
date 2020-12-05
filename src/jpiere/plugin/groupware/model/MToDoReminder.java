@@ -226,7 +226,13 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		String subject = Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+todo.getName();
 
 		StringBuilder message = new StringBuilder(todo.getName()).append(System.lineSeparator());
-		message.append(AEnv.getZoomUrlTableID(todo)).append(System.lineSeparator()).append(System.lineSeparator());
+		try
+		{
+			if(!Util.isEmpty(AEnv.getApplicationUrl()))
+				message.append(AEnv.getZoomUrlTableID(todo)).append(System.lineSeparator()).append(System.lineSeparator());
+		}catch (Exception e) {
+			;
+		}
 
 		SimpleDateFormat sdfV = DisplayType.getDateFormat();
 
@@ -282,8 +288,14 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 		message.append(getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
 
-		String reminderURL = Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+ AEnv.getZoomUrlTableID(this);
-		message.append(reminderURL).append(System.lineSeparator());
+		try
+		{
+			String reminderURL = Msg.getElement(getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : "+ AEnv.getZoomUrlTableID(this);
+			message.append(reminderURL).append(System.lineSeparator());
+		}catch (Exception e) {
+			//noting to do;
+		}
+
 
 		EMail email = client.createEMail(to.getEMail(), subject, message.toString(), false);
 
