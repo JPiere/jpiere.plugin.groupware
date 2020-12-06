@@ -2,21 +2,21 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: jpiere.plugin.groupware
 Bundle-SymbolicName: jpiere.plugin.groupware;singleton:=true
-Bundle-Version: 7.1.0.qualifier
+Bundle-Version: 6.2.0.qualifier
 Bundle-Vendor: OSS ERP Solutions
 Automatic-Module-Name: jpiere.plugin.groupware
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: org.adempiere.base;bundle-version="7.1.0",
- org.adempiere.ui.zk;bundle-version="7.1.0",
- org.idempiere.zk.extra;bundle-version="7.1.0",
- zcommon;bundle-version="8.6.0",
- zel;bundle-version="8.6.0",
- zhtml;bundle-version="8.6.0",
- zkbind;bundle-version="8.6.0",
- zkplus;bundle-version="8.6.0",
+Require-Bundle: org.adempiere.base;bundle-version="6.2.0",
+ org.adempiere.ui.zk;bundle-version="6.2.0",
+ org.idempiere.zk.extra;bundle-version="6.2.0",
+ zcommon;bundle-version="0.0.0",
+ zel;bundle-version="0.0.0",
+ zhtml;bundle-version="0.0.0",
+ zkbind;bundle-version="0.0.0",
+ zkplus;bundle-version="0.0.0",
  zk,
  zul,
- zweb;bundle-version="8.6.0"
+ zweb;bundle-version="0.0.0"
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
