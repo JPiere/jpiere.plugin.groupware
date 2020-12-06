@@ -685,7 +685,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setValue(p_iToDo.getAD_Org_ID());
 			map_Editor.get(MToDo.COLUMNNAME_AD_User_ID).setValue(p_AD_User_ID);
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Type).setValue(p_iToDo.getJP_ToDo_Type());
-			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_iToDo.getJP_ToDo_Category_ID());
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Category_ID).setValue(p_iToDo.getJP_ToDo_Category_ID() == 0? null : p_iToDo.getJP_ToDo_Category_ID());
 			map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_iToDo.getName());
 			map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_iToDo.getDescription());
 			map_Editor.get(MToDo.COLUMNNAME_URL).setValue(p_iToDo.getURL());
@@ -706,7 +706,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).setValue(p_iToDo.getJP_Statistics_DateAndTime());
 				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).setValue(p_iToDo.getJP_Statistics_Number());
 			}else {
-				map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(p_iToDo.getJP_Team_ID());
+				map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(p_iToDo.getJP_Team_ID() == 0? null : p_iToDo.getJP_Team_ID() );
 				map_Editor.get(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info).setValue(p_iToDo.getJP_Mandatory_Statistics_Info());
 			}
 
