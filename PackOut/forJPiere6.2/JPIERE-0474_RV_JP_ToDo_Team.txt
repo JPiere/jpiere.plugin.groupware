@@ -1,0 +1,48 @@
+-- View: adempiere.rv_jp_todo_team
+
+-- DROP VIEW adempiere.rv_jp_todo_team;
+
+CREATE OR REPLACE VIEW adempiere.rv_jp_todo_team
+ AS
+ SELECT t.jp_todo_team_id AS rv_jp_todo_team_id,
+    t.ad_client_id,
+    t.ad_org_id,
+    t.ad_user_id AS jp_todo_team_user_id,
+    t.created,
+    t.createdby,
+    t.description,
+    t.isactive,
+    t.jp_todo_team_id,
+    t.jp_todo_type,
+    t.name,
+    t.updated,
+    t.updatedby,
+    t.jp_todo_category_id,
+    t.jp_todo_scheduledstartdate,
+    t.jp_todo_scheduledstarttime,
+    t.jp_todo_scheduledenddate,
+    t.jp_todo_scheduledendtime,
+    t.jp_todo_status AS jp_todo_team_status,
+    t.jp_mandatory_statistics_info,
+    t.jp_todo_team_related_id,
+    t.c_project_id,
+    t.c_projectphase_id,
+    t.c_projecttask_id,
+    t.jp_team_id,
+    t.isstartdatealldayjp,
+    t.isenddatealldayjp,
+    t.isopentodojp,
+    t.processed,
+    p.ad_user_id AS jp_todo_personal_user_id,
+    p.jp_todo_status AS jp_todo_personal_status,
+    p.comments,
+    p.jp_statistics_choice,
+    p.jp_statistics_dateandtime,
+    p.jp_statistics_number,
+    p.jp_statistics_yesno
+   FROM adempiere.jp_todo_team t
+     JOIN adempiere.jp_todo p ON t.jp_todo_team_id = p.jp_todo_team_id;
+
+ALTER TABLE adempiere.rv_jp_todo_team
+    OWNER TO adempiere;
+

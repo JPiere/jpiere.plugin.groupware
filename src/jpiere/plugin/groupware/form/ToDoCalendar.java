@@ -510,7 +510,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		//Team Searh
 		MLookup lookupTeam = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 		editor_JP_Team_ID = new WSearchEditor( MTeam.COLUMNNAME_JP_Team_ID, false, false, true, lookupTeam);
-		editor_JP_Team_ID.setValue(p_JP_Team_ID);
+		editor_JP_Team_ID.setValue(null);
 		editor_JP_Team_ID.addValueChangeListener(this);
 		ZKUpdateUtil.setVflex(editor_JP_Team_ID.getComponent(), "true");
 		ZKUpdateUtil.setHflex(editor_JP_Team_ID.getComponent(), "true");
