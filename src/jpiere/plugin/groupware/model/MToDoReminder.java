@@ -824,4 +824,18 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		return false;
 	}
 
+
+	@Override
+	public int getJP_Team_ID()
+	{
+		return 0;
+	}
+
+
+	@Override
+	public void setJP_Team_ID(int JP_Team_ID)
+	{
+		;
+	}
+
 }

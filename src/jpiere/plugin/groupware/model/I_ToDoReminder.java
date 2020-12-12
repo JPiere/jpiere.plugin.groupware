@@ -123,4 +123,8 @@ public interface I_ToDoReminder {
 	/** Set Remind Target	  */
 	public void setJP_ToDo_RemindTarget (String JP_ToDo_RemindTarget);
 	public String getJP_ToDo_RemindTarget();
+
+	/** JP_Team_ID	  */
+	public int getJP_Team_ID();
+	public void setJP_Team_ID (int JP_Team_ID);
 }

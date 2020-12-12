@@ -150,6 +150,17 @@ public interface I_JP_ToDo_Team_Reminder
 	/** Get Mandatory Statistics Info	  */
 	public String getJP_Mandatory_Statistics_Info();
 
+    /** Column name JP_Team_ID */
+    public static final String COLUMNNAME_JP_Team_ID = "JP_Team_ID";
+
+	/** Set Team	  */
+	public void setJP_Team_ID (int JP_Team_ID);
+
+	/** Get Team	  */
+	public int getJP_Team_ID();
+
+	public I_JP_Team getJP_Team() throws RuntimeException;
+
     /** Column name JP_ToDo_RemindTarget */
     public static final String COLUMNNAME_JP_ToDo_RemindTarget = "JP_ToDo_RemindTarget";
 

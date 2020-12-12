@@ -31,7 +31,7 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20201108L;
+	private static final long serialVersionUID = 20201212L;
 
     /** Standard Constructor */
     public X_JP_ToDo_Team_Reminder (Properties ctx, int JP_ToDo_Team_Reminder_ID, String trxName)
@@ -206,6 +206,31 @@ public class X_JP_ToDo_Team_Reminder extends PO implements I_JP_ToDo_Team_Remind
 	public String getJP_Mandatory_Statistics_Info () 
 	{
 		return (String)get_Value(COLUMNNAME_JP_Mandatory_Statistics_Info);
+	}
+
+	public I_JP_Team getJP_Team() throws RuntimeException
+    {
+		return (I_JP_Team)MTable.get(getCtx(), I_JP_Team.Table_Name)
+			.getPO(getJP_Team_ID(), get_TrxName());	}
+
+	/** Set Team.
+		@param JP_Team_ID Team	  */
+	public void setJP_Team_ID (int JP_Team_ID)
+	{
+		if (JP_Team_ID < 1) 
+			set_Value (COLUMNNAME_JP_Team_ID, null);
+		else 
+			set_Value (COLUMNNAME_JP_Team_ID, Integer.valueOf(JP_Team_ID));
+	}
+
+	/** Get Team.
+		@return Team	  */
+	public int getJP_Team_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Team_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
 	}
 
 	/** All User of Personal ToDo = AL */
