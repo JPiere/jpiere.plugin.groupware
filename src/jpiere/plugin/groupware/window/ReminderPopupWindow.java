@@ -766,7 +766,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			//*** JP_Team_ID ***//
 			row = rows.newRow();
 			rows.appendChild(row);
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID), true),2);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID), false),2);
 			row.appendCellChild(map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).getComponent(),4);
 		}
 
@@ -809,7 +809,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		//*** Description ***//
 		row = rows.newRow();
-		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_Description), false),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_Description), true),2);
 		row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_Description).getComponent(),4);
 
 
