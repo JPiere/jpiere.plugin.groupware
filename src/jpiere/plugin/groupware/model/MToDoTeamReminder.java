@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.Properties;
 
 import org.compiere.model.MMessage;
+import org.compiere.model.MUser;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
@@ -161,10 +162,18 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 			return false;
 		}
 
+		MUser[] users = null;
 		MToDoReminder todoReminder = null;
+
+		if(getJP_Team_ID() > 0)
+		{
+			MTeam team = new MTeam(getCtx(),getJP_Team_ID(), get_TrxName() );
+			users = team.getTeamMemberUser();
+		}
 		int counter = 0;
 		for(int i = 0; i < todoes.length; i++)
 		{
+			//Check Target
 			if(MToDoTeamReminder.JP_TODO_REMINDTARGET_AllUserOfPersonalToDo.equals(getJP_ToDo_RemindTarget()))
 			{
 				;
@@ -196,6 +205,23 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 				{
 					continue;
 				}
+			}
+
+			//Check Team
+			if(users != null)
+			{
+				boolean isIncludeTeam = false;
+				for(int j = 0; j < users.length; j++)
+				{
+					if(todoes[i].getAD_User_ID() == users[j].getAD_User_ID())
+					{
+						isIncludeTeam = true;
+						break;
+					}
+				}
+
+				if(!isIncludeTeam)
+					continue;
 			}
 
 			todoReminder = new MToDoReminder(getCtx(), 0, get_TrxName());

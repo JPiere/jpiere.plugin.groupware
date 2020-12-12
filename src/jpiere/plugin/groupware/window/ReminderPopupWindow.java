@@ -38,6 +38,7 @@ import org.adempiere.webui.editor.WDateEditor;
 import org.adempiere.webui.editor.WDatetimeEditor;
 import org.adempiere.webui.editor.WEditor;
 import org.adempiere.webui.editor.WNumberEditor;
+import org.adempiere.webui.editor.WSearchEditor;
 import org.adempiere.webui.editor.WStringEditor;
 import org.adempiere.webui.editor.WTableDirEditor;
 import org.adempiere.webui.editor.WTimeEditor;
@@ -346,22 +347,12 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}else {
 			map_Label.put(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget, new Label(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget)) );
 			map_Label.put(MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info, new Label(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info)) );
+			map_Label.put(MToDoTeamReminder.COLUMNNAME_JP_Team_ID, new Label(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_Team_ID)) );
 		}
 	}
 
 	private void createEditorMap()
 	{
-		if(!p_IsPersonalToDo)
-		{
-			//*** JP_ToDo_RemindTarget ***//
-			MLookup lookup_JP_ToDo_ReminderTarget = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeamReminder.Table_Name,  MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget),  DisplayType.List);
-			WTableDirEditor editor_JP_ToDo_RemindTarget = new WTableDirEditor(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget, true, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, lookup_JP_ToDo_ReminderTarget);
-			editor_JP_ToDo_RemindTarget.addValueChangeListener(this);
-			ZKUpdateUtil.setHflex(editor_JP_ToDo_RemindTarget.getComponent(), "true");
-			map_Editor.put(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget, editor_JP_ToDo_RemindTarget);
-		}
-
-
 		//*** JP_ToDo_ReminderType ***//
 		MLookup lookup_JP_ToDo_ReminderType = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoReminder.Table_Name,  MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType),  DisplayType.List);
 		WTableDirEditor editor_JP_ToDo_ReminderType = new WTableDirEditor(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType, true, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, lookup_JP_ToDo_ReminderType);
@@ -369,11 +360,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ReminderType.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType, editor_JP_ToDo_ReminderType);
 
+
 		//*** JP_ToDo_RemindDate ***//
 		WDateEditor editor_JP_ToDo_RemindDate = new WDateEditor(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate, false, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, null);
 		editor_JP_ToDo_RemindDate.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_RemindDate.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate, editor_JP_ToDo_RemindDate);
+
 
 		//*** JP_ToDo_RemindTime ***//
 		WTimeEditor editor_JP_ToDo_RemindTime = new WTimeEditor(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime, false, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, null);
@@ -382,6 +375,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		Timebox reminderTimebox = editor_JP_ToDo_RemindTime.getComponent();
 		reminderTimebox.setFormat("HH:mm");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime, editor_JP_ToDo_RemindTime);
+
 
 		//*** Mail Frequency ***//
 		MLookup lookup_MailFrequency = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoReminder.Table_Name,  MToDoReminder.COLUMNNAME_JP_MailFrequency),  DisplayType.List);
@@ -415,20 +409,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		map_Editor.put("URL", editor_URL);
 
 
-		if(p_IsPersonalToDo)
-		{
-			WStringEditor editor_Comments = new WStringEditor(MToDoReminder.COLUMNNAME_Comments, true, false, true, 30, 30, "", null);
-			editor_Comments.addValueChangeListener(this);
-			ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
-			editor_Comments.getComponent().setRows(3);
-			map_Editor.put(MToDoReminder.COLUMNNAME_Comments, editor_Comments);
-		}
-
 		//*** IsSentReminderJP ***//
 		WYesNoEditor editor_IsSentReminderJP = new WYesNoEditor(MToDoReminder.COLUMNNAME_IsSentReminderJP, Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsSentReminderJP), null, true, true, true);
 		editor_IsSentReminderJP.addValueChangeListener(this);
 		map_Editor.put(MToDoReminder.COLUMNNAME_IsSentReminderJP, editor_IsSentReminderJP);
 
+
+		//*** IsConfirmedJP ***//
 		WYesNoEditor editor_IsConfirmed = new WYesNoEditor(MToDoReminder.COLUMNNAME_IsConfirmed, Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsConfirmed), null, true, p_IsUpdatebale_IsConfirmed, true);
 		editor_IsConfirmed.addValueChangeListener(this);
 		map_Editor.put(MToDoReminder.COLUMNNAME_IsConfirmed, editor_IsConfirmed);
@@ -440,6 +427,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		ZKUpdateUtil.setHflex(editor_JP_Confirmed.getComponent(), "true");
 		map_Editor.put(MToDoReminder.COLUMNNAME_JP_Confirmed, editor_JP_Confirmed);
 
+
 		if(p_IsPersonalToDo)
 		{
 			//*** Comments  ***//
@@ -449,12 +437,14 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			editor_Comments.getComponent().setRows(3);
 			map_Editor.put(MToDoReminder.COLUMNNAME_Comments, editor_Comments);
 
+
 			//*** JP_Statistics_YesNo  ***//
 			MLookup lookup_JP_Statistics_YesNo = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoReminder.Table_Name, MToDoReminder.COLUMNNAME_JP_Statistics_YesNo),  DisplayType.List);
 			WTableDirEditor editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_Statistics_YesNo), null, false, !p_IsUpdatable, true);
 			editor_JP_Statistics_YesNo.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_JP_Statistics_YesNo.getComponent(), "true");
 			map_Editor.put(MToDoReminder.COLUMNNAME_JP_Statistics_YesNo, editor_JP_Statistics_YesNo);
+
 
 			//*** JP_Statistics_Choice ***//
 			MLookup lookup_JP_Statistics_Choice = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoReminder.Table_Name, MToDoReminder.COLUMNNAME_JP_Statistics_Choice),  DisplayType.List);
@@ -463,11 +453,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			ZKUpdateUtil.setHflex(editor_JP_Statistics_Choice.getComponent(), "true");
 			map_Editor.put(MToDoReminder.COLUMNNAME_JP_Statistics_Choice, editor_JP_Statistics_Choice);
 
+
 			//*** JP_Statistics_DateAndTime ***//
 			WDatetimeEditor editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime), null, false, !p_IsUpdatable, true);
 			editor_JP_Statistics_DateAndTime.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex((HtmlBasedComponent)editor_JP_Statistics_DateAndTime.getComponent(), "true");
 			map_Editor.put(MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime, editor_JP_Statistics_DateAndTime);
+
 
 			//*** JP_Statistics_Number ***//
 			WNumberEditor editor_JP_Statistics_Number = new WNumberEditor(MToDoReminder.COLUMNNAME_JP_Statistics_Number, false, !p_IsUpdatable, true, DisplayType.Number, Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_Statistics_Number));
@@ -476,6 +468,24 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			map_Editor.put(MToDoReminder.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
 
 		}else {
+
+			//*** JP_ToDo_RemindTarget ***//
+			MLookup lookup_JP_ToDo_ReminderTarget = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeamReminder.Table_Name,  MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget),  DisplayType.List);
+			WTableDirEditor editor_JP_ToDo_RemindTarget = new WTableDirEditor(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget, true, p_haveParentTeamToDoReminder? true : !p_IsUpdatable, true, lookup_JP_ToDo_ReminderTarget);
+			editor_JP_ToDo_RemindTarget.addValueChangeListener(this);
+			ZKUpdateUtil.setHflex(editor_JP_ToDo_RemindTarget.getComponent(), "true");
+			map_Editor.put(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget, editor_JP_ToDo_RemindTarget);
+
+
+			//*** JP_Team_ID ***//
+			String validationCode = "JP_Team.AD_User_ID IS NULL OR JP_Team.AD_User_ID=" + Env.getAD_User_ID(ctx);//Login user
+			MLookup lookup_JP_Team_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeamReminder.Table_Name, MToDoTeamReminder.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
+			lookup_JP_Team_ID.getLookupInfo().ValidationCode = validationCode;
+			WSearchEditor editor_JP_Team_ID = new WSearchEditor(lookup_JP_Team_ID, Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_Team_ID), null, false, !p_IsUpdatable, true);
+			editor_JP_Team_ID.addValueChangeListener(this);
+			ZKUpdateUtil.setHflex(editor_JP_Team_ID.getComponent(), "true");
+			map_Editor.put(MToDoTeamReminder.COLUMNNAME_JP_Team_ID, editor_JP_Team_ID);
+
 
 			//*** JP_Mandatory_Statistics_Info ***//
 			MLookup lookup_JP_Mandatory_Statistics_Info = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name,  MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info),  DisplayType.List);
@@ -514,6 +524,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_Number).setReadWrite(p_IsUpdatebale_StatisticsInfo);
 		}else {
 			map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget).setReadWrite(p_IsUpdatable);
+			map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).setReadWrite(p_IsUpdatable);
 		}
 
 		if(i_Reminder.isConfirmed())
@@ -543,6 +554,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			}else {
 
 				map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget).setValue(MToDoTeamReminder.JP_TODO_REMINDTARGET_AllUserOfPersonalToDo);
+				map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).setValue(null);
 			}
 
 		}else {
@@ -571,6 +583,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			}else {
 
 				map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget).setValue(i_Reminder.getJP_ToDo_RemindTarget());
+				map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).setValue(i_Reminder.getJP_Team_ID() == 0? null : i_Reminder.getJP_Team_ID());
 				map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info).setValue(i_Reminder.getJP_Mandatory_Statistics_Info());
 			}
 
@@ -749,13 +762,21 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			rows.appendChild(row);
 			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget), true),2);
 			row.appendCellChild(map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget).getComponent(),4);
+
+			//*** JP_Team_ID ***//
+			row = rows.newRow();
+			rows.appendChild(row);
+			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID), true),2);
+			row.appendCellChild(map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).getComponent(),4);
 		}
+
 
 		//*** JP_ToDo_ReminderType ***//
 		row = rows.newRow();
 		rows.appendChild(row);
 		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType), true),2);
 		row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType).getComponent(),4);
+
 
 		//** JP_ToDo_RemindDateTime **//
 		row = rows.newRow();
@@ -767,6 +788,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).getComponent(),2);
 		row.appendCellChild(addHoursBtn,1);
 		row.appendCellChild(addMinsBtn,1);
+
 
 		//*** JP_ToDo_ReminderType ***//
 		if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(i_Reminder.getJP_ToDo_ReminderType()))
@@ -783,6 +805,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_MailFrequency), true),2);
 			row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_MailFrequency).getComponent(),4);
    		}
+
 
 		//*** Description ***//
 		row = rows.newRow();
@@ -1079,6 +1102,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				}else {
 
 					i_Reminder.setJP_ToDo_RemindTarget(db_Reminder.getJP_ToDo_RemindTarget());
+					i_Reminder.setJP_Team_ID(db_Reminder.getJP_Team_ID());
 					i_Reminder.setJP_Mandatory_Statistics_Info(db_Reminder.getJP_Mandatory_Statistics_Info());
 
 				}
@@ -1098,9 +1122,10 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		WEditor editor = null;
 
-		//JP_ToDo_RemindTarget
+
 		if(!p_IsPersonalToDo)
 		{
+			//JP_ToDo_RemindTarget
 			editor = map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget);
 			if(editor.getValue() == null || Util.isEmpty(editor.getValue().toString()))
 			{
@@ -1109,6 +1134,16 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 			}else {
 				i_Reminder.setJP_ToDo_RemindTarget((String)editor.getValue());
+			}
+
+
+			//JP_Team_ID
+			editor = map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID);
+			if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
+			{
+				;
+			}else {
+				i_Reminder.setJP_Team_ID((Integer)editor.getValue());
 			}
 		}
 
