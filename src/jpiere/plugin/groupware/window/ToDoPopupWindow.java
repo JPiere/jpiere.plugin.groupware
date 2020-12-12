@@ -1092,7 +1092,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		//*** Description ***//
 		row = rows.newRow();
-		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), false),2);
+		row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDo.COLUMNNAME_Description), true),2);
 		row.appendCellChild(map_Editor.get(MToDo.COLUMNNAME_Description).getComponent(),4);
 
 
