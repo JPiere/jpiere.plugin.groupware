@@ -30,6 +30,7 @@ import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.I_ToDoReminder;
 import jpiere.plugin.groupware.model.MToDo;
 import jpiere.plugin.groupware.model.MToDoReminder;
+import jpiere.plugin.groupware.model.MToDoTeam;
 import jpiere.plugin.groupware.model.MToDoTeamReminder;
 import jpiere.plugin.groupware.window.PersonalToDoListWindow;
 import jpiere.plugin.groupware.window.ReminderPopupWindow;
@@ -198,6 +199,16 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime));
 
+		if(MToDoTeam.Table_Name.equals(p_iToDo.get_TableName()))
+		{
+			column = new Column();
+			columns.appendChild(column);
+			column.setLabel(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget));
+
+			column = new Column();
+			columns.appendChild(column);
+			column.setLabel(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_Team_ID));
+		}
 
 		//RemindType
 		column = new Column();

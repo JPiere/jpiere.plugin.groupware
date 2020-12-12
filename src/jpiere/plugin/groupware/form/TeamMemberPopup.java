@@ -9,6 +9,7 @@ import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Label;
+import org.adempiere.webui.component.Window;
 import org.adempiere.webui.factory.ButtonFactory;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
@@ -32,6 +33,7 @@ import org.zkoss.zul.South;
 import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MTeamMember;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.window.ReminderPopupWindow;
 import jpiere.plugin.groupware.window.ToDoPopupWindow;
 
 
@@ -48,14 +50,14 @@ public class TeamMemberPopup extends Popup implements EventListener<Event>{
 
 	private Button zoomTeamBtn = null;
 
-	private ToDoPopupWindow todoPopupWindow = null;
+	private Window popupWindow = null;
 
 	private int JP_Team_ID = 0;
 
-	public TeamMemberPopup(ToDoPopupWindow todoPopupWindow) throws Exception
+	public TeamMemberPopup(Window popupWindow, int JP_Team_ID) throws Exception
 	{
-		this.todoPopupWindow = todoPopupWindow;
-		JP_Team_ID = todoPopupWindow.getJP_Team_ID();
+		this.popupWindow = popupWindow;
+		this.JP_Team_ID = JP_Team_ID;
 
 		zoomTeamBtn = ButtonFactory.createButton(Msg.getMsg(Env.getCtx(), "Zoom"), null, "");
 		if (ThemeManager.isUseFontIconForImage())
@@ -192,7 +194,21 @@ public class TeamMemberPopup extends Popup implements EventListener<Event>{
 	public void onEvent(Event event) throws Exception
 	{
 		AEnv.zoom(MTable.getTable_ID(MTeam.Table_Name), JP_Team_ID);
-		todoPopupWindow.dispose();
+		if(popupWindow instanceof ToDoPopupWindow)
+		{
+			popupWindow.dispose();
+		}else if(popupWindow instanceof ReminderPopupWindow) {
+
+			ReminderPopupWindow rpw = (ReminderPopupWindow)popupWindow;
+			ToDoPopupWindow todoPopupWindow = rpw.getToDoPopupWindow();
+
+			rpw.onClose();
+			todoPopupWindow.dispose();
+
+		}else {
+			popupWindow.dispose();
+		}
+
 		this.detach();
 	}
 

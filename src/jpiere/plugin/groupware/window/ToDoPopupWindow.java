@@ -1567,7 +1567,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 			}else if(BUTTON_NAME_SHOW_TEAM_MEMBER.equals(btnName)) {
 
-				TeamMemberPopup teampMemberPopup = new TeamMemberPopup(this);
+				TeamMemberPopup teampMemberPopup = new TeamMemberPopup(this, getJP_Team_ID());
 				teampMemberPopup.setPage(showTeamMemberBtn.getPage());
 				teampMemberPopup.open(showTeamMemberBtn,"start_before");
 

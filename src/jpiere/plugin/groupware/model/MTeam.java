@@ -24,6 +24,7 @@ import org.compiere.model.MMessage;
 import org.compiere.model.MRole;
 import org.compiere.model.MUser;
 import org.compiere.model.Query;
+import org.compiere.util.CCache;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
@@ -36,6 +37,29 @@ import org.compiere.util.Util;
  *
  */
 public class MTeam extends X_JP_Team {
+
+	/**	Cache						*/
+	private static CCache<Integer,MTeam> s_cache	= new CCache<Integer,MTeam>(Table_Name, 100, 10);	//	10 minutes
+
+	public static MTeam get (Properties ctx, int JP_Team_ID)
+	{
+		if (JP_Team_ID <= 0)
+		{
+			return null;
+		}
+		Integer key = Integer.valueOf(JP_Team_ID);
+		MTeam retValue = (MTeam) s_cache.get (key);
+		if (retValue != null)
+		{
+			return retValue;
+		}
+		retValue = new MTeam (ctx, JP_Team_ID, null);
+		if (retValue.get_ID () != 0)
+		{
+			s_cache.put (key, retValue);
+		}
+		return retValue;
+	}	//	get
 
 	public MTeam(Properties ctx, int JP_ToDo_Category_ID, String trxName)
 	{

@@ -30,7 +30,10 @@ import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 
 import jpiere.plugin.groupware.model.I_ToDoReminder;
+import jpiere.plugin.groupware.model.MTeam;
 import jpiere.plugin.groupware.model.MToDoReminder;
+import jpiere.plugin.groupware.model.MToDoTeamReminder;
+import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 
 /**
@@ -43,6 +46,7 @@ import jpiere.plugin.groupware.model.MToDoReminder;
 */
 public class ReminderMenuRowRenderer implements RowRenderer<I_ToDoReminder> {
 
+	private static int remindTarget_Reference_ID = 0;
 	private static int reminderType_Reference_ID = 0;
 	private static int mailFrequency_Reference_ID = 0;
 	private static int broadcastFrequency_Reference_ID = 0;
@@ -81,6 +85,31 @@ public class ReminderMenuRowRenderer implements RowRenderer<I_ToDoReminder> {
 		cell.appendChild(new Label(date + " " + i_ToDoReminder.getJP_ToDo_RemindTime().toLocalDateTime().toLocalTime().toString().substring(0, 5) ));
 		row.appendChild(cell);
 
+
+		if(MToDoTeamReminder.Table_Name.equals(i_ToDoReminder.get_TableName()))
+		{
+			//Remind Target
+			cell = new Cell();
+			if(remindTarget_Reference_ID == 0)
+			{
+				int AD_Column_ID = MColumn.getColumn_ID(MToDoTeamReminder.Table_Name, MToDoTeamReminder.COLUMNNAME_JP_ToDo_RemindTarget);
+				MColumn col_JP_ToDo_RemindTarget = MColumn.get(Env.getCtx(), AD_Column_ID);
+				remindTarget_Reference_ID = col_JP_ToDo_RemindTarget.getAD_Reference_Value_ID();
+			}
+			String JP_ToDo_RemindTarget = MRefList.getListName(Env.getCtx(), remindTarget_Reference_ID, i_ToDoReminder.getJP_ToDo_RemindTarget());
+			cell.appendChild(new Label(JP_ToDo_RemindTarget));
+			row.appendChild(cell);
+
+			cell = new Cell();
+			if(i_ToDoReminder.getJP_Team_ID()>0)
+			{
+				MTeam team = MTeam.get(Env.getCtx(), i_ToDoReminder.getJP_Team_ID());
+				cell.appendChild(new Label(GroupwareToDoUtil.trimName(team.getName())));
+			}else {
+				;
+			}
+			row.appendChild(cell);
+		}
 
 		//Remind Type
 		cell = new Cell();

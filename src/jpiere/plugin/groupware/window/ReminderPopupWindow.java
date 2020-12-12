@@ -75,6 +75,7 @@ import org.zkoss.zul.North;
 import org.zkoss.zul.South;
 import org.zkoss.zul.Timebox;
 
+import jpiere.plugin.groupware.form.TeamMemberPopup;
 import jpiere.plugin.groupware.model.I_ToDo;
 import jpiere.plugin.groupware.model.I_ToDoReminder;
 import jpiere.plugin.groupware.model.MToDo;
@@ -132,6 +133,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private final static String BUTTON_NAME_ADD_HOURS = "ADD_HOURS";
 	private final static String BUTTON_NAME_ADD_MINS = "ADD_MINS";
 
+	private final static String BUTTON_NAME_SHOW_TEAM_MEMBER = "SHOW_TEAM_MEMBER";
+	private final static String BUTTON_NAME_SHOW_TEAM_TODO_REMINDER = "SHOW_TEAM_TODO_REMINDER";
+
 	/*** Web Components ***/
 	// WEditors & Labels
 	private Map<String, Label> map_Label = new HashMap<String, Label>();
@@ -146,6 +150,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private Button deleteBtn = null;
 	private Button addHoursBtn = null;
 	private Button addMinsBtn = null;
+
+	private Button showTeamMemberBtn = null;
+	private Button showTeamToDoReminderBtn = null;
 
 	public ReminderPopupWindow(PersonalToDoListWindow PersonalTodoListWindow, I_ToDo i_ToDo, int reminder_ID)
 	{
@@ -744,6 +751,22 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			ZKUpdateUtil.setHflex(addMinsBtn, "true");
 		}
 
+		if(showTeamMemberBtn == null)
+		{
+			showTeamMemberBtn = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				showTeamMemberBtn.setIconSclass("z-icon-BPartner");
+			else
+				showTeamMemberBtn.setImage(ThemeManager.getThemeResource("images/BPartner16.png"));
+			showTeamMemberBtn.setClass("btn-small");
+			showTeamMemberBtn.setStyle("float:right;");
+			showTeamMemberBtn.setName(BUTTON_NAME_SHOW_TEAM_MEMBER);
+			showTeamMemberBtn.setLabel(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID));
+			showTeamMemberBtn.setVisible(true);
+			showTeamMemberBtn.addEventListener(Events.ON_CLICK, this);
+			ZKUpdateUtil.setHflex(showTeamMemberBtn, "max");
+		}
+
 		Div centerContent = new Div();
 		center.appendChild(centerContent);
 		ZKUpdateUtil.setHeight(centerContent, "100%");
@@ -766,7 +789,8 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			//*** JP_Team_ID ***//
 			row = rows.newRow();
 			rows.appendChild(row);
-			row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID), false),2);
+			//row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID), false),2);
+			row.appendCellChild(showTeamMemberBtn,2);
 			row.appendCellChild(map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).getComponent(),4);
 		}
 
@@ -1047,10 +1071,14 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				}
 				detach();
 
+			}else if(BUTTON_NAME_SHOW_TEAM_MEMBER.equals(btnName)) {
+
+				TeamMemberPopup teampMemberPopup = new TeamMemberPopup(this, getJP_Team_ID());
+				teampMemberPopup.setPage(showTeamMemberBtn.getPage());
+				teampMemberPopup.open(showTeamMemberBtn,"start_before");
 			}
 		}
-
-	}
+	}//onEvent
 
 	private boolean saveReminder()
 	{
@@ -1141,7 +1169,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			editor = map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID);
 			if(editor.getValue() == null || ((Integer)editor.getValue()).intValue() == 0)
 			{
-				;
+				i_Reminder.setJP_Team_ID(0);
 			}else {
 				i_Reminder.setJP_Team_ID((Integer)editor.getValue());
 			}
@@ -1478,6 +1506,17 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		p_IsDirty = true;
 		updateNorth();
+	}
+
+	public int getJP_Team_ID()
+	{
+		Object value = map_Editor.get(MToDoTeamReminder.COLUMNNAME_JP_Team_ID).getValue();
+		return value == null ? 0 : ((Integer)value).intValue();
+	}
+
+	public ToDoPopupWindow getToDoPopupWindow()
+	{
+		return p_TodoPopupWindow;
 	}
 
 }
