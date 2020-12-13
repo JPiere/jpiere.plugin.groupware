@@ -105,7 +105,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		addEventListener(WindowContainer.ON_WINDOW_CONTAINER_SELECTION_CHANGED_EVENT, this);
 		addEventListener(Events.ON_CLOSE, this);
 
-		setTitle(m_TeamToDo.getName());
+		setTitle(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoList") + " : " +m_TeamToDo.getName());
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);
