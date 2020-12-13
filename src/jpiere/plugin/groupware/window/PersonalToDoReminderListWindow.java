@@ -107,7 +107,7 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 		addEventListener(WindowContainer.ON_WINDOW_CONTAINER_SELECTION_CHANGED_EVENT, this);
 		addEventListener(Events.ON_CLOSE, this);
 
-		setTitle(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : " + GroupwareToDoUtil.trimName(m_TeamToDoReminder.getJP_ToDo_Team().getName()));
+		setTitle(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoReminderList") + " : " + GroupwareToDoUtil.trimName(m_TeamToDoReminder.getJP_ToDo_Team().getName()));
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);

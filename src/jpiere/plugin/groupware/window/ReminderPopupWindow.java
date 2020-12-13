@@ -876,7 +876,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_IsConfirmed).getComponent(),2);
 
 				row = rows.newRow();
-				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Confirmed), true),2);
+				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Confirmed), false),2);
 				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_Confirmed).getComponent(),4);
 			}
 		}
@@ -1496,9 +1496,14 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				sendReminder();
 
 		   	if(p_TodoPopupWindow != null)
+		   	{
 	    		p_TodoPopupWindow.hideBusyMask();
-	    	else
+		   	}
+
+		   	if(p_PersonalTodoListWindow != null)
+		   	{
 	    		p_PersonalTodoListWindow.hideBusyMask();
+		   	}
 			super.onClose();
 		}
 
