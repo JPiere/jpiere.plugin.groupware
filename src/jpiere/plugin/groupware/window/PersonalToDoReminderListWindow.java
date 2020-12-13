@@ -62,21 +62,23 @@ import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.South;
 import org.zkoss.zul.ext.Sortable;
 
-import jpiere.plugin.groupware.form.ReminderMenuPopup;
 import jpiere.plugin.groupware.model.MToDo;
+import jpiere.plugin.groupware.model.MToDoReminder;
 import jpiere.plugin.groupware.model.MToDoTeam;
+import jpiere.plugin.groupware.model.MToDoTeamReminder;
+import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 
 
 
 /**
  *
- * JPIERE-0473 Personal ToDo List Popup Window
+ * JPIERE-0480 Personal ToDo Reminder List Popup Window
  *
  *
  * @author h.hagiwara
  *
  */
-public class PersonalToDoListWindow extends Window implements EventListener<Event>, WTableModelListener, ActionListener, Sortable<Object>
+public class PersonalToDoReminderListWindow extends Window implements EventListener<Event>, WTableModelListener, ActionListener, Sortable<Object>
 {
 	/**	Logger			*/
 	protected CLogger log = CLogger.getCLogger(getClass());
@@ -84,8 +86,8 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 	private Borderlayout layout = null;
 
-	private ToDoPopupWindow todoPopupWindow = null;
-	private MToDoTeam m_TeamToDo = null;
+	private ReminderPopupWindow reminderPopupWindow = null;
+	private MToDoTeamReminder m_TeamToDoReminder = null;
 
 	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
 	private Button zoomPersonalToDoBtn = null;
@@ -95,17 +97,17 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 	 */
 	private static final long serialVersionUID = 304878472233552113L;
 
-	public PersonalToDoListWindow(ToDoPopupWindow todoPopupWindow, MToDoTeam todoTeam) throws Exception
+	public PersonalToDoReminderListWindow(ReminderPopupWindow reminderPopupWindow, MToDoTeamReminder todoTeamReminder) throws Exception
 	{
 		ctx = Env.getCtx();
 
-		this.todoPopupWindow = todoPopupWindow;
-		this.m_TeamToDo = todoTeam;
+		this.reminderPopupWindow = reminderPopupWindow;
+		this.m_TeamToDoReminder = todoTeamReminder;
 
 		addEventListener(WindowContainer.ON_WINDOW_CONTAINER_SELECTION_CHANGED_EVENT, this);
 		addEventListener(Events.ON_CLOSE, this);
 
-		setTitle(m_TeamToDo.getName());
+		setTitle(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " : " + GroupwareToDoUtil.trimName(m_TeamToDoReminder.getJP_ToDo_Team().getName()));
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);
@@ -131,24 +133,24 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 
 		StringBuilder sqlSELECT = new StringBuilder("SELECT ");
-		StringBuilder sqlFROM = new StringBuilder(" FROM JP_ToDo ");
-		StringBuilder sqlWHERE = new StringBuilder(" WHERE JP_ToDo.JP_ToDo_Team_ID = ? ");
-		StringBuilder sqlOrder = new StringBuilder(" ORDER BY JP_ToDo.AD_User_ID");
+		StringBuilder sqlFROM = new StringBuilder(" FROM JP_ToDo_Reminder INNER JOIN JP_ToDo ON (JP_ToDo_Reminder.JP_ToDo_ID = JP_ToDo.JP_ToDo_ID) ");
+		StringBuilder sqlWHERE = new StringBuilder(" WHERE JP_ToDo_Reminder.JP_ToDo_Team_Reminder_ID = ? ");
+		StringBuilder sqlOrder = new StringBuilder(" ORDER BY JP_ToDo.AD_User_ID ");
 
-		//JP_ToDo_ID(1)
-		sqlSELECT.append(" JP_ToDo.JP_ToDo_ID");
+		//JP_ToDo_Reminder_ID(1)
+		sqlSELECT.append(" JP_ToDo_Reminder.JP_ToDo_Reminder_ID");
 
 		//User(2)
 		String eSql = MLookupFactory.getLookup_TableDirEmbed(Env.getLanguage(ctx), MToDo.COLUMNNAME_AD_User_ID, MToDo.Table_Name);
 		sqlSELECT.append(", (").append(eSql).append(") AS User");
 
 		//Comments(3)
-		sqlSELECT.append(", JP_ToDo.Comments");
+		sqlSELECT.append(", JP_ToDo_Reminder.Comments");
 
+		//ToDoStatus(4)
 		MColumn m_Column = MColumn.get(ctx, MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status);
 		int AD_Reference_Value_ID = m_Column.getAD_Reference_Value_ID();
 
-		//ToDo Status(4)
 		if (Env.isBaseLanguage(Env.getLanguage(ctx), "AD_Ref_List"))
 		{
 			sqlSELECT.append(", AD_Ref_List.Name AS JP_ToDo_Status ");
@@ -164,23 +166,34 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 			sqlFROM.append(" LEFT OUTER JOIN AD_Ref_List_Trl ON (AD_Ref_List.AD_Ref_List_ID = AD_Ref_List_Trl.AD_Ref_List_ID AND AD_Ref_List_Trl.AD_Language = ?) ");
 		}
 
+		//IsSentReminderJP(5)
+		sqlSELECT.append(", JP_ToDo_Reminder.IsSentReminderJP AS IsSentReminderJP ");
 
-		//JP_Statistics_YesNo(5)
-		sqlSELECT.append(", JP_ToDo.JP_Statistics_YesNo AS JP_Statistics_YesNo ");
+		//IsConfirmed(6)
+		sqlSELECT.append(", JP_ToDo_Reminder.IsConfirmed AS IsConfirmed ");
 
-		//JP_Statistics_Choice(6)
-		sqlSELECT.append(", JP_ToDo.JP_Statistics_Choice AS JP_Statistics_Choice ");
+		//JP_Confirmed(7)
+		sqlSELECT.append(", JP_ToDo_Reminder.JP_Confirmed AS JP_Confirmed ");
 
-		//JP_Statistics_DateAndTime(7)
-		sqlSELECT.append(", JP_ToDo.JP_Statistics_DateAndTime AS JP_Statistics_DateAndTime ");
+		//Processed(8)
+		sqlSELECT.append(", JP_ToDo_Reminder.Processed AS Processed ");
 
-		//JP_Statistics_DateAndTime(8)
-		sqlSELECT.append(", JP_ToDo.JP_Statistics_Number AS JP_Statistics_Number ");
+		//JP_Statistics_YesNo(9)
+		sqlSELECT.append(", JP_ToDo_Reminder.JP_Statistics_YesNo AS JP_Statistics_YesNo ");
+
+		//JP_Statistics_Choice(10)
+		sqlSELECT.append(", JP_ToDo_Reminder.JP_Statistics_Choice AS JP_Statistics_Choice ");
+
+		//JP_Statistics_DateAndTime(11)
+		sqlSELECT.append(", JP_ToDo_Reminder.JP_Statistics_DateAndTime AS JP_Statistics_DateAndTime ");
+
+		//JP_Statistics_DateAndTime(12)
+		sqlSELECT.append(", JP_ToDo_Reminder.JP_Statistics_Number AS JP_Statistics_Number ");
 
 		StringBuilder sql = sqlSELECT.append(sqlFROM).append(sqlWHERE).append(sqlOrder);
 
 
-		ArrayList<PersonalToDoModel> list = new ArrayList<PersonalToDoModel>();
+		ArrayList<PersonalToDoReminderModel> list = new ArrayList<PersonalToDoReminderModel>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try
@@ -189,27 +202,32 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 			pstmt.setInt(1, AD_Reference_Value_ID);
 			if (Env.isBaseLanguage(Env.getLanguage(ctx), "AD_Ref_List"))
 			{
-				pstmt.setInt(2, m_TeamToDo.get_ID());
+				pstmt.setInt(2, m_TeamToDoReminder.get_ID());
 			}else {
 				pstmt.setString(2, Env.getAD_Language(ctx));
-				pstmt.setInt(3, m_TeamToDo.get_ID());
+				pstmt.setInt(3, m_TeamToDoReminder.get_ID());
 			}
 
 			rs = pstmt.executeQuery();
 
-			PersonalToDoModel todo = null;
+			PersonalToDoReminderModel todo = null;
 			while (rs.next())
 			{
-				todo = new PersonalToDoModel();
-				todo.JP_ToDo_ID = rs.getInt(1);
+				todo = new PersonalToDoReminderModel();
+				todo.JP_ToDo_Reminder_ID = rs.getInt(1);
 				todo.user = rs.getString(2);
 				todo.comments = rs.getString(3);
 				todo.status = rs.getString(4);
 
-				todo.JP_Statistics_YesNo = rs.getString(5);
-				todo.JP_Statistics_Choice = rs.getString(6);
-				todo.JP_Statistics_DateAndTime = rs.getTimestamp(7);
-				todo.JP_Statistics_Number = rs.getBigDecimal(8);
+				todo.IsSentReminderJP = "Y".equals(rs.getString(5));
+				todo.IsConfirmed = "Y".equals(rs.getString(6));
+				todo.JP_Confirmed = rs.getTimestamp(7);
+				todo.Processed = "Y".equals(rs.getString(8));
+
+				todo.JP_Statistics_YesNo = rs.getString(9);
+				todo.JP_Statistics_Choice = rs.getString(10);
+				todo.JP_Statistics_DateAndTime = rs.getTimestamp(11);
+				todo.JP_Statistics_Number = rs.getBigDecimal(12);
 
 				list.add(todo);
 			}
@@ -248,47 +266,69 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		Radiogroup radioGroup = new Radiogroup();
 		column.appendChild(radioGroup);
 
-		//Reminder
-		column = new Column();
-		columns.appendChild(column);
-		column.setLabel("");
-		column.setWidth("30px");
+		//icon
+		//column = new Column();
+		//columns.appendChild(column);
+		//column.setLabel("");
+		//column.setWidth("30px");
 
 		//User
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID));
-		column.setWidth("20%");
+		ZKUpdateUtil.setHflex(column, "min");;
 
 		//ToDo Status
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status));
-		column.setWidth("10%");
+		ZKUpdateUtil.setHflex(column, "min");
 
-		if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info()))
+		//IsSentReminderJP
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsSentReminderJP));
+		ZKUpdateUtil.setHflex(column, "min");
+
+		//IsConfirmed
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_IsConfirmed));
+		ZKUpdateUtil.setHflex(column, "min");
+
+		//JP_Confirmed
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_Confirmed));
+		ZKUpdateUtil.setHflex(column, "min");
+
+		//Processed
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_Processed));
+		ZKUpdateUtil.setHflex(column, "min");
+
+		//Comments
+		column = new Column();
+		columns.appendChild(column);
+		column.setLabel(Msg.getElement(ctx, MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID) + " - " + Msg.getElement(ctx, MToDoReminder.COLUMNNAME_Comments));
+
+		PersonalToDoReminderListModel listModel = new PersonalToDoReminderListModel(list);
+		grid.setModel(listModel);
+
+		PersonalToDoReminderListRowRenderer rowRenderer = new PersonalToDoReminderListRowRenderer(this, radioGroup);
+		grid.setRowRenderer(rowRenderer);
+
+		if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(m_TeamToDoReminder.getJP_Mandatory_Statistics_Info()))
 		{
 			;//Noting To Do
 		}else {
 
 			column = new Column();
 			columns.appendChild(column);
-			column.setLabel(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info));
-			column.setWidth("10%");
+			column.setLabel(Msg.getElement(ctx, MToDoTeamReminder.COLUMNNAME_JP_Mandatory_Statistics_Info));
+			ZKUpdateUtil.setHflex(column, "min");
 		}
-
-		//Comments
-		column = new Column();
-		columns.appendChild(column);
-		column.setLabel(Msg.getElement(ctx, MToDo.COLUMNNAME_Comments));
-
-
-		PersonalToDoListModel listModel = new PersonalToDoListModel(list);
-		grid.setModel(listModel);
-
-		PersonalToDoListRowRenderer rowRenderer = new PersonalToDoListRowRenderer(this, radioGroup);
-		grid.setRowRenderer(rowRenderer);
-
 
 		//South
 		South south = new South();
@@ -326,9 +366,9 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 	}
 
-	public MToDoTeam getMToDoTeam()
+	public MToDoTeamReminder getMToDoTeamReminder()
 	{
-		return m_TeamToDo;
+		return m_TeamToDoReminder;
 	}
 
 	@Override
@@ -337,11 +377,11 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		;
 	}
 
-	private int JP_ToDO_ID = 0;
-	public void setJP_ToDo_ID(int JP_ToDo_ID)
+	private int JP_ToDo_Reminder_ID = 0;
+	public void setJP_ToDo_Reminder_ID(int JP_ToDo_Reminder_ID)
 	{
-		this.JP_ToDO_ID = JP_ToDo_ID;
-		if(JP_ToDo_ID == 0)
+		this.JP_ToDo_Reminder_ID = JP_ToDo_Reminder_ID;
+		if(JP_ToDo_Reminder_ID == 0)
 		{
 			zoomPersonalToDoBtn.setDisabled(true);
 		}else {
@@ -363,7 +403,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 
 			if(comp instanceof Radio)
 			{
-				setJP_ToDo_ID(((Integer)comp.getAttribute(MToDo.COLUMNNAME_JP_ToDo_ID)).intValue());
+				setJP_ToDo_Reminder_ID(((Integer)comp.getAttribute(MToDoReminder.COLUMNNAME_JP_ToDo_Reminder_ID)).intValue());
 			}
 
 		}else if(Events.ON_CLICK.equals(event.getName())) {
@@ -372,17 +412,21 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 			{
 				Button btn = (Button)comp;
 
-				if(btn.getName().equals(PersonalToDoListWindow.BUTTON_NAME_ZOOM_PERSONALTODO))
+				if(btn.getName().equals(PersonalToDoReminderListWindow.BUTTON_NAME_ZOOM_PERSONALTODO))
 				{
-					AEnv.zoom(MTable.getTable_ID(MToDo.Table_Name), JP_ToDO_ID);
+					AEnv.zoom(MTable.getTable_ID(MToDoReminder.Table_Name), JP_ToDo_Reminder_ID);
 					dispose();
-					todoPopupWindow.detach();
+					ToDoPopupWindow todoPopupWindow = reminderPopupWindow.getToDoPopupWindow();
+					reminderPopupWindow.detach();
+					todoPopupWindow.onClose();
+
+
 				}else if(btn.getName().equals(ToDoPopupWindow.BUTTON_NAME_REMINDER)){
 
-					int JP_ToDo_ID  =  Integer.parseInt(btn.getAttribute(MToDo.COLUMNNAME_JP_ToDo_ID).toString());
-					ReminderMenuPopup reminderMenuPopup = new ReminderMenuPopup(this, new MToDo(Env.getCtx(), JP_ToDo_ID, null));
-					reminderMenuPopup.setPage(btn.getPage());
-					reminderMenuPopup.open(btn,"end_before");
+//					int JP_ToDo_ID  =  Integer.parseInt(btn.getAttribute(MToDo.COLUMNNAME_JP_ToDo_ID).toString());
+//					ReminderMenuPopup reminderMenuPopup = new ReminderMenuPopup(this, new MToDo(Env.getCtx(), JP_ToDo_ID, null));
+//					reminderMenuPopup.setPage(btn.getPage());
+//					reminderMenuPopup.open(btn,"end_before");
 
 				}
 			}
@@ -447,11 +491,6 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 	public String getSortDirection(Comparator<Object> cmpr)
 	{
 		return null;
-	}
-
-	public ToDoPopupWindow getToDoPopupWindow()
-	{
-		return todoPopupWindow;
 	}
 
 }
