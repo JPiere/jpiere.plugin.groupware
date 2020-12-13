@@ -160,6 +160,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		ctx = Env.getCtx();
 		p_Login_User_ID = Env.getAD_User_ID(ctx);
 		this.p_PersonalTodoListWindow = PersonalTodoListWindow;
+		this.p_TodoPopupWindow = PersonalTodoListWindow.getToDoPopupWindow();
 		init(i_ToDo, reminder_ID);
 	}
 
@@ -767,6 +768,20 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			ZKUpdateUtil.setHflex(showTeamMemberBtn, "max");
 		}
 
+		if(showTeamToDoReminderBtn == null)
+		{
+			showTeamToDoReminderBtn = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				showTeamToDoReminderBtn.setIconSclass("z-icon-Report");
+			else
+				showTeamToDoReminderBtn.setImage(ThemeManager.getThemeResource("images/Report16.png"));
+			showTeamToDoReminderBtn.setName(BUTTON_NAME_SHOW_TEAM_TODO_REMINDER);
+			showTeamToDoReminderBtn.setLabel(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoReminderList"));
+			showTeamToDoReminderBtn.setVisible(true);
+			showTeamToDoReminderBtn.addEventListener(Events.ON_CLICK, this);
+			ZKUpdateUtil.setHflex(showTeamToDoReminderBtn, "true");
+		}
+
 		Div centerContent = new Div();
 		center.appendChild(centerContent);
 		ZKUpdateUtil.setHeight(centerContent, "100%");
@@ -864,6 +879,12 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				row.appendCellChild(GroupwareToDoUtil.createLabelDiv(map_Label.get(MToDoReminder.COLUMNNAME_JP_Confirmed), true),2);
 				row.appendCellChild(map_Editor.get(MToDoReminder.COLUMNNAME_JP_Confirmed).getComponent(),4);
 			}
+		}
+
+		if(!p_IsPersonalToDo && !p_IsNewRecord)
+		{
+			row = rows.newRow();
+			row.appendCellChild(showTeamToDoReminderBtn,6);
 		}
 
 		/********************************************************************************************
@@ -1044,13 +1065,16 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			}else if(BUTTON_NAME_ZOOM_PERSONALTODO_REMINDER.equals(btnName)){
 
 				AEnv.zoom(MTable.getTable_ID(MToDoReminder.Table_Name), p_Reminder_ID);
+				if(p_PersonalTodoListWindow != null)
+				{
+		    		p_PersonalTodoListWindow.hideBusyMask();
+		    		p_PersonalTodoListWindow.dispose();
+				}
+
 				if(p_TodoPopupWindow != null)
 				{
 		    		p_TodoPopupWindow.hideBusyMask();
 		    		p_TodoPopupWindow.dispose();
-				}else {
-		    		p_PersonalTodoListWindow.hideBusyMask();
-		    		p_PersonalTodoListWindow.dispose();
 				}
 			   	detach();
 
@@ -1061,13 +1085,16 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				else
 					AEnv.zoom(MTable.getTable_ID(MToDoTeamReminder.Table_Name), p_Reminder_ID);
 
+				if(p_PersonalTodoListWindow != null)
+				{
+		    		p_PersonalTodoListWindow.hideBusyMask();
+		    		p_PersonalTodoListWindow.dispose();
+				}
+
 				if(p_TodoPopupWindow != null)
 				{
 		    		p_TodoPopupWindow.hideBusyMask();
 		    		p_TodoPopupWindow.dispose();
-				}else {
-		    		p_PersonalTodoListWindow.hideBusyMask();
-		    		p_PersonalTodoListWindow.dispose();
 				}
 				detach();
 
@@ -1076,6 +1103,15 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				TeamMemberPopup teampMemberPopup = new TeamMemberPopup(this, getJP_Team_ID());
 				teampMemberPopup.setPage(showTeamMemberBtn.getPage());
 				teampMemberPopup.open(showTeamMemberBtn,"start_before");
+
+			}else if(BUTTON_NAME_SHOW_TEAM_TODO_REMINDER.equals(btnName)) {
+
+				PersonalToDoReminderListWindow personalToDoReminderListWindow = new PersonalToDoReminderListWindow(this, (MToDoTeamReminder)i_Reminder);
+				personalToDoReminderListWindow.setVisible(true);
+				personalToDoReminderListWindow.setStyle("border: 2px");
+				personalToDoReminderListWindow.setClosable(true);
+				AEnv.showWindow(personalToDoReminderListWindow);
+
 			}
 		}
 	}//onEvent
@@ -1455,7 +1491,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		}else {
 
-			sendReminder();
+			int loginUser  = Env.getAD_User_ID(ctx);
+			if(p_iToDo.getAD_User_ID() == loginUser || i_Reminder.getCreatedBy() == loginUser)
+				sendReminder();
 
 		   	if(p_TodoPopupWindow != null)
 	    		p_TodoPopupWindow.hideBusyMask();

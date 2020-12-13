@@ -125,7 +125,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}
 
 		//*** Check Statistics info ***//
-		if(getJP_ToDo_Team_Reminder_ID() != 0 && isConfirmed() && is_ValueChanged("IsConfirmed"))
+		if(getJP_ToDo_Team_Reminder_ID() != 0 && isConfirmed())
 		{
 			MToDoTeamReminder teamToDoReminder = new MToDoTeamReminder(getCtx(), getJP_ToDo_Team_Reminder_ID(), get_TrxName());
 			if(MToDoTeamReminder.JP_MANDATORY_STATISTICS_INFO_None.equals(teamToDoReminder.getJP_Mandatory_Statistics_Info()))
@@ -352,7 +352,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}
 	}
 
-	private void updateSendMailNextTime()//TODO
+	private void updateSendMailNextTime()
 	{
 		if(!MToDoReminder.JP_TODO_REMINDERTYPE_SendMail.equals(getJP_ToDo_ReminderType()))
 			return;
