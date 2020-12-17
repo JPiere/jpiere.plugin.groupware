@@ -31,6 +31,7 @@ import java.util.Set;
 import org.adempiere.exceptions.AdempiereException;
 import org.adempiere.util.Callback;
 import org.adempiere.webui.AdempiereWebUI;
+import org.adempiere.webui.ClientInfo;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -84,6 +85,7 @@ import org.zkoss.zul.Caption;
 import org.zkoss.zul.Center;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Groupbox;
+import org.zkoss.zul.Hlayout;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Popup;
 import org.zkoss.zul.Tab;
@@ -250,6 +252,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	public final static String CSS_DEFAULT_TAB_STYLE ="border-top: 4px solid #ACD5EE;";
 
 
+	private boolean mobile;
+
 	/**
 	 * Constructor
 	 */
@@ -262,7 +266,12 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		map_Calendars.put(p_AD_User_ID, createInitialMainCalendar());
 
+		mobile = ClientInfo.isMobile();
+
 		initZk();
+
+		if(mobile)
+			return ;
 
 		updateDateLabel();
 
@@ -381,30 +390,36 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 		//***************** NORTH **************************//
 
-		North mainBorderLayout_North = new North();
-		mainBorderLayout_North.setSplittable(false);
-		mainBorderLayout_North.setCollapsible(false);
-		mainBorderLayout_North.setOpen(true);
-		mainBorderLayout.appendChild(mainBorderLayout_North);
-		mainBorderLayout_North.appendChild(createNorthContents());
+		if(!mobile)
+		{
+			North mainBorderLayout_North = new North();
+			mainBorderLayout_North.setSplittable(false);
+			mainBorderLayout_North.setCollapsible(false);
+			mainBorderLayout_North.setOpen(true);
+			mainBorderLayout.appendChild(mainBorderLayout_North);
+			mainBorderLayout_North.appendChild(createNorthContents());
+		}
 
 
 		//***************** CENTER **************************//
 
 		mainBorderLayout_Center = new Center();
 		mainBorderLayout.appendChild(mainBorderLayout_Center);
-		mainBorderLayout_Center.appendChild(createCenterContents());
+		mainBorderLayout_Center.appendChild(mobile? createWestContents() : createCenterContents());
 
 		//***************** WEST **************************//
 
-		West mainBorderLayout_West = new West();
-		mainBorderLayout_West.setSplittable(true);
-		mainBorderLayout_West.setCollapsible(true);
-		mainBorderLayout_West.setOpen(true);
-		mainBorderLayout_West.setDroppable("true");
-		ZKUpdateUtil.setWidth(mainBorderLayout_West, "25%");
-		mainBorderLayout.appendChild(mainBorderLayout_West);
-		mainBorderLayout_West.appendChild(createWestContents());
+		if(!mobile)
+		{
+			West mainBorderLayout_West = new West();
+			mainBorderLayout_West.setSplittable(true);
+			mainBorderLayout_West.setCollapsible(true);
+			mainBorderLayout_West.setOpen(true);
+			mainBorderLayout_West.setDroppable("true");
+			ZKUpdateUtil.setWidth(mainBorderLayout_West, "25%");
+			mainBorderLayout.appendChild(mainBorderLayout_West);
+			mainBorderLayout_West.appendChild(createWestContents());
+		}
 
     }
 
@@ -946,7 +961,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ZKUpdateUtil.setVflex(vlayout, "1");
 
 		//Menu
-		if(m_GroupwareUser != null && m_GroupwareUser.getAD_Tree_Menu_ID() > 0)
+		if(m_GroupwareUser != null && m_GroupwareUser.getAD_Tree_Menu_ID() > 0 && !mobile)
 		{
 			Groupbox groupBox0 = new Groupbox();
 			groupBox0.setOpen(false);
@@ -962,6 +977,49 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			GroupwareMenuGadgetFlat toDoMenu = new GroupwareMenuGadgetFlat();
 			groupBox0.appendChild(toDoMenu);
 		}
+
+		if(mobile)//TODO
+		{
+			Hlayout hlayout = new Hlayout();
+			vlayout.appendChild(hlayout);
+
+			lookup_JP_ToDo_Calendar = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MGroupwareUser.Table_Name, MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar),  DisplayType.List);
+			editor_JP_ToDo_Calendar= new WTableDirEditor(MGroupwareUser.COLUMNNAME_JP_ToDo_Calendar, true, false, true, lookup_JP_ToDo_Calendar);
+			editor_JP_ToDo_Calendar.setValue(p_JP_ToDo_Calendar);
+			editor_JP_ToDo_Calendar.addValueChangeListener(this);
+			ZKUpdateUtil.setVflex(editor_JP_ToDo_Calendar.getComponent(), "true");
+			ZKUpdateUtil.setHflex(editor_JP_ToDo_Calendar.getComponent(), "true");
+			hlayout.appendChild(editor_JP_ToDo_Calendar.getComponent());
+
+
+			//Create New ToDo Button
+			Button createNewToDo = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				createNewToDo.setIconSclass("z-icon-New");
+			else
+				createNewToDo.setImage(ThemeManager.getThemeResource("images/New16.png"));
+			createNewToDo.setName(BUTTON_NEW);
+			createNewToDo.addEventListener(Events.ON_CLICK, this);
+			createNewToDo.setId(String.valueOf(0));
+			createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
+			ZKUpdateUtil.setVflex(createNewToDo, "false");
+			ZKUpdateUtil.setHflex(createNewToDo, "true");
+			hlayout.appendChild(createNewToDo);
+
+			//Refresh Button
+			Button refresh = new Button();
+			if (ThemeManager.isUseFontIconForImage())
+				refresh.setIconSclass("z-icon-Refresh");
+			else
+				refresh.setImage(ThemeManager.getThemeResource("images/Refresh16.png"));
+			refresh.setName(BUTTON_REFRESH);
+			refresh.addEventListener(Events.ON_CLICK, this);
+			refresh.setLabel(Msg.getMsg(ctx, "Refresh"));
+			ZKUpdateUtil.setVflex(refresh, "false");
+			ZKUpdateUtil.setHflex(refresh, "true");
+			hlayout.appendChild(refresh);
+		}
+
 
 		/**********************************************************
 		 *  Personal ToDo Gadget
@@ -1467,23 +1525,31 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				throw new WrongValueException(comp.getComponent(), msg);
 			}
 
-			p_JP_ToDo_Calendar = value.toString();
-			editor_JP_ToDo_Calendar.setValue(value);
-			editor_JP_ToDo_Calendar_For_Custom.setValue(value);
-
-			p_SelectedTab_AD_User_ID = p_AD_User_ID;
-			p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
-
-			if(p_JP_Team_ID > 0)
+			if(mobile)
 			{
-			  	mainBorderLayout_Center.getFirstChild().detach();
-				mainBorderLayout_Center.appendChild(createCenterContents());
+				p_JP_ToDo_Calendar = value.toString();
+				editor_JP_ToDo_Calendar.setValue(value);
+
+			}else {
+				p_JP_ToDo_Calendar = value.toString();
+				editor_JP_ToDo_Calendar.setValue(value);
+				editor_JP_ToDo_Calendar_For_Custom.setValue(value);
+
+				p_SelectedTab_AD_User_ID = p_AD_User_ID;
+				p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
+
+				if(p_JP_Team_ID > 0)
+				{
+				  	mainBorderLayout_Center.getFirstChild().detach();
+					mainBorderLayout_Center.appendChild(createCenterContents());
+				}
+
+				getToDoCalendarEvent(true ,true);
+
+				if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
+					button_Customize_Save.setDisabled(false);
+
 			}
-
-			getToDoCalendarEvent(true ,true);
-
-			if(editor_JP_ToDo_Calendar_For_Custom.isVisible())
-				button_Customize_Save.setDisabled(false);
 		}
 
 	}
@@ -1536,18 +1602,26 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 				}else if(BUTTON_REFRESH.equals(btnName)){
 
-					p_SelectedTab_AD_User_ID = p_AD_User_ID;
-					p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
-
-					if(p_JP_Team_ID > 0)
+					if(mobile)
 					{
-					  	mainBorderLayout_Center.getFirstChild().detach();
-						mainBorderLayout_Center.appendChild(createCenterContents());
+						refreshWest(null);
+
+					}else {
+
+						p_SelectedTab_AD_User_ID = p_AD_User_ID;
+						p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
+
+						if(p_JP_Team_ID > 0)
+						{
+						  	mainBorderLayout_Center.getFirstChild().detach();
+							mainBorderLayout_Center.appendChild(createCenterContents());
+						}
+
+						getToDoCalendarEvent(true ,true);
+
+						refreshWest(null);
 					}
 
-					getToDoCalendarEvent(true ,true);
-
-					refreshWest(null);
 
 				}else if(BUTTON_TODAY.equals(btnName)){
 
@@ -1952,11 +2026,16 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			throw new AdempiereException(Msg.getMsg(ctx, "Error") + Msg.getMsg(ctx, "SaveError"));
 		}
 
-		updateCalendarEvent(oldEvent, newEvent);
-
-		if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+		if(mobile)
+		{
 			refreshWest(todo.getJP_ToDo_Type());
+		}else {
 
+			updateCalendarEvent(oldEvent, newEvent);
+
+			if(p_AD_User_ID == p_SelectedTab_AD_User_ID)
+				refreshWest(todo.getJP_ToDo_Type());
+		}
 
 		//Adjust Remind Time of Reminder
 		if(todo instanceof MToDo)
@@ -2480,6 +2559,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 	private boolean isAcquiredToDoCalendarEventRange(ToDoCalendarEvent event)
 	{
+		if(mobile)
+			return false;
+
 		if(event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 		{
 			if(event.getToDo().getJP_ToDo_ScheduledStartTime().compareTo(ts_AcquiredToDoCalendarEventEnd) <= 0
@@ -3384,6 +3466,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	@Override
 	public boolean update(I_ToDo todo)
 	{
+		if(mobile)
+			return true;
+
 		ToDoCalendarEvent oldEvent = null;
 		ToDoCalendarEvent newEvent = null;
 		if(todo.getAD_User_ID() == p_AD_User_ID)
@@ -3480,6 +3565,8 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	@Override
 	public boolean delete(I_ToDo deleteToDo)
 	{
+		if(mobile)
+			return true;
 
 		ToDoCalendarEvent deleteEvent = null;
 		if(deleteToDo.getAD_User_ID() == p_AD_User_ID)
