@@ -252,7 +252,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	public final static String CSS_DEFAULT_TAB_STYLE ="border-top: 4px solid #ACD5EE;";
 
 
-	private boolean mobile;
+	private boolean mobile = false;
 
 	/**
 	 * Constructor

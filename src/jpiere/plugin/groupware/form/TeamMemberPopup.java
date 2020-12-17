@@ -138,7 +138,7 @@ public class TeamMemberPopup extends Popup implements EventListener<Event>{
 		}
 
 
-		ZKUpdateUtil.setWidth(this, 420 + "px");
+		ZKUpdateUtil.setWidth(this, 360 + "px");
 		ZKUpdateUtil.setHeight(this, 380 + "px");
 
 

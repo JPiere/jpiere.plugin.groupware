@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Properties;
 
+import org.adempiere.webui.ClientInfo;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -92,6 +93,8 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
 	private Button zoomPersonalToDoBtn = null;
 
+	private boolean mobile = false;
+
 	/**
 	 * generated serial id
 	 */
@@ -100,6 +103,7 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 	public PersonalToDoReminderListWindow(ReminderPopupWindow reminderPopupWindow, MToDoTeamReminder todoTeamReminder) throws Exception
 	{
 		ctx = Env.getCtx();
+		mobile = ClientInfo.isMobile();
 
 		this.reminderPopupWindow = reminderPopupWindow;
 		this.m_TeamToDoReminder = todoTeamReminder;
@@ -337,10 +341,13 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 		Grid southContent = GridFactory.newGridLayout();
 		south.appendChild(southContent);
 
-		columns = new Columns();
-		southContent.appendChild(columns);
-		for(int i = 0; i < 6; i++)
-			columns.appendChild(new Column());
+		if(!mobile)
+		{
+			columns = new Columns();
+			southContent.appendChild(columns);
+			for(int i = 0; i < 6; i++)
+				columns.appendChild(new Column());
+		}
 
 		Rows southContentRows = new Rows();
 		southContent.appendChild(southContentRows);

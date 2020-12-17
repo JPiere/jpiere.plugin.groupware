@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Properties;
 
+import org.adempiere.webui.ClientInfo;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -90,6 +91,8 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 	private final static String BUTTON_NAME_ZOOM_PERSONALTODO = "ZOOM_P";
 	private Button zoomPersonalToDoBtn = null;
 
+	private boolean mobile = false;
+
 	/**
 	 * generated serial id
 	 */
@@ -98,6 +101,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 	public PersonalToDoListWindow(ToDoPopupWindow todoPopupWindow, MToDoTeam todoTeam) throws Exception
 	{
 		ctx = Env.getCtx();
+		mobile = ClientInfo.isMobile();
 
 		this.todoPopupWindow = todoPopupWindow;
 		this.m_TeamToDo = todoTeam;
@@ -114,7 +118,6 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		ZKUpdateUtil.setWidth(this, width + "px");
 		ZKUpdateUtil.setHeight(this, height + "px");
 		this.setContentStyle("overflow: auto");
-
 
 		layout = new Borderlayout();
 		this.appendChild(layout);
@@ -258,13 +261,13 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID));
-		column.setWidth("20%");
+		ZKUpdateUtil.setHflex(column, "min");
 
 		//ToDo Status
 		column = new Column();
 		columns.appendChild(column);
 		column.setLabel(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status));
-		column.setWidth("10%");
+		ZKUpdateUtil.setHflex(column, "min");
 
 		if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info()))
 		{
@@ -274,7 +277,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 			column = new Column();
 			columns.appendChild(column);
 			column.setLabel(Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info));
-			column.setWidth("10%");
+			ZKUpdateUtil.setHflex(column, "min");
 		}
 
 		//Comments
@@ -297,10 +300,13 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		Grid southContent = GridFactory.newGridLayout();
 		south.appendChild(southContent);
 
-		columns = new Columns();
-		southContent.appendChild(columns);
-		for(int i = 0; i < 6; i++)
-			columns.appendChild(new Column());
+		if(!mobile)
+		{
+			columns = new Columns();
+			southContent.appendChild(columns);
+			for(int i = 0; i < 6; i++)
+				columns.appendChild(new Column());
+		}
 
 		Rows southContentRows = new Rows();
 		southContent.appendChild(southContentRows);
