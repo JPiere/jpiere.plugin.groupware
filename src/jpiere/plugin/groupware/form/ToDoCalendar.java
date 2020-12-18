@@ -3594,6 +3594,9 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 	@Override
 	public boolean refresh(I_ToDo todo)
 	{
+		if(mobile)
+			return true;
+
 		p_SelectedTab_AD_User_ID = p_AD_User_ID;
 		p_OldSelectedTab_AD_User_ID = p_AD_User_ID;
 

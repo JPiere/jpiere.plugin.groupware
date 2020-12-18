@@ -388,11 +388,16 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}else if(MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime.equals(getJP_MailFrequency())){
 
 			Timestamp scheduledEndTime =	getParent().getJP_ToDo_ScheduledEndTime();
-			if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0)
+			if(scheduledEndTime == null)
 			{
 				setJP_SendMailNextTime(JP_SendMailNextTime);
 
+			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+
 			}else {
+
 				setProcessed(true);
 			}
 
@@ -402,9 +407,17 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			if(isConfirmed())
 			{
 				setProcessed(true);
-			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+
+			}else if(scheduledEndTime == null) {
+
 				setJP_SendMailNextTime(JP_SendMailNextTime);
+
+			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+
 			}else {
+
 				setProcessed(true);
 			}
 
@@ -414,10 +427,19 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			if(MToDo.JP_TODO_STATUS_Completed.equals(getParent().getJP_ToDo_Status()))
 			{
 				setProcessed(true);
-			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+
+			}else if(scheduledEndTime == null) {
+
 				setJP_SendMailNextTime(JP_SendMailNextTime);
+
+			}else if(scheduledEndTime.compareTo(JP_SendMailNextTime) >= 0) {
+
+				setJP_SendMailNextTime(JP_SendMailNextTime);
+
 			}else {
+
 				setProcessed(true);
+
 			}
 		}
 	}
