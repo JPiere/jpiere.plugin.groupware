@@ -115,10 +115,17 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);
-		int height = SessionManager.getAppDesktop().getClientInfo().desktopHeight * 80 / 100;
-		int width = SessionManager.getAppDesktop().getClientInfo().desktopWidth * 80 / 100;
-		ZKUpdateUtil.setWidth(this, width + "px");
-		ZKUpdateUtil.setHeight(this, height + "px");
+
+		if(mobile)
+		{
+			ZKUpdateUtil.setWindowWidthX(this,  SessionManager.getAppDesktop().getClientInfo().desktopWidth);
+			ZKUpdateUtil.setWindowHeightX(this,  SessionManager.getAppDesktop().getClientInfo().desktopHeight);
+		}else {
+			int height = SessionManager.getAppDesktop().getClientInfo().desktopHeight * 80 / 100;
+			int width = SessionManager.getAppDesktop().getClientInfo().desktopWidth * 80 / 100;
+			ZKUpdateUtil.setWidth(this, width + "px");
+			ZKUpdateUtil.setHeight(this, height + "px");
+		}
 		this.setContentStyle("overflow: auto");
 
 

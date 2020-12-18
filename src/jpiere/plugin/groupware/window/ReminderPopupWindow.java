@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.adempiere.util.Callback;
+import org.adempiere.webui.ClientInfo;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Borderlayout;
 import org.adempiere.webui.component.Button;
@@ -46,6 +47,7 @@ import org.adempiere.webui.editor.WUrlEditor;
 import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
+import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.adempiere.webui.window.FDialog;
@@ -154,10 +156,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	private Button showTeamMemberBtn = null;
 	private Button showTeamToDoReminderBtn = null;
 
+	private boolean mobile = false;
+
 	public ReminderPopupWindow(PersonalToDoListWindow PersonalTodoListWindow, I_ToDo i_ToDo, int reminder_ID)
 	{
 		super();
 		ctx = Env.getCtx();
+		mobile = ClientInfo.isMobile();
 		p_Login_User_ID = Env.getAD_User_ID(ctx);
 		this.p_PersonalTodoListWindow = PersonalTodoListWindow;
 		this.p_TodoPopupWindow = PersonalTodoListWindow.getToDoPopupWindow();
@@ -168,6 +173,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 	{
 		super();
 		ctx = Env.getCtx();
+		mobile = ClientInfo.isMobile();
 		p_Login_User_ID = Env.getAD_User_ID(ctx);
 		this.p_TodoPopupWindow = todoPopupWindow;
 		init(i_ToDo, reminder_ID);
@@ -249,8 +255,14 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 		}
 
-		ZKUpdateUtil.setWindowWidthX(this, 480);
-		ZKUpdateUtil.setWindowHeightX(this, 480);
+		if(mobile)
+		{
+			ZKUpdateUtil.setWindowWidthX(this,  SessionManager.getAppDesktop().getClientInfo().desktopWidth);
+			ZKUpdateUtil.setWindowHeightX(this,  SessionManager.getAppDesktop().getClientInfo().desktopHeight);
+		}else {
+			ZKUpdateUtil.setWindowWidthX(this, 480);
+			ZKUpdateUtil.setWindowHeightX(this, 480);
+		}
 
 	}
 

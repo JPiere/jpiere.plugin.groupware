@@ -56,6 +56,7 @@ import org.adempiere.webui.editor.WYesNoEditor;
 import org.adempiere.webui.event.DialogEvents;
 import org.adempiere.webui.event.ValueChangeEvent;
 import org.adempiere.webui.event.ValueChangeListener;
+import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
 import org.adempiere.webui.window.FDialog;
@@ -213,8 +214,9 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private final static String BUTTON_NAME_SHOW_PERSONAL_TODO = "SHOW_PERSONAL_TODO";
 
 
-
 	private boolean isKickedProcess = false;
+
+	private boolean mobile = false;
 
 	/**
 	 * Constructor
@@ -222,6 +224,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	public ToDoPopupWindow(I_ToDoPopupwindowCaller caller, int index)
 	{
 		super();
+		mobile = ClientInfo.isMobile();
 
 		this.i_PersonalToDoPopupwindowCaller = caller;
 
@@ -241,8 +244,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 //			});
 //		}
 
-		ZKUpdateUtil.setWindowWidthX(this, 420);
-		ZKUpdateUtil.setWindowHeightX(this, 580);
+
+		if(mobile)
+		{
+			ZKUpdateUtil.setWindowWidthX(this,  SessionManager.getAppDesktop().getClientInfo().desktopWidth);
+			ZKUpdateUtil.setWindowHeightX(this,  SessionManager.getAppDesktop().getClientInfo().desktopHeight);
+		}else {
+			ZKUpdateUtil.setWindowWidthX(this, 420);
+			ZKUpdateUtil.setWindowHeightX(this, 580);
+		}
 
 		this.setSclass("popup-dialog request-dialog");
 		this.setBorder("normal");
