@@ -113,8 +113,17 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);
-		int height = SessionManager.getAppDesktop().getClientInfo().desktopHeight * 80 / 100;
-		int width = SessionManager.getAppDesktop().getClientInfo().desktopWidth * 80 / 100;
+
+		int height = 0;
+		int width  = 0;
+		if(mobile)
+		{
+			height = SessionManager.getAppDesktop().getClientInfo().desktopHeight;
+			width = SessionManager.getAppDesktop().getClientInfo().desktopWidth;
+		}else {
+			height = SessionManager.getAppDesktop().getClientInfo().desktopHeight * 80 / 100;
+			width = SessionManager.getAppDesktop().getClientInfo().desktopWidth * 80 / 100;
+		}
 		ZKUpdateUtil.setWidth(this, width + "px");
 		ZKUpdateUtil.setHeight(this, height + "px");
 		this.setContentStyle("overflow: auto");
