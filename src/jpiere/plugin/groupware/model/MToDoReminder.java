@@ -552,7 +552,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTime.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
-			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
+			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime() == null ? Timestamp.valueOf("9999-12-31 00:00:00") : parent.getJP_ToDo_ScheduledEndTime());
 
 		}else if(MToDoReminder.BROADCASTFREQUENCY_JustOnce.equals(getBroadcastFrequency()) ){
 
@@ -561,12 +561,12 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrComplete.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpiration);
-			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
+			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime() == null ? Timestamp.valueOf("9999-12-31 00:00:00") : parent.getJP_ToDo_ScheduledEndTime());
 
 		}else if(MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(getBroadcastFrequency()) ){
 
 			bm.setBroadcastFrequency(MBroadcastMessage.BROADCASTFREQUENCY_UntilExpirationOrAcknowledge);
-			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime());
+			bm.setExpiration(parent.getJP_ToDo_ScheduledEndTime() == null ? Timestamp.valueOf("9999-12-31 00:00:00") : parent.getJP_ToDo_ScheduledEndTime());
 		}
 
 
@@ -790,7 +790,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 				|| MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTime.equals(getBroadcastFrequency())
 				|| (MToDoReminder.BROADCASTFREQUENCY_UntilScheduledEndTimeOrAcknowledge.equals(getBroadcastFrequency()) && !isConfirmed()) 	) {
 
-			if(getParent().getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
+			if(getParent().getJP_ToDo_ScheduledEndTime() == null || getParent().getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
 			{
 				int AD_BroadcastMessage_ID = sendMessageRemainder();
 				setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
@@ -822,7 +822,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 					|| MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTime.equals(getJP_MailFrequency())
 					|| (MToDoReminder.JP_MAILFREQUENCY_OnceADayUntilScheduledEndTimeOrAcknowledge.equals(getJP_MailFrequency())&& !isConfirmed()) ) {
 
-			if(getParent().getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
+			if(getParent().getJP_ToDo_ScheduledEndTime() == null || getParent().getJP_ToDo_ScheduledEndTime().compareTo(Timestamp.valueOf(LocalDateTime.now())) > 0)
 			{
 				setProcessed(false);
 				saveEx(get_TrxName());
