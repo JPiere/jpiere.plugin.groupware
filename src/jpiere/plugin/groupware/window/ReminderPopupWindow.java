@@ -750,7 +750,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			addHoursBtn.setLabel("+"+p_Add_Hours+Msg.getMsg(ctx, "JP_Hours"));
 			addHoursBtn.setVisible(p_haveParentTeamToDoReminder? false : p_IsUpdatable);
 			addHoursBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(addHoursBtn, "true");
+			ZKUpdateUtil.setWidth(addHoursBtn, "100%");
 		}
 
 		if(addMinsBtn == null)
@@ -761,7 +761,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			addMinsBtn.setLabel("+"+p_Add_Mins+Msg.getMsg(ctx, "JP_Mins"));
 			addMinsBtn.setVisible(p_haveParentTeamToDoReminder? false : p_IsUpdatable);
 			addMinsBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(addMinsBtn, "true");
+			ZKUpdateUtil.setWidth(addMinsBtn, "100%");
 		}
 
 		if(showTeamMemberBtn == null)
@@ -791,7 +791,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			showTeamToDoReminderBtn.setLabel(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoReminderList"));
 			showTeamToDoReminderBtn.setVisible(true);
 			showTeamToDoReminderBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(showTeamToDoReminderBtn, "true");
+			ZKUpdateUtil.setWidth(showTeamToDoReminderBtn, "100%");
 		}
 
 		Div centerContent = new Div();

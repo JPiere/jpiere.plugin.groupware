@@ -396,8 +396,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		editor_IsDisplaySchedule = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayScheduleJP), null, true, false, true);
 		editor_IsDisplaySchedule.setValue(p_IsDisplaySchedule);
 		editor_IsDisplaySchedule.addValueChangeListener(this);
-		ZKUpdateUtil.setVflex(editor_IsDisplaySchedule.getComponent(), "true");
-		ZKUpdateUtil.setHflex(editor_IsDisplaySchedule.getComponent(), "true");
+		ZKUpdateUtil.setVflex(editor_IsDisplaySchedule.getComponent(), "min");
+		ZKUpdateUtil.setHflex(editor_IsDisplaySchedule.getComponent(), "min");
 		Div div = GroupwareToDoUtil.createEditorDiv(editor_IsDisplaySchedule, true);
 		div.setStyle("vertical-align: middle; white-space: nowrap;");
 		row.appendChild(div);
@@ -409,8 +409,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		editor_IsDisplayTask = new WYesNoEditor(MGroupwareUser.COLUMNNAME_IsDisplayTaskJP, Msg.getElement(ctx,MGroupwareUser.COLUMNNAME_IsDisplayTaskJP), null, true, false, true);
 		editor_IsDisplayTask.setValue(p_IsDisplayTask);
 		editor_IsDisplayTask.addValueChangeListener(this);
-		ZKUpdateUtil.setVflex(editor_IsDisplayTask.getComponent(), "true");
-		ZKUpdateUtil.setHflex(editor_IsDisplayTask.getComponent(), "true");
+		ZKUpdateUtil.setVflex(editor_IsDisplayTask.getComponent(), "min");
+		ZKUpdateUtil.setHflex(editor_IsDisplayTask.getComponent(), "min");
 		div = GroupwareToDoUtil.createEditorDiv(editor_IsDisplayTask, true);
 		div.setStyle("vertical-align: middle; white-space: nowrap;");
 		row.appendChild(div);
@@ -460,8 +460,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		createNewToDo.addEventListener(Events.ON_CLICK, this);
 		createNewToDo.setId(String.valueOf(0));
 		createNewToDo.setLabel(Msg.getMsg(ctx, "NewRecord"));
-		ZKUpdateUtil.setVflex(createNewToDo, "false");
-		ZKUpdateUtil.setHflex(createNewToDo, "true");
+		ZKUpdateUtil.setWidth(createNewToDo, "100%");
+		ZKUpdateUtil.setHeight(createNewToDo, "100%");
 		row.appendCellChild(createNewToDo,2);
 		row.appendChild(GroupwareToDoUtil.createSpaceDiv());
 
@@ -475,8 +475,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		refresh.setName(BUTTON_REFRESH);
 		refresh.addEventListener(Events.ON_CLICK, this);
 		refresh.setLabel(Msg.getMsg(ctx, "Refresh"));
-		ZKUpdateUtil.setVflex(refresh, "false");
-		ZKUpdateUtil.setHflex(refresh, "true");
+		ZKUpdateUtil.setWidth(refresh, "100%");
+		ZKUpdateUtil.setHeight(refresh, "100%");
 		row.appendCellChild(refresh, 2);
 
 
@@ -491,8 +491,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		//leftBtn.setClass("btn-small");
 		leftBtn.setName(BUTTON_PREVIOUS);
 		leftBtn.addEventListener(Events.ON_CLICK, this);
-		ZKUpdateUtil.setVflex(leftBtn, "false");
-		ZKUpdateUtil.setHflex(leftBtn, "true");
+		ZKUpdateUtil.setWidth(leftBtn, "100%");
+		ZKUpdateUtil.setHeight(leftBtn, "100%");
 		row.appendChild(leftBtn);
 
 		editor_Date = new WDateEditor(EDITOR_DATE, false, false, true, "");
@@ -522,8 +522,8 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		//rightBtn.setClass("btn-small");
 		rightBtn.addEventListener(Events.ON_CLICK, this);
 		rightBtn.setName(BUTTON_NEXT);
-		ZKUpdateUtil.setVflex(rightBtn, "false");
-		ZKUpdateUtil.setHflex(rightBtn, "true");
+		ZKUpdateUtil.setWidth(rightBtn, "100%");
+		ZKUpdateUtil.setHeight(rightBtn, "100%");
 		row.appendChild(rightBtn);
 
 		row.appendChild(GroupwareToDoUtil.getDividingLine());
