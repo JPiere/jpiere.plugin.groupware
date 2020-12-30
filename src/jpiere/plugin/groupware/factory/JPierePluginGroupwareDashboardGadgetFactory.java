@@ -18,6 +18,7 @@ import org.adempiere.webui.factory.IDashboardGadgetFactory;
 import org.zkoss.zk.ui.Component;
 
 import jpiere.plugin.groupware.form.GroupwareMenuGadgetFlat;
+import jpiere.plugin.groupware.form.JPiereCreateInfoGadget;
 import jpiere.plugin.groupware.form.ToDoGadget;
 
 
@@ -41,6 +42,11 @@ public class JPierePluginGroupwareDashboardGadgetFactory implements IDashboardGa
 			}else if(uri.equals("JP_Groupware=GroupwareMenuGadget")) {
 				return new GroupwareMenuGadgetFlat();
 			}
+
+		}else if (uri != null && uri.startsWith("JP_InfoGadgetCategory_ID="))
+		{
+			String JP_InfoGadgetCategory_ID = uri.substring("JP_InfoGadgetCategory_ID=".length());
+		   return new JPiereCreateInfoGadget(Integer.valueOf(JP_InfoGadgetCategory_ID).intValue());
 
 		}
 
