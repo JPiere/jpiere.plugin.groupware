@@ -163,7 +163,7 @@ public class JPiereCKEditor implements EventListener<Event>, ValueChangeListener
 		wysiwygEditorForm.setSizable(true);
 		wysiwygEditorForm.setClosable(true);
 		wysiwygEditorForm.setMaximizable(true);
-		ZKUpdateUtil.setWidth(wysiwygEditorForm, "95%");
+		ZKUpdateUtil.setWidth(wysiwygEditorForm, "80%");
 		ZKUpdateUtil.setHeight(wysiwygEditorForm, "80%");
 		wysiwygEditorForm.appendChild (mainLayout);
 		LayoutUtils.addSclass("jpiere-ckeditor-form-content", mainLayout);
@@ -360,6 +360,7 @@ public class JPiereCKEditor implements EventListener<Event>, ValueChangeListener
 			SaveButton.addActionListener(this);
 			SaveButton.setEnabled(true);
 			SaveButton.setImage(ThemeManager.getThemeResource("images/Save16.png"));
+			ZKUpdateUtil.setWidth(SaveButton, "100%");
 			row.appendCellChild(SaveButton);
 		}
 
