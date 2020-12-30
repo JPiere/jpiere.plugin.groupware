@@ -437,6 +437,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ZKUpdateUtil.setHflex(outerDiv, "max");
     	outerDiv.setStyle("padding: 4px 2px 4px 2px; margin-bottom:4px; border: solid 2px #dddddd;");
     	Vlayout vlayout = new Vlayout();
+    	vlayout.setClass("info-panel");
 		ZKUpdateUtil.setVflex(vlayout, "min");
 		ZKUpdateUtil.setHflex(vlayout, "min");
     	outerDiv.appendChild(vlayout);
@@ -448,11 +449,11 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		vlayout.appendChild(grid);
 
 		Rows rows = grid.newRows();
-		ZKUpdateUtil.setVflex(rows, "min");
+		ZKUpdateUtil.setVflex(rows, "false");
 		ZKUpdateUtil.setHflex(rows, "min");
 
 		Row row = rows.newRow();
-		ZKUpdateUtil.setVflex(row, "min");
+		ZKUpdateUtil.setVflex(row, "false");
 		ZKUpdateUtil.setHflex(row, "min");
 
 
