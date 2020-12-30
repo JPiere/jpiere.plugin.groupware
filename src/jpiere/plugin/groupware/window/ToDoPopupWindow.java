@@ -990,7 +990,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addStartHoursBtn.setLabel("+"+p_Add_Hours+Msg.getMsg(ctx, "JP_Hours"));
 			addStartHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addStartHoursBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(addStartHoursBtn, "true");
+			ZKUpdateUtil.setWidth(addStartHoursBtn, "100%");
 		}
 
 		if(addStartMinsBtn == null)
@@ -1001,7 +1001,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addStartMinsBtn.setLabel("+"+p_Add_Mins+Msg.getMsg(ctx, "JP_Mins"));
 			addStartMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addStartMinsBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(addStartMinsBtn, "true");
+			ZKUpdateUtil.setWidth(addStartMinsBtn, "100%");
 		}
 
 		if(addEndHoursBtn == null)
@@ -1012,7 +1012,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addEndHoursBtn.setLabel("+"+p_Add_Hours+Msg.getMsg(ctx, "JP_Hours"));
 			addEndHoursBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addEndHoursBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(addEndHoursBtn, "true");
+			ZKUpdateUtil.setWidth(addEndHoursBtn, "100%");
 		}
 
 		if(addEndMinsBtn == null)
@@ -1023,7 +1023,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			addEndMinsBtn.setLabel("+"+p_Add_Mins+Msg.getMsg(ctx, "JP_Mins"));
 			addEndMinsBtn.setVisible(p_haveParentTeamToDo? false : p_IsUpdatable);
 			addEndMinsBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(addEndMinsBtn, "true");
+			ZKUpdateUtil.setWidth(addEndMinsBtn, "100%");
 		}
 
 		if(showTeamMemberBtn == null)
@@ -1053,7 +1053,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			showPersonaToDoBtn.setLabel(Msg.getMsg(ctx, "JP_ToDo_PersonalToDoList"));//Personal ToDo list that was created from this Team ToDo
 			showPersonaToDoBtn.setVisible(true);
 			showPersonaToDoBtn.addEventListener(Events.ON_CLICK, this);
-			ZKUpdateUtil.setHflex(showPersonaToDoBtn, "true");
+			ZKUpdateUtil.setWidth(showPersonaToDoBtn, "100%");
 		}
 
 		Div centerContent = new Div();
