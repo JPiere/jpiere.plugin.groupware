@@ -604,7 +604,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		}
 		color2 = "#dddddd";
 
-		if(Util.isEmpty(m_GroupwareUser.getJP_NonBusinessDayColor()))
+		if(m_GroupwareUser == null || Util.isEmpty(m_GroupwareUser.getJP_NonBusinessDayColor()))
 			colorNonBusinessDay = "#ff0000";
 		else
 			colorNonBusinessDay = m_GroupwareUser.getJP_NonBusinessDayColor();
