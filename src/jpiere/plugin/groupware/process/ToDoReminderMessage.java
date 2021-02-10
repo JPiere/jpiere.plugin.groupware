@@ -43,6 +43,11 @@ public class ToDoReminderMessage extends SvrProcess {
 
 	private long plusMin = 5;
 
+	private int teamTodoReminderSuccess = 0;
+	private int teamTodoReminderFailure = 0;
+	private int personalTodoReminderSuccess = 0;
+	private int personalTodoReminderFailure = 0;
+
 	@Override
 	protected void prepare()
 	{
@@ -68,6 +73,13 @@ public class ToDoReminderMessage extends SvrProcess {
 			createPersonalToDoRemainderFromTeamToDoReminder();
 			sendMessageFromPersonalToDoRemainder();
 
+			return Msg.getElement(getCtx(), "JP_ToDo_Team_Reminder_ID") + " ( "
+							+ Msg.getMsg(getCtx(), "JP_Success") + " : " + teamTodoReminderSuccess + "  "
+							+ Msg.getMsg(getCtx(), "JP_Failure") + " : " + teamTodoReminderFailure + " ) - "
+						+ Msg.getElement(getCtx(), "JP_ToDo_Reminder_ID") + " ( "
+							+ Msg.getMsg(getCtx(), "JP_Success") + " : " + personalTodoReminderSuccess + " "
+							+ Msg.getMsg(getCtx(), "JP_Failure") + " : " + personalTodoReminderFailure + " ) " ;
+
 		}else if(MToDoReminder.Table_Name.equals(m_Table.getTableName())) {
 
 			if(record_ID == 0)
@@ -86,11 +98,6 @@ public class ToDoReminderMessage extends SvrProcess {
 				createPersonalToDoRemainderFromTeamToDoReminder(new MToDoTeamReminder(getCtx(), record_ID, get_TrxName()));
 			}
 
-		}else {
-
-			createPersonalToDoRemainderFromTeamToDoReminder();
-			sendMessageFromPersonalToDoRemainder();
-
 		}
 
 		return Msg.getMsg(getCtx(), "Success");
@@ -106,11 +113,33 @@ public class ToDoReminderMessage extends SvrProcess {
 										.setParameters(p_AD_Client_ID, remindTime)
 										.list();
 
+		boolean isSuccess = false;
 		for(MToDoReminder reminder : list)
 		{
-			sendMessageFromPersonalToDoRemainder(reminder);
+			try {
+				isSuccess = sendMessageFromPersonalToDoRemainder(reminder);
+				if(!isSuccess)
+				{
+					addLog(getProcessInfo().getAD_Process_ID(), remindTime, null, reminder.getRemindMsg(), MToDoReminder.Table_ID, reminder.getJP_ToDo_Reminder_ID());
+				}
+
+			}catch (Exception e) {
+
+				isSuccess = false;
+				addLog(getProcessInfo().getAD_Process_ID(), remindTime, null, e.getMessage(), MToDoReminder.Table_ID, reminder.getJP_ToDo_Reminder_ID());
+
+			}finally {
+
+				if(isSuccess)
+				{
+					personalTodoReminderSuccess++;
+				}else {
+					personalTodoReminderFailure++;
+				}
+			}
 			commitEx();
-		}
+
+		}//for
 
 		return true;
 	}
@@ -120,10 +149,6 @@ public class ToDoReminderMessage extends SvrProcess {
 		int AD_BroadcastMessage_ID = todoReminder.sendMessageRemainder();
 		if(AD_BroadcastMessage_ID > 0)
 		{
-			todoReminder.setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
-			todoReminder.setIsSentReminderJP(true);
-			todoReminder.saveEx();
-
 			return true;
 		}else {
 			return false;
@@ -141,11 +166,33 @@ public class ToDoReminderMessage extends SvrProcess {
 										.setParameters(p_AD_Client_ID, remindTime)
 										.list();
 
+		boolean isSuccess = false;
 		for(MToDoTeamReminder reminder : list)
 		{
-			createPersonalToDoRemainderFromTeamToDoReminder(reminder);
+			try {
+				isSuccess = createPersonalToDoRemainderFromTeamToDoReminder(reminder);
+				if(!isSuccess)
+				{
+					addLog(getProcessInfo().getAD_Process_ID(), remindTime, null, reminder.getRemindMsg(), MToDoTeamReminder.Table_ID, reminder.getJP_ToDo_Team_Reminder_ID());
+				}
+			}catch (Exception e) {
+
+				isSuccess = false;
+				addLog(getProcessInfo().getAD_Process_ID(), remindTime, null, e.getMessage(), MToDoTeamReminder.Table_ID, reminder.getJP_ToDo_Team_Reminder_ID());
+
+			}finally {
+
+				if(isSuccess)
+				{
+					teamTodoReminderSuccess++;
+				}else {
+					teamTodoReminderFailure++;
+				}
+
+			}
 			commitEx();
-		}
+
+		}//for
 
 		return true;
 	}

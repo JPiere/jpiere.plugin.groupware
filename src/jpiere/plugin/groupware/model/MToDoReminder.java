@@ -71,6 +71,11 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 
 	private boolean isProcessingReminder = false;
 
+	public void setProcessingReminder(boolean isProcessingReminder)
+	{
+		this.isProcessingReminder = isProcessingReminder;
+	}
+
 
 	@Override
 	protected boolean beforeSave(boolean newRecord)
@@ -648,7 +653,16 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 		}
 
 		AD_BroadcastMessage_ID = bm.getAD_BroadcastMessage_ID();
+		if(AD_BroadcastMessage_ID > 0)
+		{
+			setAD_BroadcastMessage_ID(AD_BroadcastMessage_ID);
+			setIsSentReminderJP(true);
+			setProcessingReminder(true);
+			saveEx(get_TrxName());
+			setProcessingReminder(false);
+		}
 
+		//log
 		MToDoReminderLog reminderlog = new MToDoReminderLog(getCtx(), 0, get_TrxName());
 		reminderlog.setJP_ToDo_Reminder_ID(getJP_ToDo_Reminder_ID());
 
@@ -667,6 +681,8 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 			if(get_TrxName() != null)
 				Trx.get(get_TrxName(), true).commit();
 		}
+
+
 
 		return AD_BroadcastMessage_ID;
 	}
@@ -744,7 +760,7 @@ public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder 
 	{
 		if(getAD_BroadcastMessage_ID() > 0)
 		{
-			MBroadcastMessage mbMessage = MBroadcastMessage.get(Env.getCtx(), getAD_BroadcastMessage_ID());
+			MBroadcastMessage mbMessage = new MBroadcastMessage(Env.getCtx(), getAD_BroadcastMessage_ID(), get_TrxName() );
 			if (!mbMessage.isExpired() && mbMessage.isPublished())
 			{
 				String sql = "UPDATE AD_Note SET Processed='Y' WHERE AD_BroadcastMessage_ID = ?";

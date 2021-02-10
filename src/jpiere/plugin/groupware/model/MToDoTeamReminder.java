@@ -235,7 +235,7 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 			todoReminder.setDescription(getDescription());
 			todoReminder.setURL(getURL());
 			todoReminder.setJP_SendMailNextTime(getJP_ToDo_RemindTime());
-			todoReminder.save(get_TrxName());
+			todoReminder.saveEx(get_TrxName());
 			counter++;
 		}
 
