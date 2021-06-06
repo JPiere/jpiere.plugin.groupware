@@ -38,6 +38,7 @@ public class CreateToDoFromTeamToDo extends SvrProcess {
 
 	private int p_JP_ToDo_Team_ID = 0;
 
+	@SuppressWarnings("unused")
 	private int p_JP_Team_ID = 0;
 
 	private String p_JP_ToDo_Member_Additional_ID = null;
