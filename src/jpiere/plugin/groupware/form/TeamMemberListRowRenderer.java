@@ -29,6 +29,7 @@ import org.zkoss.zul.RowRenderer;
 */
 public class TeamMemberListRowRenderer implements RowRenderer<TeamMemberModel> {
 
+	@SuppressWarnings("unused")
 	private TeamMemberPopup personalToDoListWindow = null;
 
 
