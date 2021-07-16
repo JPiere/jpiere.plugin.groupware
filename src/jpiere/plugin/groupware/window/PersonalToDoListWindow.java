@@ -113,6 +113,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);
+		setSizable(true);
 
 		int height = 0;
 		int width  = 0;
@@ -251,6 +252,7 @@ public class PersonalToDoListWindow extends Window implements EventListener<Even
 		center.appendChild(grid);
 
 		org.zkoss.zul.Columns columns = new Columns();
+		columns.setSizable(true);
 		grid.appendChild(columns);
 
 		org.zkoss.zul.Column column = new Column();

@@ -185,6 +185,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		this.setBorder("normal");
 		this.setShadow(true);
 		this.setClosable(true);
+		this.setSizable(true);
 
 
 		this.p_iToDo = i_ToDo;

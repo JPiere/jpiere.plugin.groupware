@@ -141,7 +141,6 @@ public class TeamMemberPopup extends Popup implements EventListener<Event>{
 		ZKUpdateUtil.setWidth(this, 360 + "px");
 		ZKUpdateUtil.setHeight(this, 380 + "px");
 
-
 		Borderlayout popupContent = new Borderlayout();
 		this.appendChild(popupContent);
 		ZKUpdateUtil.setVflex(popupContent, "max");
@@ -159,6 +158,7 @@ public class TeamMemberPopup extends Popup implements EventListener<Event>{
 		center.appendChild(grid);
 
 		org.zkoss.zul.Columns columns = new Columns();
+		columns.setSizable(true);
 		grid.appendChild(columns);
 
 		//User
