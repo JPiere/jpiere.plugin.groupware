@@ -258,6 +258,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		this.setBorder("normal");
 		this.setShadow(true);
 		this.setClosable(true);
+		this.setSizable(true);
 
 		if(index <= -1)
 		{

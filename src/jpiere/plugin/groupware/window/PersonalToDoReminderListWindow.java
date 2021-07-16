@@ -115,6 +115,7 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 		setAttribute(Window.MODE_KEY, Window.MODE_HIGHLIGHTED);
 		setBorder("normal");
 		setClosable(true);
+		setSizable(true);
 
 		if(mobile)
 		{
@@ -268,6 +269,7 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 		center.appendChild(grid);
 
 		org.zkoss.zul.Columns columns = new Columns();
+		columns.setSizable(true);
 		grid.appendChild(columns);
 
 		org.zkoss.zul.Column column = new Column();

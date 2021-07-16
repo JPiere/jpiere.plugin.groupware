@@ -182,7 +182,7 @@ public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 		center.appendChild(grid);
 
 		org.zkoss.zul.Columns columns = new Columns();
-		//columns.setSizable(true);
+		columns.setSizable(true);
 		grid.appendChild(columns);
 
 		org.zkoss.zul.Column column = null;
