@@ -155,7 +155,6 @@ public class JPiereCKEditor implements EventListener<Event>, ValueChangeListener
 			return;
 		}
 		zkInit();
-		LayoutUtils.sendDeferLayoutEvent(mainLayout, 100);
 	}
 
 	private String prepare()
