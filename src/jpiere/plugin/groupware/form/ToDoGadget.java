@@ -301,7 +301,10 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			leftBtn.addEventListener(Events.ON_CLICK, this);
 			hlayout.appendChild(leftBtn);
 
+			editor_Date.removeValuechangeListener(this);
 			editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
+			editor_Date.addValueChangeListener(this);
+			
 			hlayout.appendChild(editor_Date.getComponent());
 
 			hlayout.appendChild(GroupwareToDoUtil.createLabelDiv(null, " - ", true));
