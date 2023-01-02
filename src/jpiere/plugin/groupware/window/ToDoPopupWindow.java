@@ -59,7 +59,7 @@ import org.adempiere.webui.event.ValueChangeListener;
 import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
-import org.adempiere.webui.window.FDialog;
+import org.adempiere.webui.window.Dialog;
 import org.compiere.model.GridField;
 import org.compiere.model.GridFieldVO;
 import org.compiere.model.MColumn;
@@ -1398,7 +1398,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 								}
 							}
 					};
-					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_SaveBeforeProcess", Msg.getMsg(ctx, "SaveChanges?"), isSave);
+					Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_SaveBeforeProcess", Msg.getMsg(ctx, "SaveChanges?"), isSave);
 					//Please save changes before Process
 
 				}else {
@@ -1451,7 +1451,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 								}
 							}
 					};
-					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_SaveBeforeEditToDoReminder", Msg.getMsg(ctx, "SaveChanges?"), isSave);
+					Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_SaveBeforeEditToDoReminder", Msg.getMsg(ctx, "SaveChanges?"), isSave);
 					//Please save changes before edit ToDo Reminder.
 
 				}else {
@@ -1605,11 +1605,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			MPInstance instance = new MPInstance(ctx, pi.getAD_PInstance_ID(), "false");
 			String msg= instance.getErrorMsg();
 			if(instance.getResult() == 0 && !Util.isEmpty(msg))
-				FDialog.error(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
+				Dialog.error(i_PersonalToDoPopupwindowCaller.getWindowNo(), "Error", msg);
 			else if(instance.getResult() == 0 && Util.isEmpty(msg))
 				;
 			else
-				FDialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, msg);
+				Dialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), "Error", msg);
 
 			p_IsDirty = false;
 			I_ToDo todo = null;
@@ -1697,7 +1697,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			if(p_iToDo.getUpdated().compareTo(db_ToDo.getUpdated()) != 0)
 			{
 				//Current ToDo was changed by another user, so refreshed.
-				FDialog.info(0, this, "JP_ToDo_CurrentToDoModified");
+				Dialog.info(0, "JP_ToDo_CurrentToDoModified");
 
 				p_iToDo.setAD_Org_ID(db_ToDo.getAD_Org_ID());
 				p_iToDo.setAD_User_ID(db_ToDo.getAD_User_ID());
@@ -2086,7 +2086,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		String msg = p_iToDo.beforeSavePreCheck(true);
 		if(!Util.isEmpty(msg))
 		{
-			FDialog.error(0, this, msg);
+			Dialog.error(0, "Error", msg);
 			return false;
 		}
 
@@ -2123,7 +2123,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 		else
 		{
-			FDialog.error(0, this, Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+			Dialog.error(0, "Error", Msg.getMsg(ctx, "SaveError") + " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 			return false;
 		}
 
@@ -2176,7 +2176,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 													,valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
 							}
 					};
-					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+					Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
 					//Would you like to adjust the time for unsent reminders?
 
 				}else {
@@ -2234,7 +2234,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 												, valueChangeFieldMap, between_ScheduledStartMins, between_ScheduledEndMins);
 							}
 					};
-					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+					Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
 				}else {
 
 					updateRelatedToDoes(p_iToDo
@@ -2370,7 +2370,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 										if(!todo.save())
 										{
-											FDialog.error(0, null, "SaveError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+											Dialog.error(0, "SaveError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 											break;
 										}else {
 
@@ -2390,7 +2390,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 								}
 							}
 					};
-					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 				}
 
 
@@ -2461,7 +2461,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 										if(!todo.save())
 										{
-											FDialog.error(0, null, "SaveError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+											Dialog.error(0, "SaveError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 											break ;
 
 										}else {
@@ -2483,7 +2483,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 							}
 
 					};
-					FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 				}
 
 			}
@@ -2519,7 +2519,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 								{
 									if(!todo.delete(false))
 									{
-										FDialog.error(0, null, "DeleteError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+										Dialog.error(0, "DeleteError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 										break ;
 									}
 								}
@@ -2533,7 +2533,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 							}
 						}
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
+				Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
 			}
 		}else if(p_iToDo instanceof MToDoTeam) {
 
@@ -2554,7 +2554,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 									if(!todo.delete(false))
 									{
-										FDialog.error(0, null, "DeleteError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
+										Dialog.error(0, "DeleteError", " : "+ Msg.getMsg(ctx, "JP_UnexpectedError"));
 										break ;
 									}
 								}
@@ -2569,7 +2569,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 						}
 
 				};
-				FDialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), this ,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
+				Dialog.ask(i_PersonalToDoPopupwindowCaller.getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
 			}
 
 		}//Update Related ToDo
@@ -2808,7 +2808,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(p_IsDirty)
 		{
 
-			FDialog.ask(0, null, "SaveChanges?", new Callback<Boolean>() {//Do you want to save changes?
+			Dialog.ask(0, "SaveChanges?", new Callback<Boolean>() {//Do you want to save changes?
 
 				@Override
 				public void onCallback(Boolean result)

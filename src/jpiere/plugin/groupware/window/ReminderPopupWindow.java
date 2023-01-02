@@ -50,7 +50,7 @@ import org.adempiere.webui.event.ValueChangeListener;
 import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
-import org.adempiere.webui.window.FDialog;
+import org.adempiere.webui.window.Dialog;
 import org.compiere.model.GridField;
 import org.compiere.model.GridFieldVO;
 import org.compiere.model.MColumn;
@@ -1150,7 +1150,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			if(i_Reminder.getUpdated().compareTo(db_Reminder.getUpdated()) != 0)
 			{
 				//Current ToDo was changed by another user, so refreshed.
-				FDialog.info(0, this, "JP_ToDo_CurrentToDoModified");
+				Dialog.info(0, "JP_ToDo_CurrentToDoModified");
 
 				i_Reminder.setAD_Org_ID(db_Reminder.getAD_Org_ID());
 				i_Reminder.setJP_ToDo_ReminderType(db_Reminder.getJP_ToDo_ReminderType());
@@ -1377,7 +1377,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		String msg = i_Reminder.beforeSavePreCheck(true);
 		if(!Util.isEmpty(msg))
 		{
-			FDialog.error(0, this, msg);
+			Dialog.error(0, "Error", msg);
 			return false;
 		}
 
@@ -1396,7 +1396,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}
 		else
 		{
-			FDialog.error(0, this, "SaveError", Msg.getMsg(ctx, "JP_UnexpectedError"));
+			Dialog.error(0, "SaveError", Msg.getMsg(ctx, "JP_UnexpectedError"));
 			return false;
 		}
 
@@ -1429,9 +1429,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 							todoReminder.setIsSentReminderJP(true);
 							todoReminder.saveEx();
 
-							FDialog.info(0, this, "SendMail", i_Reminder.getRemindMsg());
+							Dialog.info(0, "SendMail", i_Reminder.getRemindMsg());
 						}else{
-							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+							Dialog.error(0, "Error", i_Reminder.getRemindMsg());
 						}
 
 					}else if(MToDoReminder.JP_TODO_REMINDERTYPE_BroadcastMessage.equals(todoReminder.getJP_ToDo_ReminderType())) {
@@ -1446,11 +1446,11 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 								todoReminder.setProcessed(true);
 							todoReminder.saveEx();
 
-							FDialog.info(0, this, "MessageSent", i_Reminder.getRemindMsg());
+							Dialog.info(0, "MessageSent", i_Reminder.getRemindMsg());
 
 						}else {
 
-							FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+							Dialog.error(0, "Error", i_Reminder.getRemindMsg());
 						}
 					}
 
@@ -1459,9 +1459,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 					MToDoTeamReminder todoReminder = (MToDoTeamReminder)i_Reminder;
 					if(todoReminder.createPersonalToDoRemainder())
 					{
-						FDialog.info(0, this, "JP_CreatePersonalToDoReminder", i_Reminder.getRemindMsg());
+						Dialog.info(0, "JP_CreatePersonalToDoReminder", i_Reminder.getRemindMsg());
 					}else {
-						FDialog.error(0, this, "Error", i_Reminder.getRemindMsg());
+						Dialog.error(0, "Error", i_Reminder.getRemindMsg());
 					}
 
 				}
@@ -1477,7 +1477,7 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		if(p_IsDirty)
 		{
 
-			FDialog.ask(0, null, "SaveChanges?", new Callback<Boolean>() {//Do you want to save changes?
+			Dialog.ask(0, "SaveChanges?", new Callback<Boolean>() {//Do you want to save changes?
 
 				@Override
 				public void onCallback(Boolean result)

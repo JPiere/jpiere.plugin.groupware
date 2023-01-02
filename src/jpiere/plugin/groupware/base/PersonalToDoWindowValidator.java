@@ -23,7 +23,7 @@ import org.adempiere.util.Callback;
 import org.adempiere.webui.adwindow.validator.WindowValidator;
 import org.adempiere.webui.adwindow.validator.WindowValidatorEvent;
 import org.adempiere.webui.adwindow.validator.WindowValidatorEventType;
-import org.adempiere.webui.window.FDialog;
+import org.adempiere.webui.window.Dialog;
 import org.compiere.model.GridField;
 import org.compiere.model.GridTab;
 import org.compiere.util.Env;
@@ -138,7 +138,7 @@ public class PersonalToDoWindowValidator implements WindowValidator {
 									}
 								}
 						};
-						FDialog.ask(gridTab.getWindowNo(), null, "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(Env.getCtx(), "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+						Dialog.ask(gridTab.getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(Env.getCtx(), "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 
 					}//if(list.size() > 0)
 				}
@@ -174,7 +174,7 @@ public class PersonalToDoWindowValidator implements WindowValidator {
 							}
 
 					};
-					FDialog.ask(gridTab.getWindowNo(), null ,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(Env.getCtx(), "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
+					Dialog.ask(gridTab.getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(Env.getCtx(), "JP_ToDo_Delete_CreatedRepeatedly2"), isRelaredToDoUpdate);
 				}
 			}
 

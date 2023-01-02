@@ -55,7 +55,7 @@ import org.adempiere.webui.panel.IFormController;
 import org.adempiere.webui.session.SessionManager;
 import org.adempiere.webui.theme.ThemeManager;
 import org.adempiere.webui.util.ZKUpdateUtil;
-import org.adempiere.webui.window.FDialog;
+import org.adempiere.webui.window.Dialog;
 import org.compiere.model.I_C_NonBusinessDay;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
@@ -1279,7 +1279,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					editor_JP_Team_ID.setValue(0);
 
 					//There are no users on the team, or there are no users on the team except the selected user.
-					FDialog.error(form.getWindowNo(), "Error", Msg.getMsg(ctx, "JP_Team_No_Users_Except_Selected_User"));
+					Dialog.error(form.getWindowNo(), "Error", Msg.getMsg(ctx, "JP_Team_No_Users_Except_Selected_User"));
 
 					return ;
 				}
@@ -1293,7 +1293,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 					editor_JP_Team_ID.setValue(0);
 
 					//The number of users belonging to the selected team has exceeded the maximum number of users that can be displayed on the calendar.
-					FDialog.error(form.getWindowNo(), "Error", Msg.getMsg(ctx, "JP_ToDo_Calendar_Max_Member", new Object[] {member.length,JP_ToDo_Calendar_Max_Member}));
+					Dialog.error(form.getWindowNo(), "Error", Msg.getMsg(ctx, "JP_ToDo_Calendar_Max_Member", new Object[] {member.length,JP_ToDo_Calendar_Max_Member}));
 
 					return ;
 				}
@@ -2081,7 +2081,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 								updateRelatedToDoScheduledTime(todo, osst, nsst, oset, nset, result);
 							}
 					};
-					FDialog.ask(getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+					Dialog.ask(getWindowNo(), "JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
 					//Would you like to adjust the time for unsent reminders?
 
 				}else {
@@ -2133,7 +2133,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 								updateRelatedToDoScheduledTime(todo, osst, nsst, oset, nset, result);
 							}
 					};
-					FDialog.ask(getWindowNo(), null,"JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
+					Dialog.ask(getWindowNo(), "JP_ToDoReminders", Msg.getMsg(ctx, "JP_AdjustToDoReminders"), isReminderUpdate);
 
 				}else {
 
@@ -2246,7 +2246,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 							}
 						}
 				};
-				FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+				Dialog.ask(getWindowNo(),"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 			}
 
 		}else if(todo instanceof MToDoTeam) {
@@ -2302,7 +2302,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 						}
 
 				};
-				FDialog.ask(getWindowNo(), null,"JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
+				Dialog.ask(getWindowNo(), "JP_ToDo_Update_CreatedRepeatedly1", Msg.getMsg(ctx, "JP_ToDo_Update_CreatedRepeatedly2"), isRelaredToDoUpdate);
 			}
 
 		}//Update Related ToDo
