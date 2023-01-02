@@ -305,6 +305,10 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		createEditorMap();
 		updateEditorStatus();
 		updateEditorValue();
+		
+		//From iDempiere ver10. IDEMPIERE-5467 - Implement IsRange for Info Window fields 
+		//We have to separate setting valueChengeListenr timing at WDateEditor adn WDateTimeEditor.
+		setValueChangeListener();
 
 		Borderlayout borderlayout = new Borderlayout();
 		this.appendChild(borderlayout);
@@ -442,12 +446,16 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		}
 	}
 
+	/**
+	 * From iDempiere ver10. IDEMPIERE-5467 - Implement IsRange for Info Window fields 
+	 * We have to separate setting valueChengeListenr timing at WDateEditor adn WDateTimeEditor.
+	 */
 	private void createEditorMap()
 	{
 		//*** AD_Org_ID ***//
 		MLookup lookup_AD_Org_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_Org_ID),  DisplayType.Search);
 		WSearchEditor Editor_AD_Org_ID = new WSearchEditor(lookup_AD_Org_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_Org_ID), null, true, p_IsNewRecord? false : true, true);
-		Editor_AD_Org_ID.addValueChangeListener(this);
+		//Editor_AD_Org_ID.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(Editor_AD_Org_ID.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_AD_Org_ID, Editor_AD_Org_ID);
 
@@ -455,7 +463,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//*** AD_User_ID ***//
 		MLookup lookup_AD_User_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_AD_User_ID),  DisplayType.Search);
 		WSearchEditor Editor_AD_User_ID = new WSearchEditor(lookup_AD_User_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_AD_User_ID), null, true, p_IsNewRecord? false : true, true);
-		Editor_AD_User_ID.addValueChangeListener(this);
+		//Editor_AD_User_ID.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(Editor_AD_User_ID.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_AD_User_ID, Editor_AD_User_ID);
 
@@ -464,7 +472,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		MLookup lookup_JP_ToDo_Type = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name,  MToDo.COLUMNNAME_JP_ToDo_Type),  DisplayType.List);
 		//WTableDirEditor editor_JP_ToDo_Type = new WTableDirEditor(lookup_JP_ToDo_Type, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Type), null, true, p_IsTeamToDo? true : !p_IsUpdatable, true);
 		WTableDirEditor editor_JP_ToDo_Type = new WTableDirEditor(MToDo.COLUMNNAME_JP_ToDo_Type, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, lookup_JP_ToDo_Type);
-		editor_JP_ToDo_Type.addValueChangeListener(this);
+		//editor_JP_ToDo_Type.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Type.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Type, editor_JP_ToDo_Type);
 
@@ -478,7 +486,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		MLookup lookup_JP_ToDo_Category_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Category_ID),  DisplayType.Search);
 		lookup_JP_ToDo_Category_ID.getLookupInfo().ValidationCode = validationCode;
 		WSearchEditor editor_JP_ToDo_Category_ID = new WSearchEditor(lookup_JP_ToDo_Category_ID, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Category_ID), null, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true);
-		editor_JP_ToDo_Category_ID.addValueChangeListener(this);
+		//editor_JP_ToDo_Category_ID.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Category_ID.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Category_ID, editor_JP_ToDo_Category_ID);
 
@@ -490,7 +498,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			MLookup lookup_JP_Team_ID = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name, MToDoTeam.COLUMNNAME_JP_Team_ID),  DisplayType.Search);
 			lookup_JP_Team_ID.getLookupInfo().ValidationCode = validationCode;
 			WSearchEditor editor_JP_Team_ID = new WSearchEditor(lookup_JP_Team_ID, Msg.getElement(ctx, MToDoTeam.COLUMNNAME_JP_Team_ID), null, false, !p_IsUpdatable, true);
-			editor_JP_Team_ID.addValueChangeListener(this);
+			//editor_JP_Team_ID.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_JP_Team_ID.getComponent(), "true");
 			map_Editor.put(MToDoTeam.COLUMNNAME_JP_Team_ID, editor_JP_Team_ID);
 		}
@@ -498,7 +506,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		//*** Name ***//
 		WStringEditor editor_Name = new WStringEditor(MToDo.COLUMNNAME_Name, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
-		editor_Name.addValueChangeListener(this);
+		//editor_Name.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Name.getComponent(), "true");
 		editor_Name.getComponent().setRows(2);
 		map_Editor.put(MToDo.COLUMNNAME_Name, editor_Name);
@@ -507,7 +515,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//*** Description ***//
 		WStringEditor editor_Description = new WStringEditor(MToDo.COLUMNNAME_Description, true, p_haveParentTeamToDo? true : !p_IsUpdatable, true, 30, 30, "", null);
 
-		editor_Description.addValueChangeListener(this);
+		//editor_Description.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_Description.getComponent(), "true");
 		editor_Description.getComponent().setRows(3);
 		map_Editor.put(MToDo.COLUMNNAME_Description, editor_Description);
@@ -516,7 +524,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//*** URL ***//
 		GridFieldVO gridFieldVO = GridFieldVO.createParameter(ctx, 0, 0, 0, 0, MToDo.COLUMNNAME_URL, MToDo.COLUMNNAME_URL, DisplayType.URL, 0, false, false, null);
 		WUrlEditor editor_URL = new WUrlEditor(new GridField(gridFieldVO));
-		editor_URL.addValueChangeListener(this);
+		//editor_URL.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_URL.getComponent(), "true");
 		map_Editor.put("URL", editor_URL);
 
@@ -525,7 +533,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		if(p_IsPersonalToDo)
 		{
 			WStringEditor editor_Comments = new WStringEditor(MToDo.COLUMNNAME_Comments, true, !p_IsUpdatable, true, 30, 30, "", null);
-			editor_Comments.addValueChangeListener(this);
+			//editor_Comments.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_Comments.getComponent(), "true");
 			editor_Comments.getComponent().setRows(3);
 			map_Editor.put(MToDo.COLUMNNAME_Comments, editor_Comments);
@@ -533,18 +541,18 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		//*** JP_ToDo_ScheduledStartDate ***//
 		WDateEditor editor_JP_ToDo_ScheduledStartDate = new WDateEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
-		editor_JP_ToDo_ScheduledStartDate.addValueChangeListener(this);
+		//editor_JP_ToDo_ScheduledStartDate.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartDate.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate, editor_JP_ToDo_ScheduledStartDate);
 
 		//*** IsStarDateAllDayJP ***//
 		WYesNoEditor editor_IsStartDateAllDayJP = new WYesNoEditor(MToDo.COLUMNNAME_IsStartDateAllDayJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsStartDateAllDayJP), null, true, !p_IsUpdatable, true);
-		editor_IsStartDateAllDayJP.addValueChangeListener(this);
+		//editor_IsStartDateAllDayJP.addValueChangeListener(this);
 		map_Editor.put(MToDo.COLUMNNAME_IsStartDateAllDayJP, editor_IsStartDateAllDayJP);
 
 		//*** JP_ToDo_ScheduledStartTime ***//
 		WTimeEditor editor_JP_ToDo_ScheduledStartTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime, false, p_haveParentTeamToDo? true : !p_IsUpdatable, true, null);
-		editor_JP_ToDo_ScheduledStartTime.addValueChangeListener(this);
+		//editor_JP_ToDo_ScheduledStartTime.addValueChangeListener(this);
 		//ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledStartTime.getComponent(), "80px");
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledStartTime.getComponent(), "true");
 		Timebox startTimebox = editor_JP_ToDo_ScheduledStartTime.getComponent();
@@ -553,18 +561,18 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 
 		//*** JP_ToDo_ScheduledEndDate ***//
 		WDateEditor editor_JP_ToDo_ScheduledEndDate = new WDateEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, false, p_haveParentTeamToDo? true :!p_IsUpdatable, true, null);
-		editor_JP_ToDo_ScheduledEndDate.addValueChangeListener(this);
+		//editor_JP_ToDo_ScheduledEndDate.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndDate.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate, editor_JP_ToDo_ScheduledEndDate);
 
 		//*** IsEndDateAllDayJP ***//
 		WYesNoEditor editor_IsEndDateAllDayJP = new WYesNoEditor(MToDo.COLUMNNAME_IsEndDateAllDayJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsEndDateAllDayJP), null, true, !p_IsUpdatable, true);
-		editor_IsEndDateAllDayJP.addValueChangeListener(this);
+		//editor_IsEndDateAllDayJP.addValueChangeListener(this);
 		map_Editor.put(MToDo.COLUMNNAME_IsEndDateAllDayJP, editor_IsEndDateAllDayJP);
 
 		//*** JP_ToDo_ScheduledEndTime ***//
 		WTimeEditor editor_JP_ToDo_ScheduledEndTime = new WTimeEditor(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime, false, p_haveParentTeamToDo? true :!p_IsUpdatable, true, null);
-		editor_JP_ToDo_ScheduledEndTime.addValueChangeListener(this);
+		//editor_JP_ToDo_ScheduledEndTime.addValueChangeListener(this);
 		//ZKUpdateUtil.setWidth(editor_JP_ToDo_ScheduledEndTime.getComponent(), "80px");
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_ScheduledEndTime.getComponent(), "true");
 		Timebox endTimebox = editor_JP_ToDo_ScheduledEndTime.getComponent();
@@ -574,13 +582,13 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 		//*** JP_ToDo_Status ***//
 		MLookup lookup_JP_ToDo_Status = MLookupFactory.get(ctx, 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_ToDo_Status),  DisplayType.List);
 		WTableDirEditor editor_JP_ToDo_Status = new WTableDirEditor(lookup_JP_ToDo_Status, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_ToDo_Status), null, true, p_IsUpdatable_ToDoStatus? false: true, true);
-		editor_JP_ToDo_Status.addValueChangeListener(this);
+		//editor_JP_ToDo_Status.addValueChangeListener(this);
 		ZKUpdateUtil.setHflex(editor_JP_ToDo_Status.getComponent(), "true");
 		map_Editor.put(MToDo.COLUMNNAME_JP_ToDo_Status, editor_JP_ToDo_Status);
 
 		//*** IsOpenToDoJP ***//
 		WYesNoEditor editor_IsOpenToDoJP = new WYesNoEditor(MToDo.COLUMNNAME_IsOpenToDoJP, Msg.getElement(ctx, MToDo.COLUMNNAME_IsOpenToDoJP), null, true, !p_IsUpdatable, true);
-		editor_IsOpenToDoJP.addValueChangeListener(this);
+		//editor_IsOpenToDoJP.addValueChangeListener(this);
 		map_Editor.put(MToDo.COLUMNNAME_IsOpenToDoJP, editor_IsOpenToDoJP);
 
 
@@ -590,26 +598,26 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			//*** JP_Statistics_YesNo  ***//
 			MLookup lookup_JP_Statistics_YesNo = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_YesNo),  DisplayType.List);
 			WTableDirEditor editor_JP_Statistics_YesNo = new WTableDirEditor(lookup_JP_Statistics_YesNo, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_YesNo), null, false, !p_IsUpdatable, true);
-			editor_JP_Statistics_YesNo.addValueChangeListener(this);
+			//editor_JP_Statistics_YesNo.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_JP_Statistics_YesNo.getComponent(), "true");
 			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_YesNo, editor_JP_Statistics_YesNo);
 
 			//*** JP_Statistics_Choice ***//
 			MLookup lookup_JP_Statistics_Choice = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDo.Table_Name, MToDo.COLUMNNAME_JP_Statistics_Choice),  DisplayType.List);
 			WTableDirEditor editor_JP_Statistics_Choice = new WTableDirEditor(lookup_JP_Statistics_Choice, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Choice), null, false, !p_IsUpdatable, true);
-			editor_JP_Statistics_Choice.addValueChangeListener(this);
+			//editor_JP_Statistics_Choice.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_JP_Statistics_Choice.getComponent(), "true");
 			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Choice, editor_JP_Statistics_Choice);
 
 			//*** JP_Statistics_DateAndTime ***//
 			WDatetimeEditor editor_JP_Statistics_DateAndTime = new WDatetimeEditor(Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_DateAndTime), null, false, !p_IsUpdatable, true);
-			editor_JP_Statistics_DateAndTime.addValueChangeListener(this);
+			//editor_JP_Statistics_DateAndTime.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex((HtmlBasedComponent)editor_JP_Statistics_DateAndTime.getComponent(), "true");
 			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_DateAndTime, editor_JP_Statistics_DateAndTime);
 
 			//*** JP_Statistics_Number ***//
 			WNumberEditor editor_JP_Statistics_Number = new WNumberEditor(MToDo.COLUMNNAME_JP_Statistics_Number, false, !p_IsUpdatable, true, DisplayType.Number, Msg.getElement(ctx, MToDo.COLUMNNAME_JP_Statistics_Number));
-			editor_JP_Statistics_Number.addValueChangeListener(this);
+			//editor_JP_Statistics_Number.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_JP_Statistics_Number.getComponent(), "true");
 			map_Editor.put(MToDo.COLUMNNAME_JP_Statistics_Number, editor_JP_Statistics_Number);
 
@@ -618,13 +626,25 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			//*** JP_Mandatory_Statistics_Info ***//
 			MLookup lookup_JP_Mandatory_Statistics_Info = MLookupFactory.get(Env.getCtx(), 0,  0, MColumn.getColumn_ID(MToDoTeam.Table_Name,  MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info),  DisplayType.List);
 			WTableDirEditor editor_JP_Mandatory_Statistics_Info= new WTableDirEditor(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, true, !p_IsUpdatable, true, lookup_JP_Mandatory_Statistics_Info);
-			editor_JP_Mandatory_Statistics_Info.addValueChangeListener(this);
+			//editor_JP_Mandatory_Statistics_Info.addValueChangeListener(this);
 			ZKUpdateUtil.setHflex(editor_JP_Mandatory_Statistics_Info.getComponent(), "true");
 			map_Editor.put(MToDoTeam.COLUMNNAME_JP_Mandatory_Statistics_Info, editor_JP_Mandatory_Statistics_Info);
 
 		}
 	}
 
+	/**
+	*	From iDempiere ver10. IDEMPIERE-5467 - Implement IsRange for Info Window fields 
+	*	We have to separate setting valueChengeListenr timing at WDateEditor adn WDateTimeEditor.
+	*/
+	private void setValueChangeListener()
+	{
+		for (WEditor editor : map_Editor.values()) 
+		{
+			editor.addValueChangeListener(this);
+		}
+	}
+	
 	private void updateEditorStatus()
 	{
 		map_Editor.get(MToDo.COLUMNNAME_AD_Org_ID).setReadWrite(p_haveParentTeamToDo? false : p_IsUpdatable);
@@ -2721,8 +2741,17 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					throw new WrongValueException(scheduledStartDate.getComponent(), msg);
 				}
 				ts_ScheduledStartTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledStartDate.toLocalDateTime().toLocalDate(), ts_ScheduledStartTime.toLocalDateTime().toLocalTime()));
+				
+				//From iDempiere ver10. IDEMPIERE-5467 - Implement IsRange for Info Window fields 
+				//We have to separate setting valueChengeListenr timing at WDateEditor adn WDateTimeEditor.
+				scheduledStartDate.removeValuechangeListener(this);
+				scheduledStartTime.removeValuechangeListener(this);
+				
 				scheduledStartDate.setValue(ts_ScheduledStartTime);
 				scheduledStartTime.setValue(ts_ScheduledStartTime);
+				
+				scheduledStartDate.addValueChangeListener(this);
+				scheduledStartTime.addValueChangeListener(this);
 
 				WDateEditor scheduledEndDate = (WDateEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate);
 				Timestamp ts_ScheduledEndDate =(Timestamp)scheduledEndDate.getValue();
@@ -2731,8 +2760,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					if(ts_ScheduledStartTime.compareTo(ts_ScheduledEndDate) >= 0 )
 					{
 						WTimeEditor scheduledEndTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime);
+						
+						scheduledEndDate.removeValuechangeListener(this);
+						scheduledEndTime.removeValuechangeListener(this);
+						
 						scheduledEndDate.setValue(ts_ScheduledStartTime);
 						scheduledEndTime.setValue(ts_ScheduledStartTime);
+						
+						scheduledEndDate.addValueChangeListener(this);
+						scheduledEndTime.addValueChangeListener(this);
 					}
 				}
 
@@ -2762,13 +2798,28 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 					throw new WrongValueException(scheduledEndDate.getComponent(), msg);
 				}
 				ts_ScheduledEndTime = Timestamp.valueOf(LocalDateTime.of(ts_ScheduledEndDate.toLocalDateTime().toLocalDate(), ts_ScheduledEndTime.toLocalDateTime().toLocalTime()));
+				
+				//From iDempiere ver10. IDEMPIERE-5467 - Implement IsRange for Info Window fields 
+				//We have to separate setting valueChengeListenr timing at WDateEditor adn WDateTimeEditor.
+				scheduledEndDate.removeValuechangeListener(this);
+				scheduledEndTime.removeValuechangeListener(this);
+				
 				scheduledEndDate.setValue(ts_ScheduledEndTime);
 				scheduledEndTime.setValue(ts_ScheduledEndTime);
+				
+				scheduledEndDate.addValueChangeListener(this);
+				scheduledEndTime.addValueChangeListener(this);
 
 				if(MToDo.JP_TODO_TYPE_Task.equals(p_JP_ToDo_Type))
 				{
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).removeValuechangeListener(this);
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).removeValuechangeListener(this);
+					
 					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(ts_ScheduledEndTime);
 					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(ts_ScheduledEndTime);
+					
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).addValueChangeListener(this);
+					map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).addValueChangeListener(this);
 
 				}else if(MToDo.JP_TODO_TYPE_Schedule.equals(p_JP_ToDo_Type)) {
 
@@ -2779,8 +2830,15 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 						if(ts_ScheduledStartDate.compareTo(ts_ScheduledEndTime) >= 0 )
 						{
 							WTimeEditor scheduledStartTime = (WTimeEditor)map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime);
+							
+							scheduledStartDate.removeValuechangeListener(this);
+							scheduledStartTime.removeValuechangeListener(this);
+							
 							scheduledStartDate.setValue(ts_ScheduledEndTime);
 							scheduledStartTime.setValue(ts_ScheduledEndTime);
+							
+							scheduledStartDate.addValueChangeListener(this);
+							scheduledStartTime.addValueChangeListener(this);
 						}
 
 					}

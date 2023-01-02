@@ -182,17 +182,20 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 
 		editor_Date = new WDateEditor(EDITOR_DATE, false, false, true, "");
 		editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
-		editor_Date.addValueChangeListener(this);
-
+		
 		editor_Days = new WNumberEditor(EDITOR_DAYS,true, false,true, DisplayType.Integer, "");
 		editor_Days.setValue(p_Days);
-		editor_Days.addValueChangeListener(this);
 
 		today = Timestamp.valueOf(LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN));
 
 		createHeader();
 		createMessage();
 		createContents();
+		
+		//From iDempiere ver10. IDEMPIERE-5467 - Implement IsRange for Info Window fields 
+		//We have to separate setting valueChengeListenr timing at WDateEditor adn WDateTimeEditor.
+		editor_Date.addValueChangeListener(this);
+		editor_Days.addValueChangeListener(this);
 
 		this.appendChild(headerArea);
 		this.appendChild(messageArea);
