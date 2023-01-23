@@ -560,8 +560,15 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		if(p_IsNewRecord)
 		{
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType).setValue(i_Reminder.getJP_ToDo_ReminderType());
+			
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).setValue(Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN)));
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).setValue(Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.now())));
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
 			map_Editor.get(MToDoReminder.COLUMNNAME_IsSentReminderJP).setValue("N");
 
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_MailFrequency).setValue(MToDoReminder.JP_MAILFREQUENCY_JustOne);
@@ -581,8 +588,15 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 		}else {
 
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_ReminderType).setValue(i_Reminder.getJP_ToDo_ReminderType());
+			
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).setValue(i_Reminder.getJP_ToDo_RemindTime());
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindDate).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).setValue(i_Reminder.getJP_ToDo_RemindTime());
+			map_Editor.get(MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
 			map_Editor.get(MToDoReminder.COLUMNNAME_Description).setValue(i_Reminder.getDescription());
 			map_Editor.get(MToDoReminder.COLUMNNAME_URL).setValue(i_Reminder.getURL());
 			map_Editor.get(MToDoReminder.COLUMNNAME_IsSentReminderJP).setValue(i_Reminder.isSentReminderJP());
@@ -595,7 +609,11 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 				map_Editor.get(MToDoReminder.COLUMNNAME_Comments).setValue(i_Reminder.getComments());
 				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_YesNo).setValue(i_Reminder.getJP_Statistics_YesNo());
 				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_Choice).setValue(i_Reminder.getJP_Statistics_Choice());
+				
+				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime).setValue(i_Reminder.getJP_Statistics_DateAndTime());
+				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_DateAndTime).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+				
 				map_Editor.get(MToDoReminder.COLUMNNAME_JP_Statistics_Number).setValue(i_Reminder.getJP_Statistics_Number());
 
 				map_Editor.get(MToDoReminder.COLUMNNAME_IsConfirmed).setValue(i_Reminder.isConfirmed());

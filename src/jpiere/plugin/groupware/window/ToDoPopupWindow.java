@@ -1646,9 +1646,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			if(instance.getResult() == 0 && !Util.isEmpty(msg))
 				Dialog.error(i_PersonalToDoPopupwindowCaller.getWindowNo(), "Error", msg);
 			else if(instance.getResult() == 0 && Util.isEmpty(msg))
-				;
+				Dialog.error(i_PersonalToDoPopupwindowCaller.getWindowNo(), "Error", msg);
+			else if(instance.getResult() == 1)
+				Dialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), "Success", msg);
 			else
-				Dialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), "Error", msg);
+				Dialog.info(i_PersonalToDoPopupwindowCaller.getWindowNo(), "OK", msg);
 
 			p_IsDirty = false;
 			I_ToDo todo = null;
