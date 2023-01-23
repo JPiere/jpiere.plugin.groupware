@@ -2892,7 +2892,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		Timestamp calendar_Begin = new Timestamp(calendars.getBeginDate().getTime());
 		Timestamp calendar_End = new Timestamp(calendars.getEndDate().getTime());
 
-		if(event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
+		if(event != null && event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Schedule))
 		{
 			if(event.getToDo().getJP_ToDo_ScheduledStartTime().compareTo(calendar_End) <= 0
 					&& event.getToDo().getJP_ToDo_ScheduledEndTime().compareTo(calendar_Begin) >= 0)
@@ -2903,7 +2903,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 			}
 
 
-		}else if(event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
+		}else if(event != null && event.getToDo().getJP_ToDo_Type().equals(MToDo.JP_TODO_TYPE_Task)) {
 
 			if(event.getToDo().getJP_ToDo_ScheduledEndTime().compareTo(calendar_Begin) >= 0
 					&& event.getToDo().getJP_ToDo_ScheduledEndTime().compareTo(calendar_End) <= 0)
@@ -3474,23 +3474,29 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ToDoCalendarEvent newEvent = null;
 		if(todo.getAD_User_ID() == p_AD_User_ID)
 		{
-			oldEvent = map_ToDoCalendarEvent_User.get(todo.getAD_User_ID()).get(todo.get_ID());
-			if(oldEvent != null)
-				map_ToDoCalendarEvent_User.get(todo.getAD_User_ID()).remove(todo.get_ID());
-
-			newEvent = new ToDoCalendarEvent(todo);
-			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_ToDoCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+			if(map_ToDoCalendarEvent_User.size() > 0)
+			{
+				oldEvent = map_ToDoCalendarEvent_User.get(todo.getAD_User_ID()).get(todo.get_ID());
+				if(oldEvent != null)
+					map_ToDoCalendarEvent_User.get(todo.getAD_User_ID()).remove(todo.get_ID());
+	
+				newEvent = new ToDoCalendarEvent(todo);
+				if(isAcquiredToDoCalendarEventRange(newEvent))
+					map_ToDoCalendarEvent_User.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+			}
 
 		}else {
 
-			oldEvent = map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID()).get(todo.get_ID());
-			if(oldEvent != null)
-				map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID()).remove(todo.get_ID());
-
-			newEvent = new ToDoCalendarEvent(todo);
-			if(isAcquiredToDoCalendarEventRange(newEvent))
-				map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+			if(map_ToDoCalendarEvent_Team.size() > 0)
+			{
+				oldEvent = map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID()).get(todo.get_ID());
+				if(oldEvent != null)
+					map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID()).remove(todo.get_ID());
+	
+				newEvent = new ToDoCalendarEvent(todo);
+				if(isAcquiredToDoCalendarEventRange(newEvent))
+					map_ToDoCalendarEvent_Team.get(todo.getAD_User_ID()).put(todo.get_ID(), newEvent);
+			}
 		}
 
 		updateCalendarEvent(oldEvent, newEvent);
@@ -3572,16 +3578,21 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		ToDoCalendarEvent deleteEvent = null;
 		if(deleteToDo.getAD_User_ID() == p_AD_User_ID)
 		{
-			deleteEvent = map_ToDoCalendarEvent_User.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
-			if(deleteEvent != null)
-				map_ToDoCalendarEvent_User.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
-
+			if(map_ToDoCalendarEvent_User.size() > 0)
+			{
+				deleteEvent = map_ToDoCalendarEvent_User.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
+				if(deleteEvent != null)
+					map_ToDoCalendarEvent_User.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
+			}
 
 		}else {
 
-			deleteEvent = map_ToDoCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
-			if(deleteEvent != null)
-				map_ToDoCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
+			if(map_ToDoCalendarEvent_Team.size() > 0)
+			{
+				deleteEvent = map_ToDoCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).get(deleteToDo.get_ID());
+				if(deleteEvent != null)
+					map_ToDoCalendarEvent_Team.get(deleteToDo.getAD_User_ID()).remove(deleteToDo.get_ID());
+			}
 
 		}
 
