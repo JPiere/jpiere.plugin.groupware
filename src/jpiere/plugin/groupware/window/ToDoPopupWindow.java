@@ -139,7 +139,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 	private int p_JP_ToDo_Category_ID = 0;
 	private Timestamp p_InitialScheduledStartTime = null;
 	private Timestamp p_InitialScheduledEndTime = null;
-	private boolean p_IsDirty = false;
+	volatile private boolean p_IsDirty = false;
 	private boolean p_Debug = false;
 
 	private int p_Add_Hours = 5;
@@ -720,12 +720,27 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			map_Editor.get(MToDo.COLUMNNAME_Name).setValue(p_iToDo.getName());
 			map_Editor.get(MToDo.COLUMNNAME_Description).setValue(p_iToDo.getDescription());
 			map_Editor.get(MToDo.COLUMNNAME_URL).setValue(p_iToDo.getURL());
+			
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).setValue(p_iToDo.getJP_ToDo_ScheduledStartTime());
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartDate).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
 			map_Editor.get(MToDo.COLUMNNAME_IsStartDateAllDayJP).setValue(p_iToDo.isStartDateAllDayJP());
+			
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).setValue(p_iToDo.getJP_ToDo_ScheduledStartTime());
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledStartTime).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).setValue(p_iToDo.getJP_ToDo_ScheduledEndTime());
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndDate).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
 			map_Editor.get(MToDo.COLUMNNAME_IsEndDateAllDayJP).setValue(p_iToDo.isEndDateAllDayJP());
+			
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).setValue(p_iToDo.getJP_ToDo_ScheduledEndTime());
+			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_ScheduledEndTime).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+			
 			map_Editor.get(MToDo.COLUMNNAME_JP_ToDo_Status).setValue(p_iToDo.getJP_ToDo_Status());
 			map_Editor.get(MToDo.COLUMNNAME_IsOpenToDoJP).setValue(p_iToDo.isOpenToDoJP());
 
@@ -734,7 +749,11 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 				map_Editor.get(MToDo.COLUMNNAME_Comments).setValue(p_iToDo.getComments());
 				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_YesNo).setValue(p_iToDo.getJP_Statistics_YesNo());
 				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Choice).setValue(p_iToDo.getJP_Statistics_Choice());
+				
+				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).setValue(p_iToDo.getJP_Statistics_DateAndTime());
+				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_DateAndTime).addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
+				
 				map_Editor.get(MToDo.COLUMNNAME_JP_Statistics_Number).setValue(p_iToDo.getJP_Statistics_Number());
 			}else {
 				map_Editor.get(MToDoTeam.COLUMNNAME_JP_Team_ID).setValue(p_iToDo.getJP_Team_ID() == 0? null : p_iToDo.getJP_Team_ID() );

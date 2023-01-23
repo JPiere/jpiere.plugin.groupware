@@ -301,9 +301,9 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 			leftBtn.addEventListener(Events.ON_CLICK, this);
 			hlayout.appendChild(leftBtn);
 
-			editor_Date.removeValuechangeListener(this);
+			editor_Date.removeValuechangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			editor_Date.setValue(Timestamp.valueOf(p_LocalDateTime));
-			editor_Date.addValueChangeListener(this);
+			editor_Date.addValueChangeListener(this);//TODO Influence of IDEMPIERE-5467:Implement IsRange for Info Window fields
 			
 			hlayout.appendChild(editor_Date.getComponent());
 
