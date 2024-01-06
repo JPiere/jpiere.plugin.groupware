@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: jpiere.plugin.groupware
 Bundle-SymbolicName: jpiere.plugin.groupware;singleton:=true
-Bundle-Version: 10.0.0.qualifier
+Bundle-Version: 11.0.0.qualifier
 Bundle-Vendor: OSS ERP Solutions
 Automatic-Module-Name: jpiere.plugin.groupware
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.adempiere.base;bundle-version="7.1.0",
  org.adempiere.ui.zk;bundle-version="7.1.0",
  org.idempiere.zk.extra;bundle-version="7.1.0",
