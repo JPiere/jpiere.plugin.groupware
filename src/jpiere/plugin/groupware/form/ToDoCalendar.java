@@ -2673,7 +2673,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 
 			if(ts_AcquiredToDoCalendarEventEnd.compareTo(calendar_End) >= 0) // AcquiredRenge_Begin <= calendar_Begin &&  calendar_End <= ts_AcquiredToDoCalendarEventEnd
 			{
-				;// Noting to do;
+				;// Nothing to do;
 
 			}else { // AcquiredRenge_Begin <= calendar_Beginn &&  ts_AcquiredToDoCalendarEventEnd < calendar_End
 
@@ -2864,7 +2864,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				if(event.getToDo().getJP_ToDo_Status().equals(MGroupwareUser.JP_TODO_STATUS_NotYetStarted)
 						|| event.getToDo().getJP_ToDo_Status().equals(MGroupwareUser.JP_TODO_STATUS_WorkInProgress))
 				{
-					;//Noting to do;
+					;//Nothing to do;
 
 				}else {
 
@@ -2959,7 +2959,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		//Authorization Check
 		if(p_login_User_ID == p_AD_User_ID)
 		{
-			//Noting to do;
+			//Nothing to do;
 
 		}else {
 
@@ -3532,7 +3532,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 				{
 					if(p_JP_Team_ID == 0 && m_Team == null)
 					{
-						;//Noting to do -> Don't display calendar
+						;//Nothing to do -> Don't display calendar
 
 					}else {
 

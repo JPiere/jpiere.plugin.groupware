@@ -334,7 +334,7 @@ public class PersonalToDoReminderListWindow extends Window implements EventListe
 
 		if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(m_TeamToDoReminder.getJP_Mandatory_Statistics_Info()))
 		{
-			;//Noting To Do
+			;//Nothing To Do
 		}else {
 
 			column = new Column();

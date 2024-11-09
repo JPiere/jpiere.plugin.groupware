@@ -196,7 +196,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 					end_LocalTime = begin_LocalTime.plusMinutes(JUDGMENT_SHORT_TIME_MINUTE);
 					if(begin_LocalTime.compareTo(end_LocalTime) < 0)
 					{
-						;//Noting to do
+						;//Nothing to do
 					}else {
 						end_LocalTime = LocalTime.MAX;
 					}
@@ -245,7 +245,7 @@ public class ToDoCalendarEvent extends SimpleCalendarEvent {
 				end_LocalTime = begin_LocalTime.plusHours(INITIAL_TASK_HOUR);
 				if(begin_LocalTime.compareTo(end_LocalTime) < 0)//In case of end_LocalTime is Tommorow
 				{
-					;//Noting to do
+					;//Nothing to do
 				}else {
 					end_LocalTime = LocalTime.MAX;
 				}

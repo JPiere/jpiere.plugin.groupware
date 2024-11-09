@@ -699,7 +699,7 @@ public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, 
 				p_Days = ((Integer) value).intValue();
 				if(0 < p_Days && p_Days < 32)
 				{
-					;//Noting to Do
+					;//Nothing to Do
 
 				}else {
 

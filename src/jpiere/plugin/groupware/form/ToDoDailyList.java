@@ -1308,7 +1308,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				p_Days = ((Integer) value).intValue();
 				if(0 < p_Days && p_Days < 8)
 				{
-					;//Noting to Do
+					;//Nothing to Do
 
 				}else {
 
@@ -1582,7 +1582,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 				if(event.getToDo().getJP_ToDo_Status().equals(MGroupwareUser.JP_TODO_STATUS_NotYetStarted)
 						|| event.getToDo().getJP_ToDo_Status().equals(MGroupwareUser.JP_TODO_STATUS_WorkInProgress))
 				{
-					;//Noting to do;
+					;//Nothing to do;
 
 				}else {
 
@@ -1639,7 +1639,7 @@ public class ToDoDailyList implements I_ToDoPopupwindowCaller, I_ToDoCalendarEve
 		//Authorization Check
 		if(p_login_User_ID == p_AD_User_ID)
 		{
-			//Noting to do;
+			//Nothing to do;
 
 		}else {
 

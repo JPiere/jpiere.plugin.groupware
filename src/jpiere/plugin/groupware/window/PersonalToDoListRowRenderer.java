@@ -100,7 +100,7 @@ public class PersonalToDoListRowRenderer implements RowRenderer<PersonalToDoMode
 
 		if(MToDoTeam.JP_MANDATORY_STATISTICS_INFO_None.equals(m_TeamToDo.getJP_Mandatory_Statistics_Info()))
 		{
-			;//Noting To Do
+			;//Nothing To Do
 		}else {
 
 			cell = new Cell();

@@ -1165,7 +1165,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			boolean IsStartDateAllDayJP = (boolean)editor.getValue();
 			if(IsStartDateAllDayJP)
 			{
-				;//Noting to do
+				;//Nothing to do
 			}else {
 
 				row = rows.newRow();
@@ -1194,7 +1194,7 @@ public class ToDoPopupWindow extends Window implements EventListener<Event>,Valu
 			boolean IsEndDateAllDayJP = (boolean)editor.getValue();
 			if(IsEndDateAllDayJP)
 			{
-				;//Noting to do
+				;//Nothing to do
 			}else {
 
 				row = rows.newRow();
