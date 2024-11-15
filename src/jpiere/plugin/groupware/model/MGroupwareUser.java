@@ -30,6 +30,8 @@ import org.compiere.util.DB;
  */
 public class MGroupwareUser extends X_JP_GroupwareUser {
 
+	private static final long serialVersionUID = -7852064990205629285L;
+
 	public MGroupwareUser(Properties ctx, int JP_GroupwareUser_ID, String trxName)
 	{
 		super(ctx, JP_GroupwareUser_ID, trxName);

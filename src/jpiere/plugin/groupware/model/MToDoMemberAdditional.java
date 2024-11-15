@@ -24,6 +24,9 @@ import java.util.Properties;
  */
 public class MToDoMemberAdditional extends X_JP_ToDo_Member_Additional {
 
+	private static final long serialVersionUID = 1979320130625068119L;
+
+
 	public MToDoMemberAdditional(Properties ctx, int JP_ToDo_Team_ID, String trxName)
 	{
 		super(ctx, JP_ToDo_Team_ID, trxName);

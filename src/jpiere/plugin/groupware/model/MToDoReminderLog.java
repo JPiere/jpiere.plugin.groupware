@@ -24,6 +24,8 @@ import java.util.Properties;
  */
 public class MToDoReminderLog extends X_JP_ToDo_Reminder_Log {
 
+	private static final long serialVersionUID = -4498527822321393510L;
+
 	public MToDoReminderLog(Properties ctx, int JP_ToDo_Reminder_Log_ID, String trxName)
 	{
 		super(ctx, JP_ToDo_Reminder_Log_ID, trxName);

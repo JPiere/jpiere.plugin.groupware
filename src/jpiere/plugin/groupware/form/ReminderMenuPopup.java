@@ -46,6 +46,8 @@ import jpiere.plugin.groupware.window.ToDoPopupWindow;
  */
 public class ReminderMenuPopup extends Popup implements EventListener<Event>{
 
+	private static final long serialVersionUID = -717238391369592882L;
+
 	private Properties ctx = Env.getCtx();
 
 	private Button createNewBtn = null;

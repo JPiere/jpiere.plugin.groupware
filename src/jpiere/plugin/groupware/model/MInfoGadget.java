@@ -18,6 +18,8 @@ import java.util.Properties;
 
 public class MInfoGadget extends X_JP_InfoGadget {
 
+	private static final long serialVersionUID = -8854151284413459331L;
+
 	public MInfoGadget(Properties ctx, int JP_InfoGadget_ID, String trxName) {
 		super(ctx, JP_InfoGadget_ID, trxName);
 	}

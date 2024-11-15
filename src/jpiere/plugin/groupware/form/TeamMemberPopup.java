@@ -46,6 +46,8 @@ import jpiere.plugin.groupware.window.ToDoPopupWindow;
  */
 public class TeamMemberPopup extends Popup implements EventListener<Event>{
 
+	private static final long serialVersionUID = -8336091996041137809L;
+
 	private Properties ctx = Env.getCtx();
 
 	private Button zoomTeamBtn = null;

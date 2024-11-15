@@ -75,7 +75,8 @@ import jpiere.plugin.groupware.window.ToDoPopupWindow;
  */
 public class ToDoGadget extends DashboardPanel implements I_ToDoCalendarGadget, I_ToDoPopupwindowCaller, I_ToDoCalendarEventReceiver, EventListener<Event>, ValueChangeListener {
 
-
+	private static final long serialVersionUID = -6961690399043396769L;
+	
 	private Properties ctx = Env.getCtx();
 	private String p_JP_ToDo_Calendar = MGroupwareUser.JP_TODO_CALENDAR_PersonalToDo;
 

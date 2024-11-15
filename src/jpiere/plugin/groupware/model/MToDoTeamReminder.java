@@ -33,6 +33,8 @@ import org.compiere.util.Util;
  */
 public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDoReminder  {
 
+	private static final long serialVersionUID = -1296743262558933321L;
+
 	private MToDoTeam parent = null;
 
 	protected String  m_RemindMsg = null;

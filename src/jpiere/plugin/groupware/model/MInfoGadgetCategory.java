@@ -27,6 +27,8 @@ import org.compiere.util.Util;
 
 public class MInfoGadgetCategory extends X_JP_InfoGadgetCategory {
 
+	private static final long serialVersionUID = 5825106918191924411L;
+
 	public MInfoGadgetCategory(Properties ctx, int JP_InfoGadgetCategory_ID,
 			String trxName) {
 		super(ctx, JP_InfoGadgetCategory_ID, trxName);

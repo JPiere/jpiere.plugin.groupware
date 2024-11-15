@@ -38,6 +38,8 @@ import org.compiere.util.Util;
  */
 public class MTeam extends X_JP_Team {
 
+	private static final long serialVersionUID = 6589983440692603772L;
+	
 	/**	Cache						*/
 	private static CCache<Integer,MTeam> s_cache	= new CCache<Integer,MTeam>(Table_Name, 100, 10);	//	10 minutes
 

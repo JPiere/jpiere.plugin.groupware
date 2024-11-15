@@ -31,6 +31,8 @@ import org.compiere.util.Util;
  */
 public class MToDoCategory extends X_JP_ToDo_Category {
 
+	private static final long serialVersionUID = -7982664399088585073L;
+
 	public MToDoCategory(Properties ctx, int JP_ToDo_Category_ID, String trxName)
 	{
 		super(ctx, JP_ToDo_Category_ID, trxName);

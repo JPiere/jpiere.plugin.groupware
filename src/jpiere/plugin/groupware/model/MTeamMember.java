@@ -24,6 +24,8 @@ import java.util.Properties;
  */
 public class MTeamMember extends X_JP_Team_Member {
 
+	private static final long serialVersionUID = 8773600053162719033L;
+
 	public MTeamMember(Properties ctx, int JP_Team_Member_ID, String trxName)
 	{
 		super(ctx, JP_Team_Member_ID, trxName);

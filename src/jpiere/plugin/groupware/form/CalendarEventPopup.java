@@ -61,6 +61,8 @@ import jpiere.plugin.groupware.util.GroupwareToDoUtil;
 */
 public class CalendarEventPopup extends Popup implements EventListener<Event>{
 
+	private static final long serialVersionUID = 6265348008402018104L;
+
 	private Properties ctx = Env.getCtx();
 
 	/*** Web Components ***/

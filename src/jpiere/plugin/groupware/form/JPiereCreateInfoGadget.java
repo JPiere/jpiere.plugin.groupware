@@ -52,6 +52,8 @@ import jpiere.plugin.groupware.model.MInfoGadgetCategory;
  */
 public class JPiereCreateInfoGadget extends DashboardPanel {
 
+	private static final long serialVersionUID = 13204254799684161L;
+	
 	private Grid grid = GridFactory.newGridLayout();
 	private Rows gridRows = grid.newRows();
 	private Language lang = Env.getLanguage(Env.getCtx());

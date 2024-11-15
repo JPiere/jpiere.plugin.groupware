@@ -38,6 +38,8 @@ import org.compiere.util.Util;
  */
 public class MToDo extends X_JP_ToDo implements I_ToDo {
 
+	private static final long serialVersionUID = -9016792772388050751L;
+
 	public MToDo(Properties ctx, int JP_ToDo_Team_ID, String trxName)
 	{
 		super(ctx, JP_ToDo_Team_ID, trxName);

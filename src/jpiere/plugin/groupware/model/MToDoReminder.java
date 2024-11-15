@@ -52,6 +52,8 @@ import org.idempiere.broadcast.BroadcastMsgUtil;
  */
 public class MToDoReminder extends X_JP_ToDo_Reminder implements I_ToDoReminder {
 
+	private static final long serialVersionUID = -5427497167992634836L;
+	
 	public static final String COLUMNNAME_JP_ToDo_RemindDate = "JP_ToDo_RemindDate";
 	private MToDo parent = null;
 

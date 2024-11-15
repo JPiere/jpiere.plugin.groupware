@@ -37,6 +37,7 @@ import jpiere.plugin.groupware.model.MGroupwareUser;
 */
 public class NonBusinessDayCalendarEvent extends SimpleCalendarEvent {
 
+	private static final long serialVersionUID = -1612616982241043269L;
 
 	public NonBusinessDayCalendarEvent(I_C_NonBusinessDay nonBusinessDay, MGroupwareUser gUser)
 	{
