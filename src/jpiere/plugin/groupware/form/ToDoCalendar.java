@@ -2400,7 +2400,7 @@ public class ToDoCalendar implements I_ToDoPopupwindowCaller, I_ToDoCalendarEven
 		if(popup_Customize == null)
 		{
 			popup_Customize = new Popup();
-			popup_Customize.setWidgetAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
+			popup_Customize.setClientAttribute(AdempiereWebUI.WIDGET_INSTANCE_NAME, "processButtonPopup");
 			grid = GridFactory.newGridLayout();
 			ZKUpdateUtil.setVflex(grid, "min");
 			ZKUpdateUtil.setHflex(grid, "min");
