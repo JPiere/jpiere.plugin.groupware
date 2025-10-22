@@ -613,6 +613,9 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 
 	private North updateNorth()
 	{
+		if(north == null)
+			return null;
+		
 		if(north.getFirstChild() != null)
 			north.getFirstChild().detach();
 
@@ -1547,8 +1550,13 @@ public class ReminderPopupWindow extends Window implements EventListener<Event> 
 			Timestamp ts_RemindTime =(Timestamp)editor_RemindTime.getValue();
 			if(ts_RemindTime == null)
 			{
-				String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime);
-				throw new WrongValueException(editor_RemindDate.getComponent(), msg);
+				if(value != null)
+				{
+					ts_RemindTime = Timestamp.valueOf(value.toString());
+				}else {
+					String msg = Msg.getMsg(Env.getCtx(), "FillMandatory") + Msg.getElement(Env.getCtx(), MToDoReminder.COLUMNNAME_JP_ToDo_RemindTime);
+					throw new WrongValueException(editor_RemindDate.getComponent(), msg);
+				}
 			}
 			ts_RemindTime = Timestamp.valueOf(LocalDateTime.of(ts_RemindDate.toLocalDateTime().toLocalDate(), ts_RemindTime.toLocalDateTime().toLocalTime()));
 			editor_RemindDate.setValue(ts_RemindTime);
