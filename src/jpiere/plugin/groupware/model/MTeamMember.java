@@ -31,6 +31,11 @@ public class MTeamMember extends X_JP_Team_Member {
 		super(ctx, JP_Team_Member_ID, trxName);
 	}
 
+	public MTeamMember(Properties ctx, String JP_Team_Member_UU, String trxName)
+	{
+		super(ctx, JP_Team_Member_UU, trxName);
+	}
+	
 	public MTeamMember(Properties ctx, ResultSet rs, String trxName)
 	{
 		super(ctx, rs, trxName);

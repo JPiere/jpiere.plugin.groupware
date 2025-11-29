@@ -22,15 +22,16 @@ import java.util.Properties;
 import org.compiere.model.*;
 
 /** Generated Model for JP_Team_Member
- *  @author iDempiere (generated) 
- *  @version Release 7.1 - $Id$ */
-public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persistent 
+ *  @author iDempiere (generated)
+ *  @version Release 12 - $Id$ */
+@org.adempiere.base.Model(table="JP_Team_Member")
+public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persistent
 {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20200806L;
+	private static final long serialVersionUID = 20251129L;
 
     /** Standard Constructor */
     public X_JP_Team_Member (Properties ctx, int JP_Team_Member_ID, String trxName)
@@ -38,6 +39,47 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
       super (ctx, JP_Team_Member_ID, trxName);
       /** if (JP_Team_Member_ID == 0)
         {
+			setAD_User_ID (0);
+// null
+			setJP_Team_ID (0);
+			setJP_Team_Member_ID (0);
+        } */
+    }
+
+    /** Standard Constructor */
+    public X_JP_Team_Member (Properties ctx, int JP_Team_Member_ID, String trxName, String ... virtualColumns)
+    {
+      super (ctx, JP_Team_Member_ID, trxName, virtualColumns);
+      /** if (JP_Team_Member_ID == 0)
+        {
+			setAD_User_ID (0);
+// null
+			setJP_Team_ID (0);
+			setJP_Team_Member_ID (0);
+        } */
+    }
+
+    /** Standard Constructor */
+    public X_JP_Team_Member (Properties ctx, String JP_Team_Member_UU, String trxName)
+    {
+      super (ctx, JP_Team_Member_UU, trxName);
+      /** if (JP_Team_Member_UU == null)
+        {
+			setAD_User_ID (0);
+// null
+			setJP_Team_ID (0);
+			setJP_Team_Member_ID (0);
+        } */
+    }
+
+    /** Standard Constructor */
+    public X_JP_Team_Member (Properties ctx, String JP_Team_Member_UU, String trxName, String ... virtualColumns)
+    {
+      super (ctx, JP_Team_Member_UU, trxName, virtualColumns);
+      /** if (JP_Team_Member_UU == null)
+        {
+			setAD_User_ID (0);
+// null
 			setJP_Team_ID (0);
 			setJP_Team_Member_ID (0);
         } */
@@ -50,7 +92,7 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
     }
 
     /** AccessLevel
-      * @return 2 - Client 
+      * @return 6 - System - Client
       */
     protected int get_AccessLevel()
     {
@@ -66,32 +108,32 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
 
     public String toString()
     {
-      StringBuffer sb = new StringBuffer ("X_JP_Team_Member[")
+      StringBuilder sb = new StringBuilder ("X_JP_Team_Member[")
         .append(get_ID()).append("]");
       return sb.toString();
     }
 
 	public org.compiere.model.I_AD_User getAD_User() throws RuntimeException
-    {
-		return (org.compiere.model.I_AD_User)MTable.get(getCtx(), org.compiere.model.I_AD_User.Table_Name)
-			.getPO(getAD_User_ID(), get_TrxName());	}
+	{
+		return (org.compiere.model.I_AD_User)MTable.get(getCtx(), org.compiere.model.I_AD_User.Table_ID)
+			.getPO(getAD_User_ID(), get_TrxName());
+	}
 
 	/** Set User/Contact.
-		@param AD_User_ID 
-		User within the system - Internal or Business Partner Contact
-	  */
+		@param AD_User_ID User within the system - Internal or Business Partner Contact
+	*/
 	public void setAD_User_ID (int AD_User_ID)
 	{
-		if (AD_User_ID < 1) 
-			set_ValueNoCheck (COLUMNNAME_AD_User_ID, null);
-		else 
-			set_ValueNoCheck (COLUMNNAME_AD_User_ID, Integer.valueOf(AD_User_ID));
+		if (AD_User_ID < 1)
+			set_Value (COLUMNNAME_AD_User_ID, null);
+		else
+			set_Value (COLUMNNAME_AD_User_ID, Integer.valueOf(AD_User_ID));
 	}
 
 	/** Get User/Contact.
 		@return User within the system - Internal or Business Partner Contact
 	  */
-	public int getAD_User_ID () 
+	public int getAD_User_ID()
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_AD_User_ID);
 		if (ii == null)
@@ -100,9 +142,8 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
 	}
 
 	/** Set Description.
-		@param Description 
-		Optional short description of the record
-	  */
+		@param Description Optional short description of the record
+	*/
 	public void setDescription (String Description)
 	{
 		set_Value (COLUMNNAME_Description, Description);
@@ -111,29 +152,31 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
 	/** Get Description.
 		@return Optional short description of the record
 	  */
-	public String getDescription () 
+	public String getDescription()
 	{
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
 	public I_JP_Team getJP_Team() throws RuntimeException
-    {
-		return (I_JP_Team)MTable.get(getCtx(), I_JP_Team.Table_Name)
-			.getPO(getJP_Team_ID(), get_TrxName());	}
+	{
+		return (I_JP_Team)MTable.get(getCtx(), I_JP_Team.Table_ID)
+			.getPO(getJP_Team_ID(), get_TrxName());
+	}
 
 	/** Set Team.
-		@param JP_Team_ID Team	  */
+		@param JP_Team_ID Team
+	*/
 	public void setJP_Team_ID (int JP_Team_ID)
 	{
-		if (JP_Team_ID < 1) 
+		if (JP_Team_ID < 1)
 			set_ValueNoCheck (COLUMNNAME_JP_Team_ID, null);
-		else 
+		else
 			set_ValueNoCheck (COLUMNNAME_JP_Team_ID, Integer.valueOf(JP_Team_ID));
 	}
 
 	/** Get Team.
 		@return Team	  */
-	public int getJP_Team_ID () 
+	public int getJP_Team_ID()
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Team_ID);
 		if (ii == null)
@@ -142,18 +185,19 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
 	}
 
 	/** Set Team Member.
-		@param JP_Team_Member_ID Team Member	  */
+		@param JP_Team_Member_ID Team Member
+	*/
 	public void setJP_Team_Member_ID (int JP_Team_Member_ID)
 	{
-		if (JP_Team_Member_ID < 1) 
+		if (JP_Team_Member_ID < 1)
 			set_ValueNoCheck (COLUMNNAME_JP_Team_Member_ID, null);
-		else 
+		else
 			set_ValueNoCheck (COLUMNNAME_JP_Team_Member_ID, Integer.valueOf(JP_Team_Member_ID));
 	}
 
 	/** Get Team Member.
 		@return Team Member	  */
-	public int getJP_Team_Member_ID () 
+	public int getJP_Team_Member_ID()
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_Team_Member_ID);
 		if (ii == null)
@@ -162,7 +206,8 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
 	}
 
 	/** Set JP_Team_Member_UU.
-		@param JP_Team_Member_UU JP_Team_Member_UU	  */
+		@param JP_Team_Member_UU JP_Team_Member_UU
+	*/
 	public void setJP_Team_Member_UU (String JP_Team_Member_UU)
 	{
 		set_Value (COLUMNNAME_JP_Team_Member_UU, JP_Team_Member_UU);
@@ -170,7 +215,7 @@ public class X_JP_Team_Member extends PO implements I_JP_Team_Member, I_Persiste
 
 	/** Get JP_Team_Member_UU.
 		@return JP_Team_Member_UU	  */
-	public String getJP_Team_Member_UU () 
+	public String getJP_Team_Member_UU()
 	{
 		return (String)get_Value(COLUMNNAME_JP_Team_Member_UU);
 	}

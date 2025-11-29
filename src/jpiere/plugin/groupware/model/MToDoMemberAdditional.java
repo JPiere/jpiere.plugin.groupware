@@ -31,6 +31,11 @@ public class MToDoMemberAdditional extends X_JP_ToDo_Member_Additional {
 	{
 		super(ctx, JP_ToDo_Team_ID, trxName);
 	}
+	
+	public MToDoMemberAdditional(Properties ctx, String JP_ToDo_Team_UU, String trxName)
+	{
+		super(ctx, JP_ToDo_Team_UU, trxName);
+	}
 
 
 	public MToDoMemberAdditional(Properties ctx, ResultSet rs, String trxName)

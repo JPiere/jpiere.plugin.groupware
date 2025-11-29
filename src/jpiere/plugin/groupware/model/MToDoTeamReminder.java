@@ -44,6 +44,11 @@ public class MToDoTeamReminder extends X_JP_ToDo_Team_Reminder implements I_ToDo
 		super(ctx, JP_ToDo_Team_Reminder_ID, trxName);
 	}
 
+	public MToDoTeamReminder(Properties ctx, String JP_ToDo_Team_Reminder_UU, String trxName)
+	{
+		super(ctx, JP_ToDo_Team_Reminder_UU, trxName);
+	}
+	
 	public MToDoTeamReminder(Properties ctx, ResultSet rs, String trxName)
 	{
 		super(ctx, rs, trxName);

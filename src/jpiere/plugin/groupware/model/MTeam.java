@@ -63,11 +63,17 @@ public class MTeam extends X_JP_Team {
 		return retValue;
 	}	//	get
 
-	public MTeam(Properties ctx, int JP_ToDo_Category_ID, String trxName)
+	public MTeam(Properties ctx, int JP_Team_ID, String trxName)
 	{
-		super(ctx, JP_ToDo_Category_ID, trxName);
+		super(ctx, JP_Team_ID, trxName);
 	}
 
+	public MTeam(Properties ctx, String JP_Team_UU, String trxName)
+	{
+		super(ctx, JP_Team_UU, trxName);
+	}
+
+	
 	public MTeam(Properties ctx, ResultSet rs, String trxName)
 	{
 		super(ctx, rs, trxName);

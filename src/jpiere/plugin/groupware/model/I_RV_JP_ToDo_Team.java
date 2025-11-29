@@ -23,7 +23,7 @@ import org.compiere.util.KeyNamePair;
 
 /** Generated Interface for RV_JP_ToDo_Team
  *  @author iDempiere (generated) 
- *  @version Release 7.1
+ *  @version Release 12
  */
 @SuppressWarnings("all")
 public interface I_RV_JP_ToDo_Team 
@@ -46,23 +46,66 @@ public interface I_RV_JP_ToDo_Team
     /** Column name AD_Client_ID */
     public static final String COLUMNNAME_AD_Client_ID = "AD_Client_ID";
 
-	/** Get Client.
-	  * Client/Tenant for this installation.
+	/** Get Tenant.
+	  * Tenant for this installation.
 	  */
 	public int getAD_Client_ID();
+
+    /** Column name AD_OrgTrx_ID */
+    public static final String COLUMNNAME_AD_OrgTrx_ID = "AD_OrgTrx_ID";
+
+	/** Set Trx Organization.
+	  * Performing or initiating organization
+	  */
+	public void setAD_OrgTrx_ID (int AD_OrgTrx_ID);
+
+	/** Get Trx Organization.
+	  * Performing or initiating organization
+	  */
+	public int getAD_OrgTrx_ID();
+
+    /** Column name AD_OrgType_ID */
+    public static final String COLUMNNAME_AD_OrgType_ID = "AD_OrgType_ID";
+
+	/** Set Organization Type.
+	  * Organization Type
+	  */
+	public void setAD_OrgType_ID (int AD_OrgType_ID);
+
+	/** Get Organization Type.
+	  * Organization Type
+	  */
+	public int getAD_OrgType_ID();
+
+	public org.compiere.model.I_AD_OrgType getAD_OrgType() throws RuntimeException;
 
     /** Column name AD_Org_ID */
     public static final String COLUMNNAME_AD_Org_ID = "AD_Org_ID";
 
 	/** Set Organization.
-	  * Organizational entity within client
+	  * Organizational entity within tenant
 	  */
 	public void setAD_Org_ID (int AD_Org_ID);
 
 	/** Get Organization.
-	  * Organizational entity within client
+	  * Organizational entity within tenant
 	  */
 	public int getAD_Org_ID();
+
+    /** Column name C_Job_ID */
+    public static final String COLUMNNAME_C_Job_ID = "C_Job_ID";
+
+	/** Set Position.
+	  * Job Position
+	  */
+	public void setC_Job_ID (int C_Job_ID);
+
+	/** Get Position.
+	  * Job Position
+	  */
+	public int getC_Job_ID();
+
+	public org.compiere.model.I_C_Job getC_Job() throws RuntimeException;
 
     /** Column name C_ProjectPhase_ID */
     public static final String COLUMNNAME_C_ProjectPhase_ID = "C_ProjectPhase_ID";
@@ -164,14 +207,54 @@ public interface I_RV_JP_ToDo_Team
 	  */
 	public boolean isActive();
 
+    /** Column name IsEndDateAllDayJP */
+    public static final String COLUMNNAME_IsEndDateAllDayJP = "IsEndDateAllDayJP";
+
+	/** Set All Day	  */
+	public void setIsEndDateAllDayJP (boolean IsEndDateAllDayJP);
+
+	/** Get All Day	  */
+	public boolean isEndDateAllDayJP();
+
     /** Column name IsOpenToDoJP */
     public static final String COLUMNNAME_IsOpenToDoJP = "IsOpenToDoJP";
 
-	/** Set Open ToDo	  */
+	/** Set Public ToDo	  */
 	public void setIsOpenToDoJP (boolean IsOpenToDoJP);
 
-	/** Get Open ToDo	  */
+	/** Get Public ToDo	  */
 	public boolean isOpenToDoJP();
+
+    /** Column name IsStartDateAllDayJP */
+    public static final String COLUMNNAME_IsStartDateAllDayJP = "IsStartDateAllDayJP";
+
+	/** Set All Day	  */
+	public void setIsStartDateAllDayJP (boolean IsStartDateAllDayJP);
+
+	/** Get All Day	  */
+	public boolean isStartDateAllDayJP();
+
+    /** Column name JP_BusinessUnit_ID */
+    public static final String COLUMNNAME_JP_BusinessUnit_ID = "JP_BusinessUnit_ID";
+
+	/** Set Business Unit	  */
+	public void setJP_BusinessUnit_ID (int JP_BusinessUnit_ID);
+
+	/** Get Business Unit	  */
+	public int getJP_BusinessUnit_ID();
+
+//	public I_JP_BusinessUnit getJP_BusinessUnit() throws RuntimeException;
+
+    /** Column name JP_Corporation_ID */
+    public static final String COLUMNNAME_JP_Corporation_ID = "JP_Corporation_ID";
+
+	/** Set Corporation	  */
+	public void setJP_Corporation_ID (int JP_Corporation_ID);
+
+	/** Get Corporation	  */
+	public int getJP_Corporation_ID();
+
+//	public I_JP_Corporation getJP_Corporation() throws RuntimeException;
 
     /** Column name JP_Mandatory_Statistics_Info */
     public static final String COLUMNNAME_JP_Mandatory_Statistics_Info = "JP_Mandatory_Statistics_Info";
@@ -260,6 +343,15 @@ public interface I_RV_JP_ToDo_Team
 
 	public org.compiere.model.I_AD_User getJP_ToDo_Personal_User() throws RuntimeException;
 
+    /** Column name JP_ToDo_ScheduledEndDate */
+    public static final String COLUMNNAME_JP_ToDo_ScheduledEndDate = "JP_ToDo_ScheduledEndDate";
+
+	/** Set Scheduled End Date	  */
+	public void setJP_ToDo_ScheduledEndDate (Timestamp JP_ToDo_ScheduledEndDate);
+
+	/** Get Scheduled End Date	  */
+	public Timestamp getJP_ToDo_ScheduledEndDate();
+
     /** Column name JP_ToDo_ScheduledEndTime */
     public static final String COLUMNNAME_JP_ToDo_ScheduledEndTime = "JP_ToDo_ScheduledEndTime";
 
@@ -268,6 +360,15 @@ public interface I_RV_JP_ToDo_Team
 
 	/** Get Scheduled End Time	  */
 	public Timestamp getJP_ToDo_ScheduledEndTime();
+
+    /** Column name JP_ToDo_ScheduledStartDate */
+    public static final String COLUMNNAME_JP_ToDo_ScheduledStartDate = "JP_ToDo_ScheduledStartDate";
+
+	/** Set Scheduled Start Date	  */
+	public void setJP_ToDo_ScheduledStartDate (Timestamp JP_ToDo_ScheduledStartDate);
+
+	/** Get Scheduled Start Date	  */
+	public Timestamp getJP_ToDo_ScheduledStartDate();
 
     /** Column name JP_ToDo_ScheduledStartTime */
     public static final String COLUMNNAME_JP_ToDo_ScheduledStartTime = "JP_ToDo_ScheduledStartTime";
@@ -309,17 +410,6 @@ public interface I_RV_JP_ToDo_Team
 	/** Get Team ToDo Status	  */
 	public String getJP_ToDo_Team_Status();
 
-    /** Column name JP_ToDo_Team_User_ID */
-    public static final String COLUMNNAME_JP_ToDo_Team_User_ID = "JP_ToDo_Team_User_ID";
-
-	/** Set Team ToDo User	  */
-	public void setJP_ToDo_Team_User_ID (int JP_ToDo_Team_User_ID);
-
-	/** Get Team ToDo User	  */
-	public int getJP_ToDo_Team_User_ID();
-
-	public org.compiere.model.I_AD_User getJP_ToDo_Team_User() throws RuntimeException;
-
     /** Column name JP_ToDo_Type */
     public static final String COLUMNNAME_JP_ToDo_Type = "JP_ToDo_Type";
 
@@ -328,6 +418,17 @@ public interface I_RV_JP_ToDo_Team
 
 	/** Get ToDo Type	  */
 	public String getJP_ToDo_Type();
+
+    /** Column name JP_Todo_Team_User_ID */
+    public static final String COLUMNNAME_JP_Todo_Team_User_ID = "JP_Todo_Team_User_ID";
+
+	/** Set Team ToDo User	  */
+	public void setJP_Todo_Team_User_ID (int JP_Todo_Team_User_ID);
+
+	/** Get Team ToDo User	  */
+	public int getJP_Todo_Team_User_ID();
+
+	public org.compiere.model.I_AD_User getJP_Todo_Team_User() throws RuntimeException;
 
     /** Column name Name */
     public static final String COLUMNNAME_Name = "Name";
@@ -358,11 +459,26 @@ public interface I_RV_JP_ToDo_Team
     /** Column name RV_JP_ToDo_Team_ID */
     public static final String COLUMNNAME_RV_JP_ToDo_Team_ID = "RV_JP_ToDo_Team_ID";
 
-	/** Set Team ToDo	  */
+	/** Set RV_JP_ToDo_Team	  */
 	public void setRV_JP_ToDo_Team_ID (int RV_JP_ToDo_Team_ID);
 
-	/** Get Team ToDo	  */
+	/** Get RV_JP_ToDo_Team	  */
 	public int getRV_JP_ToDo_Team_ID();
+
+    /** Column name Supervisor_ID */
+    public static final String COLUMNNAME_Supervisor_ID = "Supervisor_ID";
+
+	/** Set Supervisor.
+	  * Supervisor for this user/organization - used for escalation and approval
+	  */
+	public void setSupervisor_ID (int Supervisor_ID);
+
+	/** Get Supervisor.
+	  * Supervisor for this user/organization - used for escalation and approval
+	  */
+	public int getSupervisor_ID();
+
+	public org.compiere.model.I_AD_User getSupervisor() throws RuntimeException;
 
     /** Column name Updated */
     public static final String COLUMNNAME_Updated = "Updated";

@@ -24,6 +24,10 @@ public class MInfoGadget extends X_JP_InfoGadget {
 		super(ctx, JP_InfoGadget_ID, trxName);
 	}
 
+	public MInfoGadget(Properties ctx, String JP_InfoGadget_UU, String trxName) {
+		super(ctx, JP_InfoGadget_UU, trxName);
+	}
+	
 	public MInfoGadget(Properties ctx, ResultSet rs, String trxName) {
 		super(ctx, rs, trxName);
 	}

@@ -22,21 +22,76 @@ import java.util.Properties;
 import org.compiere.model.*;
 
 /** Generated Model for JP_InfoGadgetCategory
- *  @author iDempiere (generated) 
- *  @version Release 8.2 - $Id$ */
-public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCategory, I_Persistent 
+ *  @author iDempiere (generated)
+ *  @version Release 12 - $Id$ */
+@org.adempiere.base.Model(table="JP_InfoGadgetCategory")
+public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCategory, I_Persistent
 {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20201230L;
+	private static final long serialVersionUID = 20251129L;
 
     /** Standard Constructor */
     public X_JP_InfoGadgetCategory (Properties ctx, int JP_InfoGadgetCategory_ID, String trxName)
     {
       super (ctx, JP_InfoGadgetCategory_ID, trxName);
       /** if (JP_InfoGadgetCategory_ID == 0)
+        {
+			setJP_InfoGadgetCategory_ID (0);
+			setJP_PageSize (0);
+// 5
+			setJP_UserDisplayPosition (null);
+// N
+			setMaxQueryRecords (0);
+// 0
+			setName (null);
+			setValue (null);
+        } */
+    }
+
+    /** Standard Constructor */
+    public X_JP_InfoGadgetCategory (Properties ctx, int JP_InfoGadgetCategory_ID, String trxName, String ... virtualColumns)
+    {
+      super (ctx, JP_InfoGadgetCategory_ID, trxName, virtualColumns);
+      /** if (JP_InfoGadgetCategory_ID == 0)
+        {
+			setJP_InfoGadgetCategory_ID (0);
+			setJP_PageSize (0);
+// 5
+			setJP_UserDisplayPosition (null);
+// N
+			setMaxQueryRecords (0);
+// 0
+			setName (null);
+			setValue (null);
+        } */
+    }
+
+    /** Standard Constructor */
+    public X_JP_InfoGadgetCategory (Properties ctx, String JP_InfoGadgetCategory_UU, String trxName)
+    {
+      super (ctx, JP_InfoGadgetCategory_UU, trxName);
+      /** if (JP_InfoGadgetCategory_UU == null)
+        {
+			setJP_InfoGadgetCategory_ID (0);
+			setJP_PageSize (0);
+// 5
+			setJP_UserDisplayPosition (null);
+// N
+			setMaxQueryRecords (0);
+// 0
+			setName (null);
+			setValue (null);
+        } */
+    }
+
+    /** Standard Constructor */
+    public X_JP_InfoGadgetCategory (Properties ctx, String JP_InfoGadgetCategory_UU, String trxName, String ... virtualColumns)
+    {
+      super (ctx, JP_InfoGadgetCategory_UU, trxName, virtualColumns);
+      /** if (JP_InfoGadgetCategory_UU == null)
         {
 			setJP_InfoGadgetCategory_ID (0);
 			setJP_PageSize (0);
@@ -57,7 +112,7 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
     }
 
     /** AccessLevel
-      * @return 7 - System - Client - Org 
+      * @return 7 - System - Client - Org
       */
     protected int get_AccessLevel()
     {
@@ -79,9 +134,8 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
     }
 
 	/** Set Description.
-		@param Description 
-		Optional short description of the record
-	  */
+		@param Description Optional short description of the record
+	*/
 	public void setDescription (String Description)
 	{
 		set_Value (COLUMNNAME_Description, Description);
@@ -90,15 +144,14 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	/** Get Description.
 		@return Optional short description of the record
 	  */
-	public String getDescription () 
+	public String getDescription()
 	{
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
 	/** Set Comment/Help.
-		@param Help 
-		Comment or Hint
-	  */
+		@param Help Comment or Hint
+	*/
 	public void setHelp (String Help)
 	{
 		set_Value (COLUMNNAME_Help, Help);
@@ -107,24 +160,25 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	/** Get Comment/Help.
 		@return Comment or Hint
 	  */
-	public String getHelp () 
+	public String getHelp()
 	{
 		return (String)get_Value(COLUMNNAME_Help);
 	}
 
 	/** Set Info Gadget Category.
-		@param JP_InfoGadgetCategory_ID Info Gadget Category	  */
+		@param JP_InfoGadgetCategory_ID Info Gadget Category
+	*/
 	public void setJP_InfoGadgetCategory_ID (int JP_InfoGadgetCategory_ID)
 	{
-		if (JP_InfoGadgetCategory_ID < 1) 
+		if (JP_InfoGadgetCategory_ID < 1)
 			set_ValueNoCheck (COLUMNNAME_JP_InfoGadgetCategory_ID, null);
-		else 
+		else
 			set_ValueNoCheck (COLUMNNAME_JP_InfoGadgetCategory_ID, Integer.valueOf(JP_InfoGadgetCategory_ID));
 	}
 
 	/** Get Info Gadget Category.
 		@return Info Gadget Category	  */
-	public int getJP_InfoGadgetCategory_ID () 
+	public int getJP_InfoGadgetCategory_ID()
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_InfoGadgetCategory_ID);
 		if (ii == null)
@@ -133,7 +187,8 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	}
 
 	/** Set JP_InfoGadgetCategory_UU.
-		@param JP_InfoGadgetCategory_UU JP_InfoGadgetCategory_UU	  */
+		@param JP_InfoGadgetCategory_UU JP_InfoGadgetCategory_UU
+	*/
 	public void setJP_InfoGadgetCategory_UU (String JP_InfoGadgetCategory_UU)
 	{
 		set_ValueNoCheck (COLUMNNAME_JP_InfoGadgetCategory_UU, JP_InfoGadgetCategory_UU);
@@ -141,13 +196,14 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 
 	/** Get JP_InfoGadgetCategory_UU.
 		@return JP_InfoGadgetCategory_UU	  */
-	public String getJP_InfoGadgetCategory_UU () 
+	public String getJP_InfoGadgetCategory_UU()
 	{
 		return (String)get_Value(COLUMNNAME_JP_InfoGadgetCategory_UU);
 	}
 
 	/** Set Page Size.
-		@param JP_PageSize Page Size	  */
+		@param JP_PageSize Page Size
+	*/
 	public void setJP_PageSize (int JP_PageSize)
 	{
 		set_Value (COLUMNNAME_JP_PageSize, Integer.valueOf(JP_PageSize));
@@ -155,7 +211,7 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 
 	/** Get Page Size.
 		@return Page Size	  */
-	public int getJP_PageSize () 
+	public int getJP_PageSize()
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_JP_PageSize);
 		if (ii == null)
@@ -163,16 +219,15 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 		return ii.intValue();
 	}
 
+	/** Left side of the title = L */
+	public static final String JP_USERDISPLAYPOSITION_LeftSideOfTheTitle = "L";
 	/** None = N */
 	public static final String JP_USERDISPLAYPOSITION_None = "N";
 	/** Right side of the title = R */
 	public static final String JP_USERDISPLAYPOSITION_RightSideOfTheTitle = "R";
-	/** Left side of the title = L */
-	public static final String JP_USERDISPLAYPOSITION_LeftSideOfTheTitle = "L";
 	/** Set User Display Position.
-		@param JP_UserDisplayPosition 
-		JPIERE-0110:JPPS
-	  */
+		@param JP_UserDisplayPosition JPIERE-0110:JPPS
+	*/
 	public void setJP_UserDisplayPosition (String JP_UserDisplayPosition)
 	{
 
@@ -182,15 +237,14 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	/** Get User Display Position.
 		@return JPIERE-0110:JPPS
 	  */
-	public String getJP_UserDisplayPosition () 
+	public String getJP_UserDisplayPosition()
 	{
 		return (String)get_Value(COLUMNNAME_JP_UserDisplayPosition);
 	}
 
 	/** Set Max Query Records.
-		@param MaxQueryRecords 
-		If defined, you cannot query more records as defined - the query criteria needs to be changed to query less records
-	  */
+		@param MaxQueryRecords If defined, you cannot query more records as defined - the query criteria needs to be changed to query less records
+	*/
 	public void setMaxQueryRecords (int MaxQueryRecords)
 	{
 		set_Value (COLUMNNAME_MaxQueryRecords, Integer.valueOf(MaxQueryRecords));
@@ -199,7 +253,7 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	/** Get Max Query Records.
 		@return If defined, you cannot query more records as defined - the query criteria needs to be changed to query less records
 	  */
-	public int getMaxQueryRecords () 
+	public int getMaxQueryRecords()
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_MaxQueryRecords);
 		if (ii == null)
@@ -208,9 +262,8 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	}
 
 	/** Set Name.
-		@param Name 
-		Alphanumeric identifier of the entity
-	  */
+		@param Name Alphanumeric identifier of the entity
+	*/
 	public void setName (String Name)
 	{
 		set_Value (COLUMNNAME_Name, Name);
@@ -219,15 +272,14 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	/** Get Name.
 		@return Alphanumeric identifier of the entity
 	  */
-	public String getName () 
+	public String getName()
 	{
 		return (String)get_Value(COLUMNNAME_Name);
 	}
 
 	/** Set Search Key.
-		@param Value 
-		Search key for the record in the format required - must be unique
-	  */
+		@param Value Search key for the record in the format required - must be unique
+	*/
 	public void setValue (String Value)
 	{
 		set_Value (COLUMNNAME_Value, Value);
@@ -236,7 +288,7 @@ public class X_JP_InfoGadgetCategory extends PO implements I_JP_InfoGadgetCatego
 	/** Get Search Key.
 		@return Search key for the record in the format required - must be unique
 	  */
-	public String getValue () 
+	public String getValue()
 	{
 		return (String)get_Value(COLUMNNAME_Value);
 	}

@@ -45,6 +45,10 @@ public class MToDo extends X_JP_ToDo implements I_ToDo {
 		super(ctx, JP_ToDo_Team_ID, trxName);
 	}
 
+	public MToDo(Properties ctx, String JP_ToDo_Team_UU, String trxName)
+	{
+		super(ctx, JP_ToDo_Team_UU, trxName);
+	}
 
 	public MToDo(Properties ctx, ResultSet rs, String trxName)
 	{

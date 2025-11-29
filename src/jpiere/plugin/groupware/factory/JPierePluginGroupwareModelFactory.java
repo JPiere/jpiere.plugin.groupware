@@ -166,6 +166,69 @@ public class JPierePluginGroupwareModelFactory implements IModelFactory {
 
 		return null;
 	}
+	
+	@Override
+	public PO getPO(String tableName, String Record_UU, String trxName) {
+
+		if(tableName.startsWith("JP_ToDo") ||  tableName.startsWith("JP_Team") || tableName.startsWith("JP_Groupware") || tableName.startsWith("JP_InfoGadget"))
+		{
+			Class<?> clazz = getClass(tableName);
+			if (clazz == null)
+			{
+				return null;
+			}
+
+			boolean errorLogged = false;
+			try
+			{
+				Constructor<?> constructor = null;
+				try
+				{
+					constructor = clazz.getDeclaredConstructor(new Class[]{Properties.class, String.class, String.class});
+				}
+				catch (Exception e)
+				{
+					String msg = e.getMessage();
+					if (msg == null)
+						msg = e.toString();
+					s_log.warning("No transaction Constructor for " + clazz + " (" + msg + ")");
+				}
+
+				PO po = constructor!=null ? (PO)constructor.newInstance(new Object[] {Env.getCtx(), Record_UU, trxName}) : null;
+				return po;
+			}
+			catch (Exception e)
+			{
+				if (e.getCause() != null)
+				{
+					Throwable t = e.getCause();
+					s_log.log(Level.SEVERE, "(id) - Table=" + tableName + ",Class=" + clazz, t);
+					errorLogged = true;
+					if (t instanceof Exception)
+						s_log.saveError("Error", (Exception)e.getCause());
+					else
+						s_log.saveError("Error", "Table=" + tableName + ",Class=" + clazz);
+				}
+				else
+				{
+					s_log.log(Level.SEVERE, "(id) - Table=" + tableName + ",Class=" + clazz, e);
+					errorLogged = true;
+					s_log.saveError("Error", "Table=" + tableName + ",Class=" + clazz);
+				}
+			}
+			if (!errorLogged)
+				s_log.log(Level.SEVERE, "(id) - Not found - Table=" + tableName
+					+ ", Record_ID=" + Record_UU);
+
+			return null;
+
+		}else if(tableName.equals("RV_JP_ToDo_Team")) {
+
+			return new MJPToDoTeam(Env.getCtx(), Record_UU, trxName);
+		}
+
+		return null;
+	}
 
 	@Override
 	public PO getPO(String tableName, ResultSet rs, String trxName) {

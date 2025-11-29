@@ -38,6 +38,11 @@ public class MToDoCategory extends X_JP_ToDo_Category {
 		super(ctx, JP_ToDo_Category_ID, trxName);
 	}
 
+	public MToDoCategory(Properties ctx, String JP_ToDo_Category_UU, String trxName)
+	{
+		super(ctx, JP_ToDo_Category_UU, trxName);
+	}
+	
 	public MToDoCategory(Properties ctx, ResultSet rs, String trxName)
 	{
 		super(ctx, rs, trxName);

@@ -23,7 +23,7 @@ import org.compiere.util.KeyNamePair;
 
 /** Generated Interface for JP_GroupwareUser
  *  @author iDempiere (generated) 
- *  @version Release 7.1
+ *  @version Release 12
  */
 @SuppressWarnings("all")
 public interface I_JP_GroupwareUser 
@@ -46,8 +46,8 @@ public interface I_JP_GroupwareUser
     /** Column name AD_Client_ID */
     public static final String COLUMNNAME_AD_Client_ID = "AD_Client_ID";
 
-	/** Get Client.
-	  * Client/Tenant for this installation.
+	/** Get Tenant.
+	  * Tenant for this installation.
 	  */
 	public int getAD_Client_ID();
 
@@ -55,12 +55,12 @@ public interface I_JP_GroupwareUser
     public static final String COLUMNNAME_AD_Org_ID = "AD_Org_ID";
 
 	/** Set Organization.
-	  * Organizational entity within client
+	  * Organizational entity within tenant
 	  */
 	public void setAD_Org_ID (int AD_Org_ID);
 
 	/** Get Organization.
-	  * Organizational entity within client
+	  * Organizational entity within tenant
 	  */
 	public int getAD_Org_ID();
 
@@ -376,10 +376,12 @@ public interface I_JP_GroupwareUser
     /** Column name JP_ToDo_Main_Calendar */
     public static final String COLUMNNAME_JP_ToDo_Main_Calendar = "JP_ToDo_Main_Calendar";
 
-	/** Set Main Calendar's ToDo 	  */
+	/** Set Main Calendar&#039;
+s ToDo 	  */
 	public void setJP_ToDo_Main_Calendar (String JP_ToDo_Main_Calendar);
 
-	/** Get Main Calendar's ToDo 	  */
+	/** Get Main Calendar&#039;
+s ToDo 	  */
 	public String getJP_ToDo_Main_Calendar();
 
     /** Column name JP_ToDo_Status */

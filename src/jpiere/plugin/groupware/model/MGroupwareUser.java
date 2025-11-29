@@ -37,6 +37,11 @@ public class MGroupwareUser extends X_JP_GroupwareUser {
 		super(ctx, JP_GroupwareUser_ID, trxName);
 	}
 
+	public MGroupwareUser(Properties ctx, String JP_GroupwareUser_UU, String trxName)
+	{
+		super(ctx, JP_GroupwareUser_UU, trxName);
+	}
+	
 	public MGroupwareUser(Properties ctx, ResultSet rs, String trxName)
 	{
 		super(ctx, rs, trxName);

@@ -31,6 +31,11 @@ public class MToDoReminderLog extends X_JP_ToDo_Reminder_Log {
 		super(ctx, JP_ToDo_Reminder_Log_ID, trxName);
 	}
 
+	public MToDoReminderLog(Properties ctx, String JP_ToDo_Reminder_Log_UU, String trxName)
+	{
+		super(ctx, JP_ToDo_Reminder_Log_UU, trxName);
+	}
+	
 	public MToDoReminderLog(Properties ctx, ResultSet rs, String trxName)
 	{
 		super(ctx, rs, trxName);

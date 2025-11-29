@@ -12,6 +12,11 @@ public class MJPToDoTeam extends X_RV_JP_ToDo_Team {
 		super(ctx, RV_JP_ToDo_Team_ID, trxName);
 	}
 
+	public MJPToDoTeam(Properties ctx, String RV_JP_ToDo_Team_UU, String trxName) 
+	{
+		super(ctx, RV_JP_ToDo_Team_UU, trxName);
+	}
+	
 	public MJPToDoTeam(Properties ctx, ResultSet rs, String trxName) 
 	{
 		super(ctx, rs, trxName);
